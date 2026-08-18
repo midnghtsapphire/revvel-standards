@@ -1,59 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-18T03:18:10.523Z",
+  "generated_at": "2026-08-18T07:16:16.699Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "6/100 recent runs failed; 0 stuck item(s)",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 6,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32094912660,
-            "name": "Lint Markdown (markdownlint-cli)",
-            "path": ".github/workflows/lint-md.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094912660",
+            "id": 32110547638,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32110547638",
             "conclusion": "failure"
           },
           {
-            "id": 32094912505,
-            "name": "WR Lint",
-            "path": ".github/workflows/wr-lint.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094912505",
+            "id": 32106897172,
+            "name": "WR-4600 Watchtower",
+            "path": ".github/workflows/watchtower.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32106897172",
             "conclusion": "failure"
           },
           {
-            "id": 32094911930,
-            "name": ".github/workflows/release-banner-social.yml",
-            "path": ".github/workflows/release-banner-social.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094911930",
+            "id": 32105797125,
+            "name": "App Artifact Audit",
+            "path": ".github/workflows/app-artifact-audit.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32105797125",
             "conclusion": "failure"
           },
           {
-            "id": 32094911467,
-            "name": "Social Media Automation",
-            "path": ".github/workflows/social-media-automation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094911467",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32094911430,
-            "name": ".github/workflows/dprint-check.yml",
-            "path": ".github/workflows/dprint-check.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094911430",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32094905924,
-            "name": "WR Lint",
-            "path": ".github/workflows/wr-lint.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094905924",
+            "id": 32105569758,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32105569758",
             "conclusion": "failure"
           }
         ],
@@ -79,10 +65,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32109996721"
       }
     },
     "sheaf": {
