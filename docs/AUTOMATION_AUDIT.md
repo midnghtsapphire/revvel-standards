@@ -886,3 +886,40 @@ containing the text rather than the variable read. The lesson is that a
 find-and-replace across `run:` and `script:` blocks is not one transformation:
 the two have different interpreters, and the same expression needs a different
 form in each.
+
+### Correction — the `choice`-input false positive, and what it cost
+
+The first version of this change also moved `agent-dispatcher.yml`'s
+`inputs.agent` into `env:`. That was wrong twice over, and the CI failure that
+exposed it is worth recording because the reasoning error is easy to repeat.
+
+`agent` is declared `type: choice` with four fixed options. GitHub renders such
+an input as a dropdown and validates it server-side against the declared list,
+so it cannot carry arbitrary text and therefore cannot carry a payload. Treating
+it as untrusted was a false positive in the guard, not a finding.
+
+Moving it into `env:` then broke `Lint .github/workflows/agent-dispatcher.yml`,
+which had passed on the immediately preceding PR. Two facts came out of chasing
+that:
+
+- `rethab/actions-lint` cannot resolve `choice`-typed inputs. It reports
+  `Input "agent" is not declared` for an input that is plainly declared. A
+  `number`-typed input in the same file resolves fine.
+- It validates expressions in `env:` values but **not** in `run:` bodies. That
+  is why the expression passed for as long as it lived in the shell block and
+  failed the moment it moved. My first explanation had this backwards, and the
+  second push proved it by failing on the line I had just written.
+
+The guard now skips inputs a workflow declares as `choice` or `boolean`, which
+removed seven entries from `KNOWN_REMAINING` — they were never risks. The
+shrink-only assertion caught that immediately and refused to let the stale
+entries stay.
+
+**The wider lesson is about the known-red list.** `agent-dispatcher.yml` was not
+on it, and the failure was mine; but a repository carrying ~50 permanently red
+`actions-lint` checks makes "that will be actions-lint again" the cheapest
+available explanation for any new red. It took checking the previous PR's run to
+establish that this one was new. That is a standing argument for replacing the
+linter rather than living around it — this is now the third distinct
+false-positive class it has produced, after `secrets.X || secrets.Y` and
+behaviour that depends on whether an unrelated `env:` block exists.

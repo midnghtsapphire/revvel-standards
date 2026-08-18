@@ -56,17 +56,13 @@ jobs:
       - name: Determine agent to dispatch
         env:
           ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
-          # `github.event.inputs.*` resolves on every trigger (empty when absent);
-          # the bare `inputs.*` context only exists on workflow_dispatch, and this
-          # workflow also fires on `issues`.
-          DISPATCH_AGENT: ${{ github.event.inputs.agent }}
         id: determine
         run: |
           # Read agent-prompts.yml to get triggers
           echo "Looking for label triggers..."
 
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${DISPATCH_AGENT}" ]; then
-            echo "agent=${DISPATCH_AGENT}" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.agent }}" ]; then
+            echo "agent=${{ inputs.agent }}" >> $GITHUB_OUTPUT
             exit 0
           fi
 

@@ -62,14 +62,9 @@ const KNOWN_REMAINING = new Set([
   'auto-error-handler.yml :: ${{ inputs.attempted_fixes }}',
   'auto-error-handler.yml :: ${{ inputs.error_context }}',
   'auto-error-handler.yml :: ${{ inputs.error_message }}',
-  'auto-error-handler.yml :: ${{ inputs.error_type }}',
   'auto-error-handler.yml :: ${{ inputs.workflow_run_id }}',
-  'bulk-close-failure-spam.yml :: ${{ inputs.dry_run }}',
   'bulk-close-failure-spam.yml :: ${{ inputs.max_to_close }}',
-  'chaosmender.yml :: ${{ github.event.inputs.file_issues }}',
-  'eeat-trust-cron.yml :: ${{ inputs.dry_run && \'✅ Yes\' || \'❌ No\' }}',
   'fork-audit-bot.yml :: ${{ inputs.config_path }}',
-  'fork-audit-bot.yml :: ${{ inputs.dry_run }}',
   'gumloop-pdf-pipeline.yml :: ${{ inputs.keywords }}',
   'gumloop-pdf-pipeline.yml :: ${{ inputs.niche }}',
   'gumloop-pdf-pipeline.yml :: ${{ inputs.output_name }}',
@@ -77,7 +72,6 @@ const KNOWN_REMAINING = new Set([
   'mabl.yml :: ${{ inputs.app-url }}',
   'mabl.yml :: ${{ inputs.continue-on-failure }}',
   'mabl.yml :: ${{ inputs.plan-labels }}',
-  'openrouter-assignee.yml :: ${{ github.event.inputs.dry_run || \'false\' }}',
   'patch-agent.yml :: ${{ inputs.issue_number }}',
   'research-module.yml :: ${{ inputs.output_file }}',
   'research-module.yml :: ${{ inputs.question }}',
@@ -86,7 +80,6 @@ const KNOWN_REMAINING = new Set([
   'run-human-testing-api.yml :: ${{ inputs.output_file }}',
   'run-human-testing-api.yml :: ${{ inputs.target_url }}',
   'run-human-testing-api.yml :: ${{ inputs.test_scenarios }}',
-  'stuck-check-watchdog.yml :: ${{ github.event.inputs.dry_run == \'true\' }}',
   'ui-creation-engine.yml :: ${{ inputs.business }}',
   'ui-creation-engine.yml :: ${{ inputs.industry }}',
   'ui-creation-engine.yml :: ${{ inputs.issue_number }}',
@@ -106,16 +99,40 @@ const UNTRUSTED = [
 // `inputs.dry_run == 'true'` cannot carry a payload.
 const BOOLEAN_COMPARISON = /\$\{\{\s*[^}]*\b(?:==|!=)\s*'[^']*'\s*\}\}/;
 
-function offendingExpressions(body) {
+function offendingExpressions(body, constrained = new Set()) {
   const out = [];
   for (const line of String(body).split('\n')) {
     for (const m of line.matchAll(/\$\{\{[^}]*\}\}/g)) {
       const expr = m[0];
       if (BOOLEAN_COMPARISON.test(expr)) continue;
+      const named = expr.match(/inputs\.([A-Za-z_]+)/);
+      if (named && constrained.has(named[1])) continue; // choice/boolean: GitHub constrains the value
       if (UNTRUSTED.some((re) => re.test(expr))) out.push(expr.trim());
     }
   }
   return out;
+}
+
+/**
+ * Inputs whose value GitHub constrains, per workflow file.
+ *
+ * A `choice` input is rendered as a dropdown and validated server-side against
+ * its declared options, and a `boolean` yields only true/false — neither can
+ * carry arbitrary text, so neither can carry a payload. Treating them as
+ * untrusted is a false positive, and an expensive one: `agent-dispatcher.yml`
+ * declares `agent` as a choice of four fixed values, and "fixing" it by moving
+ * the expression into `env:` traded a non-risk for a real CI failure, because
+ * rethab/actions-lint cannot resolve choice-typed inputs and validates `env:`
+ * values (it does not validate run: bodies).
+ */
+function constrainedInputs(doc) {
+  const on = doc?.on ?? doc?.[true];
+  const inputs = (on && typeof on === 'object' && !Array.isArray(on) && on.workflow_dispatch?.inputs) || {};
+  return new Set(
+    Object.entries(inputs)
+      .filter(([, spec]) => spec && (spec.type === 'choice' || spec.type === 'boolean'))
+      .map(([name]) => name)
+  );
 }
 
 function liveSteps() {
@@ -128,11 +145,13 @@ function liveSteps() {
     } catch {
       continue; // structural validity is covered elsewhere
     }
+    const constrained = constrainedInputs(doc);
     for (const [jobName, job] of Object.entries(doc?.jobs || {})) {
       if (!job || job.if === false) continue; // disabled stubs cannot run
       for (const step of job.steps || []) {
         out.push({
           file,
+          constrained,
           jobName,
           name: step?.name || '(unnamed)',
           shell: String(step?.run || ''),
@@ -157,7 +176,7 @@ test('the scan is not vacuous', () => {
 
 test('no shell run: block interpolates an attacker-controlled expression', () => {
   const offenders = liveSteps()
-    .flatMap((s) => offendingExpressions(s.shell).map((e) => ({ s, e })))
+    .flatMap((s) => offendingExpressions(s.shell, s.constrained).map((e) => ({ s, e })))
     .filter(({ s, e }) => !KNOWN_REMAINING.has(`${s.file} :: ${e}`))
     .map(({ s, e }) => `${s.file} :: ${s.jobName} :: ${s.name} -> ${e}`);
 
@@ -174,7 +193,7 @@ test('no github-script script: block interpolates an attacker-controlled express
   // Same defect, different interpreter. `const x = '${{ inputs.task }}'` breaks
   // out of the JS string literal exactly as it breaks out of a shell one.
   const offenders = liveSteps()
-    .flatMap((s) => offendingExpressions(s.js).map((e) => ({ s, e })))
+    .flatMap((s) => offendingExpressions(s.js, s.constrained).map((e) => ({ s, e })))
     .filter(({ s, e }) => !KNOWN_REMAINING.has(`${s.file} :: ${e}`))
     .map(({ s, e }) => `${s.file} :: ${s.jobName} :: ${s.name} -> ${e}`);
 
@@ -193,8 +212,8 @@ test('the known-remaining list only shrinks', () => {
   // list it was written not to be.
   const live = new Set();
   for (const s of liveSteps()) {
-    for (const e of offendingExpressions(s.shell)) live.add(`${s.file} :: ${e}`);
-    for (const e of offendingExpressions(s.js)) live.add(`${s.file} :: ${e}`);
+    for (const e of offendingExpressions(s.shell, s.constrained)) live.add(`${s.file} :: ${e}`);
+    for (const e of offendingExpressions(s.js, s.constrained)) live.add(`${s.file} :: ${e}`);
   }
   const fixed = [...KNOWN_REMAINING].filter((k) => !live.has(k));
 
