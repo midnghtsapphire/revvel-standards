@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Check if PR should be created
         id: check
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             // Parse issue number from multiple possible sources:
@@ -329,7 +329,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Post skip notification
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
@@ -403,7 +403,7 @@ jobs:
           node-version: "24"
       - name: Get issue comments for research findings
         id: get_findings
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
@@ -811,7 +811,7 @@ jobs:
           echo "Pushed branch: ${{ steps.create_branch.outputs.BRANCH_NAME }}"
       - name: Create Pull Request
         id: create_pr
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
@@ -871,7 +871,7 @@ jobs:
 
             return { number: pr.number, url: pr.html_url };
       - name: Apply labels to PR
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = parseInt('${{ env.ISSUE_NUMBER }}', 10);
@@ -995,7 +995,7 @@ jobs:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           starting_branch: ${{ steps.create_branch.outputs.BRANCH_NAME }}
       - name: Comment on issue
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
@@ -1029,7 +1029,7 @@ jobs:
               body: comment,
             });
       - name: Update issue labels
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
@@ -1078,7 +1078,7 @@ jobs:
             }
       - name: Handle workflow failure
         if: failure()
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);

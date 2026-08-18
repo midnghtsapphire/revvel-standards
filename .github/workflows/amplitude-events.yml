@@ -67,7 +67,7 @@ jobs:
       - name: Build event payload
         if: steps.verify.outputs.skip != 'true'
         id: payload
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           DISPATCH_EVENT_TYPE: ${{ github.event.inputs.event_type }}
         with:

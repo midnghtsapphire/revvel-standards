@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Post prosecution findings
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = context.eventName === 'workflow_dispatch'

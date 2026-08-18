@@ -84,7 +84,7 @@ jobs:
           mkdir -p logs/agent-audit
           touch logs/agent-audit/audit.jsonl
       - name: Log agent action
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -181,7 +181,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Analyze agent health
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
@@ -353,7 +353,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Analyze OpenRouter usage
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
