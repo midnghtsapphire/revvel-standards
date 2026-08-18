@@ -612,3 +612,53 @@ for the simplified `secrets.X || secrets.Y`. Satisfying it would mean dropping
 the `AGENT_PR_TOKEN` fallback, which `CLAUDE.md` gotcha 3 makes load-bearing.
 Five other workflows fail that check for the same reason; it is a linter
 limitation, not a defect to fix by regressing the workflows.
+
+---
+
+## Update — August 18, 2026: transient API failures no longer abandon a PR in draft
+
+**`.github/workflows/ready-for-review.yml`**, job `promote-draft`, is the gate
+that flips a draft PR to Ready for Review once every external check has gone
+green. It polls `checks.listForRef` for up to eight minutes. Every Octokit call
+in the job was bare, so a single 502 from the API threw straight out of the poll
+loop and aborted the step — after the full wait, with CI green, and with nothing
+on the PR explaining why it stayed a draft. The request was never wrong; the
+same call had already succeeded on earlier iterations of that same loop.
+
+`CLAUDE.md` gotcha 2.
+
+Both calls in the job are now wrapped. The `markPullRequestReadyForReview`
+mutation one step later carried the identical defect, and wrapping only the poll
+would have fixed half of it: the mutation *is* the point of the job, so losing
+it to a blip discards the entire eight-minute wait for CI.
+
+The retry is deliberately narrow in both directions. It covers transient status
+(`429`, `500`, `502`, `503`, `504`) and network-level codes (`ETIMEDOUT`,
+`ECONNRESET`, `ENOTFOUND`, `EAI_AGAIN`). A `404`, `403` or `422` is an answer,
+not a blip — retrying it four times delays the true error by ~15 seconds and
+buries it under warnings about attempts that never had a chance, so those
+propagate on the first attempt. Attempts are bounded, so a genuine outage still
+ends the step rather than looping.
+
+**Why the helper is inlined twice instead of shared.** This workflow runs on
+`pull_request_target` and deliberately has no checkout step, so there is no repo
+file for `require` to reach. Adding one to share ~15 lines would mean checking
+out PR-controlled code in a privileged context — duplication is the cheaper
+trade, and the comment in each step says so.
+
+Regression coverage (`tests/ready-for-review-retries.test.js`) executes the real
+inline script out of the workflow YAML against a mocked Octokit, shadowing
+`setTimeout` so the 15s/30s poll waits collapse while the real control flow still
+runs. It is behavioural rather than textual on purpose: a regex can confirm the
+word `withRetry` appears, but only running it can confirm that a `404` fails fast.
+Verified against the pre-fix workflow — five of its six tests fail there. The
+sixth passes both before and after by design, because it guards the *over*-retry
+defect this change could introduce rather than the one it fixes.
+
+**Known documentation gap, not addressed here:** `CLAUDE.md` gotcha 2 instructs
+agents to "route through the shared `withRetry({ allowError: [...] })` helper",
+but no such helper exists in this repository — the name appears nowhere outside
+that sentence. `scripts/biome/gh.js` has an `allowError` option, but it wraps
+`fetch` rather than Octokit and is unreachable from a workflow with no checkout.
+The behaviour the gotcha describes is implemented here; reconciling the standard
+with what actually exists is worth its own change.
