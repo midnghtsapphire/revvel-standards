@@ -3,22 +3,22 @@
   "generated_at": "2026-08-18T03:09:11.428Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 9,
+    "running": 21,
     "cap": 20,
-    "over_capacity": false
+    "over_capacity": true
   },
   "counts": {
     "total": 17,
     "running": 9,
     "queued": 8,
     "done": 0,
-    "healthy": 1,
+    "healthy": 13,
     "stalled": 0,
     "runaway": 8,
     "protected": 1,
-    "occupancy": 9,
+    "occupancy": 21,
     "occupancyCap": 20,
-    "overCapacity": false
+    "overCapacity": true
   },
   "orchestrators": [
     {
@@ -32,6 +32,102 @@
       "since_update_ms": 10428,
       "reason": "running within budget",
       "protected": true
+    },
+    {
+      "id": 32053928722,
+      "name": "npm_and_yarn in /. for async, lodash, lodash, lodash, lodash, lodash, lodash, url-parse, url-parse, url-parse, url-parse, url-parse, url-parse, url-parse - Update #1529366637",
+      "path": "dynamic/dependabot/dependabot-updates",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053928722",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 46883,
+      "since_update_ms": 41883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053864464,
+      "name": "PR #17048",
+      "path": "dynamic/github-code-scanning/codeql",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053864464",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 92883,
+      "since_update_ms": 85883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053836782,
+      "name": "PR #17048",
+      "path": "dynamic/github-code-scanning/codeql",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053836782",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 114883,
+      "since_update_ms": 109883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053791174,
+      "name": "PR Lifecycle",
+      "path": ".github/workflows/pr-lifecycle.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053791174",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 149883,
+      "since_update_ms": 132883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053689251,
+      "name": "🎛️ PR State Orchestrator",
+      "path": ".github/workflows/pr-state-orchestrator.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053689251",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 225883,
+      "since_update_ms": 179883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053575479,
+      "name": "OSSAR",
+      "path": ".github/workflows/ossar.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053575479",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 309883,
+      "since_update_ms": 5883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053500575,
+      "name": "Addressing comment on PR #17044",
+      "path": "dynamic/copilot-swe-agent/copilot",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053500575",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 367883,
+      "since_update_ms": 362883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053410492,
+      "name": "CodeQL",
+      "path": ".github/workflows/codeql.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053410492",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 438883,
+      "since_update_ms": 152883,
+      "reason": "running within budget",
+      "protected": false
     },
     {
       "id": 31608261441,
