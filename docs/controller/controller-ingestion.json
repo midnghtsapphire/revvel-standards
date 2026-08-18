@@ -1,5 +1,110 @@
 {
   "schema": "fleet-controller-ingestion/v1",
-  "generated_at": "2026-07-15T23:11:20.014Z",
-  "needs_healing": []
+  "generated_at": "2026-08-18T03:09:11.428Z",
+  "needs_healing": [
+    {
+      "id": 31608261441,
+      "name": "Devin Code Review",
+      "path": ".github/workflows/devin-code-review.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31608261441",
+      "health": "runaway",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "running 7947m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 31607544739,
+      "name": "PR Lifecycle",
+      "path": ".github/workflows/pr-lifecycle.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607544739",
+      "health": "runaway",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "running 7955m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 31607480387,
+      "name": "AI PR Review (OpenRouter)",
+      "path": ".github/workflows/ai-pr-review-openrouter.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607480387",
+      "health": "runaway",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "running 7955m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 31607475332,
+      "name": "Agent Fingerprint Gate",
+      "path": ".github/workflows/agent-fingerprint-gate.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607475332",
+      "health": "runaway",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "running 7955m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 31607177890,
+      "name": "GOAP Assignment Router",
+      "path": ".github/workflows/goap-assignment-router.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607177890",
+      "health": "runaway",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "running 7958m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29262820826,
+      "name": "PR Lifecycle",
+      "path": ".github/workflows/pr-lifecycle.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29262820826",
+      "health": "runaway",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "running 51094m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29257786646,
+      "name": "No-Destroy Guard",
+      "path": ".github/workflows/no-destroy-guard.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29257786646",
+      "health": "runaway",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "running 51165m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29252937753,
+      "name": "Project Board Sync",
+      "path": ".github/workflows/project-board-sync.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29252937753",
+      "health": "runaway",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "running 51236m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+    }
+  ]
 }
