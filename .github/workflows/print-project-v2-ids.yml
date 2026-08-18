@@ -186,7 +186,7 @@ jobs:
           echo
           echo "Saved readable output to project-v2-ids.txt"
       - name: Upload Project v2 ID report
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7
         with:
           name: project-v2-ids
           path: |
