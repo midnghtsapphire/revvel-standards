@@ -56,20 +56,23 @@ jobs:
       issue_num: ${{ steps.meta.outputs.issue_num }}
     steps:
       - name: Parse delivery labels / dispatch input
+        env:
+          CHANNEL_INPUT: ${{ github.event.inputs.channel }}
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ' ') }}
         id: labels
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            LABELS="${{ join(github.event.pull_request.labels.*.name, ' ') }}"
+            LABELS="${PR_LABELS}"
           else
             LABELS=""
           fi
-          INPUT="${{ github.event.inputs.channel }}"
+          INPUT="${CHANNEL_INPUT}"
           ALL="$([[ "$INPUT" == "all" || "$LABELS" == *"deliver:all"* ]] && echo true || echo false)"
-          INPUT="${{ github.event.inputs.channel }}"
+          INPUT="${CHANNEL_INPUT}"
 
           # Only access PR labels if this is a pull_request event
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            LABELS="${{ join(github.event.pull_request.labels.*.name, ' ') }}"
+            LABELS="${PR_LABELS}"
           else
             LABELS=""
           fi

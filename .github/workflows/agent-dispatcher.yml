@@ -54,6 +54,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Determine agent to dispatch
+        env:
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
         id: determine
         run: |
           # Read agent-prompts.yml to get triggers
@@ -65,7 +67,7 @@ jobs:
           fi
 
           # Check issue labels
-          LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
+          LABELS="${ISSUE_LABELS}"
           
           # Belt-and-suspenders: route octopus-review[bot] issues to openrouter
           # even if the octopus-route.yml translator hasn't applied wr:code yet.

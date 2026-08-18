@@ -824,3 +824,65 @@ reports (unguarded `removeLabel` calls, `CLAUDE.md` gotcha 1) are real and
 remain outstanding. They are a large mechanical change across many workflows and
 are deliberately left for their own batched work rather than widened into this
 diff.
+
+---
+
+## Update — August 18, 2026: template injection closed on every attacker-supplied value
+
+`${{ }}` is template substitution performed **before** the script runs. The
+surrounding quotes are part of the substituted output, not a boundary the
+expansion respects, so a value containing a quote closes the string literal and
+the remainder executes. This is true in `run:` (bash) and in `github-script`
+(JavaScript) alike — being inside a string literal is what makes the pattern
+exploitable, not what prevents it.
+
+zizmor alert 3380 caught one instance in `auto-branch-update.yml`. The
+`security-fleet` `@exprwatch` sweep (#17644) then reported 33, of which 16
+carried values an actor chooses:
+
+| expression | why it is attacker-supplied |
+| --- | --- |
+| `inputs.error_message`, `inputs.task`, `inputs.url`, `inputs.repo`, `inputs.channel`, `inputs.target_state`, `inputs.required_agents` | free text on a `workflow_dispatch` |
+| `inputs.issue_number` | declared `string` in several workflows, not `number` |
+| `join(github.event.*.labels.*.name, …)` | label names, settable by anyone who can label |
+
+All 16 now arrive through the step's `env:` and are read as `$VAR` in shell or
+`process.env.VAR` in github-script, across ten workflows. The `@exprwatch` count
+drops from 33 to 17, and the attacker-influenceable subset from 16 to zero.
+
+The remaining 17 are deliberately left: `repository.default_branch`,
+`pull_request.base.ref`, `head.sha`, `github.event.before` and similar are
+server-controlled, and `inputs.x == 'y'` is evaluated by Actions to a boolean
+before the shell sees it, so it cannot carry a payload.
+
+**The sweep undercounted.** `@exprwatch` matches `github.event.inputs.*`; the
+bare `inputs.*` form is the same value in a `workflow_dispatch` context and was
+not counted. `tests/no-untrusted-expression-in-run.test.js` catches both, and
+sees 38 further instances across `auto-error-handler.yml`,
+`reset-self-heal-issue.yml`, `fork-audit-bot.yml`, `gumloop-pdf-pipeline.yml`
+and others. Fixing all of them in one change would produce a diff nobody can
+review, so they are recorded in a `KNOWN_REMAINING` **ratchet** — a list that may
+only shrink, with a guard asserting that an entry which has since been fixed
+must be deleted rather than left holding a slot open. That is the same shape as
+the `DORMANT` list in `tests/workflow-files-are-discoverable.test.js`, and for
+the same reason: a list that outlives its problem quietly becomes the ignore
+list it was written not to be.
+
+**One existing test had to change, and the reason is worth recording.**
+`tests/ci-error-prevention.test.js` asserted that the `transition-state` step's
+script body contains the literal string `github.event.inputs.target_state`. That
+assertion checks the *mechanism*, not the property it cares about — so the safe
+form failed it, and the test as written argued for the defect it exists to
+prevent. It now asserts that the step still *consumes* each dispatch input,
+whether directly or via `env:` plus `process.env`. Verified it still fails when
+the `env:` entry is removed, so it was not weakened into a tautology.
+
+**Two mistakes made during this change, both caught before pushing.** The
+mechanical pass wrote shell syntax (`${VAR}`) into two github-script blocks,
+where it is invalid JavaScript — `ci-error-prevention.test.js` caught one, and an
+audit of every edit caught the other, which no test covered. A follow-up blind
+replace then produced `String('process.env.ISSUE_NUMBER')` — a string literal
+containing the text rather than the variable read. The lesson is that a
+find-and-replace across `run:` and `script:` blocks is not one transformation:
+the two have different interpreters, and the same expression needs a different
+form in each.
