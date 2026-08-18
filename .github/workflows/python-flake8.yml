@@ -1,0 +1,83 @@
+# Python flake8 lint gate (WR #15858).
+# Uses py-actions/flake8@v2.3.0 (SHA-pinned). Pre-existing violations are tracked in
+# config/flake8-baseline.txt; the baseline gate fails only when debt increases.
+# Docs: docs/PYTHON_FLAKE8_LINT.md
+name: Python flake8 Lint
+
+on:
+  pull_request:
+    paths:
+      - "**/*.py"
+      - ".flake8"
+      - "config/flake8-baseline.txt"
+      - "scripts/flake8-baseline-gate.js"
+      - ".github/workflows/python-flake8.yml"
+      - "tests/python-flake8-workflow.test.js"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.py"
+      - ".flake8"
+      - "config/flake8-baseline.txt"
+      - "scripts/flake8-baseline-gate.js"
+      - ".github/workflows/python-flake8.yml"
+      - "tests/python-flake8-workflow.test.js"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: python-flake8-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flake8:
+    name: flake8
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      # Required bundle (WR #15858): py-actions/flake8@v2.3.0
+      # SHA pin per CLAUDE.md gotcha #8 (floating tags are a supply-chain risk).
+      # continue-on-error: the monorepo still carries pre-existing flake8 debt that
+      # this WR explicitly excludes from cleanup. The next step is the real gate —
+      # it fails the job when any path::CODE count exceeds config/flake8-baseline.txt.
+      # If the action itself crashes (install/runtime), the baseline step still runs
+      # flake8 via pip and enforces the same select=E,W,F contract.
+      - name: Python flake8 Lint
+        id: flake8
+        continue-on-error: true
+        uses: py-actions/flake8@84ec6726560b6d5bd68f2a5bed83d62b52bb50ba # v2.3.0
+        with:
+          path: "."
+          max-line-length: "120"
+          # Keep tests/scripts/tools/products in scope; only skip cache/vendor trees.
+          exclude: ".git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,.pytest_cache"
+          args: "--select=E,W,F --max-complexity=15 --show-source --statistics"
+
+      - name: Setup Node.js (baseline gate)
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+
+      - name: Setup Python (baseline gate)
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      # Real CI gate: fail when flake8 debt grows past the committed baseline.
+      # Exit code reflects resolution state (GREEN_MAIN / CLAUDE.md gotcha #6).
+      - name: flake8 baseline ratchet gate
+        run: node scripts/flake8-baseline-gate.js
+
+      # tests/python-flake8-workflow.test.js requires the `yaml` package from package.json.
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Workflow regression tests
+        run: node --test tests/python-flake8-workflow.test.js

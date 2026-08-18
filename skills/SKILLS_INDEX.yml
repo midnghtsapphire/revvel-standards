@@ -87,6 +87,28 @@ skills:
       - "self-healing review"
       - "recurse-rules"
 
+  - name: stacker_bot
+    title: "Stacker Bot — Stacked Pull Requests"
+    version: "1.0.0"
+    path: "skills/stacker-bot/"
+    skill_file: "skills/stacker-bot/stacker-bot.skill.yml"
+    category: "PR Workflow & Merge Hygiene"
+    platform: "https://github.com/apps/stacker-bot"
+    integration_doc: "docs/STACKER_BOT_INTEGRATION.md"
+    verification_doc: "docs/STACKER_BOT_INSTALLATION.md"
+    access: all
+    persona: reviewer
+    triggers:
+      - "stacker"
+      - "stacker-bot"
+      - "stacked pr"
+      - "stacked pull request"
+      - "pr stack"
+      - "stack toc"
+      - "merge order"
+      - "stacker cli"
+      - "150619571"
+
   - name: truthslayer_audit
     title: "TruthSlayer Audit — Composite Code Scoring"
     version: "1.1.0"
@@ -1408,22 +1430,3 @@ skills:
       - "/ai-validation"
       - "probabilistic-orchestration"
       - "probabilistic orchestration"
-
-  - name: awesome_grok_build
-    title: "Awesome Grok Build — xAI Grok skill library & install planner"
-    version: "1.0.0"
-    path: "skills/awesome-grok-build/"
-    skill_file: "skills/awesome-grok-build/SKILL.md"
-    category: "Agent Runtimes & Coding Agents"
-    product: "products/awesome-grok-build/"
-    upstream: "https://github.com/DominikTobureto/awesome-grok-build"
-    access: all
-    persona: builder
-    triggers:
-      - "grok build"
-      - "awesome grok"
-      - "grok skills"
-      - ".grok/skills"
-      - "grokignore"
-      - "xai cli"
-

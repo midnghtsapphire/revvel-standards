@@ -2,11 +2,6 @@ name: Daily News Briefing
 on:
   schedule:
     - cron: '0 6 * * *' # 6am UTC daily (must be 5 fields; 3-field cron makes GitHub reject the workflow)
-
-# Least privilege: checkout + local script only; no GitHub write APIs.
-permissions:
-  contents: read
-
 jobs:
   news:
     runs-on: ubuntu-latest

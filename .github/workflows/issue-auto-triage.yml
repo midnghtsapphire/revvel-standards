@@ -15,7 +15,7 @@ jobs:
          startsWith(github.event.issue.title, '[ALERT]')))
     steps:
       - name: Auto-label based on title and body
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issue = context.payload.issue;
@@ -65,7 +65,7 @@ jobs:
               });
             }
       - name: Create linked branch for enhancements
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         if: contains(github.event.issue.labels.*.name, 'enhancement')
         continue-on-error: true
         with:

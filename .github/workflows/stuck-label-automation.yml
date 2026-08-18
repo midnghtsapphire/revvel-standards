@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Scan for stuck labels
         id: scan
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const MS_PER_HOUR = 1000 * 60 * 60;
@@ -183,7 +183,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Process stuck items
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
@@ -375,7 +375,7 @@ jobs:
     if: always()
     steps:
       - name: Generate summary
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           STUCK_ISSUES: ${{ needs.detect-stuck.outputs.stuck_issues }}
           STUCK_PRS: ${{ needs.detect-stuck.outputs.stuck_prs }}

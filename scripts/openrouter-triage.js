@@ -4,14 +4,8 @@
 const https = require("https");
 const fs = require("fs");
 const path = require("path");
-const {
-  getOpenRouterKey,
-  openRouterAuthHeader,
-} = require("./utils/openrouter-key");
 
-// Sanitize once at load so a secret pasted with trailing CR/LF cannot break
-// Authorization headers (issue #16942). Empty string means "no key configured".
-const OPENROUTER_API_KEY = getOpenRouterKey();
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
 const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
 const ISSUE_NUMBER = process.env.ISSUE_NUMBER || "";
@@ -342,7 +336,7 @@ async function callOpenRouter(systemPrompt, userPrompt) {
     pathName: OPENROUTER_PATH,
     method: "POST",
     headers: {
-      Authorization: openRouterAuthHeader(OPENROUTER_API_KEY),
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       "HTTP-Referer": referer,
       "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage`,
     },
@@ -372,7 +366,7 @@ async function callOpenRouterFreeModels(systemPrompt, userPrompt) {
     pathName: OPENROUTER_PATH,
     method: "POST",
     headers: {
-      Authorization: openRouterAuthHeader(OPENROUTER_API_KEY),
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       "HTTP-Referer": referer,
       "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage (free-tier)`,
     },
@@ -403,7 +397,7 @@ async function callOpenRouterBackupModels(systemPrompt, userPrompt) {
     pathName: OPENROUTER_PATH,
     method: "POST",
     headers: {
-      Authorization: openRouterAuthHeader(OPENROUTER_API_KEY),
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       "HTTP-Referer": referer,
       "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage (backup models)`,
     },
@@ -747,15 +741,71 @@ async function reportTriageFailure({ kind, detail }) {
 //   6. Static rule-based fallback — never throws; keyword-only output so that
 //      every issue always receives some triage result.
 // Lane 6 never fails, so triageWithFallback always returns a result.
+//
+// WR-4481 / WR-4474: HTTP 402/429 on the primary OpenRouter lane is an
+// *explicit* trigger (config/routing-failover.yml) to jump straight to the
+// keyless Perplexity tier-2 target — not a prose "try something else" note.
+// Credit exhaustion must never stall triage waiting on a funded key.
 async function triageWithFallback(systemPrompt, userPrompt) {
+  const {
+    extractStatusCode,
+    decideFailover,
+    hasExplicitKeylessFailover,
+  } = require("./lane-failover");
+  const { appendFailureLedger } = require("./failure-ledger");
+
   // Lane 1: OpenRouter SSOT triage profile.
   if (OPENROUTER_API_KEY) {
     try {
       const text = await callOpenRouter(systemPrompt, userPrompt);
       return { text, lane: "OpenRouter SSOT triage", model: PRIMARY_OPENROUTER_MODELS.join(" → ") };
     } catch (err) {
-      // 401/402/403/429 almost always means the account is not funded/verified.
-      console.log(`::warning::Lane 1 (OpenRouter) failed (${err.message}). Trying lane 2.`);
+      const status = extractStatusCode(err);
+      const decision = decideFailover({ status });
+      console.log(
+        `::warning::Lane 1 (OpenRouter) failed (${err.message}). ` +
+          `WR-4481 decision=${decision.action} trigger=${decision.trigger}.`,
+      );
+
+      // Explicit 402/429 (and configured failover triggers): skip intermediate
+      // funded lanes and go to keyless Perplexity immediately.
+      const creditOrRate =
+        status === 402 ||
+        status === 429 ||
+        decision.action === "failover" ||
+        decision.action === "backoff_then_failover";
+
+      if (creditOrRate && decision.toLane && decision.toLane.keyless) {
+        try {
+          appendFailureLedger({
+            agent: "openrouter-triage",
+            class: status === 402 ? "lane-402" : status === 429 ? "lane-429" : "lane-failover",
+            trigger: String(status || decision.trigger || "unknown"),
+            lane: `openrouter→${decision.toLane.provider}`,
+            repo: GITHUB_REPOSITORY,
+            task_ref: ISSUE_NUMBER ? `#${ISSUE_NUMBER}` : undefined,
+            summary: `Primary OpenRouter ${status}: failover to keyless ${decision.toLane.id}`,
+            root_cause: decision.reason,
+          });
+        } catch (ledgerErr) {
+          console.log(`::warning::FAILURE-LEDGER write failed: ${ledgerErr.message}`);
+        }
+
+        try {
+          const text = await callPerplexityNoKey(systemPrompt, userPrompt);
+          return {
+            text,
+            lane: "Perplexity (keyless) [WR-4481 402/429 failover]",
+            model: "perplexity/sonar",
+            failover: decision,
+            keylessFailoverWired: hasExplicitKeylessFailover(),
+          };
+        } catch (pplxErr) {
+          console.log(
+            `::warning::Keyless Perplexity failover failed (${pplxErr.message}). Continuing cascade.`,
+          );
+        }
+      }
     }
   } else {
     console.log("::warning::OPENROUTER_API_KEY not configured — skipping lane 1.");
@@ -880,6 +930,7 @@ module.exports = {
   collectUrlContext,
   loadAgentModelProfile,
   parsePositiveInt,
+  triageWithFallback,
   TRIAGE_PROFILE,
   MODEL,
   MODEL_FALLBACK,

@@ -55,7 +55,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Scan for stuck issues and diagnose
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           DRY_RUN: ${{ inputs.dry_run || 'false' }}
           MAX_AGE_DAYS: ${{ inputs.max_age_days || '7' }}

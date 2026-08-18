@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Resolve issue/PR number and check label
         id: resolve
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             // Get issue/PR number from event or workflow_dispatch input
@@ -77,7 +77,7 @@ jobs:
             core.setOutput('has_assignee', String(assignees.length > 0));
       - name: Assign to Copilot (OpenRouter orchestrator)
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.has_assignee != 'true' && steps.resolve.outputs.dry_run != 'true'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
@@ -97,7 +97,7 @@ jobs:
             }
       - name: Apply routing labels
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
@@ -133,7 +133,7 @@ jobs:
             }
       - name: Remove needs-action label
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
@@ -152,7 +152,7 @@ jobs:
             }
       - name: Post routing comment
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
@@ -224,7 +224,7 @@ jobs:
             }
       - name: Log dry run results
         if: steps.resolve.outputs.dry_run == 'true' && steps.resolve.outputs.skip != 'true'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = '${{ steps.resolve.outputs.issue_number }}';
@@ -241,7 +241,7 @@ jobs:
             core.notice('═══════════════════════════════════════════════════════');
       - name: Summary
         if: steps.resolve.outputs.skip != 'true'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = '${{ steps.resolve.outputs.issue_number }}';

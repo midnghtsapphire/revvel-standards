@@ -29,6 +29,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | RecurseML, autonomous PR review, bug detection, code standards                                                          | [`recurse-ml`](#recurse-ml)                                   |
 | Knowledge sheaf, sheaf consistency, H¹, Laplacian energy, persistent homology, barcodes, imprint-at-spawn, MOTU, BNAT   | [`bnatsheaf`](#bnatsheaf)                                     |
 | BITO AI, persistent-memory code review, desktop API procurement, bito cli, bito secret, repo memory, agentic review     | [`bito-ai`](#bito-ai)                                         |
+| Stacker bot, stacked PRs, PR stack TOC, merge-order guard, stacker CLI, installation 150619571                          | [`stacker-bot`](#stacker-bot)                                 |
 | TruthSlayer audit, composite code score, rate a repo, marketplace audit, trust/authenticity badge                       | [`truthslayer-audit`](#truthslayer-audit)                     |
 | AI model selection, cost optimization, Sonnet vs Opus                                                                   | [`model-router`](#model-router)                               |
 | OpenRouter, multi-agent systems, swarms, agent naming, GitHub model tokens                                              | [`openrouter-swarms`](#openrouter-swarms)                     |
@@ -113,6 +114,17 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Standard:** `standards/BITO_AI_INTEGRATION_STANDARD.md`
 - **Workflow:** `.github/workflows/bito-ai.yml`
 - **Integration doc:** `docs/BITO_AI_INTEGRATION.md`
+
+#### stacker-bot
+
+- **Path:** `skills/stacker-bot/`
+- **Files:** `SKILL.md` · `stacker-bot.skill.yml`
+- **Platform:** [stacker-bot](https://github.com/apps/stacker-bot) (installation `150619571`)
+- **Description:** Free stacked-PR GitHub App. Splits large agent/human diffs into dependent PR stacks, keeps a TOC on the main stack PR, and fails status checks on non-top items so merges stay top-down. No API key. Complementary to Graphite.
+- **Tags:** stacker-bot, stacked-prs, pr-stack, merge-order, stack-toc, free-github-app
+- **Trigger:** "stacker", "stacker-bot", "stacked pr", "pr stack", "stack toc", "merge order", "stacker cli", "150619571".
+- **Integration doc:** `docs/STACKER_BOT_INTEGRATION.md`
+- **Verification doc:** `docs/STACKER_BOT_INSTALLATION.md`
 
 #### recurse-ml
 
@@ -723,12 +735,3 @@ _This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: Ma
 - **Path:** `skills/probabilistic-orchestration/SKILL.md`
 - **Persona:** DRAGNET (PROBABILISTIC MODE)
 - **Description:** Defensive guardrails, validation layers, and self-correction loops for handling unpredictable AI outputs. Use this skill when parsing LLM outputs or building AI-driven pipelines.
-
-## awesome-grok-build
-
-**Path:** `skills/awesome-grok-build/`  
-**Product:** `products/awesome-grok-build/` (port 3012)  
-**Upstream:** https://github.com/DominikTobureto/awesome-grok-build (MIT)
-
-Vendored Grok Build skills + templates. Use for Grok CLI setup, stack install plans, and AGENTS.md starters. Root mirror: `.grok/skills/`.
-
