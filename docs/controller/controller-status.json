@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-08-18T08:03:01.905Z",
+  "generated_at": "2026-08-18T11:57:40.305Z",
   "preempt_enabled": true,
   "occupancy": {
     "running": 9,
@@ -22,14 +22,14 @@
   },
   "orchestrators": [
     {
-      "id": 32114383115,
+      "id": 32134319938,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32114383115",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32134319938",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 10905,
-      "since_update_ms": 6905,
+      "age_ms": 11305,
+      "since_update_ms": 6305,
       "reason": "running within budget",
       "protected": true
     },
@@ -40,9 +40,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31608261441",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 494429905,
-      "since_update_ms": 494428905,
-      "reason": "running 8240m ≥ 60m budget",
+      "age_ms": 508508305,
+      "since_update_ms": 508507305,
+      "reason": "running 8475m ≥ 60m budget",
       "protected": false
     },
     {
@@ -52,9 +52,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607544739",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 494900905,
-      "since_update_ms": 494441905,
-      "reason": "running 8248m ≥ 60m budget",
+      "age_ms": 508979305,
+      "since_update_ms": 508520305,
+      "reason": "running 8483m ≥ 60m budget",
       "protected": false
     },
     {
@@ -64,9 +64,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607480387",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 494942905,
-      "since_update_ms": 494437905,
-      "reason": "running 8249m ≥ 60m budget",
+      "age_ms": 509021305,
+      "since_update_ms": 508516305,
+      "reason": "running 8484m ≥ 60m budget",
       "protected": false
     },
     {
@@ -76,9 +76,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607475332",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 494945905,
-      "since_update_ms": 494443905,
-      "reason": "running 8249m ≥ 60m budget",
+      "age_ms": 509024305,
+      "since_update_ms": 508522305,
+      "reason": "running 8484m ≥ 60m budget",
       "protected": false
     },
     {
@@ -88,9 +88,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607177890",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 495136905,
-      "since_update_ms": 494439905,
-      "reason": "running 8252m ≥ 60m budget",
+      "age_ms": 509215305,
+      "since_update_ms": 508518305,
+      "reason": "running 8487m ≥ 60m budget",
       "protected": false
     },
     {
@@ -100,9 +100,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29262820826",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 3083293905,
-      "since_update_ms": 3083024905,
-      "reason": "running 51388m ≥ 60m budget",
+      "age_ms": 3097372305,
+      "since_update_ms": 3097103305,
+      "reason": "running 51623m ≥ 60m budget",
       "protected": false
     },
     {
@@ -112,9 +112,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29257786646",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 3087531905,
-      "since_update_ms": 3087443905,
-      "reason": "running 51459m ≥ 60m budget",
+      "age_ms": 3101610305,
+      "since_update_ms": 3101522305,
+      "reason": "running 51694m ≥ 60m budget",
       "protected": false
     },
     {
@@ -124,9 +124,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29252937753",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 3091770905,
-      "since_update_ms": 3090516905,
-      "reason": "running 51530m ≥ 60m budget",
+      "age_ms": 3105849305,
+      "since_update_ms": 3104595305,
+      "reason": "running 51764m ≥ 60m budget",
       "protected": false
     },
     {
@@ -232,16 +232,15 @@
       "name": "Devin Code Review",
       "path": ".github/workflows/devin-code-review.yml",
       "health": "runaway",
-      "reason": "running 8240m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing",
-      "planned": "escalate",
-      "next_model": null,
-      "reassign_count": 2,
+      "reason": "running 8475m ≥ 60m budget",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.8",
+      "reassign_count": 1,
       "tried_models": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
+        "anthropic/claude-opus-4.8"
       ],
       "cut": "cancel-failed",
-      "reassign_outcome": null,
+      "reassign_outcome": "pending",
       "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31608261441/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
     },
     {
@@ -249,16 +248,15 @@
       "name": "PR Lifecycle",
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
-      "reason": "running 8248m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing",
-      "planned": "escalate",
-      "next_model": null,
-      "reassign_count": 2,
+      "reason": "running 8483m ≥ 60m budget",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.8",
+      "reassign_count": 1,
       "tried_models": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
+        "anthropic/claude-opus-4.8"
       ],
       "cut": "cancel-failed",
-      "reassign_outcome": null,
+      "reassign_outcome": "pending",
       "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31607544739/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
     },
     {
@@ -266,16 +264,15 @@
       "name": "AI PR Review (OpenRouter)",
       "path": ".github/workflows/ai-pr-review-openrouter.yml",
       "health": "runaway",
-      "reason": "running 8249m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing",
-      "planned": "escalate",
-      "next_model": null,
-      "reassign_count": 2,
+      "reason": "running 8484m ≥ 60m budget",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.8",
+      "reassign_count": 1,
       "tried_models": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
+        "anthropic/claude-opus-4.8"
       ],
       "cut": "cancel-failed",
-      "reassign_outcome": null,
+      "reassign_outcome": "pending",
       "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31607480387/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
     },
     {
@@ -283,16 +280,15 @@
       "name": "Agent Fingerprint Gate",
       "path": ".github/workflows/agent-fingerprint-gate.yml",
       "health": "runaway",
-      "reason": "running 8249m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing",
-      "planned": "escalate",
-      "next_model": null,
-      "reassign_count": 2,
+      "reason": "running 8484m ≥ 60m budget",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.8",
+      "reassign_count": 1,
       "tried_models": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
+        "anthropic/claude-opus-4.8"
       ],
       "cut": "cancel-failed",
-      "reassign_outcome": null,
+      "reassign_outcome": "pending",
       "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31607475332/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
     },
     {
@@ -300,16 +296,15 @@
       "name": "GOAP Assignment Router",
       "path": ".github/workflows/goap-assignment-router.yml",
       "health": "runaway",
-      "reason": "running 8252m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing",
-      "planned": "escalate",
-      "next_model": null,
-      "reassign_count": 2,
+      "reason": "running 8487m ≥ 60m budget",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.8",
+      "reassign_count": 1,
       "tried_models": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
+        "anthropic/claude-opus-4.8"
       ],
       "cut": "cancel-failed",
-      "reassign_outcome": null,
+      "reassign_outcome": "pending",
       "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31607177890/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
     },
     {
@@ -317,16 +312,15 @@
       "name": "PR Lifecycle",
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
-      "reason": "running 51388m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing",
-      "planned": "escalate",
-      "next_model": null,
-      "reassign_count": 2,
+      "reason": "running 51623m ≥ 60m budget",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.8",
+      "reassign_count": 1,
       "tried_models": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
+        "anthropic/claude-opus-4.8"
       ],
       "cut": "cancel-failed",
-      "reassign_outcome": null,
+      "reassign_outcome": "pending",
       "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29262820826/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
     },
     {
@@ -334,16 +328,15 @@
       "name": "No-Destroy Guard",
       "path": ".github/workflows/no-destroy-guard.yml",
       "health": "runaway",
-      "reason": "running 51459m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing",
-      "planned": "escalate",
-      "next_model": null,
-      "reassign_count": 2,
+      "reason": "running 51694m ≥ 60m budget",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.8",
+      "reassign_count": 1,
       "tried_models": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
+        "anthropic/claude-opus-4.8"
       ],
       "cut": "cancel-failed",
-      "reassign_outcome": null,
+      "reassign_outcome": "pending",
       "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29257786646/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
     },
     {
@@ -351,16 +344,15 @@
       "name": "Project Board Sync",
       "path": ".github/workflows/project-board-sync.yml",
       "health": "runaway",
-      "reason": "running 51530m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing",
-      "planned": "escalate",
-      "next_model": null,
-      "reassign_count": 2,
+      "reason": "running 51764m ≥ 60m budget",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.8",
+      "reassign_count": 1,
       "tried_models": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
+        "anthropic/claude-opus-4.8"
       ],
       "cut": "cancel-failed",
-      "reassign_outcome": null,
+      "reassign_outcome": "pending",
       "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29252937753/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
     }
   ]
