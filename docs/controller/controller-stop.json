@@ -1,46 +1,46 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-08-18T03:36:08.325Z",
+  "generated_at": "2026-08-18T03:54:11.056Z",
   "stop": [
     {
       "id": 31608261441,
       "name": "Devin Code Review",
-      "reason": "running 7974m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 7992m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 31607544739,
       "name": "PR Lifecycle",
-      "reason": "running 7981m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 8000m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 31607480387,
       "name": "AI PR Review (OpenRouter)",
-      "reason": "running 7982m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 8000m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 31607475332,
       "name": "Agent Fingerprint Gate",
-      "reason": "running 7982m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 8000m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 31607177890,
       "name": "GOAP Assignment Router",
-      "reason": "running 7985m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 8003m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 51121m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 51139m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 51192m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 51210m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 51263m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 51281m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     }
   ]
 }
