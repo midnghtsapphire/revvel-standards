@@ -30,6 +30,42 @@ jobs:
         with:
           github-token: ${{ github.token }}
           script: |
+            // ── Transient-failure guard (CLAUDE.md gotcha 2) ────────────────
+            // Every Octokit call in this job was bare. This job is the gate
+            // that promotes a draft PR once CI is green, and `listForRef`
+            // below sits inside an 8-minute poll loop — so a single 502 from
+            // the API threw out of the loop, aborted the step, and left the PR
+            // sitting in draft with nothing explaining why. The call had
+            // already succeeded on previous iterations; nothing about the
+            // request was wrong.
+            //
+            // Inlined rather than shared because this workflow is
+            // `pull_request_target` and deliberately has no checkout step, so
+            // there is no repo file for `require` to reach. Duplicating ~15
+            // lines is the cost of not checking out PR-controlled code here.
+            const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
+            const RETRYABLE_CODE = new Set(['ETIMEDOUT', 'ECONNRESET', 'ENOTFOUND', 'EAI_AGAIN']);
+
+            async function withRetry(label, fn, attempts = 4) {
+              for (let attempt = 1; ; attempt++) {
+                try {
+                  return await fn();
+                } catch (e) {
+                  // A 404/403/422 is an answer, not a blip. Retrying it burns
+                  // four attempts on a result that will not change, and delays
+                  // the real error by ~15s.
+                  const retryable = RETRYABLE_STATUS.has(e?.status) || RETRYABLE_CODE.has(e?.code);
+                  if (!retryable || attempt >= attempts) throw e;
+                  const backoffMs = 1000 * 2 ** (attempt - 1);
+                  core.warning(
+                    `${label} failed (${e?.status ?? e?.code}); ` +
+                    `retry ${attempt}/${attempts - 1} in ${backoffMs}ms`
+                  );
+                  await new Promise(r => setTimeout(r, backoffMs));
+                }
+              }
+            }
+
             // Job names that belong to this workflow — exclude them from the
             // external-check evaluation so we never block on ourselves.
             const SELF_JOB_NAMES = new Set([
@@ -49,12 +85,14 @@ jobs:
             let elapsed = INITIAL_WAIT_MS;
 
             while (true) {
-              const { data } = await github.rest.checks.listForRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: context.payload.pull_request.head.sha,
-                per_page: 100,
-              });
+              const { data } = await withRetry('checks.listForRef', () =>
+                github.rest.checks.listForRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: context.payload.pull_request.head.sha,
+                  per_page: 100,
+                })
+              );
 
               const runs = data.check_runs.filter(r => !SELF_JOB_NAMES.has(r.name));
               core.info(`[${elapsed / 1000}s] Found ${runs.length} external check run(s):`);
@@ -98,13 +136,38 @@ jobs:
         with:
           github-token: ${{ secrets.READY_FOR_REVIEW_TOKEN != '' && secrets.READY_FOR_REVIEW_TOKEN || secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || github.token }}
           script: |
-            await github.graphql(`
+            // Same defect, one step later: this mutation is the whole point
+            // of the job. A transient 5xx here throws away an 8-minute wait
+            // for CI and leaves the PR in draft. Retried on transient status
+            // only — a 403 from a token without permission is a real answer.
+            // Inlined for the same no-checkout reason as the step above.
+            const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
+            const RETRYABLE_CODE = new Set(['ETIMEDOUT', 'ECONNRESET', 'ENOTFOUND', 'EAI_AGAIN']);
+
+            async function withRetry(label, fn, attempts = 4) {
+              for (let attempt = 1; ; attempt++) {
+                try {
+                  return await fn();
+                } catch (e) {
+                  const retryable = RETRYABLE_STATUS.has(e?.status) || RETRYABLE_CODE.has(e?.code);
+                  if (!retryable || attempt >= attempts) throw e;
+                  const backoffMs = 1000 * 2 ** (attempt - 1);
+                  core.warning(
+                    `${label} failed (${e?.status ?? e?.code}); ` +
+                    `retry ${attempt}/${attempts - 1} in ${backoffMs}ms`
+                  );
+                  await new Promise(r => setTimeout(r, backoffMs));
+                }
+              }
+            }
+
+            await withRetry('markPullRequestReadyForReview', () => github.graphql(`
               mutation($prId: ID!) {
                 markPullRequestReadyForReview(input: { pullRequestId: $prId }) {
                   pullRequest { number title isDraft }
                 }
               }
-            `, { prId: context.payload.pull_request.node_id });
+            `, { prId: context.payload.pull_request.node_id }));
 
             core.notice(
               `✅ PR #${context.payload.pull_request.number} — all CI checks passed. ` +
