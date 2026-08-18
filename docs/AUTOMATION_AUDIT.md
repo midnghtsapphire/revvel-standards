@@ -289,6 +289,30 @@ The issue says "@why is this not autoprocessing please fix and do this WR" — l
 
 **Assessment:** ✅ All critical cron jobs are configured and active.
 
+### Merge-gate automation must aggregate, not sample
+
+`ralph-loop.yml`'s `ralph-unblock` job is triggered by a single `check_suite`
+completing with conclusion `success`, and on that basis deleted the
+`won't-merge` / `auto-fix` labels and declared the PR ready to merge. With
+~109 check runs across many suites on a commit, the first suite to go green
+cleared the block while others were still red.
+
+Observed on PR #17701 at 03:11:08 UTC: `ralph-loop.yml` posted "All checks
+passed! Merge block removed" in the same second `pr-check-status.yml` posted
+"CI Checks Failed" for the same commit. Three Vercel statuses and CircleCI
+`lint-and-test` were failing.
+
+It now performs the same aggregation `pr-check-status.yml` gained in #17691 —
+every check run on the head SHA (paginated), plus the combined commit status,
+which is a separate surface and is where CircleCI and Vercel report — and
+refuses while anything is still running. `tests/ralph-loop-unblock.test.js`
+pins both the aggregation and the ordering, since a check that runs after
+`removeLabel` cannot prevent the unblock.
+
+Any future workflow that *acts* on CI state (promoting drafts, clearing
+labels, enabling auto-merge) must read both surfaces. Reading one suite's
+conclusion, or check runs alone, is how a red PR reads as green.
+
 ### Dormant: filed where GitHub Actions does not look
 
 Three files sit in `.github/workflows/cron/`. GitHub registers workflows at
