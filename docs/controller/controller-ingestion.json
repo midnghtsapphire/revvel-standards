@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller-ingestion/v1",
-  "generated_at": "2026-08-18T09:05:43.712Z",
+  "generated_at": "2026-08-18T09:18:21.627Z",
   "needs_healing": [
     {
       "id": 31608261441,
@@ -13,7 +13,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "reason": "running 8303m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 8316m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 31607544739,
@@ -26,7 +26,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "reason": "running 8311m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 8324m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 31607480387,
@@ -39,7 +39,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "reason": "running 8312m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 8324m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 31607475332,
@@ -52,7 +52,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "reason": "running 8312m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 8324m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 31607177890,
@@ -65,7 +65,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "reason": "running 8315m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 8328m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 29262820826,
@@ -78,7 +78,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "reason": "running 51451m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 51464m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 29257786646,
@@ -91,7 +91,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "reason": "running 51522m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 51534m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 29252937753,
@@ -104,7 +104,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "reason": "running 51592m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "running 51605m ≥ 60m budget; 2 reassignment(s) exhausted — handing to self-healing"
     }
   ]
 }
