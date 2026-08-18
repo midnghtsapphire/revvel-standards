@@ -824,3 +824,65 @@ reports (unguarded `removeLabel` calls, `CLAUDE.md` gotcha 1) are real and
 remain outstanding. They are a large mechanical change across many workflows and
 are deliberately left for their own batched work rather than widened into this
 diff.
+
+---
+
+## Update — August 18, 2026: two workflows opened PRs claiming to close issues they never worked on
+
+**`.github/workflows/jules-coding-agent.yml`** fired on any `issue_comment`
+containing `/jules`. Its agent step was:
+
+```yaml
+run: |
+  echo "Running Jules coding agent for issue #..."
+  # Agent logic would go here
+```
+
+It then wrote `.jules/issue-N.md` containing a single timestamp line, committed
+it as `chore(jules): stub for #N`, opened a PR whose body read `Closes #N`, and
+added `wr:pr-open` to the issue. Merging one of those would have auto-closed a
+real issue having changed nothing. A second, duplicate PR-creating path in the
+same job used `git add -A` and swallowed every failure with `|| true`.
+
+It had run: `jules/issue-17456` and `jules/issue-17537` remain on the remote,
+alongside `jules/issue-` — a branch whose name carries an empty slot, because
+`inputs.issue_number` was interpolated without a guard. That is the same
+empty-interpolation defect as the blank `[AUTO-FALLBACK]` issues (#17710).
+
+No stub PR was ever merged — no `.jules/` files reached `main` — so no issue was
+falsely auto-closed. The two stub branches can be deleted.
+
+**`.github/workflows/patch-agent.yml` had the identical body**, and was found by
+the guard written for the first one rather than by reading it. It called no
+agent of any kind — no action, no API, no script — and its entire contribution
+was `.patch-agent/issue-N.md` containing a timestamp, committed as `scaffold
+changes for #N` and shipped as a PR saying `Closes #N`. It was reachable only by
+`workflow_dispatch`, so it never fired on its own and left no debris. That is
+luck rather than design.
+
+Both are now RVS-AGENT-001 stubs: header comment, `workflow_dispatch` only,
+`contents: read`, and every job `if: false`. Real Jules runs already live in
+`jules-invoke.yml` via `BeksOmega/jules-action@v1.0.0`, so nothing is lost.
+
+`tests/no-workflow-fakes-closing-issues.test.js` guards the **shape**, not the
+filenames, which is why it found the second instance:
+
+- no live workflow step may open a PR whose body claims `Closes #N`
+- none may commit something its own message calls a stub
+- none may build a git ref from an input with no non-empty guard
+- `jules-coding-agent.yml` specifically may not regain an `issue_comment` trigger
+
+**A note on the fourth guard.** Its first version matched only direct
+interpolation next to `git checkout -b`, and the real code assigned
+`BRANCH="jules/issue-${{ inputs.issue_number }}"` first and used `"$BRANCH"`
+after — so the guard did not fire on the very file it cites. Caught by restoring
+the original and watching which assertions failed. It now requires the two facts
+in the same step (an input is interpolated, and the step creates or pushes a
+ref) rather than requiring them adjacent. A guard that cannot catch its own
+example is the defect this document keeps recording, and it is just as easy to
+write into a test as into a workflow.
+
+This is the fourth and fifth instance of the same family recorded here, after
+`npm test || true` (#17704), ChaosMender's empty scope (#17708), and the blank
+`[AUTO-FALLBACK]` issues (#17710): an artifact that reports success without
+doing the work.

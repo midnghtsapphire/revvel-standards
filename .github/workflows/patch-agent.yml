@@ -1,53 +1,45 @@
-name: Patch Agent
-
+# REVVEL-DISABLED | AGENT: claude-code | MODEL: not-recorded | WR: #17248 | DATE: 2026-08-18 | STATUS: REPLACED | REASON: Pure scaffolding. It called no agent of any kind — no action, no API, no script — yet wrote a one-line timestamp file, committed it as "scaffold changes for #N", opened a PR whose body read "Closes #N", and swallowed every failure with `|| true`. Same defect as jules-coding-agent.yml, found by the guard added alongside it. Disabled per RVS-AGENT-001 (comment, don't delete).
+# OWNER: midnghtsapphire | TICKET: #17248
+#
+# The whole of its "work" was:
+#
+#   mkdir -p .patch-agent
+#   echo "Patch run for #${ISSUE_NUM} at $(date -u +%FT%TZ)" > ".patch-agent/issue-${ISSUE_NUM}.md"
+#   git add -A
+#   git commit -m "chore(patch-agent): scaffold changes for #${ISSUE_NUM}" || echo "No changes"
+#   git push -u origin "$BRANCH" || true
+#   gh pr create --body "Closes #${ISSUE_NUM}" ... || echo "PR may already exist"
+#
+# Merging such a PR would auto-close a real issue having changed nothing but a
+# timestamp file. It was never dispatched — no `patch-agent/*` branches exist —
+# so unlike jules-coding-agent.yml it left no debris. That is luck, not design.
+#
+# It was reachable only by workflow_dispatch, which is why it never fired on its
+# own; jules-coding-agent.yml had the same body wired to `issue_comment` and did
+# leave stub branches behind.
+#
+# Guarded by tests/no-workflow-fakes-closing-issues.test.js, which asserts the
+# shape rather than the filename: no live workflow step may open a PR whose body
+# claims `Closes #N`, commit something it calls a stub, or build a git ref from
+# an unguarded input.
+#
+# Minimal inert stub below keeps this file a valid workflow (automation-doctor
+# requires every workflow file to parse with a jobs section). No automatic
+# triggers; the job is if:false and can never run.
+#
+# If a patch agent is wanted, wire a real one and let it earn the `Closes #N`.
+name: Patch Agent (disabled)
 on:
-  workflow_dispatch:
-    inputs:
-      issue_number:
-        description: 'Issue number'
-        required: true
-        type: string
-
+  workflow_dispatch: null
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-
+  contents: read
 jobs:
-  patch:
+  disabled:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 5
+    if: false
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Apply fixes and open PR
-        env:
-          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+      - name: Disabled
         run: |
-          ISSUE_NUM="${{ inputs.issue_number }}"
-          BRANCH="patch-agent/issue-${ISSUE_NUM}"
-          git config user.name "patch-agent[bot]"
-          git config user.email "patch-agent@users.noreply.github.com"
-          git checkout -b "$BRANCH" || git checkout "$BRANCH"
-          mkdir -p .patch-agent
-          echo "Patch run for #${ISSUE_NUM} at $(date -u +%FT%TZ)" > ".patch-agent/issue-${ISSUE_NUM}.md"
-          git add -A
-          git commit -m "chore(patch-agent): scaffold changes for #${ISSUE_NUM}" || echo "No changes"
-          git push -u origin "$BRANCH" || true
-          gh pr create \
-            --title "fix: patch-agent changes for #${ISSUE_NUM}" \
-            --body "Closes #${ISSUE_NUM}" \
-            --base main \
-            --head "$BRANCH" || echo "PR may already exist"
+          echo "This workflow is disabled: it never called an agent."
+          exit 1
