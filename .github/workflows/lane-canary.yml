@@ -55,7 +55,7 @@ jobs:
 
       - name: Open lane-degraded issue on failure
         if: steps.pplx.outcome == 'failure' || steps.orfree.outcome == 'failure'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             await github.rest.issues.create({
