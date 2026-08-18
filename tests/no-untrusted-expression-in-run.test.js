@@ -166,6 +166,28 @@ function liveSteps() {
 test('the scan is not vacuous', () => {
   // Guards the guard: if the workflow directory stops being read, every
   // assertion below passes by inspecting nothing.
+  //
+  // The parse-failure skip below is the sharp edge. While writing this change I
+  // left a duplicated `env:` key in agent-dispatcher.yml; the file stopped
+  // parsing, liveSteps() silently dropped it, and every assertion here still
+  // passed. A security guard that quietly narrows its own scope when a file
+  // breaks is worth less than no guard, because it reports success either way.
+  // So an unreadable workflow fails this test rather than vanishing from it.
+  const onDisk = fs.readdirSync(WF_DIR).filter((f) => /\.ya?ml$/.test(f));
+  const parsed = onDisk.filter((f) => {
+    try {
+      yaml.load(fs.readFileSync(path.join(WF_DIR, f), 'utf8'));
+      return true;
+    } catch {
+      return false;
+    }
+  });
+  assert.deepEqual(
+    onDisk.filter((f) => !parsed.includes(f)),
+    [],
+    'these workflow files do not parse, so this guard cannot inspect them'
+  );
+
   const steps = liveSteps();
   assert.ok(steps.length > 100, `expected to inspect many steps, saw ${steps.length}`);
   assert.ok(
