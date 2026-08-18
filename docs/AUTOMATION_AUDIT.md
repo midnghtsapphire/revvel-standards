@@ -662,3 +662,53 @@ that sentence. `scripts/biome/gh.js` has an `allowError` option, but it wraps
 `fetch` rather than Octokit and is unreachable from a workflow with no checkout.
 The behaviour the gotcha describes is implemented here; reconciling the standard
 with what actually exists is worth its own change.
+
+---
+
+## Update — August 18, 2026: ChaosMender's PR gate refuses to pass on an empty scope
+
+On a pull request, **`.github/workflows/chaosmender.yml`** runs
+`scripts/chaosmender.js --changed-only`, which filters whole-repo findings down
+to the files the diff touched:
+
+```js
+findings = findings.filter((f) => changed.has(f.file));
+```
+
+The scoping itself works — verified in both directions. The defect was what
+happened when `changed` arrived empty: every finding was filtered away, the scan
+printed `✅ ChaosMender: no known error patterns detected.`, and it exited 0.
+
+That is not a clean PR. The pull-request trigger is path-filtered to
+`.github/workflows/**`, `scripts/**` and `config/error-ledger.json`, so a
+`pull_request` run always has at least one file in scope. An empty scope can
+only mean the list never arrived — the compute step was skipped, its
+`$GITHUB_OUTPUT` heredoc broke, the base SHA was unreachable, or the env var was
+renamed. Any of those turned the gate into a check that cannot fail, reporting
+success while inspecting nothing (`CLAUDE.md` gotcha 6 — the same shape as the
+`npm test || true` defect fixed in #17704).
+
+`--changed-only` with an empty scope now exits 1 and says why. The whole-repo
+and scheduled paths are unchanged.
+
+**The second silent-vacuum mode is now pinned too.** The filter compares scanner
+output against `git diff --name-only` output, so the two must agree on path
+format. If a scanner ever emitted a basename or an absolute path, every key
+would miss, no finding could be attributed to any diff, and the gate would pass
+everything — again with no error anywhere, because "0 findings" reads as
+success. `tests/chaosmender-scope-is-real.test.js` asserts that every reported
+path is repo-relative, forward-slashed, free of a `./` prefix, and resolves from
+the repo root.
+
+Coverage runs the real CLI rather than its exports, so arg parsing, env parsing
+and the filter are exercised as one unit — that seam is exactly where a rename
+breaks things. Verified by planting all three defects: reverting the empty-scope
+guard, changing a scanner to emit `path.basename`, and deleting
+`CHAOSMENDER_CHANGED_FILES` from the workflow. Each is caught by the guard
+written for it.
+
+**Not addressed here:** the 35 `LABEL-RACE-001` findings the whole-repo scan
+reports (unguarded `removeLabel` calls, `CLAUDE.md` gotcha 1) are real and
+remain outstanding. They are a large mechanical change across many workflows and
+are deliberately left for their own batched work rather than widened into this
+diff.
