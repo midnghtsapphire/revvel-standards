@@ -37,8 +37,21 @@ jobs:
       - name: Run CI Error Prevention Tests
         run: node tests/ci-error-prevention.test.js
 
+      # `npm test || true` sat here and swallowed every failure. This is the
+      # only workflow that runs the full suite on a push to main, so main
+      # could go red and no check would ever say so. Three regressions landed
+      # that way in a single day — #17044 (unparseable prioritize-stars.yml,
+      # 13 AGENTS.md product rows, a registry entry), #17687 (the
+      # AGENT_PR_TOKEN fallback deleted), and #17000 (204 action pins dropped,
+      # 7 of them full-SHA pins). Each was green on its own PR because what it
+      # broke lived outside its diff, and each was found only by a human
+      # running the suite on a clean checkout hours later.
+      #
+      # CLAUDE.md gotcha 6: exit codes must reflect the postcondition, not
+      # whether the process finished. `|| true` is the most direct possible
+      # violation of that.
       - name: Run existing test suite
-        run: npm test || true
+        run: npm test
 
   lint-workflows:
     name: Workflow Lint
