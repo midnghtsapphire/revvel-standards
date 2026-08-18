@@ -41,7 +41,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
 
@@ -49,7 +49,7 @@ jobs:
         # Pin: v1.14.0 → be25753025f5cf74c1ed40c2b7bb6fc16ca061f7
         # WR #15862 requires the v1.14.0 tag; action-ref audit accepts tags.
         # Note: GoSQLX globs need a concrete path segment before ** (sql/** fails).
-        uses: ajitpratap0/GoSQLX@v1.14.0
+        uses: ajitpratap0/GoSQLX@be25753025f5cf74c1ed40c2b7bb6fc16ca061f7 # v1.14.0
         with:
           files: "sql/fixtures/**/*.sql"
           config: .gosqlx.yml
@@ -63,7 +63,7 @@ jobs:
           gosqlx-version: "v1.14.0"
 
       - name: GoSQLX Lint Action (product fixtures)
-        uses: ajitpratap0/GoSQLX@v1.14.0
+        uses: ajitpratap0/GoSQLX@be25753025f5cf74c1ed40c2b7bb6fc16ca061f7 # v1.14.0
         with:
           files: "products/gosqlx-sql-linter/fixtures/**/*.sql"
           config: .gosqlx.yml

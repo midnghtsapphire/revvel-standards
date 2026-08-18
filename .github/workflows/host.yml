@@ -19,7 +19,9 @@ on:
         type: number
 
 concurrency:
-  group: host-${{ github.event.issue.number || inputs.issue_number }}
+  # `inputs` is not a valid context at workflow level; GitHub rejected the
+  # whole file, so this workflow never ran.
+  group: host-${{ github.event.issue.number || github.event.inputs.issue_number }}
   cancel-in-progress: false
 
 permissions:
@@ -45,10 +47,10 @@ jobs:
       ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '20'
           cache: 'npm'

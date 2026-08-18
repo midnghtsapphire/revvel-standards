@@ -17,7 +17,7 @@ jobs:
     if: github.event_name == 'issues' && github.event.action == 'opened'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v9.0.0
+      - uses: actions/github-script@v9
         with:
           script: |
             const { owner, repo } = context.repo;
@@ -37,7 +37,7 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v9.0.0
+      - uses: actions/github-script@v9
         with:
           script: |
             const { owner, repo } = context.repo;

@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Find matching open PR
         id: find-pr
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const head_sha =
@@ -44,7 +44,7 @@ jobs:
       - name: Count existing Ralph Loop attempts
         id: count-attempts
         if: steps.find-pr.outputs.result != 'null'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
@@ -63,7 +63,7 @@ jobs:
         if: |
           steps.find-pr.outputs.result != 'null' &&
           fromJSON(steps.count-attempts.outputs.result) < 5
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
@@ -115,7 +115,7 @@ jobs:
         if: |
           steps.find-pr.outputs.result != 'null' &&
           fromJSON(steps.count-attempts.outputs.result) >= 5
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
@@ -162,7 +162,7 @@ jobs:
     steps:
       - name: Find matching open PR
         id: find-pr
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const head_sha =
@@ -181,7 +181,7 @@ jobs:
             return pr?.number ?? null;
       - name: Remove won't-merge label on CI pass
         if: steps.find-pr.outputs.result != 'null'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
@@ -201,6 +201,64 @@ jobs:
               return;
             }
 
+            // This job is triggered by ONE check_suite completing successfully.
+            // A single green suite is not "all checks passed": this repo runs
+            // ~109 check runs across many suites on a commit, so acting on one
+            // suite's conclusion removes a merge block while other suites are
+            // still red. Observed on PR #17701 at 03:11:08 UTC, where this
+            // workflow posted "All checks passed! Merge block removed" in the
+            // same second that pr-check-status.yml correctly posted "CI Checks
+            // Failed" for the same commit.
+            //
+            // Same defect pr-check-status.yml carried until #17691; this is the
+            // same aggregation, and it matters more here because this workflow
+            // ACTS on the verdict rather than only reporting it.
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const ref = pr.head.sha;
+            const FAILING = ['failure', 'timed_out', 'cancelled', 'action_required'];
+
+            const runs = await github.paginate(github.rest.checks.listForRef, {
+              owner, repo, ref, per_page: 100,
+            });
+            // Skip this workflow's own check run — it is necessarily still in
+            // progress right here and would otherwise read as "not finished".
+            const selfPrefix = `/actions/runs/${context.runId}/`;
+            const others = runs.filter((r) => !(r.details_url || '').includes(selfPrefix));
+
+            const failed = others.filter(
+              (r) => r.status === 'completed' && FAILING.includes(r.conclusion)
+            );
+            if (failed.length > 0) {
+              console.log(
+                `Not unblocking: ${failed.length} check run(s) failing on ${ref} — ` +
+                  failed.slice(0, 5).map((r) => r.name).join(', ')
+              );
+              return;
+            }
+
+            // Commit statuses are a separate surface from check runs, and are
+            // where CircleCI and Vercel report. Reading only check runs is what
+            // let "Account is blocked" sit under a green banner.
+            const { data: combined } = await github.rest.repos.getCombinedStatusForRef({
+              owner, repo, ref,
+            });
+            if (combined.state === 'failure' || combined.state === 'error') {
+              console.log(`Not unblocking: combined commit status is ${combined.state} on ${ref}`);
+              return;
+            }
+
+            // Anything still running means we cannot yet claim success.
+            const pending = others.filter((r) => r.status !== 'completed');
+            if (pending.length > 0) {
+              console.log(`Not unblocking: ${pending.length} check run(s) still in progress on ${ref}`);
+              return;
+            }
+            if (combined.total_count > 0 && combined.state === 'pending') {
+              console.log(`Not unblocking: combined commit status still pending on ${ref}`);
+              return;
+            }
+
             // Remove blocking labels
             for (const label of ["won't-merge", 'auto-fix']) {
               try {
@@ -217,7 +275,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr_number,
-              body: `✅ **Ralph Loop — All checks passed!**\n\nMerge block removed. This PR is ready to merge.`,
+              body: `✅ **Ralph Loop — merge block removed**\n\nVerified on \\`${ref.slice(0, 7)}\\`: every check run completed without failure, and the combined commit status is not failing. Blocking labels cleared.`,
             });
     timeout-minutes: 30
 env:

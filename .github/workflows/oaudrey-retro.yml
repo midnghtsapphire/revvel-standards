@@ -106,7 +106,7 @@ jobs:
           echo "panel_count=$PANEL_COUNT" >> "$GITHUB_OUTPUT"
       - name: Generate retrospective report
         id: retro-report
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const date = new Date().toISOString().split('T')[0];

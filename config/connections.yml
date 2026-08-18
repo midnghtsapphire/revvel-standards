@@ -147,11 +147,44 @@ connections:
     name: Vercel
     type: app
     auth: oauth
-    status: verified
+    status: unverified
     access: [preview-deploys, production-deploys, hosting]
     connects_to: [github]
     used_by: [vercel-bot]
-    note: "Deploys a preview on every PR (observed via vercel[bot])."
+    note: >-
+      BLOCKED as of 2026-08-17. All three projects (revvel-standards,
+      standards, marketplace-relister) report "Account is blocked." on every
+      commit, on main as well as PRs. No deploy has succeeded since at least
+      13:18 UTC that day. Downgraded from verified because the registry must
+      not assert a working integration that demonstrably is not working.
+      Cause is account-level (billing or a usage/abuse flag), not repo config
+      — see https://vercel.com/knowledge/why-is-my-account-deployment-blocked
+      Re-verify and restore status: verified only after a deploy actually
+      succeeds.
+
+  - id: stacker-bot
+    name: Stacker (stacked PRs)
+    type: app
+    auth: free
+    status: verified
+    access: [stacked-prs, pr-toc, merge-order-guard]
+    connects_to: [github]
+    used_by: ["stacker-bot[bot]", docs/STACKER_BOT_INSTALLATION.md]
+    note: >-
+      Free stacked-PR GitHub App (installation 150619571). Bot login
+      stacker-bot[bot]. Pairs with the stacker CLI (brew tap stackedpr/stacker).
+      See docs/STACKER_BOT_INSTALLATION.md and skills/stacker-bot/SKILL.md.
+      Complementary to Graphite (docs/GRAPHITE_INTEGRATION.md); Stacker is the
+      free, already-installed lane for splitting large agent diffs.
+  - id: mergeme
+    name: MergeMe (mergeme.dev)
+    type: app
+    auth: oauth
+    status: verified
+    access: [pr-slack-cards, review-thread-mirroring, mention-routing]
+    connects_to: [github, slack]
+    used_by: [mergeme-status.yml, products/mergeme-status]
+    note: "Slack PR cards (one updating message per PR). Repo-side wiring audited by scripts/mergeme-wiring.js (WR #16824). GitHub App + Slack OAuth installed at https://mergeme.dev / marketplace — no MERGEME_API_KEY in this repo."
 
   - id: perplexity
     name: Perplexity
@@ -282,9 +315,8 @@ connections:
     auth: key
     env: XAI_API_KEY, GROK_API_KEY
     status: verified
-    access: [motu-bnat-controller, xai-code-review]
+    access: [motu-bnat-controller]
     connects_to: []
-    used_by: [xai-code-review.yml]
   - id: tavily
     name: Tavily
     type: api
@@ -382,17 +414,6 @@ connections:
     status: verified
     access: [domains, dns]
     connects_to: [digitalocean]
-
-  - id: markdown-image-alt-text-checker
-    name: Markdown Image Alt-text Checker
-    type: github-action
-    auth: token
-    env: GITHUB_TOKEN
-    status: verified
-    access: [markdown-a11y, seo]
-    connects_to: [github]
-    used_by: [markdown-image-alt-text-checker.yml]
-    note: "WR #16270. Marketplace action ruthtxh/markdown-image-alt-text-checker@v1 (SHA-pinned). Local script scripts/markdown-image-alt-text-checker.js is the PR gate; marketplace step is workflow_dispatch-only. Optional Azure Computer Vision secrets: AZURE_COMPUTER_VISION_KEY, AZURE_COMPUTER_VISION_ENDPOINT."
 
   # ── Asserted by owner, NOT yet verified — confirm before relying on these ──
   - id: vader

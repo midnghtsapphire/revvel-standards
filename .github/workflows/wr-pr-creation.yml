@@ -1,30 +1,8 @@
 name: WR PR Creation
 # quiet-mode 2026-07-25 (owner request): automatic triggers disabled;
 # run manually via workflow_dispatch if needed.
-#   ^ ARCHIVED 2026-08-08 by @midnghtsapphire (owner decision: "no more quiet
-#   mode" / "i want the agents out of silent mode" — exit-quiet-mode issue
-#   #17099, DECISIONS.md D017). Pre-quiet-mode triggers restored below,
-#   verbatim from the commit before #16805 (cd2b736b^). The 2026-07-25
-#   directive comment is preserved per RVS-PRESERVE-001 — never delete an
-#   owner policy directive.
 on:
-  # `issue_comment` trigger is intentionally omitted: sibling automation posts
-  # comments constantly which would regenerate duplicate skeleton WR PRs.
-  # `issues: labeled` is re-enabled ONLY for `wr:reset`, which is applied
-  # exclusively by the self-heal system to force a fresh PR creation pass.
-  # Generic label-churn (research:complete, wr:complete, etc.) is still filtered
-  # out in the detect-completion step to prevent retrigger storms.
-  issues:
-    types:
-      - opened
-      - reopened
-      - labeled
-  workflow_dispatch:
-    inputs:
-      issue_number:
-        description: Issue number to create WR PR for
-        required: true
-        type: string
+  workflow_dispatch: null
 
 permissions:
   contents: write
@@ -60,7 +38,7 @@ jobs:
     steps:
       - name: Check if PR should be created
         id: check
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             // Parse issue number from multiple possible sources:
@@ -351,7 +329,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Post skip notification
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
@@ -425,7 +403,7 @@ jobs:
           node-version: "24"
       - name: Get issue comments for research findings
         id: get_findings
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
@@ -833,7 +811,7 @@ jobs:
           echo "Pushed branch: ${{ steps.create_branch.outputs.BRANCH_NAME }}"
       - name: Create Pull Request
         id: create_pr
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
@@ -893,7 +871,7 @@ jobs:
 
             return { number: pr.number, url: pr.html_url };
       - name: Apply labels to PR
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = parseInt('${{ env.ISSUE_NUMBER }}', 10);
@@ -1017,7 +995,7 @@ jobs:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           starting_branch: ${{ steps.create_branch.outputs.BRANCH_NAME }}
       - name: Comment on issue
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
@@ -1051,7 +1029,7 @@ jobs:
               body: comment,
             });
       - name: Update issue labels
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
@@ -1086,18 +1064,21 @@ jobs:
               );
 
             for (const name of labelsToRemove) {
-              await github.rest.issues.removeLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-                name,
-              }).then(() => {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name,
+                });
                 core.info(`Removed recovered WR label: ${name}`);
-              }).catch(err => { if (err.status !== 404) throw err; });
+              } catch (error) {
+                core.notice(`Could not remove label "${name}": ${error.message}`);
+              }
             }
       - name: Handle workflow failure
         if: failure()
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
