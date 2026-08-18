@@ -1,38 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-18T09:10:08.242Z",
+  "generated_at": "2026-08-18T10:07:16.682Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "3/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
+            "id": 32125041715,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32125041715",
+            "conclusion": "failure"
+          },
+          {
             "id": 32120056066,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32120056066",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32115349607,
-            "name": "Vine → Marketplace Automation",
-            "path": ".github/workflows/vine-to-marketplace.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32115349607",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32114830589,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32114830589",
             "conclusion": "failure"
           }
         ],
