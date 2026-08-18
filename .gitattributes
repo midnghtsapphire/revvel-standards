@@ -1,0 +1,27 @@
+# Normalize line endings — kills 90% of phantom merge conflicts.
+* text=auto eol=lf
+
+# Binary files should never be diffed or merged textually.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
+*.woff binary
+*.woff2 binary
+
+# Union-merge files that grow append-only.
+CHANGELOG.md merge=union
+AUTHORS merge=union
+CONTRIBUTORS merge=union
+
+# Lockfiles: prefer regeneration over manual merging.
+package-lock.json merge=ours linguist-generated=true
+yarn.lock merge=ours linguist-generated=true
+pnpm-lock.yaml merge=ours linguist-generated=true
+poetry.lock merge=ours linguist-generated=true
+Cargo.lock merge=ours linguist-generated=true
+go.sum merge=ours linguist-generated=true
