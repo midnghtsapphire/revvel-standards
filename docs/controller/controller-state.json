@@ -1,5 +1,17 @@
 {
   "schema": "fleet-controller-state/v1",
+  "updated_at": "2026-08-17T18:14:52.883Z",
+  "workflows": {
+    "dynamic/dependabot/dependabot-updates": {
+      "count": 1,
+      "tried": [
+        "anthropic/claude-opus-4.8"
+      ],
+      "last_cut_at": "2026-08-17T12:29:14.815Z"
+    }
+  }
+  "updated_at": "2026-08-18T00:56:20.244Z",
+  "workflows": {}
   "updated_at": "2026-08-18T03:09:11.428Z",
   "workflows": {
     ".github/workflows/devin-code-review.yml": {
