@@ -50,7 +50,7 @@ function stepsRunningTheSuite() {
         const run = String(step?.run || '');
         // `npm test` as its own command, not `npm test:something`.
         if (/(^|[\n;&|])\s*npm test\b(?!:)/.test(run)) {
-          out.push({ file: name, job: jobName, step: step.name || '(unnamed)', run, raw: step });
+          out.push({ file: name, job: jobName, step: step.name || '(unnamed)', run, raw: step, jobObj: job });
         }
       }
     }
@@ -109,20 +109,57 @@ test('an npm test step may only be continue-on-error if its result is consumed',
   );
 });
 
-test('the full suite runs on a push to main, not only on pull requests', () => {
-  // A PR-only gate cannot catch a regression whose cause lives outside the
-  // diff that introduced it — which is how all three of the above landed.
-  const onMain = stepsRunningTheSuite().filter(({ file }) => {
+test('no job running the suite is marked continue-on-error', () => {
+  // Copilot caught this hole in review. GitHub Actions supports
+  // `jobs.<job>.continue-on-error` as well as the step-level form, and the
+  // job-level one makes the whole workflow succeed even when the step fails.
+  // A guard that only inspected steps would stay green while the gate was
+  // silenced one level up — the same defect this file exists to prevent,
+  // hiding inside the file that prevents it.
+  const offenders = stepsRunningTheSuite().filter(
+    ({ jobObj }) => jobObj && jobObj['continue-on-error'] === true
+  );
+
+  assert.deepEqual(
+    offenders.map((o) => `${o.file} :: ${o.job}`),
+    [],
+    'these JOBS run `npm test` with continue-on-error, so a red suite yields a green workflow'
+  );
+});
+
+test('the suite actually runs for a push to main, conditions included', () => {
+  // Copilot caught this in review: a push trigger on the workflow proves only
+  // that the workflow fires, not that this job and step execute for that
+  // event. A workflow with both `push` and `pull_request` triggers plus
+  // `if: github.event_name == 'pull_request'` on the job or the step would
+  // satisfy a trigger-only assertion while never testing main at all — a
+  // guard that passes without establishing the thing it names, which is the
+  // exact defect this file was written to stop.
+  //
+  // So: the workflow must trigger on push to main AND neither the job nor the
+  // step may carry a condition that excludes push events.
+  const excludesPush = (cond) => {
+    if (cond === undefined || cond === null) return false;
+    const c = String(cond);
+    // Conditions that pin execution to a non-push event.
+    return /event_name\s*==\s*'(?!push)/.test(c) || /event_name\s*!=\s*'push'/.test(c);
+  };
+
+  const onMain = stepsRunningTheSuite().filter(({ file, raw, jobObj }) => {
     const doc = yaml.load(fs.readFileSync(path.join(WF_DIR, file), 'utf8'));
     const on = doc?.on ?? doc?.[true]; // YAML 1.1 parses bare `on:` as boolean true
     const push = on && typeof on === 'object' ? on.push : null;
     if (!push) return false;
     const branches = push.branches || [];
-    return branches.length === 0 || branches.includes('main');
+    const coversMain = branches.length === 0 || branches.includes('main');
+    if (!coversMain) return false;
+    // The job and the step must both be reachable on a push event.
+    return !excludesPush(jobObj?.if) && !excludesPush(raw?.if);
   });
 
   assert.ok(
     onMain.length > 0,
-    'no workflow runs the full suite on push to main; a red main would go unreported'
+    'no workflow runs the full suite for a push to main with the job and step ' +
+      'actually reachable on that event; a red main would go unreported'
   );
 });
