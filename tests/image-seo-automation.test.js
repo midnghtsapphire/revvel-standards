@@ -230,14 +230,51 @@ describe('standard + auto-wr', () => {
     assert.doesNotMatch(md, /```text\s*$/m);
   });
 
-  test('auto-wr re-emits manifest with zero missing', () => {
-    const res = runNode(AUTO_WR, []);
+  test('auto-wr re-emits manifest with zero missing', (t) => {
+    // Run the generator somewhere disposable.
+    //
+    // `image-automation-auto-wr.mjs` sets `const ROOT = process.cwd()` and writes
+    // its artifacts under that root, so running it with `cwd: ROOT` — as this
+    // test used to — regenerated two TRACKED files on every `npm test`:
+    // artifacts/image-automation/formal-wr-manifest.json and package.json. The
+    // suite left the working tree dirty, so `git status` after a test run
+    // reported changes nobody made, and a real accidental edit in that directory
+    // would have been invisible among them.
+    //
+    // The inputs are symlinked but `scripts/` is COPIED, and that distinction is
+    // load-bearing. image-seo-build-pack.mjs guards its entry point with
+    //
+    //   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+    //
+    // which is false when it is reached through a symlink, because argv[1] is
+    // the link and import.meta.url is the target. Under a symlinked scripts/ the
+    // builder silently does nothing, still exits 0, and the parent reports
+    // `ok: true` — so this test would pass while generating no package.json at
+    // all. Copying keeps both paths identical and the builder actually runs.
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'image-auto-wr-'));
+    t.after(() => fs.rmSync(tmp, { recursive: true, force: true }));
+
+    fs.cpSync(path.join(ROOT, 'scripts'), path.join(tmp, 'scripts'), { recursive: true });
+    for (const dir of ['wr', 'standards', '.github', 'workflows', 'config', 'tests']) {
+      fs.symlinkSync(path.join(ROOT, dir), path.join(tmp, dir));
+    }
+
+    const res = runNode(path.join(tmp, 'scripts/image-automation-auto-wr.mjs'), [], { cwd: tmp });
     assert.equal(res.status, 0, res.stderr || res.stdout);
+
     const manifest = JSON.parse(
-      fs.readFileSync(path.join(ROOT, 'artifacts/image-automation/formal-wr-manifest.json'), 'utf8'),
+      fs.readFileSync(path.join(tmp, 'artifacts/image-automation/formal-wr-manifest.json'), 'utf8'),
     );
     assert.equal(manifest.auto_merge, false);
     assert.equal(manifest.human_review_required, true);
     assert.deepEqual(manifest.missing, []);
+
+    // The builder must actually have produced its pack. Without this the
+    // symlink trap above returns silently and every assertion still passes.
+    assert.ok(
+      fs.existsSync(path.join(tmp, 'artifacts/image-automation/package.json')),
+      'the spawned builder must write its pack — a missing file here means it ' +
+        'no-opped and exited 0'
+    );
   });
 });
