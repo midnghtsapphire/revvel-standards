@@ -662,3 +662,56 @@ that sentence. `scripts/biome/gh.js` has an `allowError` option, but it wraps
 `fetch` rather than Octokit and is unreachable from a workflow with no checkout.
 The behaviour the gotcha describes is implemented here; reconciling the standard
 with what actually exists is worth its own change.
+
+---
+
+## Update — August 18, 2026: `agent-fallback.yml` no longer files blank monitoring issues
+
+Thirteen open issues looked like this:
+
+```
+title: [AUTO-FALLBACK] OpenRouter →  (#)
+body:  OpenRouter was unavailable or failed. Automatically failed over to .
+       **Original task:** #
+       **Agent used:**
+       **Success:**
+       No action required — fallback is working as designed.
+```
+
+Every interpolation empty, and the body telling the reader there is nothing to
+do. They were open, permanent, and carried `priority-p1`.
+
+The cause was the step condition:
+
+```yaml
+if: steps.result.outputs.agent != 'openrouter' && steps.result.outputs.agent != 'none'
+```
+
+It excludes the two known non-fallback values and nothing else, so an **empty**
+agent satisfies both halves and the step ran with no data at all. The guard
+enumerated what to skip instead of requiring what it needed, so "no agent" read
+as "some agent other than those two".
+
+The condition now requires a non-empty agent. The script additionally refuses to
+file when agent or original-issue is missing, reporting through `core.warning`
+and the step summary instead. Both halves are load-bearing: if the result step
+stops producing outputs again, the condition alone would skip silently and teach
+us nothing, while a blank issue teaches even less and is permanent.
+
+Regression coverage executes the real inline script from the workflow YAML with
+a mocked Octokit and pins the condition **and** the script body, since either
+alone leaves the other free to regress. It also covers whitespace-only metadata,
+because `${{ }}` interpolation of a missing output can yield blanks rather than
+an empty string. Verified against the pre-fix workflow: four of the five tests
+fail there. The fifth — a real fallback event still files a populated issue —
+passes before and after by design, guarding the over-blocking defect this change
+could introduce, which would silently disable the monitoring the workflow exists
+to provide.
+
+The thirteen existing issues were closed during backlog triage (#16002 canonical,
+twelve marked duplicate of it).
+
+**Loose end, not fixed here:** the `priority-p1` label does not come from this
+workflow, which applies only `auto-fallback`, `agent-monitoring` and
+`openrouter-fallback`. Something else escalates these to p1. Worth finding,
+since it is what made a self-declared no-action-required event look urgent.
