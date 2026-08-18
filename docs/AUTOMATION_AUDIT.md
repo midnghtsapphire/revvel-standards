@@ -665,6 +665,68 @@ with what actually exists is worth its own change.
 
 ---
 
+## Update — August 18, 2026: security-fleet filed every PR finding twice
+
+The `security-fleet` event lane derived its issue title from whichever webhook
+payload key happened to be populated:
+
+```js
+const subject = context.payload.issue?.number
+  ? `issue #${context.payload.issue.number}`
+  : context.payload.pull_request?.number
+    ? `PR #${context.payload.pull_request.number}`
+    : context.eventName;
+```
+
+A pull request **is** an issue to the webhook payload. An `issue_comment` event
+on a PR arrives with `payload.issue` set to that PR's number, while the
+`pull_request` event for the same PR sets `payload.pull_request` instead. One
+subject therefore produced two titles, and the dedup immediately below — an
+exact title match against open `security-fleet` issues — could never see across
+the pair.
+
+The lane fires on `issues`, `issue_comment` **and** `pull_request`, so any PR
+that receives a comment reliably triggers both shapes. This was not a rare race.
+Four pairs were open simultaneously:
+
+| source | pair |
+| --- | --- |
+| #17136 | #17546 / #17547 |
+| #17107 | #17551 / #17550 |
+| #17222 | #17564 / #17565 |
+| #17225 | #17666 / #17642 |
+
+Issue and PR numbers come from one sequence per repository, so the number alone
+identifies the subject. Titles are now `[security-fleet] finding on #N`, which
+both payload shapes produce identically.
+
+Regression coverage drives the real inline script from the workflow YAML under
+both payload shapes, in both arrival orders, and requires one issue rather than
+two. A fourth test requires two *different* subjects to still produce two
+issues — collapsing every finding onto a single title would satisfy the dedup
+tests while silently dropping every finding after the first. Verified against
+the pre-fix workflow: three of the four fail there.
+
+**Note on the existing issues:** the eight above were closed during backlog
+triage, so the changed title format has nothing stale to collide with.
+
+**Not addressed here — the `@permit` detector is unreliable.** Its weekly sweep
+(#17154) reports 189 findings, and both of its actionable "under-permission"
+findings are false positives, by two different mechanisms:
+
+- `docs-freshness-check.yml` is flagged as using issues-write without
+  `permissions.issues`. It calls `github.rest.issues.createComment` on a *pull
+  request*; PR comments go through the issues endpoint but are authorised by
+  `pull-requests: write`, which is declared. The workflow demonstrably works —
+  it posts its sticky comment on every PR.
+- `agent-dispatcher.yml` is flagged as using actions-write operations. It
+  dispatches nothing; the detector matched the literal string
+  `workflow_dispatch`, which appears there as a *trigger* and inside a string
+  comparison.
+
+Acting on the remaining ~187 "declared but unused" findings from an instrument
+with that error rate would mean stripping permissions from workflows that need
+them. The detector wants fixing before the sweep is worked.
 ## Update — August 18, 2026: `agent-fallback.yml` no longer files blank monitoring issues
 
 Thirteen open issues looked like this:
