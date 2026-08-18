@@ -1,0 +1,92 @@
+# WR-4481 routing failover table (machine-checked).
+# Agents may READ this file. Agents must NEVER edit it in response to 402/429
+# (gate-tamper class, WR-4472). Failover is config, not code edits.
+#
+# Triggers are explicit enums — not prose:
+#   failover | backoff_then_failover | count_then_failover | halt_needs_human
+#
+# Tier-2 is the keyless Perplexity lane. OpenRouter :free is alt only
+# (still needs a funded account — see AGENTS.md OpenRouter gotcha).
+
+defaults:
+  backoff_429_seconds: 30
+  consecutive_5xx_failover: 2
+  recovery_probe: hourly
+  sticky_downgrade_issue_after: 24h
+  ledger: FAILURE-LEDGER
+
+lanes:
+  text:
+    primary:
+      id: text.primary
+      provider: openrouter
+      model: openai/gpt-4o-mini
+      triggers:
+        "402": failover
+        "429": backoff_then_failover
+        "5xx": count_then_failover
+      fallback: text.tier2
+    text.tier2:
+      id: text.tier2
+      provider: perplexity
+      keyless: true
+      model: perplexity/sonar
+      alt: openrouter:free
+      triggers:
+        "402": halt_needs_human
+        "429": backoff_then_halt
+      fallback: null
+  vision:
+    primary:
+      id: vision.primary
+      provider: openrouter
+      model: openai/gpt-4o-mini
+      triggers:
+        "402": failover
+        "429": backoff_then_failover
+        "5xx": count_then_failover
+      fallback: vision.tier2
+    vision.tier2:
+      id: vision.tier2
+      provider: openrouter
+      alt: openrouter:free
+      keyless: true
+      triggers:
+        "402": halt_needs_human
+      fallback: null
+  audio:
+    primary:
+      id: audio.primary
+      provider: openrouter
+      model: openai/gpt-4o-mini
+      triggers:
+        "402": failover
+        "429": backoff_then_failover
+        "5xx": count_then_failover
+      fallback: audio.tier2
+    audio.tier2:
+      id: audio.tier2
+      provider: openrouter
+      alt: openrouter:free
+      keyless: true
+      triggers:
+        "402": halt_needs_human
+      fallback: null
+  embed:
+    primary:
+      id: embed.primary
+      provider: openrouter
+      model: openai/gpt-4o-mini
+      triggers:
+        "402": failover
+        "429": backoff_then_failover
+        "5xx": count_then_failover
+      fallback: embed.tier2
+    embed.tier2:
+      id: embed.tier2
+      provider: openrouter
+      alt: openrouter:free
+      keyless: true
+      triggers:
+        "402": halt_needs_human
+      fallback: null

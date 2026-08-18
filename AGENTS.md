@@ -10,6 +10,22 @@ This document provides guidance for AI agents (Cursor, Claude, GPT, etc.) workin
 > API caller…) Read [`VISITING_AGENTS.md`](./VISITING_AGENTS.md) **first** — it's the
 > short guest contract: where you may write, where setup/API info lives, and how not to
 > scaffold over the repo.
+>
+> **Every agent (fleet or visiting) — three mandatory standards, load these before any write:**
+>
+> 1. [`standards/VISITING_AGENT_SANDBOX_STANDARD.md`](./standards/VISITING_AGENT_SANDBOX_STANDARD.md)
+>    — save every thought / script / API call / decision to `.sandbox/<your-name>/` as
+>    you work so a credit blackout does not lose the session's data.
+> 2. [`standards/OUT_OF_SCOPE_AUTO_WR_STANDARD.md`](./standards/OUT_OF_SCOPE_AUTO_WR_STANDARD.md)
+>    — when you find a bug you did not introduce or feel is out of scope, immediately
+>    file a Triage-role WR before continuing. "Not my bug" without a filed WR is banned.
+> 3. [`standards/TRIAGE_ROLE_STANDARD.md`](./standards/TRIAGE_ROLE_STANDARD.md)
+>    — the override authority every agent has, at all times, to file the out-of-scope
+>    WR the above standard requires.
+>
+> Every error is a training module. Append lessons to [`learnings.md`](./learnings.md)
+> using the TM-NNNN format at the bottom of that file — future agents (and future
+> auto-fix scripts) read those modules as their curriculum.
 
 ## PRIME DIRECTIVE
 
@@ -21,6 +37,23 @@ Every change should be evaluated against this north star. Prefer work that:
 2. Reduces friction in the automated product pipeline
 3. Improves Polar.sh / GitHub funding integrations
 4. Strengthens OSINT tooling that we monetize
+
+## BNAT Knowledge Sheaf — imprint before work
+
+Every agent instantiation should call the imprint path and assert the geometric
+invariant before high-blast edits:
+
+```bash
+node scripts/bnatsheaf/cli.js imprint_agent --agent <name>
+node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
+```
+
+- Standard: `standards/BNAT_SHEAF_STANDARD.md`
+- Skill: `skills/bnatsheaf/SKILL.md`
+- Math + PH + cohomology: `scripts/bnatsheaf/`
+- Public Observatory (Method · Living Manifold): `docs/bnatsheaf/observatory.html`
+- Long-lived H¹ bars escalate — never silently glue
+  (`wr/pending/14-veins-grounding-gate.md`).
 
 ## Goal Structure
 
@@ -99,7 +132,8 @@ revenue-generating products:
     ├── revvel-skill-runner/
     ├── creator-payout-tracker/
     ├── hvac-calc-service/
-    └── fda-design-controls/
+    ├── fda-design-controls/
+    └── agent-manifest-validator/
 ```
 
 Root-level code is intentionally lightweight — it provides linting, validation,
@@ -126,6 +160,16 @@ collisions:
 | FDA Design Controls | `products/fda-design-controls` | 3010 | Next.js. Interactive 21 CFR 820.30 compliance checklist and DHF generator with Markdown/CSV export. |
 | MedDevice Compliance Navigator | `products/meddevice-compliance-navigator` | 3010 | Next.js. Medical device compliance tracker: FDA 510(k), ISO 13485, IEC 60601, ISO 10993, EU MDR pathways. |
 | DevOps Dashboard | `products/devops-dashboard` | 3011 | Next.js. Real-time DevOps monitoring: self-healing PRs, CI/CD pipeline health, agent status, workflow run history. |
+| WR Title Studio | `products/wr-title-studio` | 3012 | Next.js. Autocreate clean generic `[WR]` titles from messy drafts; keyless template engine. |
+| GOAP Swarm Console | `products/goap-swarm-console` | 3012 | Next.js. Symbolic GOAP planner + swarm allocator, research eval, Markdown/CSV export. |
+| GoSQLX SQL Linter | `products/gosqlx-sql-linter` | 3012 | Next.js. Multi-dialect SQL lint playground + API aligned with GoSQLX rules; CI twin of `.github/workflows/gosqlx-lint.yml`. |
+| Easy Env Vars | `products/easy-env-vars` | 3012 | Next.js. Safe briantist/ezenv env-block composer with injection/cycle validation and workflow export. |
+| MergeMe Status | `products/mergeme-status` | 3012 | Next.js. mergeme.dev wiring status console + owner Slack/GitHub App setup checklist (WR #16824). |
+| pplx-api Skills Console | `products/pplx-api-skills` | 3012 | Next.js. Perplexity API integration with skills/tools framework, auth, rate limits, BOM lookup, monitoring. Needs `PERPLEXITY_API_KEY` for live mode (mock works without). |
+| Caspian Channel Console | `products/caspian-channel-console` | 3012 | Static SPA. Multi-channel agent planner/simulator from Caspian SDK research (WR-16898). |
+| Greenfield UI Lab | `products/greenfield-ui-lab` | 3012 | Next.js. Modernized idea board + day wallet from rgn/greenfield-ui research patterns. |
+| Groq Code Review | `products/groq-code-review` | 3012 | Next.js. Groq-powered PR review SaaS + composite Action with large-diff chunking and local fallback. |
+| Star Optimizer | `products/star-optimizer` | 3012 | Next.js. Rank starred GitHub repos by activity/recency; pairs with `scripts/prioritize_stars.py` automation. |
 
 Start a specific product on its assigned port:
 
@@ -142,6 +186,15 @@ cd products/red-light-therapy-dosage-calculator && npm run dev -- -p 3010
 cd products/fda-design-controls  && npm run dev -- -p 3010
 cd products/meddevice-compliance-navigator && npm run dev -- -p 3010
 cd products/devops-dashboard     && npm run dev -- -p 3011
+cd products/wr-title-studio      && npm run dev -- -p 3012
+cd products/gosqlx-sql-linter    && npm run dev -- -p 3012
+cd products/easy-env-vars        && npm run dev -- -p 3012
+cd products/mergeme-status       && npm run dev -- -p 3012
+cd products/pplx-api-skills      && npm run dev -- -p 3012
+# Static: python3 -m http.server 3012 -d products/caspian-channel-console/public
+cd products/greenfield-ui-lab     && npm run dev -- -p 3012
+cd products/groq-code-review      && npm run dev -- -p 3012
+cd products/star-optimizer       && npm run dev -- -p 3012
 ```
 
 ### Running and testing

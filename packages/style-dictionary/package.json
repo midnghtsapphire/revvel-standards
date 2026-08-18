@@ -1,0 +1,30 @@
+{
+  "name": "@revvel/style-dictionary",
+  "version": "1.0.0",
+  "description": "Centralized design tokens for Revvel products (Style Dictionary format) with SCSS/CSS builds",
+  "main": "build.js",
+  "exports": {
+    ".": "./build.js",
+    "./tokens/tokens.json": "./tokens/tokens.json",
+    "./dist/_variables.scss": "./dist/_variables.scss",
+    "./dist/variables.css": "./dist/variables.css",
+    "./dist/tokens.flat.json": "./dist/tokens.flat.json"
+  },
+  "files": [
+    "build.js",
+    "scss-to-tokens.js",
+    "tokens",
+    "dist"
+  ],
+  "scripts": {
+    "build": "node build.js",
+    "convert": "node scss-to-tokens.js"
+  },
+  "keywords": [
+    "design-tokens",
+    "style-dictionary",
+    "scss",
+    "revvel"
+  ],
+  "license": "MIT"
+}

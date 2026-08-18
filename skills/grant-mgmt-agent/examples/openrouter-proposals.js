@@ -92,7 +92,7 @@ function callOpenRouter(model, systemPrompt, userPrompt, options = {}) {
 
 /**
  * Generate a proposal section using AI
- * 
+ *
  * @param {Object} params - Generation parameters
  * @returns {Promise<Object>} Generated section with metadata
  */

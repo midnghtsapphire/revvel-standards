@@ -1,31 +1,59 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-07T19:21:17.612Z",
+  "generated_at": "2026-08-18T03:18:10.523Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "6/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 6,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 31211048749,
-            "name": "pr-governance-checks",
-            "path": ".github/workflows/pr-governance-checks.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31211048749",
+            "id": 32094912660,
+            "name": "Lint Markdown (markdownlint-cli)",
+            "path": ".github/workflows/lint-md.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094912660",
             "conclusion": "failure"
           },
           {
-            "id": 31211045769,
-            "name": "label-allowlist",
-            "path": ".github/workflows/label-allowlist.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31211045769",
+            "id": 32094912505,
+            "name": "WR Lint",
+            "path": ".github/workflows/wr-lint.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094912505",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32094911930,
+            "name": ".github/workflows/release-banner-social.yml",
+            "path": ".github/workflows/release-banner-social.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094911930",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32094911467,
+            "name": "Social Media Automation",
+            "path": ".github/workflows/social-media-automation.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094911467",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32094911430,
+            "name": ".github/workflows/dprint-check.yml",
+            "path": ".github/workflows/dprint-check.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094911430",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32094905924,
+            "name": "WR Lint",
+            "path": ".github/workflows/wr-lint.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094905924",
             "conclusion": "failure"
           }
         ],

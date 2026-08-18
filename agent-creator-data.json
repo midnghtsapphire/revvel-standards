@@ -310,6 +310,7 @@
     "Fleet Consistency & Topology",
     "Fleet Operations / Agent Guardrails",
     "Marketing Automation",
+    "PR Workflow & Merge Hygiene",
     "Product Analytics",
     "Product Development",
     "Product Operations",
@@ -374,6 +375,24 @@
         "enforce code standards",
         "self-healing review",
         "recurse-rules"
+      ]
+    },
+    {
+      "name": "stacker_bot",
+      "title": "Stacker Bot — Stacked Pull Requests",
+      "category": "PR Workflow & Merge Hygiene",
+      "path": "skills/stacker-bot/",
+      "persona": "reviewer",
+      "triggers": [
+        "stacker",
+        "stacker-bot",
+        "stacked pr",
+        "stacked pull request",
+        "pr stack",
+        "stack toc",
+        "merge order",
+        "stacker cli",
+        "150619571"
       ]
     },
     {

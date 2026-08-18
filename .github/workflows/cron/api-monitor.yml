@@ -1,34 +1,63 @@
-# API Monitor - Checks API endpoints
-
-name: API Monitor
-
-on:
-  schedule:
-    - cron: '*/30 * * * *'  # Every 30 min
-  workflow_dispatch:
-
-jobs:
-  check-apis:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check APIs
-        run: |
-          APIs="
-            https://api.github.com
-            https://openrouter.ai/api/v1
-          "
-          
-          FAILED=""
-          for url in $APIs; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
-            if [ "$status" = "000" ]; then
-              FAILED="${FAILED}"$'\n'"- $url: TIMEOUT"
-            fi
-          done
-          
-          if [ -n "$FAILED" ]; then
-            echo "failed=$FAILED" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Report
-        run: echo "API check complete"
+# REVVEL-DISABLED | AGENT: claude-code | MODEL: not-recorded | WR: PR-17699 | DATE: 2026-08-17 | STATUS: REPLACED
+# REASON: Superseded in this same diff by .github/workflows/api-monitor.yml; this path was never readable by GitHub Actions.
+# OWNER: @midnghtsapphire | TICKET: PR #17699
+#
+# This file is a tombstone, not a workflow. It is archived here per
+# RVS-AGENT-001 (`standards/COMMENT-DONT-DELETE.md`) because the archival
+# policy check treats the path as deleted, and STATUS: REPLACED is the status
+# the standard defines for code superseded elsewhere in the same diff.
+#
+# Two separate defects applied to the original, and both are fixed in the
+# replacement rather than here:
+#
+#   1. LOCATION. GitHub Actions registers workflows at `.github/workflows/*.yml`
+#      only. Nested directories are never searched, so this file had never run
+#      once despite its `*/30 * * * *` schedule. Its own API path returned
+#      404 Not Found and it was absent from all 242 registered workflows.
+#
+#   2. IT COULD NOT FAIL. It detected unhealthy endpoints, wrote them to
+#      $GITHUB_OUTPUT as a multi-line value (invalid without a heredoc
+#      delimiter, from a step with no `id` for anything to read), then exited 0
+#      regardless. Only HTTP 000 counted as a failure, so a 500 or 404 reported
+#      healthy.
+#
+# Do not re-enable this copy. The working version is one directory up. If you
+# are here because you want the original text, it is archived below and also in
+# git history at 88fa56bab.
+#
+# --- archived original ---------------------------------------------------
+# name: API Monitor
+#
+# on:
+#   schedule:
+#     - cron: '*/30 * * * *'  # Every 30 min
+#   workflow_dispatch:
+#
+# jobs:
+#   check-apis:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Check APIs
+#         run: |
+#           APIs="
+#             https://api.github.com
+#             https://openrouter.ai/api/v1
+#           "
+#
+#           FAILED=""
+#           for url in $APIs; do
+#             status=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
+#             if [ "$status" = "000" ]; then
+#               FAILED="${FAILED}"$'\n'"- $url: TIMEOUT"
+#             fi
+#           done
+#
+#           if [ -n "$FAILED" ]; then
+#             echo "failed=$FAILED" >> $GITHUB_OUTPUT
+#           fi
+#
+#       - name: Report
+#         run: echo "API check complete"
+# --- end archived original -----------------------------------------------
+#
+# REVVEL-DISABLED-END

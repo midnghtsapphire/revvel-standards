@@ -2,6 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert');
+const fs = require('fs');
 const path = require('path');
 
 const reg = require('../scripts/connections-registry');
@@ -96,4 +97,67 @@ test('html dashboard embeds the data and filter controls', () => {
   assert.match(html, /Connections Dashboard/);
   assert.match(html, /const DATA = \[/);
   assert.match(html, /vade/);
+});
+
+test('markdown notes autolink bare URLs (MD034) and escape pipes', () => {
+  // Regression: docs/CONNECTIONS_REGISTRY.md is generated, and CircleCI's
+  // lint-and-test gate lints *changed* Markdown. A single bare URL typed into
+  // a note in config/connections.yml therefore turned the generated file red
+  // on every PR that regenerated it, reporting the error against the generated
+  // file rather than the note that caused it. Two live notes did exactly that
+  // (mergeme.dev and a vercel.com support link) and failed PR #17701.
+  const doc = {
+    meta: { fallback_chain: ['a', 'b'] },
+    connections: [
+      {
+        id: 'x',
+        name: 'X',
+        type: 'app',
+        auth: 'free',
+        status: 'verified',
+        note: 'see https://example.com/page for details',
+      },
+      {
+        id: 'y',
+        name: 'Y',
+        type: 'app',
+        auth: 'free',
+        status: 'verified',
+        note: 'already <https://ok.example> and [linked](https://l.example) and a|pipe',
+      },
+    ],
+  };
+  const md = reg.renderMarkdown(doc);
+
+  assert.match(md, /<https:\/\/example\.com\/page>/, 'bare URL must be autolinked');
+  assert.doesNotMatch(md, /[^<(]https:\/\/example\.com\/page/, 'no bare form may survive');
+
+  // Already-safe forms must not be double-wrapped.
+  assert.doesNotMatch(md, /<<https/, 'must not double-wrap an existing autolink');
+  assert.doesNotMatch(md, /\(<https:\/\/l\.example>\)/, 'must not wrap a markdown link target');
+
+  // Pipes still escaped, or the cell ends early.
+  assert.match(md, /a\\\|pipe/);
+});
+
+test('the committed CONNECTIONS_REGISTRY.md has no bare URLs', () => {
+  // Deliberately reads the file ON DISK rather than re-rendering it. Rendering
+  // would pass through mdNote(), which is the thing doing the fixing — so a
+  // render-based assertion is tautological and can never fail. The invariant
+  // that actually matters is that the *committed* generated file is clean,
+  // which also catches a hand-edit or a regeneration someone forgot to commit.
+  const md = fs.readFileSync(
+    path.join(__dirname, '../docs/CONNECTIONS_REGISTRY.md'),
+    'utf8'
+  );
+  const bare = md
+    .split('\n')
+    .filter((l) => l.startsWith('|'))
+    .map((l) => l.replace(/\[[^\]]*\]\([^)]*\)/g, '').replace(/<https?:\/\/[^>]*>/g, ''))
+    .filter((l) => /https?:\/\//.test(l));
+  assert.deepEqual(
+    bare.map((l) => l.slice(0, 70)),
+    [],
+    'bare URLs in the committed registry fail MD034 in the CircleCI gate'
+  );
 });

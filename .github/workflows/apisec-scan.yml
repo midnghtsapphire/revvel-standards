@@ -29,22 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
-    steps:
-       - name: APIsec scan
-         uses: apisec-inc/apisec-run-scan@025432089674a28ba8fb55f8ab06c10215e772ea
-         with:
-          # The APIsec username with which the scans will be executed
-          apisec-username: ${{ secrets.apisec_username || 'dummy-user' }}
-          # The Password of the APIsec user with which the scans will be executed
-          apisec-password: ${{ secrets.apisec_password || 'dummy-pass' }}
-          # The name of the project for security scan
-          apisec-project: "VAmPI"
-          # The name of the sarif format result file The file is written only if this property is provided.
-          sarif-result-file: "apisec-results.sarif"
-       - name: Import results
-         uses: github/codeql-action/upload-sarif@v3
-         with:
-          sarif_file: ./apisec-results.sarif
+    # Single steps block only — duplicate `steps:` keys make YAML parsers
+    # (automation-doctor / `yaml` package) reject the file and fail npm test.
+    # Full original body remains in the REVVEL-DISABLED-BODY comment below.
     steps:
       - run: echo "archived per RVS-AGENT-001; see file header for restore steps"
 
