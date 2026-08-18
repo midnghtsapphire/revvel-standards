@@ -1,55 +1,62 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-08-18T01:39:09.641Z",
+  "updated_at": "2026-08-18T02:16:56.159Z",
   "workflows": {
     ".github/workflows/devin-code-review.yml": {
-      "count": 1,
+      "count": 2,
       "tried": [
-        "anthropic/claude-opus-4.8"
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T01:39:09.641Z"
+      "last_cut_at": "2026-08-18T02:16:56.159Z"
     },
     ".github/workflows/pr-lifecycle.yml": {
-      "count": 1,
+      "count": 2,
       "tried": [
-        "anthropic/claude-opus-4.8"
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T01:39:09.641Z"
+      "last_cut_at": "2026-08-18T02:16:56.159Z"
     },
     ".github/workflows/ai-pr-review-openrouter.yml": {
-      "count": 1,
+      "count": 2,
       "tried": [
-        "anthropic/claude-opus-4.8"
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T01:39:09.641Z"
+      "last_cut_at": "2026-08-18T02:16:56.159Z"
     },
     ".github/workflows/agent-fingerprint-gate.yml": {
-      "count": 1,
+      "count": 2,
       "tried": [
-        "anthropic/claude-opus-4.8"
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T01:39:09.641Z"
+      "last_cut_at": "2026-08-18T02:16:56.159Z"
     },
     ".github/workflows/goap-assignment-router.yml": {
-      "count": 1,
+      "count": 2,
       "tried": [
-        "anthropic/claude-opus-4.8"
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T01:39:09.641Z"
+      "last_cut_at": "2026-08-18T02:16:56.159Z"
     },
     ".github/workflows/no-destroy-guard.yml": {
-      "count": 1,
+      "count": 2,
       "tried": [
-        "anthropic/claude-opus-4.8"
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T01:39:09.641Z"
+      "last_cut_at": "2026-08-18T02:16:56.159Z"
     },
     ".github/workflows/project-board-sync.yml": {
-      "count": 1,
+      "count": 2,
       "tried": [
-        "anthropic/claude-opus-4.8"
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T01:39:09.641Z"
+      "last_cut_at": "2026-08-18T02:16:56.159Z"
     }
   }
 }
