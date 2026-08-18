@@ -1,31 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-18T06:08:56.641Z",
+  "generated_at": "2026-08-18T07:16:16.699Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
+            "id": 32110547638,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32110547638",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32106897172,
+            "name": "WR-4600 Watchtower",
+            "path": ".github/workflows/watchtower.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32106897172",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32105797125,
+            "name": "App Artifact Audit",
+            "path": ".github/workflows/app-artifact-audit.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32105797125",
+            "conclusion": "failure"
+          },
+          {
             "id": 32105569758,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32105569758",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32101728565,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32101728565",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +65,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32109996721"
       }
     },
     "sheaf": {
