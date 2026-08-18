@@ -122,11 +122,25 @@ jobs:
               return;
             }
 
-            const subject = context.payload.issue?.number
-              ? `issue #${context.payload.issue.number}`
-              : context.payload.pull_request?.number
-                ? `PR #${context.payload.pull_request.number}`
-                : context.eventName;
+            // Identify the subject by NUMBER, not by which payload key happens
+            // to be populated.
+            //
+            // A pull request IS an issue to the webhook payload: an
+            // `issue_comment` event on a PR arrives with payload.issue set to
+            // that PR's number, while the `pull_request` event for the same PR
+            // sets payload.pull_request instead. Branching on which key exists
+            // therefore produced two different titles for one subject —
+            // "finding on PR #17222" and "finding on issue #17222" — and the
+            // exact-title dedup below could never match across the pair, so
+            // every finding on a PR was filed twice. Four such pairs were open
+            // simultaneously (#17546/#17547, #17550/#17551, #17564/#17565,
+            // #17642/#17666).
+            //
+            // Issue and PR numbers come from one sequence per repository, so
+            // the number alone identifies the subject unambiguously.
+            const subjectNumber =
+              context.payload.issue?.number ?? context.payload.pull_request?.number ?? null;
+            const subject = subjectNumber ? `#${subjectNumber}` : context.eventName;
             const title = `[security-fleet] finding on ${subject}`;
 
             const { data: open } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: 'security-fleet', per_page: 100 });
