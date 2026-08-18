@@ -669,7 +669,7 @@ with what actually exists is worth its own change.
 
 Thirteen open issues looked like this:
 
-```
+```text
 title: [AUTO-FALLBACK] OpenRouter →  (#)
 body:  OpenRouter was unavailable or failed. Automatically failed over to .
        **Original task:** #
