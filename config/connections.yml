@@ -153,6 +153,20 @@ connections:
     used_by: [vercel-bot]
     note: "Deploys a preview on every PR (observed via vercel[bot])."
 
+  - id: stacker-bot
+    name: Stacker (stacked PRs)
+    type: app
+    auth: free
+    status: verified
+    access: [stacked-prs, pr-toc, merge-order-guard]
+    connects_to: [github]
+    used_by: ["stacker-bot[bot]", docs/STACKER_BOT_INSTALLATION.md]
+    note: >-
+      Free stacked-PR GitHub App (installation 150619571). Bot login
+      stacker-bot[bot]. Pairs with the stacker CLI (brew tap stackedpr/stacker).
+      See docs/STACKER_BOT_INSTALLATION.md and skills/stacker-bot/SKILL.md.
+      Complementary to Graphite (docs/GRAPHITE_INTEGRATION.md); Stacker is the
+      free, already-installed lane for splitting large agent diffs.
   - id: mergeme
     name: MergeMe (mergeme.dev)
     type: app
