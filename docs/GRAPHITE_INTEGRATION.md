@@ -105,6 +105,28 @@ Evaluated against the same criteria as [`TEST_HARNESS_RESEARCH.md`](./revvel-sta
 
 **Decision:** Adopt **Graphite CLI** (FOSS) + **Graphite GitHub App on the Free tier** for `midnghtsapphire/revvel-standards`.
 
+### Installed free lane: stacker-bot (#16874)
+
+**stacker-bot** is already installed on this account (installation ID
+`150619571`, app slug `stacker-bot`, bot login `stacker-bot[bot]`). It is a
+free stacked-PR GitHub App from [stackedpr](https://github.com/stackedpr)
+that maintains a TOC on the main stack PR and fails status checks on non-top
+stack items so merges stay top-down.
+
+| Concern | Graphite (target) | stacker-bot (installed now) |
+| --- | --- | --- |
+| Cost | Free tier / paid seats | Free forever |
+| Merge queue | Yes (SaaS) | No — status-check guard only |
+| CLI freshness | Actively maintained (`gt`) | Legacy (`stacker`, last CLI push 2021) |
+| Setup in this repo | Pending Graphite App install | Done — see [`STACKER_BOT_INSTALLATION.md`](./STACKER_BOT_INSTALLATION.md) |
+
+**Rule:** Use **stacker-bot** whenever a stack is needed and Graphite is not
+yet configured. Prefer Graphite once its App + Free tier are live. Do not
+uninstall stacker-bot solely because Graphite lands — keep both until one
+stacking UX is chosen as SSOT. Wiring details:
+[`STACKER_BOT_INTEGRATION.md`](./STACKER_BOT_INTEGRATION.md) ·
+[`skills/stacker-bot/SKILL.md`](../skills/stacker-bot/SKILL.md).
+
 ---
 
 ## 5. Requirements (RFC 2119)

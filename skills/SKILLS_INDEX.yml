@@ -87,6 +87,28 @@ skills:
       - "self-healing review"
       - "recurse-rules"
 
+  - name: stacker_bot
+    title: "Stacker Bot — Stacked Pull Requests"
+    version: "1.0.0"
+    path: "skills/stacker-bot/"
+    skill_file: "skills/stacker-bot/stacker-bot.skill.yml"
+    category: "PR Workflow & Merge Hygiene"
+    platform: "https://github.com/apps/stacker-bot"
+    integration_doc: "docs/STACKER_BOT_INTEGRATION.md"
+    verification_doc: "docs/STACKER_BOT_INSTALLATION.md"
+    access: all
+    persona: reviewer
+    triggers:
+      - "stacker"
+      - "stacker-bot"
+      - "stacked pr"
+      - "stacked pull request"
+      - "pr stack"
+      - "stack toc"
+      - "merge order"
+      - "stacker cli"
+      - "150619571"
+
   - name: truthslayer_audit
     title: "TruthSlayer Audit — Composite Code Scoring"
     version: "1.1.0"
