@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-08-18T02:16:56.159Z",
+  "updated_at": "2026-08-18T02:41:05.204Z",
   "workflows": {
     ".github/workflows/devin-code-review.yml": {
       "count": 2,
@@ -8,7 +8,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T02:16:56.159Z"
+      "last_cut_at": "2026-08-18T02:41:05.204Z"
     },
     ".github/workflows/pr-lifecycle.yml": {
       "count": 2,
@@ -16,7 +16,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T02:16:56.159Z"
+      "last_cut_at": "2026-08-18T02:41:05.204Z"
     },
     ".github/workflows/ai-pr-review-openrouter.yml": {
       "count": 2,
@@ -24,7 +24,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T02:16:56.159Z"
+      "last_cut_at": "2026-08-18T02:41:05.204Z"
     },
     ".github/workflows/agent-fingerprint-gate.yml": {
       "count": 2,
@@ -32,7 +32,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T02:16:56.159Z"
+      "last_cut_at": "2026-08-18T02:41:05.204Z"
     },
     ".github/workflows/goap-assignment-router.yml": {
       "count": 2,
@@ -40,7 +40,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T02:16:56.159Z"
+      "last_cut_at": "2026-08-18T02:41:05.204Z"
     },
     ".github/workflows/no-destroy-guard.yml": {
       "count": 2,
@@ -48,7 +48,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T02:16:56.159Z"
+      "last_cut_at": "2026-08-18T02:41:05.204Z"
     },
     ".github/workflows/project-board-sync.yml": {
       "count": 2,
@@ -56,7 +56,7 @@
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "last_cut_at": "2026-08-18T02:16:56.159Z"
+      "last_cut_at": "2026-08-18T02:41:05.204Z"
     }
   }
 }
