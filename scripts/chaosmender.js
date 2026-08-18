@@ -455,6 +455,33 @@ async function main() {
   let findings = runChecks(REPO_ROOT, ledger);
   if (opts.changedOnly) {
     const changed = loadChangedFiles();
+
+    // An empty scope is a broken scan, not a clean PR.
+    //
+    // The PR trigger for this scan is path-filtered to `.github/workflows/**`,
+    // `scripts/**` and `config/error-ledger.json`, so a pull_request run always
+    // has at least one file in scope. Reaching here with none means the file
+    // list never arrived — the compute step was skipped, its $GITHUB_OUTPUT
+    // heredoc broke, the base SHA was unreachable, or the env var was renamed.
+    //
+    // Without this, `changed.size === 0` filters every finding away and the
+    // scan prints "no known error patterns detected" and exits 0. That is a
+    // pass the scan never established, and it looks exactly like success, so
+    // nothing would ever report it (CLAUDE.md gotcha 6). The same silence
+    // follows if a scanner's `file` format ever stops matching
+    // `git diff --name-only` output, because then no key can ever match.
+    if (changed.size === 0) {
+      console.error(
+        '❌ ChaosMender --changed-only: no files in scope.\n' +
+          '   CHAOSMENDER_CHANGED_FILES is empty or unset, but this mode only runs on\n' +
+          '   pull requests that touched .github/workflows/**, scripts/** or\n' +
+          '   config/error-ledger.json — so an empty scope means the changed-file list\n' +
+          '   was never computed, not that the diff is clean.\n' +
+          '   Refusing to report "no patterns detected" for a scan that inspected nothing.',
+      );
+      process.exit(1);
+    }
+
     findings = findings.filter((f) => changed.has(f.file));
     console.log(
       `ℹ️  ChaosMender --changed-only: ${changed.size} changed file(s) in scope, ` +
