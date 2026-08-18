@@ -34,8 +34,11 @@ const yaml = require('js-yaml');
 
 const WF_DIR = path.join(__dirname, '..', '.github/workflows');
 
+let _scan = null;
+
 /** @returns {{file: string, job: string, step: string, run: string}[]} */
 function stepsRunningTheSuite() {
+  if (_scan) return _scan; // five tests ask for this; parse the directory once
   const out = [];
   for (const name of fs.readdirSync(WF_DIR)) {
     if (!/\.ya?ml$/.test(name)) continue;
@@ -55,6 +58,7 @@ function stepsRunningTheSuite() {
       }
     }
   }
+  _scan = out;
   return out;
 }
 
@@ -91,11 +95,10 @@ test('an npm test step may only be continue-on-error if its result is consumed',
   // consumed, not about the keyword.
   const offenders = stepsRunningTheSuite()
     .filter(({ raw }) => raw['continue-on-error'] === true)
-    .filter(({ raw, file, job }) => {
+    .filter(({ raw, jobObj }) => {
       const id = raw.id;
       if (!id) return true; // no id => nothing can reference it
-      const doc = yaml.load(fs.readFileSync(path.join(WF_DIR, file), 'utf8'));
-      const body = JSON.stringify(doc.jobs[job]);
+      const body = JSON.stringify(jobObj);
       // Does any later expression read this step's outcome/conclusion?
       return !new RegExp(`steps\\.${id}\\.(outcome|conclusion)`).test(body);
     });
@@ -141,8 +144,15 @@ test('the suite actually runs for a push to main, conditions included', () => {
   const excludesPush = (cond) => {
     if (cond === undefined || cond === null) return false;
     const c = String(cond);
-    // Conditions that pin execution to a non-push event.
-    return /event_name\s*==\s*'(?!push)/.test(c) || /event_name\s*!=\s*'push'/.test(c);
+    if (/event_name\s*!=\s*'push'/.test(c)) return true;
+    // Jules caught this: a lookahead for a non-push equality fires on ANY such
+    // comparison, so `event_name == 'push' || event_name == 'workflow_dispatch'`
+    // read as "excludes push" because of its second clause. Collect every event
+    // the condition equality-tests instead: a condition that names push
+    // anywhere can still run on push.
+    const tested = [...c.matchAll(/event_name\s*==\s*'([^']*)'/g)].map((m) => m[1]);
+    if (tested.length === 0) return false; // pins no event at all
+    return !tested.includes('push');
   };
 
   const onMain = stepsRunningTheSuite().filter(({ file, raw, jobObj }) => {
@@ -167,9 +177,13 @@ test('the suite actually runs for a push to main, conditions included', () => {
 
     // Only the map form carries filters. `push:` with nothing under it parses
     // as null and means every branch, same as the string and array forms.
+    // `branches:` and `branches-ignore:` accept a bare scalar as well as a
+    // sequence. Left unnormalized, a string crashed `.some` with a TypeError
+    // and `.includes` silently became a substring match, so `branches-ignore:
+    // not-main` would have read as ignoring main.
     const pushCfg = (onMap && onMap.push) || {};
-    const branches = pushCfg.branches || [];
-    const ignored = pushCfg['branches-ignore'] || [];
+    const branches = [].concat(pushCfg.branches || []);
+    const ignored = [].concat(pushCfg['branches-ignore'] || []);
     if (ignored.includes('main')) return false;
     const coversMain =
       branches.length === 0 || branches.some((b) => b === 'main' || b === '*' || b === '**');
