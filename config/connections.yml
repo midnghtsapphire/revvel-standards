@@ -147,11 +147,20 @@ connections:
     name: Vercel
     type: app
     auth: oauth
-    status: verified
+    status: unverified
     access: [preview-deploys, production-deploys, hosting]
     connects_to: [github]
     used_by: [vercel-bot]
-    note: "Deploys a preview on every PR (observed via vercel[bot])."
+    note: >-
+      BLOCKED as of 2026-08-17. All three projects (revvel-standards,
+      standards, marketplace-relister) report "Account is blocked." on every
+      commit, on main as well as PRs. No deploy has succeeded since at least
+      13:18 UTC that day. Downgraded from verified because the registry must
+      not assert a working integration that demonstrably is not working.
+      Cause is account-level (billing or a usage/abuse flag), not repo config
+      — see https://vercel.com/knowledge/why-is-my-account-deployment-blocked
+      Re-verify and restore status: verified only after a deploy actually
+      succeeds.
 
   - id: stacker-bot
     name: Stacker (stacked PRs)
