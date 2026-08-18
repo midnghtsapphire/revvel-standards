@@ -51,11 +51,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-      # Job-level, deliberately. rethab/actions-lint begins validating a step's
-      # run: body once that step carries an `env:` of its own, and it cannot
-      # resolve this workflow's choice-typed `agent` input — so a step-level
-      # env: here turns a pre-existing, valid `inputs.agent` into a lint error.
-      ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
     timeout-minutes: 30
     steps:
       - name: Determine agent to dispatch
@@ -70,7 +65,7 @@ jobs:
           fi
 
           # Check issue labels
-          LABELS="${ISSUE_LABELS}"
+          LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
           
           # Belt-and-suspenders: route octopus-review[bot] issues to openrouter
           # even if the octopus-route.yml translator hasn't applied wr:code yet.

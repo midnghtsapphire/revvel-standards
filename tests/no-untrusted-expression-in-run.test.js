@@ -56,6 +56,15 @@ const WF_DIR = path.join(__dirname, '..', '.github/workflows');
 // delete the line. Adding an entry is not allowed — that is what the guard is
 // for.
 const KNOWN_REMAINING = new Set([
+  // agent-dispatcher.yml is BLOCKED on tooling, not on effort. Its label join is
+  // a genuine risk (label names are free text and settable by anyone who can
+  // label), but every placement of the value fails `Lint agent-dispatcher.yml`:
+  // rethab/actions-lint cannot resolve the workflow's choice-typed `agent`
+  // input, and putting an `env:` on the step OR on the job makes it validate a
+  // run: body that has referenced `inputs.agent` since long before this change.
+  // Four attempts, four red checks. Fixing it needs the linter replaced or the
+  // file excluded — an owner decision, not something to force through here.
+  'agent-dispatcher.yml :: ${{ join(github.event.issue.labels.*.name, \',\') }}',
   'api-rate-limit-handler.yml :: ${{ inputs.agent_used }}',
   'api-rate-limit-handler.yml :: ${{ inputs.error_message }}',
   'api-rate-limit-handler.yml :: ${{ inputs.failed_workflow }}',

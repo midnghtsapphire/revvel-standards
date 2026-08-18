@@ -887,6 +887,42 @@ find-and-replace across `run:` and `script:` blocks is not one transformation:
 the two have different interpreters, and the same expression needs a different
 form in each.
 
+### Correction — agent-dispatcher.yml is blocked on the linter, not fixed
+
+`agent-dispatcher.yml` interpolates `join(github.event.issue.labels.*.name, ',')`
+into a `run:` block. Label names are free text and settable by anyone who can
+label an issue, so this is a genuine instance — but it is **not fixed here**, and
+the reason is worth recording because four attempts failed in four different
+ways.
+
+Every placement of the value fails `Lint .github/workflows/agent-dispatcher.yml`:
+
+| attempt | result |
+| --- | --- |
+| step-level `env:` + `$ISSUE_LABELS` in `run:` | two errors, `Input "agent" is not declared` |
+| also route `inputs.agent` through `env:` | one error, now on the `env:` line itself |
+| revert that, keep step-level `env:` | back to two errors |
+| move `ISSUE_LABELS` to job-level `env:` | still failing |
+
+Two facts are established. `rethab/actions-lint` cannot resolve the workflow's
+`choice`-typed `agent` input — it reports an input that is plainly declared as
+undeclared, while a `number`-typed input in the same file resolves. And the
+reported position, `Line 60, Col 14`, is the `run: |` pipe itself, so the tool
+attributes run-body findings to the block start and begins checking that body
+once an `env:` exists nearby. The expression it objects to has been in that file
+since long before this change.
+
+So the value cannot be moved anywhere without turning a pre-existing, valid
+expression into a red check. The entry stays on the `KNOWN_REMAINING` ratchet
+with this explanation attached. Fixing it needs the linter replaced, or the file
+added to `.github/actions-lint-exclude.txt` — an owner decision about tooling,
+not something to force through inside a security batch.
+
+**The process lesson is mine.** The error column pointed at the answer on the
+very first failure and I theorised twice before reading it. Three corrections
+were pushed to one file that ends this change untouched. Read the position
+before forming a mechanism.
+
 ### Correction — the `choice`-input false positive, and what it cost
 
 The first version of this change also moved `agent-dispatcher.yml`'s
