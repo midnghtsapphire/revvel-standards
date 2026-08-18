@@ -1,59 +1,66 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-18T03:18:10.523Z",
+  "generated_at": "2026-08-18T04:13:53.100Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "6/100 recent runs failed; 0 stuck item(s)",
+      "summary": "7/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 6,
+        "failed_runs": 7,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32094912660,
-            "name": "Lint Markdown (markdownlint-cli)",
-            "path": ".github/workflows/lint-md.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094912660",
+            "id": 32098286342,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32098286342",
             "conclusion": "failure"
           },
           {
-            "id": 32094912505,
-            "name": "WR Lint",
-            "path": ".github/workflows/wr-lint.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094912505",
+            "id": 32098084715,
+            "name": "Ralph Loop — Self-Healing CI",
+            "path": ".github/workflows/ralph-loop.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32098084715",
             "conclusion": "failure"
           },
           {
-            "id": 32094911930,
-            "name": ".github/workflows/release-banner-social.yml",
-            "path": ".github/workflows/release-banner-social.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094911930",
+            "id": 32098076892,
+            "name": "Ralph Loop — Self-Healing CI",
+            "path": ".github/workflows/ralph-loop.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32098076892",
             "conclusion": "failure"
           },
           {
-            "id": 32094911467,
-            "name": "Social Media Automation",
-            "path": ".github/workflows/social-media-automation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094911467",
+            "id": 32098070116,
+            "name": "Ralph Loop — Self-Healing CI",
+            "path": ".github/workflows/ralph-loop.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32098070116",
             "conclusion": "failure"
           },
           {
-            "id": 32094911430,
-            "name": ".github/workflows/dprint-check.yml",
-            "path": ".github/workflows/dprint-check.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094911430",
+            "id": 32098032278,
+            "name": "Ralph Loop — Self-Healing CI",
+            "path": ".github/workflows/ralph-loop.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32098032278",
             "conclusion": "failure"
           },
           {
-            "id": 32094905924,
-            "name": "WR Lint",
-            "path": ".github/workflows/wr-lint.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32094905924",
+            "id": 32098016310,
+            "name": "Ralph Loop — Self-Healing CI",
+            "path": ".github/workflows/ralph-loop.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32098016310",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32097996928,
+            "name": "Ralph Loop — Self-Healing CI",
+            "path": ".github/workflows/ralph-loop.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32097996928",
             "conclusion": "failure"
           }
         ],
