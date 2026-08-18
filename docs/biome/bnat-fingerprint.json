@@ -1,34 +1,17 @@
 {
   "schema": "bnat-fingerprint/v1",
-  "generated_at": "2026-08-18T09:10:12.650Z",
+  "generated_at": "2026-08-18T10:07:20.924Z",
   "credit_free": true,
   "dim_H0": 1,
   "dim_H1": 3,
   "rank_delta": 3,
   "dim_C0": 4,
   "dim_C1": 6,
-  "energy": 3,
-  "consistent": false,
+  "energy": 0,
+  "consistent": true,
   "obstruction": true,
-  "long_lived_h1": [
-    {
-      "birth": 1,
-      "death": null,
-      "edge": [
-        "sentinel",
-        "medic"
-      ]
-    },
-    {
-      "birth": 1,
-      "death": null,
-      "edge": [
-        "sentinel",
-        "sheaf"
-      ]
-    }
-  ],
-  "long_lived_h1_count": 2,
+  "long_lived_h1": [],
+  "long_lived_h1_count": 0,
   "h0_bars": 4,
   "h1_bars": 3,
   "workers": 4
