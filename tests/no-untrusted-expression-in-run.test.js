@@ -56,7 +56,6 @@ const WF_DIR = path.join(__dirname, '..', '.github/workflows');
 // delete the line. Adding an entry is not allowed — that is what the guard is
 // for.
 const KNOWN_REMAINING = new Set([
-  'agent-dispatcher.yml :: ${{ inputs.agent }}',
   'api-rate-limit-handler.yml :: ${{ inputs.agent_used }}',
   'api-rate-limit-handler.yml :: ${{ inputs.error_message }}',
   'api-rate-limit-handler.yml :: ${{ inputs.failed_workflow }}',
