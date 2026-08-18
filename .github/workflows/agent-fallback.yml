@@ -351,7 +351,15 @@ jobs:
               body: body
             });
       - name: Create fallback event issue
-        if: steps.result.outputs.agent != 'openrouter' && steps.result.outputs.agent != 'none'
+        # `agent` must actually name an agent. The original condition excluded
+        # the two known non-fallback values and nothing else, so an EMPTY agent
+        # satisfied both halves and the step ran with no data at all — filing an
+        # issue titled "[AUTO-FALLBACK] OpenRouter →  (#)" whose every field was
+        # blank. Thirteen of those accumulated before anyone looked.
+        if: >-
+          steps.result.outputs.agent != '' &&
+          steps.result.outputs.agent != 'openrouter' &&
+          steps.result.outputs.agent != 'none'
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           AGENT: ${{ steps.result.outputs.agent }}
@@ -359,9 +367,24 @@ jobs:
           TASK_SUCCESS: ${{ steps.result.outputs.success }}
         with:
           script: |
-            const agent = process.env.AGENT;
-            const originalIssue = process.env.ORIGINAL_ISSUE;
-            const success = process.env.TASK_SUCCESS;
+            const agent = (process.env.AGENT || '').trim();
+            const originalIssue = (process.env.ORIGINAL_ISSUE || '').trim();
+            const success = (process.env.TASK_SUCCESS || '').trim();
+
+            // Belt and braces behind the step condition above. If the result
+            // step ever stops producing these outputs again, the condition
+            // would skip this step silently and we would learn nothing; an
+            // issue with no agent, no task and no outcome teaches even less,
+            // and is permanent. Say it in the run, file nothing.
+            if (!agent || !originalIssue) {
+              const detail = `agent=${JSON.stringify(agent)} original_issue=${JSON.stringify(originalIssue)}`;
+              core.warning(
+                `Fallback event had no usable metadata (${detail}); not filing a ` +
+                  `monitoring issue. An issue with every field blank is not a record of anything.`,
+              );
+              core.summary.addRaw(`⚠️ Fallback event skipped — missing metadata (${detail})`).write();
+              return;
+            }
 
             await github.rest.issues.create({
               owner: context.repo.owner,
