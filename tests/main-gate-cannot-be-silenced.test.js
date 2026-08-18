@@ -148,10 +148,31 @@ test('the suite actually runs for a push to main, conditions included', () => {
   const onMain = stepsRunningTheSuite().filter(({ file, raw, jobObj }) => {
     const doc = yaml.load(fs.readFileSync(path.join(WF_DIR, file), 'utf8'));
     const on = doc?.on ?? doc?.[true]; // YAML 1.1 parses bare `on:` as boolean true
-    const push = on && typeof on === 'object' ? on.push : null;
-    if (!push) return false;
-    const branches = push.branches || [];
-    const coversMain = branches.length === 0 || branches.includes('main');
+
+    // `on` has three legal shapes and only one of them may be property-read.
+    // Jules caught the bug in review: for the array form (`on: [pull_request]`)
+    // `typeof on === 'object'` is true and `on.push` resolves to
+    // Array.prototype.push — a truthy function whose `.branches` is undefined,
+    // so `branches.length === 0` read as "every branch" and a workflow that
+    // never touches main satisfied this assertion. That is this file's own
+    // failure mode reproduced inside the guard against it. The two string/null
+    // forms (`on: push` and a bare `push:` key with no filters) were the
+    // mirror-image false negative.
+    const onMap = on && typeof on === 'object' && !Array.isArray(on) ? on : null;
+    const triggersPush =
+      on === 'push' ||
+      (Array.isArray(on) && on.includes('push')) ||
+      (onMap !== null && Object.prototype.hasOwnProperty.call(onMap, 'push'));
+    if (!triggersPush) return false;
+
+    // Only the map form carries filters. `push:` with nothing under it parses
+    // as null and means every branch, same as the string and array forms.
+    const pushCfg = (onMap && onMap.push) || {};
+    const branches = pushCfg.branches || [];
+    const ignored = pushCfg['branches-ignore'] || [];
+    if (ignored.includes('main')) return false;
+    const coversMain =
+      branches.length === 0 || branches.some((b) => b === 'main' || b === '*' || b === '**');
     if (!coversMain) return false;
     // The job and the step must both be reachable on a push event.
     return !excludesPush(jobObj?.if) && !excludesPush(raw?.if);
