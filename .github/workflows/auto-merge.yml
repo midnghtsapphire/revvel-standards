@@ -1,17 +1,8 @@
 name: Auto-Merge on Approval
 # quiet-mode 2026-07-25 (owner request): automatic triggers disabled;
 # run manually via workflow_dispatch if needed.
-#   ^ ARCHIVED 2026-08-08 by @midnghtsapphire (owner decision: "no more quiet
-#   mode" / "i want the agents out of silent mode" — exit-quiet-mode issue
-#   #17099, DECISIONS.md D017). Pre-quiet-mode triggers restored below,
-#   verbatim from the commit before #16805 (cd2b736b^). The 2026-07-25
-#   directive comment is preserved per RVS-PRESERVE-001 — never delete an
-#   owner policy directive.
 on:
-  pull_request:
-    types:
-      - labeled
-      - unlabeled
+  workflow_dispatch: null
 
 concurrency:
   group: auto-merge-${{ github.event.pull_request.number }}

@@ -30,6 +30,12 @@ jobs:
         with:
           # Prefer PAT when present so scheduled commits can land reliably
           token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          # Deliberate: the "Commit Updated Index & Optimizations" step below
+          # uses stefanzweifel/git-auto-commit-action, which pushes with the
+          # credentials checkout persists. Setting this false would silently
+          # stop the hourly commits. Accepted rather than fixed — flagged by
+          # zizmor as credential persistence, and true here by necessity.
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5

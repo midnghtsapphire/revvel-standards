@@ -70,7 +70,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
 
@@ -138,6 +138,12 @@ jobs:
         shell: bash
         env:
           EASY_ENV_BLOCK: ${{ inputs.env_block }}
+          # Through the environment, not interpolated into the script body:
+          # template expansion is text substitution done before the shell runs,
+          # so a ref crafted to contain shell metacharacters would execute
+          # (zizmor template-injection).
+          RUN_ACTOR: ${{ github.actor }}
+          RUN_REF: ${{ github.ref }}
         run: |
           {
             echo "## Easy Env Vars (WR #15863)"
@@ -145,8 +151,8 @@ jobs:
             echo "- Action: \`briantist/ezenv@v1.0.0\`"
             echo "- Pinned SHA: \`f38d123244576d2065059c68a02ab332fc682199\`"
             echo "- Pre-validation: products/easy-env-vars/lib/validate-cli.js"
-            echo "- Actor: \`${{ github.actor }}\`"
-            echo "- Ref: \`${{ github.ref }}\`"
+            echo "- Actor: \`$RUN_ACTOR\`"
+            echo "- Ref: \`$RUN_REF\`"
             echo ""
             echo "### Input block"
             echo '```'

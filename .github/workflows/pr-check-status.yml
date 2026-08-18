@@ -64,23 +64,70 @@ jobs:
 
             const MARKER = '<!-- pr-check-status:sticky -->';
             const { owner, repo } = context.repo;
+            // timed_out / startup_failure / action_required / stale must
+            // clear a stale checks-passing or ready-to-merge state (cubic
+            // P1 on #15623). 'cancelled' is deliberately a no-op: with
+            // cancel-in-progress concurrency, cancellations are routine
+            // supersessions and mapping them to failing would flap the
+            // labels on every rapid push.
+            const FAILING = ['failure', 'timed_out', 'action_required', 'startup_failure', 'stale'];
+
+            // A check suite's conclusion describes THAT SUITE ONLY. This repo
+            // runs many suites per commit — Actions, CircleCI, Vercel and
+            // other apps — so one green suite is not a green pull request.
+            // Reporting it as one produced "✅ All checks have passed" on PRs
+            // whose combined status was `failure`, and because a passing state
+            // also adds `ready-to-merge`, it fed ready-for-review.yml and let
+            // red PRs be promoted and merged.
+            //
+            // A failing suite is conclusive on its own, so it still short
+            // circuits with no extra API calls. Only the success path pays for
+            // verification — which also keeps the request count near the
+            // rate-limit budget described above.
+            async function aggregateState(ref) {
+              const runs = await github.paginate(github.rest.checks.listForRef, {
+                owner, repo, ref, per_page: 100,
+              });
+              // Skip this workflow's own check run: it is necessarily still
+              // in progress right here, and would pin the PR to "pending".
+              const selfPrefix = `/actions/runs/${context.runId}/`;
+              const others = runs.filter((r) => !(r.details_url || '').includes(selfPrefix));
+
+              if (others.some((r) => r.status === 'completed' && FAILING.includes(r.conclusion))) {
+                return 'failing';
+              }
+
+              // Commit statuses are a separate surface from check runs, and
+              // are where CircleCI and Vercel report. Checking only check runs
+              // is what let "Account is blocked" sit under a green banner.
+              const { data: combined } = await github.rest.repos.getCombinedStatusForRef({
+                owner, repo, ref,
+              });
+              if (combined.state === 'failure' || combined.state === 'error') {
+                return 'failing';
+              }
+
+              // Anything still running means we cannot yet claim success.
+              if (others.some((r) => r.status !== 'completed')) return null;
+              if (combined.total_count > 0 && combined.state === 'pending') return null;
+
+              return 'passing';
+            }
+
+            let desired = null;
+            if (FAILING.includes(conclusion)) {
+              desired = 'failing';
+            } else if (conclusion === 'success' || conclusion === 'neutral') {
+              desired = await aggregateState(suite.head_sha);
+            }
+
+            if (!desired) {
+              core.info(`Suite conclusion ${conclusion} -> no confirmed state; leaving PR status unchanged`);
+              return;
+            }
 
             for (const pr of prs) {
               const prNumber = pr.number;
-              // timed_out / startup_failure / action_required / stale must
-              // clear a stale checks-passing or ready-to-merge state (cubic
-              // P1 on #15623). 'cancelled' is deliberately a no-op: with
-              // cancel-in-progress concurrency, cancellations are routine
-              // supersessions and mapping them to failing would flap the
-              // labels on every rapid push.
-              const desired =
-                conclusion === 'success' || conclusion === 'neutral' ? 'passing'
-                : ['failure', 'timed_out', 'action_required', 'startup_failure', 'stale'].includes(conclusion) ? 'failing'
-                : null;
-              if (!desired) {
-                core.info(`PR #${prNumber}: conclusion ${conclusion} — no action`);
-                continue;
-              }
               core.info(`Processing PR #${prNumber}, conclusion: ${conclusion} -> ${desired}`);
 
               // ONE read of current labels; every write below is conditional on
@@ -91,11 +138,17 @@ jobs:
               const names = prLabels.map((l) => l.name);
               const approved = names.includes('approved');
 
+              // removeLabel is not idempotent (CLAUDE.md gotcha 1). A blanket
+              // catch also swallows 401/403, so a token that has lost label
+              // permission looks exactly like a label that was already gone
+              // and the PR silently keeps a stale state. Swallow 404 only.
+              const dropLabel = (name) =>
+                github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name })
+                  .catch((err) => { if (err.status !== 404) throw err; });
+
               if (desired === 'passing') {
                 if (names.includes('checks-failing')) {
-                  try {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'checks-failing' });
-                  } catch (e) { /* already gone */ }
+                  await dropLabel('checks-failing');
                 }
                 if (!names.includes('checks-passing')) {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['checks-passing'] });
@@ -106,17 +159,13 @@ jobs:
                 }
               } else {
                 if (names.includes('checks-passing')) {
-                  try {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'checks-passing' });
-                  } catch (e) { /* already gone */ }
+                  await dropLabel('checks-passing');
                 }
                 if (!names.includes('checks-failing')) {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['checks-failing'] });
                 }
                 if (names.includes('ready-to-merge')) {
-                  try {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'ready-to-merge' });
-                  } catch (e) { /* already gone */ }
+                  await dropLabel('ready-to-merge');
                 }
               }
 
@@ -124,7 +173,12 @@ jobs:
               // create it only the first time; write nothing when unchanged.
               const body = desired === 'passing'
                 ? `${MARKER}\n✅ **CI Checks Passing** — All checks have passed.${approved ? ' This PR is now ready to merge!' : ''}`
-                : `${MARKER}\n❌ **CI Checks Failed** — One or more checks failed. Please review the [check results](${suite.html_url}) and push a fix.`;
+                // The check_suite webhook payload has no `html_url`, so the
+                // old link rendered literally as "[check results](undefined)".
+                // The PR's own checks tab is always valid and is what a
+                // reader actually wants — it shows every suite, not just the
+                // one that happened to trigger this run.
+                : `${MARKER}\n❌ **CI Checks Failed** — One or more checks failed. Please review the [check results](https://github.com/${owner}/${repo}/pull/${prNumber}/checks) and push a fix.`;
 
               const comments = await github.paginate(github.rest.issues.listComments, {
                 owner, repo, issue_number: prNumber, per_page: 100,

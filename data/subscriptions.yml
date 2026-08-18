@@ -31,20 +31,6 @@
 #
 # Keep dates accurate. Use null (not a guess) for anything unknown — the tracker
 # treats null due-dates as "unknown" and surfaces them for a human to fill in.
-#
-# ── Known-stale entries as of 2026-08-09 (owner audit) ────────────────────────
-# Several `renewal_date` and `trial_end` values are in the past because the
-# tracker was never scheduled to run (fixed in the same PR as this note added).
-# When the first cron run posts its report, verify and update:
-#   • RecurseML trial_end 2026-06-27 → owner pays $10 every ~2 weeks, so status
-#     is really "recurring $10 short-term extensions"; ideal: switch to $250 annual
-#     once verified working (see the app-installation check in the accompanying PR).
-#   • DigitalOcean renewal_date 2026-07-15 → sites down per the note; verify
-#     which droplets are actually serving traffic before the next bill.
-#   • Devin renewal_date 2026-07-08 → confirm still active and update.
-# The tracker will keep surfacing these as "past due — please update" until the
-# dates are refreshed. That is the correct behaviour, not a bug.
-# ──────────────────────────────────────────────────────────────────────────────
 
 subscriptions:
   - name: RecurseML
@@ -272,3 +258,25 @@ subscriptions:
     notes: >-
       Usage-priced per Google plan. Per docs/TOOL_COST_INDEX.md — varies.
       Fill in latest invoice total when known.
+
+  - name: Stacker (stacker-bot)
+    vendor: stackedpr
+    type: github_app
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: free
+    cost: 0
+    currency: USD
+    repositories:
+      - midnghtsapphire/revvel-standards
+    dashboard_url: https://github.com/settings/installations/150619571
+    decision_doc: docs/STACKER_BOT_INSTALLATION.md
+    notes: >-
+      Free stacked-PR GitHub App installed 2026-08-01 (installation ID
+      150619571, app slug stacker-bot). No API key or paid plan. Manages
+      stacked PR TOCs and blocks out-of-order merges via status checks.
+      CLI: brew tap stackedpr/stacker && brew install stacker.
+      Marketplace: https://github.com/marketplace/stacked-pull-requests
+      App page: https://github.com/apps/stacker-bot

@@ -1,13 +1,13 @@
 {
   "schema": "biome-app-completion/v1",
-  "generated_at": "2026-08-16T12:47:15.025Z",
+  "generated_at": "2026-08-18T00:49:13.588Z",
   "credit_free": true,
   "base_url": "https://revvel-standards.vercel.app",
   "overall": "incomplete",
   "summary": {
-    "total": 19,
+    "total": 20,
     "live": 0,
-    "unreachable": 18,
+    "unreachable": 19,
     "no_link": 0,
     "external": 1
   },
@@ -23,6 +23,14 @@
     {
       "name": "ai-video-toolkit",
       "url": "https://revvel-standards.vercel.app/docs/ai-video-toolkit/",
+      "external": false,
+      "http_status": 402,
+      "reachable": false,
+      "state": "unreachable"
+    },
+    {
+      "name": "caspian-channel-console",
+      "url": "https://revvel-standards.vercel.app/docs/caspian-channel-console/",
       "external": false,
       "http_status": 402,
       "reachable": false,

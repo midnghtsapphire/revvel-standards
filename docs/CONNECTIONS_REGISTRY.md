@@ -3,7 +3,7 @@
 
 Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what each can reach. **Generated from `config/connections.yml`** — edit the YAML, run `npm run connections`, never hand-edit this file.
 
-**44** connections · **41** verified · **3** unverified (confirm before relying on them).
+**46** connections · **42** verified · **4** unverified (confirm before relying on them).
 
 ## Agents & orchestration
 
@@ -57,7 +57,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `resend` (Resend) | ✅ verified | key | transactional-email | — | — | — |
 | `revenuecat` (RevenueCat) | ✅ verified | paid | subscriptions, iap | — | — | — |
 | `tavily` (Tavily) | ✅ verified | key | web-search | — | — | — |
-| `xai` (xAI / Grok) | ✅ verified | key | motu-bnat-controller, xai-code-review | — | xai-code-review.yml | — |
+| `xai` (xAI / Grok) | ✅ verified | key | motu-bnat-controller | — | — | — |
 
 ## Libraries
 
@@ -71,7 +71,9 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | --- | :---: | :---: | --- | --- | --- | --- |
 | `augment` (Augment Code) | ✅ verified | key | code-review | github | augment-check.yml | — |
 | `bito` (Bito AI) | ✅ verified | key | code-review | github | bito-ai.yml | — |
+| `mergeme` (MergeMe (mergeme.dev)) | ✅ verified | oauth | pr-slack-cards, review-thread-mirroring, mention-routing | github, slack | mergeme-status.yml, products/mergeme-status | Slack PR cards (one updating message per PR). Repo-side wiring audited by scripts/mergeme-wiring.js (WR #16824). GitHub App + Slack OAuth installed at <https://mergeme.dev> / marketplace — no MERGEME_API_KEY in this repo. |
 | `octopus` (Octopus Review) | ✅ verified | paid | pr-review | github | octopus-route.yml, octopus-cli.yml | Owner: found several different error classes in a single review. Currently over monthly AI quota — needs own API keys. |
-| `vercel` (Vercel) | ✅ verified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | Deploys a preview on every PR (observed via vercel[bot]). |
+| `stacker-bot` (Stacker (stacked PRs)) | ✅ verified | free | stacked-prs, pr-toc, merge-order-guard | github | stacker-bot[bot], docs/STACKER_BOT_INSTALLATION.md | Free stacked-PR GitHub App (installation 150619571). Bot login stacker-bot[bot]. Pairs with the stacker CLI (brew tap stackedpr/stacker). See docs/STACKER_BOT_INSTALLATION.md and skills/stacker-bot/SKILL.md. Complementary to Graphite (docs/GRAPHITE_INTEGRATION.md); Stacker is the free, already-installed lane for splitting large agent diffs. |
+| `vercel` (Vercel) | ⚠️ unverified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | BLOCKED as of 2026-08-17. All three projects (revvel-standards, standards, marketplace-relister) report "Account is blocked." on every commit, on main as well as PRs. No deploy has succeeded since at least 13:18 UTC that day. Downgraded from verified because the registry must not assert a working integration that demonstrably is not working. Cause is account-level (billing or a usage/abuse flag), not repo config — see <https://vercel.com/knowledge/why-is-my-account-deployment-blocked> Re-verify and restore status: verified only after a deploy actually succeeds. |
 
-*Last generated: 2026-08-08 from `config/connections.yml`.*
+*Last generated: 2026-08-18 from `config/connections.yml`.*

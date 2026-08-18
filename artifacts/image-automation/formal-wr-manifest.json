@@ -1,7 +1,7 @@
 {
   "schema": "midnghtsapphire.formal_wr_pack/v1",
   "brand": "MIDNGHTSAPPHIRE",
-  "generated_at": "2026-08-05T23:57:05.640Z",
+  "generated_at": "2026-08-17T15:16:28.822Z",
   "repo": "midnghtsapphire/revvel-standards",
   "branch": "automation/image-seo-lsi-release-banner",
   "wr": "wr/pending/WR-image-seo-lsi-release-2026-08-05.md",
@@ -11,19 +11,22 @@
     "wr/pending/WR-image-seo-lsi-release-2026-08-05.md",
     "standards/IMAGE_CREATION_SEO_AUTOMATION.md",
     "scripts/image-seo-build-pack.mjs",
+    "scripts/image-seo-filename-qa.mjs",
     ".github/workflows/image-seo-pipeline.yml",
     ".github/workflows/release-banner-social.yml",
     ".github/workflows/image-seo-qa.yml",
     "workflows/blueprints/image-seo-pipeline.gumloop.json",
-    "config/connections.image-automation.yml"
+    "workflows/blueprints/release-banner-social.n8n.json",
+    "workflows/blueprints/image-seo.zapier.json",
+    "config/connections.image-automation.yml",
+    "tests/image-seo-automation.test.js"
   ],
   "missing": [],
   "apply": {
     "draft_pr_title": "[WR] Automate image SEO + LSI + release banners",
     "labels": [
-      "wr",
-      "human-review-required",
-      "priority:p1",
+      "work-request",
+      "needs-human",
       "automation"
     ]
   }

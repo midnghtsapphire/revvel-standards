@@ -327,6 +327,47 @@ groups:
     update-types: ["minor", "patch"]
 ```
 
+### 6.1.1. Monorepo rule — split-deps-per-directory (mandatory)
+
+Formal verification on PR #16791 (`structural_conflict`, WR #16950) chose **path A
+`split-deps-per-directory`** over path B `dependabot-group-bump` when a single
+`npm_and_yarn` group spanned 10 directories. Cross-directory group bumps are a
+formal fail in this monorepo.
+
+**Hard rules** (enforced by `scripts/check-dependabot-split-deps.js` +
+`tests/dependabot-split-deps.test.js`):
+
+| Rule | Why |
+| --- | --- |
+| One `directory:` per `updates[]` entry | Never use `directories:` (plural) — Dependabot will open multi-dir PRs |
+| Group names unique + directory-scoped | Shared names (e.g. `npm_and_yarn`) recreate path B |
+| Never name a group `npm_and_yarn` / `npm-and-yarn` | That pattern produced the #16791 conflict |
+| Within one directory, group patch+minor | Noise control is fine **inside** a single package root |
+| Majors stay ignored / human-reviewed | Same as §6.2 |
+
+```yaml
+# ✅ Path A — one directory, scoped group name
+- package-ecosystem: "npm"
+  directory: "/products/affiliate-hub"
+  groups:
+    affiliate-hub-patch-minor:
+      update-types: ["minor", "patch"]
+
+# ❌ Path B — multi-directory group bump (formal structural_conflict)
+- package-ecosystem: "npm"
+  directories: ["/", "/products/affiliate-hub"]
+  groups:
+    npm_and_yarn:
+      patterns: ["*"]
+```
+
+Validate anytime:
+
+```bash
+node scripts/check-dependabot-split-deps.js
+node --test tests/dependabot-split-deps.test.js
+```
+
 ### 6.2. Always Block Major Updates from Auto-Merge
 
 Major version bumps (`1.x → 2.x`) often contain breaking changes. Always require manual review:
