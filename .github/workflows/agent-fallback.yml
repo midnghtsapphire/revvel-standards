@@ -138,7 +138,7 @@ jobs:
           node-version: "24"
       - name: Resolve issue context
         id: issue
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           INPUT_TASK_DESCRIPTION: ${{ inputs.task_description }}
           INPUT_ISSUE_NUMBER: ${{ inputs.issue_number }}
@@ -327,7 +327,7 @@ jobs:
           echo "pr_url=${{ steps.cpr.outputs.pull-request-url }}" >> $GITHUB_OUTPUT
       - name: Comment on issue with success
         if: steps.result.outputs.success == 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           AGENT: ${{ steps.result.outputs.agent }}
           PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
@@ -352,7 +352,7 @@ jobs:
             });
       - name: Create fallback event issue
         if: steps.result.outputs.agent != 'openrouter' && steps.result.outputs.agent != 'none'
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           AGENT: ${{ steps.result.outputs.agent }}
           ORIGINAL_ISSUE: ${{ steps.issue.outputs.issue_number }}
@@ -379,7 +379,7 @@ jobs:
             });
       - name: Comment on issue with failure
         if: steps.result.outputs.success == 'false'
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           ISSUE_NUM: ${{ steps.issue.outputs.issue_number }}
           OpenHands_OUTCOME: ${{ steps.OpenHands.outcome }}

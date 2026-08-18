@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Walk open PRs and label the dirty ones
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           MAX_DIRTY: ${{ github.event.inputs.max_dirty || '25' }}

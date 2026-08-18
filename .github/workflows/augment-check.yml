@@ -53,7 +53,7 @@ jobs:
         # main reason detection looked "broken". 180s covers the observed tail.
         run: sleep 180
       - name: Detect Augment activity, annotate only (no PR comment)
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const prNumber =

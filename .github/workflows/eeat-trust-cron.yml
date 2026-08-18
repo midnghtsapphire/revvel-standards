@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Quiet Mode gate
         id: quiet
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const { owner, repo } = context.repo;
@@ -478,7 +478,7 @@ jobs:
             seo
       - name: Notify on failure
         if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trustforge.outputs.notify_on_failure == 'true' && steps.trustforge.outputs.ssl_errors != '0'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const { owner, repo } = context.repo;
@@ -505,7 +505,7 @@ jobs:
             });
       - name: Notify on warning
         if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trustforge.outputs.notify_on_warning == 'true' && steps.trustforge.outputs.total_issues != '0' && steps.trustforge.outputs.ssl_errors == '0'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const { owner, repo } = context.repo;

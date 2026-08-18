@@ -61,7 +61,7 @@ jobs:
         id: ping
         env:
           MATRIX: ${{ steps.urls.outputs.matrix }}
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const https = require('https');
@@ -130,7 +130,7 @@ jobs:
             // Persist results for the next step
             core.exportVariable('HEALTH_RESULTS', JSON.stringify(results));
       - name: Create or close issues for down deployments
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           HEALTH_RESULTS: ${{ env.HEALTH_RESULTS }}
         with:

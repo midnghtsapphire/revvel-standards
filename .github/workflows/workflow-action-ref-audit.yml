@@ -145,7 +145,7 @@ jobs:
           failure() &&
           (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
            (github.event_name == 'push' && github.ref == 'refs/heads/main'))
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const broken = (`${{ steps.audit.outputs.broken_refs }}` || '').trim();
@@ -209,7 +209,7 @@ jobs:
           success() &&
           (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
            (github.event_name == 'push' && github.ref == 'refs/heads/main'))
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         continue-on-error: true
         with:
           script: |

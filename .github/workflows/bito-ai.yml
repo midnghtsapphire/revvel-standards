@@ -169,7 +169,7 @@ jobs:
       - name: Resolve PR context
         id: pr-context
         if: env.BITO_SKIP == 'false'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             let prNumber, prUrl, prTitle;
@@ -248,7 +248,7 @@ jobs:
       # -------------------------------------------------------------------------
       - name: Update labels
         if: env.BITO_SKIP == 'false' && steps.pr-context.outputs.number != ''
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const prNumber = parseInt('${{ steps.pr-context.outputs.number }}', 10);
@@ -288,7 +288,7 @@ jobs:
           echo "📖 See: standards/BITO_AI_INTEGRATION_STANDARD.md"
       - name: Notify if secrets missing
         if: env.BITO_SKIP == 'true' && github.event_name == 'pull_request'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         continue-on-error: true
         env:
           MISSING: ${{ env.MISSING_SECRETS }}

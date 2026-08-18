@@ -112,7 +112,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
       - name: Create error issue
         id: create_issue
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const errorType = '${{ inputs.error_type }}';
@@ -211,7 +211,7 @@ jobs:
             return issue.data.number;
       - name: Comment on related PR if exists
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = '${{ steps.create_issue.outputs.issue_number }}';
@@ -288,7 +288,7 @@ jobs:
           path: recovery_log.txt
           retention-days: 30
       - name: Comment recovery results
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = ${{ needs.capture-and-create-issue.outputs.issue_number }};

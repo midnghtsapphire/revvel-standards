@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Check if issue is WR
         id: check
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
@@ -102,7 +102,7 @@ jobs:
             core.setOutput('issue_number', String(issueNumber));
       - name: Apply WR labels
         if: steps.check.outputs.is_wr == 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -145,7 +145,7 @@ jobs:
             }
       - name: Post WR welcome comment
         if: steps.check.outputs.is_wr == 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = ${{ steps.check.outputs.issue_number }};
@@ -260,7 +260,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add completion tracker comment
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = ${{ needs.detect-wr.outputs.issue_number }};

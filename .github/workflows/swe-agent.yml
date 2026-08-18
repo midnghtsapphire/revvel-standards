@@ -52,7 +52,7 @@ jobs:
     if: needs.preflight.outputs.configured == 'false'
     steps:
       - name: Post one-time setup-needed notice
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = parseInt(
@@ -155,7 +155,7 @@ jobs:
             --actions.pr_config.skip_if_commits_reference_issue true
       - name: Post resolver outcome
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           OUTCOME: ${{ steps.resolve.outcome }}
         with:

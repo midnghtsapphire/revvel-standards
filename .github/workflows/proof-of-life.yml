@@ -52,7 +52,7 @@ jobs:
             echo "OPENROUTER_API_KEY is configured."
           fi
       - name: Run proof of life
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ROLE: ${{ github.event.inputs.role }}

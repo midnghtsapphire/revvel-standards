@@ -66,7 +66,7 @@ jobs:
 
       - name: Extract brain dump text
         id: extract
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             let text = '';
@@ -96,7 +96,7 @@ jobs:
 
       - name: Acknowledge receipt (issue comment trigger)
         if: github.event_name == 'issue_comment'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           BRAIN_DUMP_TEXT: ${{ steps.extract.outputs.text }}
         with:
@@ -125,7 +125,7 @@ jobs:
 
       - name: Parse brain dump with OpenRouter
         id: parse
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           BRAIN_DUMP_TEXT: ${{ steps.extract.outputs.text }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -230,7 +230,7 @@ jobs:
 
       - name: Create WR issues for each item
         id: create-issues
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           ITEMS_JSON: ${{ steps.parse.outputs.items_json }}
           SOURCE_ISSUE: ${{ steps.extract.outputs.source_issue }}
@@ -339,7 +339,7 @@ jobs:
 
       - name: Post summary comment
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           CREATED_JSON: ${{ steps.create-issues.outputs.created_json }}
           SOURCE_ISSUE: ${{ steps.extract.outputs.source_issue }}

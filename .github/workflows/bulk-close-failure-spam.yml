@@ -37,7 +37,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Close matching failure-spam issues
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const dryRun = `${{ inputs.dry_run }}` !== 'false';

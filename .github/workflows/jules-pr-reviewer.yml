@@ -55,7 +55,7 @@ jobs:
           status_context: jules/review
       - name: Mark Jules review status as skipped
         if: ${{ env.JULES_API_KEY == '' || env.JULES_API_KEY == null }}
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const sha = context.payload.pull_request?.head?.sha;

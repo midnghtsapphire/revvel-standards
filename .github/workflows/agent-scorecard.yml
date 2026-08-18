@@ -49,7 +49,7 @@ jobs:
 
       - name: Gather PR signals
         id: signals
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           INPUT_PR_NUMBER: ${{ github.event.inputs.pr_number }}
         with:
@@ -131,7 +131,7 @@ jobs:
 
       - name: Open remediation tracking issue
         if: steps.score.outputs.needs_remediation == 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           AGENT: ${{ steps.signals.outputs.agent }}
           PR_NUMBER: ${{ steps.signals.outputs.pr_number }}
