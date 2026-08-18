@@ -1,19 +1,41 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-09T03:49:16.349Z",
+  "generated_at": "2026-08-18T02:24:20.215Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 32091628321,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32091628321",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32088403319,
+            "name": "API Monitor",
+            "path": ".github/workflows/api-monitor.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32088403319",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32088361489,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32088361489",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": []
       }
     },

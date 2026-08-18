@@ -144,7 +144,17 @@ Encryption alone is not compliance. Storage location alone is not compliance.
 
 ### 8.5 Required Actions Before Tracker Launch
 
-- [ ] **Formal Privacy Impact Assessment (PIA)** with legal/compliance covering HIPAA, FDA SaMD, CCPA/CPRA, WA MHMDA, GDPR (if EU traffic), and applicable state laws.
+- [x] **Formal Privacy Impact Assessment (PIA)** with legal/compliance covering HIPAA, FDA SaMD, CCPA/CPRA, WA MHMDA, GDPR (if EU traffic), and applicable state laws.
+      Engineering draft delivered as the WR-15279 privacy package (issue #16110):
+      [`compliance/wr-15279/privacy-impact-assessment.md`](../../compliance/wr-15279/privacy-impact-assessment.md),
+      with [`entity-classification.md`](../../compliance/wr-15279/entity-classification.md),
+      [`data-inventory.md`](../../compliance/wr-15279/data-inventory.md),
+      [`data-flows.md`](../../compliance/wr-15279/data-flows.md),
+      [`regulatory-mapping.md`](../../compliance/wr-15279/regulatory-mapping.md),
+      [`third-party-processors.md`](../../compliance/wr-15279/third-party-processors.md) and
+      [`risk-register.md`](../../compliance/wr-15279/risk-register.md).
+      **Counsel sign-off is still required before any production health-data
+      collection** — the checkbox marks the engineering deliverable, not legal approval.
 - [ ] **Data classification review:** document, per data element, whether it is PHI, consumer health data, sensitive PI, or non-sensitive, and cite the legal basis for that classification.
 - [ ] **Regulatory scoping memo** signed by counsel stating whether HIPAA applies and why/why not.
 - [ ] **If HIPAA applies:** complete the §8.4 program *before* the tracker collects any user input.
