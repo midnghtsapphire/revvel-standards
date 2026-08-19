@@ -40,38 +40,17 @@ const path = require('node:path');
 const repoRoot = path.resolve(__dirname, '..');
 const jsoncPath = path.join(repoRoot, '.markdownlint.jsonc');
 
-// Minimal JSONC reader: strip // line comments outside strings, then JSON.parse.
-function readJsonc(file) {
-  const text = fs.readFileSync(file, 'utf8');
-  const out = [];
-  let inString = false;
-  let escaped = false;
-  for (let i = 0; i < text.length; i += 1) {
-    const ch = text[i];
-    if (inString) {
-      out.push(ch);
-      if (escaped) escaped = false;
-      else if (ch === '\\') escaped = true;
-      else if (ch === '"') inString = false;
-      continue;
-    }
-    if (ch === '"') {
-      inString = true;
-      out.push(ch);
-      continue;
-    }
-    if (ch === '/' && text[i + 1] === '/') {
-      while (i < text.length && text[i] !== '\n') i += 1;
-      out.push('\n');
-      continue;
-    }
-    out.push(ch);
-  }
-  return JSON.parse(out.join(''));
+// Use the JSONC parser markdownlint-cli2 itself ships, rather than a
+// hand-rolled one. The hand-rolled version stripped `//` comments but not
+// `/* ... */`, so adding a block comment to the config would have failed this
+// test for the wrong reason.
+async function readJsonc(file) {
+  const { default: jsoncParse } = await import('markdownlint-cli2/parsers/jsonc');
+  return jsoncParse(fs.readFileSync(file, 'utf8'));
 }
 
-test('.markdownlint.jsonc only defers to .markdownlint.yaml', () => {
-  const config = readJsonc(jsoncPath);
+test('.markdownlint.jsonc only defers to .markdownlint.yaml', async () => {
+  const config = await readJsonc(jsoncPath);
   assert.deepEqual(
     Object.keys(config),
     ['extends'],
@@ -130,6 +109,8 @@ test('no second markdownlint config can override the yaml', () => {
     '.markdownlintrc',
     '.markdownlint.json',
     '.markdownlint.yml',
+    '.markdownlint.cjs',
+    '.markdownlint.mjs',
     '.markdownlint-cli2.jsonc',
     '.markdownlint-cli2.yaml',
     '.markdownlint-cli2.cjs',
@@ -141,5 +122,56 @@ test('no second markdownlint config can override the yaml', () => {
     [],
     'these root config files are auto-discovered ahead of the --config that ' +
       'lint-md.yml passes, so they would silently replace .markdownlint.yaml',
+  );
+});
+
+test('the local gate covers .markdown, which CI also lints', () => {
+  // lint-md.yml passes `files: .` to markdownlint-cli, and that CLI expands a
+  // directory to both *.md and *.markdown. Globbing only **/*.md left a
+  // .markdown file checked by CI and invisible locally. Measured on a fixture:
+  // markdownlint-cli on '.' reported 2 findings in sample.markdown;
+  // markdownlint-cli2 with '**/*.md' linted 0 files.
+  const args = require('node:child_process').spawnSync(
+    process.execPath,
+    [
+      '-e',
+      `import(${JSON.stringify(
+        require('node:url').pathToFileURL(
+          path.join(repoRoot, 'scripts', 'markdownlint-repo.mjs'),
+        ).href,
+      )}).then((m) => console.log(JSON.stringify(m.lintArgs({ root: ${JSON.stringify(repoRoot)} }))))`,
+    ],
+    { encoding: 'utf8' },
+  );
+  assert.equal(args.status, 0, args.stderr);
+  const parsed = JSON.parse(args.stdout);
+  assert.ok(parsed.includes('**/*.md'), 'the .md glob is missing');
+  assert.ok(
+    parsed.includes('**/*.markdown'),
+    'the .markdown glob is missing — CI lints those files and the local gate would not',
+  );
+});
+
+test('the local gate runs the cli through node, not the unix shim', () => {
+  // node_modules/.bin/markdownlint-cli2 is an extensionless shell script.
+  // Spawning it directly fails on Windows even when the package is installed.
+  const src = fs.readFileSync(
+    path.join(repoRoot, 'scripts', 'markdownlint-repo.mjs'),
+    'utf8',
+  );
+  assert.match(
+    src,
+    /spawnSync\(\s*process\.execPath/,
+    'the cli must be launched with process.execPath so it works off-Unix',
+  );
+  assert.doesNotMatch(
+    src,
+    /'\.bin'/,
+    'do not spawn node_modules/.bin shims directly',
+  );
+  assert.match(
+    src,
+    /result\.error/,
+    'a spawn failure must be reported, not exited on silently',
   );
 });
