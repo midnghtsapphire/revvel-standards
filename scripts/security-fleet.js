@@ -170,12 +170,106 @@ function scanSecretExfil(text, { source = 'text' } = {}) {
 // ---------------------------------------------------------------------------
 // @permit — permissions: vs what each job actually does (CLAUDE.md gotcha #3).
 // Heuristic and report-only: humans confirm before narrowing/widening scopes.
+//
+// Two things this detector got wrong, both found by checking its own output
+// against the workflows it flagged:
+//
+//   1. It read `github.rest.issues.*` as proof a job needs `issues: write`.
+//      On GitHub a pull request IS an issue: commenting on a PR, labelling it
+//      or closing it all go through the issues REST namespace, and they are
+//      authorised by `pull-requests: write`. docs-freshness-check.yml was
+//      reported as missing `issues: write` while holding `pull-requests:
+//      write` and demonstrably working in production. Those shared endpoints
+//      are now satisfied by EITHER scope; only opening a new issue
+//      (`rest.issues.create`, `gh issue create`) still requires `issues`.
+//
+//   2. It only ever read `run:` bodies and `with.script:`, so a step that is
+//      an action was invisible. agent-fallback.yml uses
+//      peter-evans/create-pull-request — which needs `pull-requests: write` —
+//      and was reported as holding that scope in excess. 118 of 165
+//      excess-permission findings sat on jobs with a non-benign `uses:` step.
+//
+// The second one is the important shape: "excess" was an assertion of absence
+// drawn from a scan that could not see the whole job. A detector must not
+// claim a permission is unused when it cannot read every step that might use
+// it. Known actions now contribute their scopes, and a job carrying an action
+// this table does not know reports `unverified-permission` instead of
+// `excess-permission` — a prompt to look, not a verdict.
+
+// Scopes that satisfy each detected operation. A need is met when ANY listed
+// scope is granted write.
 const SCOPE_SIGNALS = {
-  issues: /\bgh issue (create|comment|edit|close|reopen)\b|\brest\.issues\.(create|update|createComment|addLabels|removeLabel|setLabels)\b/,
-  'pull-requests': /\bgh pr (create|comment|edit|merge|review|close|ready)\b|\brest\.pulls\.(create|update|merge|createReview)\b/,
-  contents: /\bgit push\b|\bcreateOrUpdateFileContents\b|\bgh release create\b/,
-  actions: /\bgh workflow run\b|\bgh run (rerun|cancel)\b|\bcreateWorkflowDispatch\b|\breRunWorkflow\b/,
+  // Opening a new issue is the one issues-namespace call a PR token cannot make.
+  issues: {
+    signal: /\bgh issue create\b|\brest\.issues\.create\b(?!Comment)/,
+    satisfiedBy: ['issues'],
+  },
+  // Shared issue/PR endpoints: comments, labels, state. Either scope works,
+  // depending on whether the subject is an issue or a pull request — which is
+  // not decidable from the source, so both are accepted.
+  'issues-or-pulls': {
+    signal:
+      /\bgh issue (comment|edit|close|reopen)\b|\brest\.issues\.(update|createComment|updateComment|addLabels|removeLabel|setLabels)\b/,
+    satisfiedBy: ['issues', 'pull-requests'],
+  },
+  'pull-requests': {
+    signal:
+      /\bgh pr (create|comment|edit|merge|review|close|ready)\b|\brest\.pulls\.(create|update|merge|createReview)\b/,
+    satisfiedBy: ['pull-requests'],
+  },
+  contents: {
+    signal: /\bgit push\b|\bcreateOrUpdateFileContents\b|\bgh release create\b/,
+    satisfiedBy: ['contents'],
+  },
+  actions: {
+    signal:
+      /\bgh workflow run\b|\bgh run (rerun|cancel)\b|\bcreateWorkflowDispatch\b|\breRunWorkflow\b/,
+    satisfiedBy: ['actions'],
+  },
 };
+
+// Actions whose token scopes are known. Anything here contributes its scopes
+// as "used", so holding them is not excess.
+const ACTION_SCOPES = [
+  [/^peter-evans\/create-pull-request/, ['contents', 'pull-requests']],
+  [/^peter-evans\/create-or-update-comment/, ['issues', 'pull-requests']],
+  [/^peter-evans\/find-comment/, ['issues', 'pull-requests']],
+  [/^actions\/labeler/, ['pull-requests']],
+  [/^actions\/stale/, ['issues', 'pull-requests']],
+  [/^actions\/add-to-project/, ['issues', 'pull-requests']],
+  [/^actions\/create-release/, ['contents']],
+  [/^softprops\/action-gh-release/, ['contents']],
+  [/^stefanzweifel\/git-auto-commit-action/, ['contents']],
+  [/^github\/codeql-action/, ['actions', 'contents']],
+  [/^dependabot\//, ['pull-requests']],
+  [/^mshick\/add-pr-comment/, ['pull-requests']],
+  [/^thollander\/actions-comment-pull-request/, ['pull-requests']],
+];
+
+// Steps that cannot use an API scope no matter what the job holds. Anything
+// outside this list and ACTION_SCOPES makes the job unverifiable.
+const SCOPELESS_ACTIONS = [
+  /^actions\/checkout/,
+  /^actions\/upload-artifact/,
+  /^actions\/download-artifact/,
+  /^actions\/setup-/,
+  /^actions\/cache/,
+  /^step-security\/harden-runner/,
+];
+
+function matchesAny(patterns, value) {
+  return patterns.some((p) => p.test(value));
+}
+
+// github-script bodies are readable source, so a github-script step is not
+// opaque — its script is already folded into jobText().
+function isReadableStep(step) {
+  if (!step || typeof step !== 'object') return true;
+  if (typeof step.uses !== 'string') return true;
+  const uses = step.uses.replace(/^\.\//, '');
+  if (/^actions\/github-script/.test(uses)) return true;
+  return matchesAny(SCOPELESS_ACTIONS, uses);
+}
 
 function jobText(job) {
   const parts = [];
@@ -186,12 +280,40 @@ function jobText(job) {
   return parts.join('\n');
 }
 
+// Scopes the job's actions are known to need, and whether any step is opaque.
+function scopesFromSteps(job) {
+  const used = new Set();
+  let opaque = false;
+  for (const step of job.steps || []) {
+    if (!step || typeof step.uses !== 'string') continue;
+    const uses = step.uses.replace(/^\.\//, '');
+    const known = ACTION_SCOPES.find(([pattern]) => pattern.test(uses));
+    if (known) {
+      for (const scope of known[1]) used.add(scope);
+      continue;
+    }
+    if (!isReadableStep(step)) opaque = true;
+  }
+  return { used, opaque };
+}
+
 function auditPermissions(yamlText, file = 'workflow') {
   const findings = [];
   let doc;
   try {
     doc = YAML.parse(yamlText);
-  } catch (_) {
+  } catch (err) {
+    // Returning [] here reads as "this workflow is clean". It is not — it is
+    // unreadable, and a broken workflow is exactly when you want to be told.
+    // The same silent-skip cost us a guard earlier this session that passed
+    // while examining nothing.
+    findings.push({
+      member: 'permit',
+      rule: 'unparseable-workflow',
+      source: file,
+      job: null,
+      excerpt: `could not parse as YAML, so no permission was checked: ${err.message.split('\n')[0]}`,
+    });
     return findings;
   }
   if (!doc || typeof doc !== 'object' || !doc.jobs) return findings;
@@ -200,21 +322,51 @@ function auditPermissions(yamlText, file = 'workflow') {
     if (!job || typeof job !== 'object') continue;
     const effective = job.permissions !== undefined ? job.permissions : workflowPerms;
     const text = jobText(job);
-    for (const [scope, signal] of Object.entries(SCOPE_SIGNALS)) {
-      const needed = signal.test(text);
-      const granted =
-        effective && typeof effective === 'object' ? effective[scope] : undefined;
-      if (needed && effective !== undefined && granted !== 'write') {
+    const { used: actionScopes, opaque } = scopesFromSteps(job);
+    const granted = (scope) =>
+      effective && typeof effective === 'object' ? effective[scope] : undefined;
+
+    // Which scopes some detected operation could be drawing on.
+    const scopesInUse = new Set(actionScopes);
+    for (const { signal, satisfiedBy } of Object.values(SCOPE_SIGNALS)) {
+      if (signal.test(text)) for (const scope of satisfiedBy) scopesInUse.add(scope);
+    }
+
+    if (effective !== undefined) {
+      for (const [name, { signal, satisfiedBy }] of Object.entries(SCOPE_SIGNALS)) {
+        if (!signal.test(text)) continue;
+        if (satisfiedBy.some((scope) => granted(scope) === 'write')) continue;
         findings.push({
           member: 'permit',
           rule: 'missing-permission',
           source: file,
           job: jobId,
-          scope,
-          excerpt: `job uses ${scope}-write operations but permissions.${scope} is ${JSON.stringify(granted)}`,
+          scope: satisfiedBy.join('|'),
+          excerpt:
+            `job uses ${name}-write operations but none of ` +
+            `${satisfiedBy.map((s) => `permissions.${s}`).join(', ')} is write ` +
+            `(${satisfiedBy.map((s) => `${s}=${JSON.stringify(granted(s))}`).join(', ')})`,
         });
       }
-      if (!needed && granted === 'write' && scope !== 'contents') {
+
+      for (const scope of ['issues', 'pull-requests', 'actions']) {
+        if (granted(scope) !== 'write' || scopesInUse.has(scope)) continue;
+        if (opaque) {
+          // A step this detector cannot read might be the consumer. Say so
+          // rather than reporting an absence the scan cannot establish.
+          findings.push({
+            member: 'permit',
+            rule: 'unverified-permission',
+            source: file,
+            job: jobId,
+            scope,
+            excerpt:
+              `permissions.${scope}: write declared and no ${scope} operation ` +
+              'found in run:/github-script bodies, but this job runs an action ' +
+              'whose token scopes are unknown — verify by hand before narrowing',
+          });
+          continue;
+        }
         findings.push({
           member: 'permit',
           rule: 'excess-permission',
@@ -225,6 +377,7 @@ function auditPermissions(yamlText, file = 'workflow') {
         });
       }
     }
+
     if (effective === undefined) {
       findings.push({
         member: 'permit',

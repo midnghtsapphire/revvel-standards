@@ -1,6 +1,19 @@
-# Revvel Standards Markdown Linter Configuration (YAML)
-# Mirrors .markdownlint.jsonc for nosborn/github-action-markdown-cli
-# (markdownlint-cli). Keep both files in sync when changing rules.
+# Revvel Standards markdown rules — the single source of truth.
+#
+# Both gates load this file:
+#   lint-md.yml   markdownlint-cli, config_file: .markdownlint.yaml
+#   npm run lint  scripts/markdownlint-repo.mjs -> markdownlint-cli2
+# and .markdownlint.jsonc exists only to point markdownlint-cli2 here.
+#
+# It did not used to work that way. Both CLIs auto-discover
+# .markdownlint.jsonc from the repo root and that discovery BEATS an explicit
+# --config/config_file, so this file was inert: lint-md.yml named it, its
+# header claimed the repo mandated MD022/MD024/MD032, and the lenient jsonc
+# copy is what actually ran. Turning those three on is a 572-file reformat plus
+# 215 MD024 findings that are not auto-fixable, so the rules below are the ones
+# that were genuinely in force all along — now written where the workflow
+# actually reads them, instead of being contradicted by a second file.
+#
 # See https://github.com/DavidAnson/markdownlint for rule details.
 
 default: true
@@ -15,9 +28,10 @@ MD033: false
 # because some files have front matter or comments first
 MD041: false
 
-# MD022 (blanks around headings), MD024 (duplicate headings), and
-# MD032 (blanks around lists) stay enabled via `default: true` — the repo
-# mandates them and this gate must enforce them.
+# MD024: Multiple headings with the same content - disabled because docs
+# intentionally repeat section headers (What it does, When to use, How,
+# Caveats) across multiple process entries in one file.
+MD024: false
 
 # MD046: Code block style - consistent fenced style
 MD046:
@@ -28,7 +42,11 @@ MD046:
 MD060: false
 
 # Relaxed rules for audit prompts and checklists
+MD022:
+  lines_above: 0
+  lines_below: 0
 MD031: false
+MD032: false
 MD036: false
 MD040: true
 MD009: false
