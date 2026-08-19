@@ -25,9 +25,11 @@ jobs:
       - name: Validate issue exists
         id: validate
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
           script: |
-            const issueNumber = parseInt('${{ inputs.issue_number }}');
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER, 10);
             try {
               const { data: issue } = await github.rest.issues.get({
                 owner: context.repo.owner,
@@ -47,9 +49,11 @@ jobs:
         if: steps.validate.outputs.exists == 'true'
         id: get-labels
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
           script: |
-            const issueNumber = parseInt('${{ inputs.issue_number }}');
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER, 10);
             const { data: issue } = await github.rest.issues.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -62,9 +66,11 @@ jobs:
       - name: Remove self-heal labels
         if: steps.validate.outputs.exists == 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
           script: |
-            const issueNumber = parseInt('${{ inputs.issue_number }}');
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER, 10);
             const SELF_HEAL_LABELS = ['auto-fix', 'ralph-loop', 'scorecard'];
             
             for (const label of SELF_HEAL_LABELS) {
@@ -86,9 +92,11 @@ jobs:
       - name: Add self-heal labels back
         if: steps.validate.outputs.exists == 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
           script: |
-            const issueNumber = parseInt('${{ inputs.issue_number }}');
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER, 10);
             const SELF_HEAL_LABELS = ['auto-fix', 'ralph-loop', 'scorecard'];
             
             try {
@@ -125,10 +133,13 @@ jobs:
       - name: Post reset comment
         if: always() && steps.validate.outputs.exists == 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+          TRIGGER_SUCCESS: ${{ steps.trigger.outputs.success }}
         with:
           script: |
-            const issueNumber = parseInt('${{ inputs.issue_number }}');
-            const triggerSuccess = '${{ steps.trigger.outputs.success }}' === 'true';
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER, 10);
+            const triggerSuccess = process.env.TRIGGER_SUCCESS === 'true';
 
             if (triggerSuccess) {
               const resetComment = [
