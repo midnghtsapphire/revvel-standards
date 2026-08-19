@@ -289,6 +289,32 @@ The issue says "@why is this not autoprocessing please fix and do this WR" — l
 
 **Assessment:** ✅ All critical cron jobs are configured and active.
 
+### The gate on `main` must be able to fail
+
+`ci-error-prevention.yml` is the only workflow that runs the full `npm test`
+on a push to `main`, and it ran it as `npm test || true` — discarding the
+result. `main` could be red with no check anywhere saying so.
+
+Three regressions landed that way in one day, each green on its own PR
+because what it broke lived outside its diff:
+
+| PR | Damage | Found by |
+|----|--------|----------|
+| #17044 | `prioritize-stars.yml` unparseable; 13 `AGENTS.md` rows and a registry entry deleted | human, hours later |
+| #17687 | `AGENT_PR_TOKEN` fallback deleted | a guard from #17691 |
+| #17000 | 204 action pins dropped, 7 full-SHA | human, hours later |
+
+`|| true` is removed. `tests/main-gate-cannot-be-silenced.test.js` holds four
+properties: some workflow runs the suite; none discards its exit code; none
+marks it `continue-on-error` without consuming the result; and it runs on
+**push to main**, not only on pull requests — a PR-only gate cannot catch a
+regression whose cause lies outside the diff that introduced it.
+
+The `continue-on-error` rule is about whether the result is *consumed*, not
+about the keyword. `self-heal-pr.yml` uses it deliberately so a failure
+becomes a PR comment rather than hard-blocking that workflow, and the next
+step reads `steps.tests.outcome`. That is reporting, and it is allowed.
+
 ### Merge-gate automation must aggregate, not sample
 
 `ralph-loop.yml`'s `ralph-unblock` job is triggered by a single `check_suite`
@@ -586,3 +612,215 @@ for the simplified `secrets.X || secrets.Y`. Satisfying it would mean dropping
 the `AGENT_PR_TOKEN` fallback, which `CLAUDE.md` gotcha 3 makes load-bearing.
 Five other workflows fail that check for the same reason; it is a linter
 limitation, not a defect to fix by regressing the workflows.
+
+---
+
+## Update — August 18, 2026: transient API failures no longer abandon a PR in draft
+
+**`.github/workflows/ready-for-review.yml`**, job `promote-draft`, is the gate
+that flips a draft PR to Ready for Review once every external check has gone
+green. It polls `checks.listForRef` for up to eight minutes. Every Octokit call
+in the job was bare, so a single 502 from the API threw straight out of the poll
+loop and aborted the step — after the full wait, with CI green, and with nothing
+on the PR explaining why it stayed a draft. The request was never wrong; the
+same call had already succeeded on earlier iterations of that same loop.
+
+`CLAUDE.md` gotcha 2.
+
+Both calls in the job are now wrapped. The `markPullRequestReadyForReview`
+mutation one step later carried the identical defect, and wrapping only the poll
+would have fixed half of it: the mutation *is* the point of the job, so losing
+it to a blip discards the entire eight-minute wait for CI.
+
+The retry is deliberately narrow in both directions. It covers transient status
+(`429`, `500`, `502`, `503`, `504`) and network-level codes (`ETIMEDOUT`,
+`ECONNRESET`, `ENOTFOUND`, `EAI_AGAIN`). A `404`, `403` or `422` is an answer,
+not a blip — retrying it four times delays the true error by ~15 seconds and
+buries it under warnings about attempts that never had a chance, so those
+propagate on the first attempt. Attempts are bounded, so a genuine outage still
+ends the step rather than looping.
+
+**Why the helper is inlined twice instead of shared.** This workflow runs on
+`pull_request_target` and deliberately has no checkout step, so there is no repo
+file for `require` to reach. Adding one to share ~15 lines would mean checking
+out PR-controlled code in a privileged context — duplication is the cheaper
+trade, and the comment in each step says so.
+
+Regression coverage (`tests/ready-for-review-retries.test.js`) executes the real
+inline script out of the workflow YAML against a mocked Octokit, shadowing
+`setTimeout` so the 15s/30s poll waits collapse while the real control flow still
+runs. It is behavioural rather than textual on purpose: a regex can confirm the
+word `withRetry` appears, but only running it can confirm that a `404` fails fast.
+Verified against the pre-fix workflow — five of its six tests fail there. The
+sixth passes both before and after by design, because it guards the *over*-retry
+defect this change could introduce rather than the one it fixes.
+
+**Known documentation gap, not addressed here:** `CLAUDE.md` gotcha 2 instructs
+agents to "route through the shared `withRetry({ allowError: [...] })` helper",
+but no such helper exists in this repository — the name appears nowhere outside
+that sentence. `scripts/biome/gh.js` has an `allowError` option, but it wraps
+`fetch` rather than Octokit and is unreachable from a workflow with no checkout.
+The behaviour the gotcha describes is implemented here; reconciling the standard
+with what actually exists is worth its own change.
+
+---
+
+## Update — August 18, 2026: security-fleet filed every PR finding twice
+
+The `security-fleet` event lane derived its issue title from whichever webhook
+payload key happened to be populated:
+
+```js
+const subject = context.payload.issue?.number
+  ? `issue #${context.payload.issue.number}`
+  : context.payload.pull_request?.number
+    ? `PR #${context.payload.pull_request.number}`
+    : context.eventName;
+```
+
+A pull request **is** an issue to the webhook payload. An `issue_comment` event
+on a PR arrives with `payload.issue` set to that PR's number, while the
+`pull_request` event for the same PR sets `payload.pull_request` instead. One
+subject therefore produced two titles, and the dedup immediately below — an
+exact title match against open `security-fleet` issues — could never see across
+the pair.
+
+The lane fires on `issues`, `issue_comment` **and** `pull_request`, so any PR
+that receives a comment reliably triggers both shapes. This was not a rare race.
+Four pairs were open simultaneously:
+
+| source | pair |
+| --- | --- |
+| #17136 | #17546 / #17547 |
+| #17107 | #17551 / #17550 |
+| #17222 | #17564 / #17565 |
+| #17225 | #17666 / #17642 |
+
+Issue and PR numbers come from one sequence per repository, so the number alone
+identifies the subject. Titles are now `[security-fleet] finding on #N`, which
+both payload shapes produce identically.
+
+Regression coverage drives the real inline script from the workflow YAML under
+both payload shapes, in both arrival orders, and requires one issue rather than
+two. A fourth test requires two *different* subjects to still produce two
+issues — collapsing every finding onto a single title would satisfy the dedup
+tests while silently dropping every finding after the first. Verified against
+the pre-fix workflow: three of the four fail there.
+
+**Note on the existing issues:** the eight above were closed during backlog
+triage, so the changed title format has nothing stale to collide with.
+
+**Not addressed here — the `@permit` detector is unreliable.** Its weekly sweep
+(#17154) reports 189 findings, and both of its actionable "under-permission"
+findings are false positives, by two different mechanisms:
+
+- `docs-freshness-check.yml` is flagged as using issues-write without
+  `permissions.issues`. It calls `github.rest.issues.createComment` on a *pull
+  request*; PR comments go through the issues endpoint but are authorised by
+  `pull-requests: write`, which is declared. The workflow demonstrably works —
+  it posts its sticky comment on every PR.
+- `agent-dispatcher.yml` is flagged as using actions-write operations. It
+  dispatches nothing; the detector matched the literal string
+  `workflow_dispatch`, which appears there as a *trigger* and inside a string
+  comparison.
+
+Acting on the remaining ~187 "declared but unused" findings from an instrument
+with that error rate would mean stripping permissions from workflows that need
+them. The detector wants fixing before the sweep is worked.
+## Update — August 18, 2026: `agent-fallback.yml` no longer files blank monitoring issues
+
+Thirteen open issues looked like this:
+
+```text
+title: [AUTO-FALLBACK] OpenRouter →  (#)
+body:  OpenRouter was unavailable or failed. Automatically failed over to .
+       **Original task:** #
+       **Agent used:**
+       **Success:**
+       No action required — fallback is working as designed.
+```
+
+Every interpolation empty, and the body telling the reader there is nothing to
+do. They were open, permanent, and carried `priority-p1`.
+
+The cause was the step condition:
+
+```yaml
+if: steps.result.outputs.agent != 'openrouter' && steps.result.outputs.agent != 'none'
+```
+
+It excludes the two known non-fallback values and nothing else, so an **empty**
+agent satisfies both halves and the step ran with no data at all. The guard
+enumerated what to skip instead of requiring what it needed, so "no agent" read
+as "some agent other than those two".
+
+The condition now requires a non-empty agent. The script additionally refuses to
+file when agent or original-issue is missing, reporting through `core.warning`
+and the step summary instead. Both halves are load-bearing: if the result step
+stops producing outputs again, the condition alone would skip silently and teach
+us nothing, while a blank issue teaches even less and is permanent.
+
+Regression coverage executes the real inline script from the workflow YAML with
+a mocked Octokit and pins the condition **and** the script body, since either
+alone leaves the other free to regress. It also covers whitespace-only metadata,
+because `${{ }}` interpolation of a missing output can yield blanks rather than
+an empty string. Verified against the pre-fix workflow: four of the five tests
+fail there. The fifth — a real fallback event still files a populated issue —
+passes before and after by design, guarding the over-blocking defect this change
+could introduce, which would silently disable the monitoring the workflow exists
+to provide.
+
+The thirteen existing issues were closed during backlog triage (#16002 canonical,
+twelve marked duplicate of it).
+
+**Loose end, not fixed here:** the `priority-p1` label does not come from this
+workflow, which applies only `auto-fallback`, `agent-monitoring` and
+`openrouter-fallback`. Something else escalates these to p1. Worth finding,
+since it is what made a self-declared no-action-required event look urgent.
+## Update — August 18, 2026: ChaosMender's PR gate refuses to pass on an empty scope
+
+On a pull request, **`.github/workflows/chaosmender.yml`** runs
+`scripts/chaosmender.js --changed-only`, which filters whole-repo findings down
+to the files the diff touched:
+
+```js
+findings = findings.filter((f) => changed.has(f.file));
+```
+
+The scoping itself works — verified in both directions. The defect was what
+happened when `changed` arrived empty: every finding was filtered away, the scan
+printed `✅ ChaosMender: no known error patterns detected.`, and it exited 0.
+
+That is not a clean PR. The pull-request trigger is path-filtered to
+`.github/workflows/**`, `scripts/**` and `config/error-ledger.json`, so a
+`pull_request` run always has at least one file in scope. An empty scope can
+only mean the list never arrived — the compute step was skipped, its
+`$GITHUB_OUTPUT` heredoc broke, the base SHA was unreachable, or the env var was
+renamed. Any of those turned the gate into a check that cannot fail, reporting
+success while inspecting nothing (`CLAUDE.md` gotcha 6 — the same shape as the
+`npm test || true` defect fixed in #17704).
+
+`--changed-only` with an empty scope now exits 1 and says why. The whole-repo
+and scheduled paths are unchanged.
+
+**The second silent-vacuum mode is now pinned too.** The filter compares scanner
+output against `git diff --name-only` output, so the two must agree on path
+format. If a scanner ever emitted a basename or an absolute path, every key
+would miss, no finding could be attributed to any diff, and the gate would pass
+everything — again with no error anywhere, because "0 findings" reads as
+success. `tests/chaosmender-scope-is-real.test.js` asserts that every reported
+path is repo-relative, forward-slashed, free of a `./` prefix, and resolves from
+the repo root.
+
+Coverage runs the real CLI rather than its exports, so arg parsing, env parsing
+and the filter are exercised as one unit — that seam is exactly where a rename
+breaks things. Verified by planting all three defects: reverting the empty-scope
+guard, changing a scanner to emit `path.basename`, and deleting
+`CHAOSMENDER_CHANGED_FILES` from the workflow. Each is caught by the guard
+written for it.
+
+**Not addressed here:** the 35 `LABEL-RACE-001` findings the whole-repo scan
+reports (unguarded `removeLabel` calls, `CLAUDE.md` gotcha 1) are real and
+remain outstanding. They are a large mechanical change across many workflows and
+are deliberately left for their own batched work rather than widened into this
+diff.

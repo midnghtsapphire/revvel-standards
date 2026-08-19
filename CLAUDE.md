@@ -55,6 +55,38 @@ catalog with PR citations.
    (`@v3`, `@main`) break every PR when upstream ships a breaking change or
    archives the repo. Add Dependabot for `github-actions`.
 
+## Found a bug? Open a PR for it — even if it isn't yours
+
+Any defect you find while doing something else gets its own PR. Do not leave
+it in a comment, a summary, or a follow-up list where it dies with the
+session. Three regressions reached `main` in a single day because the thing
+that would have caught them was known and unfixed.
+
+**If the fix must land before the work you are currently doing, mark it as a
+blocker:**
+
+1. Keep the conventional-commit type first, then the marker:
+   `fix(ci): 🔴 BLOCKER — <what is broken>`. The type must lead so the title
+   still satisfies the conventional-commit rule below; the emoji cannot lead,
+   because that rule and this one would otherwise contradict each other.
+   GitHub renders no colour in titles, so the emoji plus the label is the
+   strongest signal the platform actually supports.
+2. Apply `priority:p0` — the canonical name in `config/labels-allowlist.yml`.
+   (`priority-p0` is an accepted alias there, but prefer the canonical form.
+   Note neither is currently defined in `.github/labels.yml`, the source
+   `sync-labels.yml` syncs from, so a sync could drop it; adding the priority
+   axis to that file is worth doing separately.)
+3. Open the body with a **Blocks:** list naming what is waiting on it, by PR
+   number or by description if the dependent work is not opened yet.
+4. Say plainly in one line why it must go first.
+
+The dependent PR then references the blocker in its own body, as
+`Blocked by: #N`, so the ordering survives in both directions and does not
+depend on anyone remembering a conversation.
+
+Ordinary (non-blocking) bug PRs need none of that — just open them, one fix
+per PR, with a regression test.
+
 ## Green-main rules (short form)
 
 - Every fix ships with a regression test that would have caught the
