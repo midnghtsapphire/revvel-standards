@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-19T08:10:18.705Z",
+  "generated_at": "2026-08-19T09:11:04.085Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
@@ -15,24 +15,24 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 32231175955,
+            "id": 32236230517,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32231175955",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32236230517",
             "conclusion": "failure"
           },
           {
-            "id": 32226984253,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32226984253",
+            "id": 32231613197,
+            "name": "Vine → Marketplace Automation",
+            "path": ".github/workflows/vine-to-marketplace.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32231613197",
             "conclusion": "failure"
           },
           {
-            "id": 32223410238,
-            "name": "WR-4600 Watchtower",
-            "path": ".github/workflows/watchtower.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32223410238",
+            "id": 32231395776,
+            "name": "Ralph Loop — Self-Healing CI",
+            "path": ".github/workflows/ralph-loop.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32231395776",
             "conclusion": "failure"
           }
         ],
@@ -58,10 +58,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32226436636"
+        "last_run": null
       }
     },
     "sheaf": {
