@@ -2,7 +2,12 @@ name: WR PR Creation
 # quiet-mode 2026-07-25 (owner request): automatic triggers disabled;
 # run manually via workflow_dispatch if needed.
 on:
-  workflow_dispatch: null
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to create a PR for"
+        required: true
+        type: string
 
 permissions:
   contents: write

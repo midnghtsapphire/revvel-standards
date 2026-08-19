@@ -104,45 +104,87 @@ jobs:
               throw error;
             }
 
-      - name: Post reset comment
-        if: steps.validate.outputs.exists == 'true'
-        uses: actions/github-script@v9.0.0
-        with:
-          script: |
-            const issueNumber = parseInt('${{ inputs.issue_number }}');
-            const resetComment = [
-              '## 🔄 Self-Heal Issue Reset',
-              '',
-              'This issue has been reset for reprocessing.',
-              '',
-              '**Actions taken:**',
-              '- Removed self-heal labels: `auto-fix`, `ralph-loop`, `scorecard`',
-              '- Re-added self-heal labels',
-              '- Triggered OpenRouter assignee workflow',
-              '',
-              'The Ralph Loop will now re-evaluate and attempt to fix this issue.',
-              '',
-              `_Reset by \`reset-self-heal-issue\` workflow — ${new Date().toISOString()}_`,
-            ].join('\n');
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
-              body: resetComment,
-            });
-            console.log('Posted reset comment');
-
       - name: Trigger OpenRouter Assignee workflow
+        id: trigger
         env:
           GH_TOKEN: ${{ github.token }}
         if: steps.validate.outputs.exists == 'true'
         run: |
           echo "Triggering openrouter-assignee workflow..."
-          gh workflow run openrouter-assignee.yml \
+          if gh workflow run openrouter-assignee.yml \
             --repo ${{ github.repository }} \
-            --field dry_run=false
-          echo "✅ OpenRouter assignee workflow triggered"
+            --field dry_run=false \
+            --field issue_number=${{ inputs.issue_number }}; then
+            echo "success=true" >> "$GITHUB_OUTPUT"
+            echo "✅ OpenRouter assignee workflow triggered"
+          else
+            echo "success=false" >> "$GITHUB_OUTPUT"
+            echo "❌ Failed to trigger openrouter-assignee workflow"
+          fi
+
+      - name: Post reset comment
+        if: always() && steps.validate.outputs.exists == 'true'
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const issueNumber = parseInt('${{ inputs.issue_number }}');
+            const triggerSuccess = '${{ steps.trigger.outputs.success }}' === 'true';
+
+            if (triggerSuccess) {
+              const resetComment = [
+                '## 🔄 Self-Heal Issue Reset',
+                '',
+                'This issue has been reset for reprocessing.',
+                '',
+                '**Actions taken:**',
+                '- Removed self-heal labels: `auto-fix`, `ralph-loop`, `scorecard`',
+                '- Re-added self-heal labels',
+                '- Triggered OpenRouter assignee workflow for this specific issue',
+                '',
+                'The Ralph Loop will now re-evaluate and attempt to fix this issue.',
+                '',
+                `_Reset by \`reset-self-heal-issue\` workflow — ${new Date().toISOString()}_`,
+              ].join('\n');
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: resetComment,
+              });
+              console.log('Posted success reset comment');
+            } else {
+              const errorComment = [
+                '## ❌ Self-Heal Issue Reset Failed',
+                '',
+                'The reset workflow failed to dispatch the OpenRouter assignee workflow.',
+                '',
+                '**Actions taken:**',
+                '- Removed self-heal labels: `auto-fix`, `ralph-loop`, `scorecard`',
+                '- Re-added self-heal labels',
+                '- ⚠️ **Failed** to trigger OpenRouter assignee workflow',
+                '',
+                'Adding `needs-human` label for manual inspection.',
+                '',
+                `_Reset by \`reset-self-heal-issue\` workflow — ${new Date().toISOString()}_`,
+              ].join('\n');
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: errorComment,
+              });
+
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['needs-human'],
+              });
+              console.log('Posted error comment and added needs-human label');
+              core.setFailed('Failed to trigger openrouter-assignee.yml');
+            }
 
       - name: Summary
         if: steps.validate.outputs.exists == 'true'
