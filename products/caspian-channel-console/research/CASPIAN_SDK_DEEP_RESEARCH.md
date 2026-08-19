@@ -16,8 +16,8 @@
 | License | AGPL-3.0 (GitHub license metadata) | observed |
 | Primary language | Python | observed |
 | Secondary SDK | TypeScript (`caspian-sdk` on npm) | observed |
-| Homepage | https://trycaspianai.com | observed |
-| Gateway | https://api.trycaspianai.com | observed |
+| Homepage | <https://trycaspianai.com> | observed |
+| Gateway | <https://api.trycaspianai.com> | observed |
 | Created | 2026-07-20 | observed |
 | Topics | agent-communication, slack, discord, telegram, whatsapp, langchain, … | observed |
 
