@@ -1,19 +1,26 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-19T07:16:29.112Z",
+  "generated_at": "2026-08-19T08:10:18.705Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 32231175955,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32231175955",
+            "conclusion": "failure"
+          },
           {
             "id": 32226984253,
             "name": "Hourly Star Growth & Prioritization Engine",
@@ -26,20 +33,6 @@
             "name": "WR-4600 Watchtower",
             "path": ".github/workflows/watchtower.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32223410238",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32222343396,
-            "name": "App Artifact Audit",
-            "path": ".github/workflows/app-artifact-audit.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32222343396",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32222071016,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32222071016",
             "conclusion": "failure"
           }
         ],
