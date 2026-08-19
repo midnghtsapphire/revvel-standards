@@ -1,19 +1,33 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-19T03:18:13.159Z",
+  "generated_at": "2026-08-19T04:13:56.374Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "11/100 recent runs failed; 0 stuck item(s)",
+      "summary": "8/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 11,
+        "failed_runs": 8,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 32214909830,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32214909830",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32213860105,
+            "name": "Push on main",
+            "path": "dynamic/github-code-scanning/codeql",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32213860105",
+            "conclusion": "failure"
+          },
           {
             "id": 32211613095,
             "name": "Hourly Star Growth & Prioritization Engine",
@@ -54,34 +68,6 @@
             "name": "npm_and_yarn in /docs/Governance-ape-ci-errors, /products/bnat-sheaf-observatory, /products/graphify-evaluator, /products/greenfield-ui-lab, /products/hvac-calc-service, /products/life-insurance-lead-saas/build, /products/openmythos, /products/pplx-api-skills, /products/red-light-therapy-dosage-calculator, /products/revvel-skill-runner/build, /products/ugc-review-generator, /products/wr-title-studio, /reesereviews/vine-marketplace for brace-expansion, brace-expansion, brace-expansion, deepmerge-ts, fast-...",
             "path": "dynamic/dependabot/dependabot-updates",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207106183",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207105927,
-            "name": "npm_and_yarn in /products/life-insurance-lead-engine/build for extract-zip, postcss, postcss, qs, uuid - Update #1531802342",
-            "path": "dynamic/dependabot/dependabot-updates",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207105927",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207105459,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207105459",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207105015,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207105015",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207064413,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207064413",
             "conclusion": "failure"
           }
         ],
