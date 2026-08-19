@@ -1,25 +1,27 @@
 name: RecurseML — Autonomous Code Review
 
-# ── CUT 2026-07-08 (D007) ─────────────────────────────────────────────────────
-# RecurseML has been removed from the active review fleet. Zero unique catches in
-# the 50-PR sample (RECURSE_ML_API_KEY was absent → no results posted). The
-# OpenRouter lane (ai-pr-review-openrouter.yml) covers the same signal.
-# Auto-triggers commented out; kept for on-demand / historical reference.
-# See: DECISIONS.md D007, docs/TOOL_COST_INDEX.md, wr/issues/issue-15517-*.md
+# ── RESTORED 2026-08-19 (D014, reverses D007) ─────────────────────────────────
+# CUT 2026-07-08 by D007 on the rationale "RECURSE_ML_API_KEY absent → no results
+# posted; zero unique catches". That measured THIS workflow lane, which without
+# the secret could not post anything by construction. The RecurseML GitHub App
+# posts its `recurseml/analysis` check independently of this file and never
+# needed that secret — it stayed installed and kept reporting through the whole
+# cut, so the 50-PR sample never covered the App's real output. Two delivery
+# mechanisms were conflated and the measured one was not the running one.
+# Auto-triggers restored below. The scan step still no-ops safely (exit 0) when
+# the key is absent, so this is safe regardless of secret state.
+# See: DECISIONS.md D014 (and D007 for the original cut).
 # ──────────────────────────────────────────────────────────────────────────────
 
 on:
-  # Auto-triggers are disabled (D007). Keep workflow_dispatch for on-demand runs.
-  # Previous pull_request + protected-branch push triggers are preserved below as
-  # comments for easy re-enable if needed.
-  # See also: DECISIONS.md D007
-  # pull_request:
-  #   types: [opened, synchronize, reopened]
-  # push:
-  #   branches:
-  #     - main
-  #     - release/**
-  #     - hotfix/**
+  # Restored by D014 — these are the exact triggers D007 commented out.
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+      - release/**
+      - hotfix/**
   workflow_dispatch:
     inputs:
       target_branch:
