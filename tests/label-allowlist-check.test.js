@@ -94,3 +94,67 @@ test('strict checker still rejects truly unknown labels', () => {
   assert.equal(result.status, 1);
   assert.match(result.stderr, /UNKNOWN labels/);
 });
+
+/**
+ * Regression for the WR-PR governance gate.
+ *
+ * `wr-pr-creation.yml` copies `jules`, `research-engine` and every
+ * `research:*` lane from the WR issue onto the WR PR. `pr-governance-checks.yml`
+ * then runs `label-allowlist-check.mjs --strict` over that PR's labels with no
+ * `|| true`, so each of those unallowlisted names failed the gate the moment
+ * the PR was opened — every WR PR was born red.
+ */
+test('strict checker accepts the label set wr-pr-creation.yml puts on a WR PR', () => {
+  const labels = [
+    'weekly-research',
+    'work-request',
+    'deep-research',
+    'openrouter',
+    'role:orchestrator',
+    'jules',
+    'bito-ai',
+    'awaiting-review',
+    'wr:in-progress',
+    'research-engine',
+    'research:marketing',
+    'research:seo',
+    'research:competitors',
+    'research:chatter',
+    'research:facts',
+    'research:technical',
+    'research:revenue',
+    'research:reviewer',
+    'research:repo-web',
+    'research:complete',
+    'research:blocked',
+    'research:review-needed',
+  ].join(',');
+  const result = runChecker(['--strict'], { LABELS: labels });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+});
+
+test('research: lanes resolve by prefix, so a brand-new lane cannot re-break the gate', () => {
+  const result = runChecker(['--strict', 'research:some-lane-invented-tomorrow']);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /research:some-lane-invented-tomorrow → research \(research: prefix\)/);
+});
+
+test('research:blocked and research:review-needed keep their distinct meaning', () => {
+  const blocked = runChecker(['--strict', 'research:blocked']);
+  assert.equal(blocked.status, 0, blocked.stderr || blocked.stdout);
+  assert.match(blocked.stdout, /research:blocked → blocked/);
+
+  const review = runChecker(['--strict', 'research:review-needed']);
+  assert.equal(review.status, 0, review.stderr || review.stdout);
+  assert.match(review.stdout, /research:review-needed → in-review/);
+});
+
+test('the allowlist fix adds no first-class labels (max_labels_total untouched)', () => {
+  const cfg = yaml.parse(fs.readFileSync(ALLOWLIST_PATH, 'utf8'));
+  const names = cfg.labels.map((l) => (typeof l === 'string' ? l : l.name));
+  assert.equal(cfg.max_labels_total, 80);
+  assert.ok(
+    names.length <= cfg.max_labels_total,
+    `allowlist grew to ${names.length}, over the ${cfg.max_labels_total} budget`,
+  );
+});

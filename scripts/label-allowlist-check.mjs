@@ -116,6 +116,21 @@ function main() {
       mapped.push(`${raw} → ${aliases[raw]}`);
       continue;
     }
+    // Fleet bots mint research:* lanes dynamically. wr-pr-creation.yml
+    // propagates every `research:*` label from the WR issue onto the WR PR
+    // (`label.startsWith('research:')`), so the lane set is open-ended and
+    // cannot be enumerated as fixed aliases without breaking again on the next
+    // lane. Resolve by prefix, same as status:* below.
+    if (raw.startsWith("research:")) {
+      const s = raw.slice("research:".length).toLowerCase();
+      let target = "research";
+      if (s.includes("block")) target = "blocked";
+      else if (s.includes("review")) target = "in-review";
+      if (allowed.has(target)) {
+        mapped.push(`${raw} → ${target} (research: prefix)`);
+        continue;
+      }
+    }
     // Fleet bots mint status:* ephemera; map to lifecycle/check labels.
     if (raw.startsWith("status:")) {
       const s = raw.slice("status:".length).toLowerCase();
