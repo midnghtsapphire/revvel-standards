@@ -148,7 +148,7 @@ re-trigger the detector.
 2. ✅ `panda-ops.yml` — PandaOps integration
 3. ✅ `proposal-prosecution.yml` — Proposal handling
 4. ✅ `research-module.yml` — Research automation
-5. ✅ `recurse-ml.yml` — RecurseML integration
+5. ✅ `recurse-ml.yml` — RecurseML integration. Auto-triggers cut 2026-07-08 (D007), **restored 2026-08-19 (D014)** — D007 measured this workflow lane while the RecurseML *GitHub App* was the mechanism actually running and reporting. ⚠️ The lane is enabled but currently **inert**: `RECURSE_ML_API_KEY` is not set, so the scan step no-ops (`exit 0`) instead of scanning. Set the secret to make it live.
 6. ✅ `run-human-testing-api.yml` — Human testing API
 7. ✅ `ship-status-audit.yml` — Ship status tracking
 8. ✅ `project-board-sync.yml` — Project board automation
