@@ -64,4 +64,3 @@ Model-lane credit/rate exhaustion is **not** a code-change path. `config/routing
 - [x] Classification table matches observed error mix
 - [x] Ledger write on every triage verified
 - [x] 402/429 failover to keyless lane tested (`tests/runtime-gateway-triage.test.js`)
-
