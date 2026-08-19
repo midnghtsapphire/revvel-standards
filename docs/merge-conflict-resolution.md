@@ -47,7 +47,7 @@ no two bots race on the same file.
 
 Every hour lost to merge conflicts is an hour not spent shipping Polar.sh funding
 integrations and OSINT tooling. This policy protects the $10M trajectory.
-# Merge Conflict Resolution Guide
+## Merge Conflict Resolution Guide
 
 > Part of the **$10k → $10M in 3 years** operational playbook.
 
@@ -72,7 +72,7 @@ funding, OSINT tools, automated product pipeline) can ship continuously.
 
 ---
 
-## 1. Priorities (in order)
+### 1. Priorities (in order)
 
 1. **Revenue path first** — anything touching `polar/`, `funding/`, or the
    automated product pipeline is highest priority.
@@ -85,7 +85,7 @@ funding, OSINT tools, automated product pipeline) can ship continuously.
 
 ---
 
-## 2. Standard resolution workflow (human lane only)
+### 2. Standard resolution workflow (human lane only)
 
 Before doing anything manually, confirm the conflict actually reached the human
 lane: `conflict-helper.yml` runs the mechanical auto-resolver on every
@@ -117,7 +117,7 @@ avoid rewriting collaborators' history.
 
 ---
 
-## 3. Handling reviewer bots and personas
+### 3. Handling reviewer bots and personas
 
 The repository receives comments from automated and human reviewers. This guide
 does not change GitHub branch protections, required checks, or required-review
@@ -131,7 +131,7 @@ Practical operator rule:
 
 ---
 
-## 4. Preventing future merge issues
+### 4. Preventing future merge issues
 
 - Keep PRs small (< 400 lines changed where possible).
 - Rebase daily while a PR is open.
@@ -141,7 +141,7 @@ Practical operator rule:
 
 ---
 
-## 5. Escalation
+### 5. Escalation
 
 If a conflict cannot be resolved safely (e.g. two features touched the same
 revenue-critical module in incompatible ways):

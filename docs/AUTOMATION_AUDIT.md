@@ -824,3 +824,197 @@ reports (unguarded `removeLabel` calls, `CLAUDE.md` gotcha 1) are real and
 remain outstanding. They are a large mechanical change across many workflows and
 are deliberately left for their own batched work rather than widened into this
 diff.
+
+---
+
+## Update — August 18, 2026: two workflows opened PRs claiming to close issues they never worked on
+
+**`.github/workflows/jules-coding-agent.yml`** fired on any `issue_comment`
+containing `/jules`. Its agent step was:
+
+```yaml
+run: |
+  echo "Running Jules coding agent for issue #..."
+  # Agent logic would go here
+```
+
+It then wrote `.jules/issue-N.md` containing a single timestamp line, committed
+it as `chore(jules): stub for #N`, opened a PR whose body read `Closes #N`, and
+added `wr:pr-open` to the issue. Merging one of those would have auto-closed a
+real issue having changed nothing. A second, duplicate PR-creating path in the
+same job used `git add -A` and swallowed every failure with `|| true`.
+
+It had run: `jules/issue-17456` and `jules/issue-17537` remain on the remote,
+alongside `jules/issue-` — a branch whose name carries an empty slot, because
+`inputs.issue_number` was interpolated without a guard. That is the same
+empty-interpolation defect as the blank `[AUTO-FALLBACK]` issues (#17710).
+
+No stub PR was ever merged — no `.jules/` files reached `main` — so no issue was
+falsely auto-closed. The two stub branches can be deleted.
+
+**`.github/workflows/patch-agent.yml` had the identical body**, and was found by
+the guard written for the first one rather than by reading it. It called no
+agent of any kind — no action, no API, no script — and its entire contribution
+was `.patch-agent/issue-N.md` containing a timestamp, committed as `scaffold
+changes for #N` and shipped as a PR saying `Closes #N`. It was reachable only by
+`workflow_dispatch`, so it never fired on its own and left no debris. That is
+luck rather than design.
+
+Both are now RVS-AGENT-001 stubs: header comment, `workflow_dispatch` only,
+`contents: read`, and every job `if: false`. Real Jules runs already live in
+`jules-invoke.yml` via `BeksOmega/jules-action@v1.0.0`, so nothing is lost.
+
+`tests/no-workflow-fakes-closing-issues.test.js` guards the **shape**, not the
+filenames, which is why it found the second instance:
+
+- no live workflow step may open a PR whose body claims `Closes #N`
+- none may commit something its own message calls a stub
+- none may build a git ref from an input with no non-empty guard
+- `jules-coding-agent.yml` specifically may not regain an `issue_comment` trigger
+
+**A note on the fourth guard.** Its first version matched only direct
+interpolation next to `git checkout -b`, and the real code assigned
+`BRANCH="jules/issue-${{ inputs.issue_number }}"` first and used `"$BRANCH"`
+after — so the guard did not fire on the very file it cites. Caught by restoring
+the original and watching which assertions failed. It now requires the two facts
+in the same step (an input is interpolated, and the step creates or pushes a
+ref) rather than requiring them adjacent. A guard that cannot catch its own
+example is the defect this document keeps recording, and it is just as easy to
+write into a test as into a workflow.
+
+This is the fourth and fifth instance of the same family recorded here, after
+`npm test || true` (#17704), ChaosMender's empty scope (#17708), and the blank
+`[AUTO-FALLBACK]` issues (#17710): an artifact that reports success without
+doing the work.
+## Update — August 18, 2026: template injection closed on every attacker-supplied value
+
+`${{ }}` is template substitution performed **before** the script runs. The
+surrounding quotes are part of the substituted output, not a boundary the
+expansion respects, so a value containing a quote closes the string literal and
+the remainder executes. This is true in `run:` (bash) and in `github-script`
+(JavaScript) alike — being inside a string literal is what makes the pattern
+exploitable, not what prevents it.
+
+zizmor alert 3380 caught one instance in `auto-branch-update.yml`. The
+`security-fleet` `@exprwatch` sweep (#17644) then reported 33, of which 16
+carried values an actor chooses:
+
+| expression | why it is attacker-supplied |
+| --- | --- |
+| `inputs.error_message`, `inputs.task`, `inputs.url`, `inputs.repo`, `inputs.channel`, `inputs.target_state`, `inputs.required_agents` | free text on a `workflow_dispatch` |
+| `inputs.issue_number` | declared `string` in several workflows, not `number` |
+| `join(github.event.*.labels.*.name, …)` | label names, settable by anyone who can label |
+
+All 16 now arrive through the step's `env:` and are read as `$VAR` in shell or
+`process.env.VAR` in github-script, across ten workflows. The `@exprwatch` count
+drops from 33 to 17, and the attacker-influenceable subset from 16 to zero.
+
+The remaining 17 are deliberately left: `repository.default_branch`,
+`pull_request.base.ref`, `head.sha`, `github.event.before` and similar are
+server-controlled, and `inputs.x == 'y'` is evaluated by Actions to a boolean
+before the shell sees it, so it cannot carry a payload.
+
+**The sweep undercounted.** `@exprwatch` matches `github.event.inputs.*`; the
+bare `inputs.*` form is the same value in a `workflow_dispatch` context and was
+not counted. `tests/no-untrusted-expression-in-run.test.js` catches both, and
+sees 38 further instances across `auto-error-handler.yml`,
+`reset-self-heal-issue.yml`, `fork-audit-bot.yml`, `gumloop-pdf-pipeline.yml`
+and others. Fixing all of them in one change would produce a diff nobody can
+review, so they are recorded in a `KNOWN_REMAINING` **ratchet** — a list that may
+only shrink, with a guard asserting that an entry which has since been fixed
+must be deleted rather than left holding a slot open. That is the same shape as
+the `DORMANT` list in `tests/workflow-files-are-discoverable.test.js`, and for
+the same reason: a list that outlives its problem quietly becomes the ignore
+list it was written not to be.
+
+**One existing test had to change, and the reason is worth recording.**
+`tests/ci-error-prevention.test.js` asserted that the `transition-state` step's
+script body contains the literal string `github.event.inputs.target_state`. That
+assertion checks the *mechanism*, not the property it cares about — so the safe
+form failed it, and the test as written argued for the defect it exists to
+prevent. It now asserts that the step still *consumes* each dispatch input,
+whether directly or via `env:` plus `process.env`. Verified it still fails when
+the `env:` entry is removed, so it was not weakened into a tautology.
+
+**Two mistakes made during this change, both caught before pushing.** The
+mechanical pass wrote shell syntax (`${VAR}`) into two github-script blocks,
+where it is invalid JavaScript — `ci-error-prevention.test.js` caught one, and an
+audit of every edit caught the other, which no test covered. A follow-up blind
+replace then produced `String('process.env.ISSUE_NUMBER')` — a string literal
+containing the text rather than the variable read. The lesson is that a
+find-and-replace across `run:` and `script:` blocks is not one transformation:
+the two have different interpreters, and the same expression needs a different
+form in each.
+
+### Correction — agent-dispatcher.yml is blocked on the linter, not fixed
+
+`agent-dispatcher.yml` interpolates `join(github.event.issue.labels.*.name, ',')`
+into a `run:` block. Label names are free text and settable by anyone who can
+label an issue, so this is a genuine instance — but it is **not fixed here**, and
+the reason is worth recording because four attempts failed in four different
+ways.
+
+Every placement of the value fails `Lint .github/workflows/agent-dispatcher.yml`:
+
+| attempt | result |
+| --- | --- |
+| step-level `env:` + `$ISSUE_LABELS` in `run:` | two errors, `Input "agent" is not declared` |
+| also route `inputs.agent` through `env:` | one error, now on the `env:` line itself |
+| revert that, keep step-level `env:` | back to two errors |
+| move `ISSUE_LABELS` to job-level `env:` | still failing |
+
+Two facts are established. `rethab/actions-lint` cannot resolve the workflow's
+`choice`-typed `agent` input — it reports an input that is plainly declared as
+undeclared, while a `number`-typed input in the same file resolves. And the
+reported position, `Line 60, Col 14`, is the `run: |` pipe itself, so the tool
+attributes run-body findings to the block start and begins checking that body
+once an `env:` exists nearby. The expression it objects to has been in that file
+since long before this change.
+
+So the value cannot be moved anywhere without turning a pre-existing, valid
+expression into a red check. The entry stays on the `KNOWN_REMAINING` ratchet
+with this explanation attached. Fixing it needs the linter replaced, or the file
+added to `.github/actions-lint-exclude.txt` — an owner decision about tooling,
+not something to force through inside a security batch.
+
+**The process lesson is mine.** The error column pointed at the answer on the
+very first failure and I theorised twice before reading it. Three corrections
+were pushed to one file that ends this change untouched. Read the position
+before forming a mechanism.
+
+### Correction — the `choice`-input false positive, and what it cost
+
+The first version of this change also moved `agent-dispatcher.yml`'s
+`inputs.agent` into `env:`. That was wrong twice over, and the CI failure that
+exposed it is worth recording because the reasoning error is easy to repeat.
+
+`agent` is declared `type: choice` with four fixed options. GitHub renders such
+an input as a dropdown and validates it server-side against the declared list,
+so it cannot carry arbitrary text and therefore cannot carry a payload. Treating
+it as untrusted was a false positive in the guard, not a finding.
+
+Moving it into `env:` then broke `Lint .github/workflows/agent-dispatcher.yml`,
+which had passed on the immediately preceding PR. Two facts came out of chasing
+that:
+
+- `rethab/actions-lint` cannot resolve `choice`-typed inputs. It reports
+  `Input "agent" is not declared` for an input that is plainly declared. A
+  `number`-typed input in the same file resolves fine.
+- It validates expressions in `env:` values but **not** in `run:` bodies. That
+  is why the expression passed for as long as it lived in the shell block and
+  failed the moment it moved. My first explanation had this backwards, and the
+  second push proved it by failing on the line I had just written.
+
+The guard now skips inputs a workflow declares as `choice` or `boolean`, which
+removed seven entries from `KNOWN_REMAINING` — they were never risks. The
+shrink-only assertion caught that immediately and refused to let the stale
+entries stay.
+
+**The wider lesson is about the known-red list.** `agent-dispatcher.yml` was not
+on it, and the failure was mine; but a repository carrying ~50 permanently red
+`actions-lint` checks makes "that will be actions-lint again" the cheapest
+available explanation for any new red. It took checking the previous PR's run to
+establish that this one was new. That is a standing argument for replacing the
+linter rather than living around it — this is now the third distinct
+false-positive class it has produced, after `secrets.X || secrets.Y` and
+behaviour that depends on whether an unrelated `env:` block exists.
