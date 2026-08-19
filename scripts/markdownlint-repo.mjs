@@ -41,26 +41,49 @@ export function ignoreGlobs(root = repoRoot) {
     .map((pattern) => `#${pattern}`);
 }
 
+// lint-md.yml passes `files: .` to markdownlint-cli, which expands a directory
+// to BOTH *.md and *.markdown. Globbing only **/*.md here would leave a
+// .markdown file checked by CI and skipped locally — the exact scope gap this
+// script exists to close. Verified: markdownlint-cli on '.' reports findings in
+// a sample.markdown that markdownlint-cli2 with '**/*.md' does not even open.
+export const MARKDOWN_GLOBS = ['**/*.md', '**/*.markdown'];
+
 export function lintArgs({ fix = false, root = repoRoot } = {}) {
   return [
     ...(fix ? ['--fix'] : []),
     '--config',
     path.join(root, '.markdownlint.yaml'),
-    '**/*.md',
+    ...MARKDOWN_GLOBS,
     ...ignoreGlobs(root),
   ];
 }
 
+// node_modules/.bin/markdownlint-cli2 is an extensionless shell shim. Windows
+// cannot exec it, so spawning it directly makes `npm run lint` fail there with
+// EACCES/ENOENT even though the dependency is installed. Resolve the package's
+// real JS entry point and run it under the current Node instead.
+export function resolveCliEntry(root = repoRoot) {
+  const pkgDir = path.join(root, 'node_modules', 'markdownlint-cli2');
+  const pkg = JSON.parse(fs.readFileSync(path.join(pkgDir, 'package.json'), 'utf8'));
+  const bin = typeof pkg.bin === 'string' ? pkg.bin : pkg.bin['markdownlint-cli2'];
+  return path.join(pkgDir, bin);
+}
+
 export function runMarkdownlint({ fix = false, root = repoRoot } = {}) {
-  const cli = path.join(root, 'node_modules', '.bin', 'markdownlint-cli2');
-  if (!fs.existsSync(cli)) {
+  let cli;
+  try {
+    cli = resolveCliEntry(root);
+  } catch {
+    cli = null;
+  }
+  if (!cli || !fs.existsSync(cli)) {
     return {
       status: 1,
       stderr: 'markdownlint-cli2 is not installed — run `npm ci` first.\n',
       stdout: '',
     };
   }
-  return spawnSync(cli, lintArgs({ fix, root }), {
+  return spawnSync(process.execPath, [cli, ...lintArgs({ fix, root })], {
     cwd: root,
     encoding: 'utf8',
     timeout: 300_000,
@@ -87,5 +110,10 @@ if (invokedDirectly) {
   const result = runMarkdownlint({ fix: process.argv.includes('--fix') });
   if (result.stdout) process.stdout.write(result.stdout);
   if (result.stderr) process.stderr.write(result.stderr);
+  // When spawn itself fails, stdout and stderr are empty and status is null —
+  // exiting 1 with no output at all. Say what went wrong instead.
+  if (result.error) {
+    process.stderr.write(`markdownlint-cli2 could not be run: ${result.error.message}\n`);
+  }
   process.exit(result.status === null ? 1 : result.status);
 }
