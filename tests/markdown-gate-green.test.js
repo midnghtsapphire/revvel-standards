@@ -21,45 +21,33 @@
 // the one gate that was red.
 //
 // This test runs the CI gate's exact rules and exact file set, so the pre-push
-// suite fails on anything lint-md.yml would fail on.
+// suite fails on anything lint-md.yml would fail on. It shares that invocation
+// with `npm run lint` via scripts/markdownlint-repo.mjs, so there is one way
+// to lint this repo's markdown and no second copy to drift.
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
+const { pathToFileURL } = require('node:url');
 
 const repoRoot = path.resolve(__dirname, '..');
-const cli = path.join(repoRoot, 'node_modules', '.bin', 'markdownlint-cli2');
-const configPath = path.join(repoRoot, '.markdownlint.yaml');
-const ignorePath = path.join(repoRoot, '.markdownlintignore');
 
-// .markdownlintignore is gitignore-style; markdownlint-cli2 takes the same
-// exclusions as "#glob" arguments. Reading the file rather than restating the
-// patterns keeps this test and lint-md.yml on one source of truth: widen the
-// ignore file and both gates widen together.
-function ignoreGlobs() {
-  return fs
-    .readFileSync(ignorePath, 'utf8')
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line && !line.startsWith('#'))
-    .map((pattern) => `#${pattern}`);
-}
+test('the markdown gate lint-md.yml runs is green', async () => {
+  const mod = await import(
+    pathToFileURL(path.join(repoRoot, 'scripts', 'markdownlint-repo.mjs')).href
+  );
 
-test('the markdown gate lint-md.yml runs is green', () => {
   assert.ok(
-    fs.existsSync(cli),
-    'markdownlint-cli2 is not installed — run `npm ci` before `npm test`',
+    fs.existsSync(path.join(repoRoot, '.markdownlint.yaml')),
+    '.markdownlint.yaml is missing',
   );
-  assert.ok(fs.existsSync(configPath), '.markdownlint.yaml is missing');
-  assert.ok(fs.existsSync(ignorePath), '.markdownlintignore is missing');
+  assert.ok(
+    fs.existsSync(path.join(repoRoot, '.markdownlintignore')),
+    '.markdownlintignore is missing',
+  );
 
-  const result = spawnSync(
-    cli,
-    ['--config', configPath, '**/*.md', ...ignoreGlobs()],
-    { cwd: repoRoot, encoding: 'utf8', timeout: 300_000 },
-  );
+  const result = mod.runMarkdownlint({ root: repoRoot });
 
   assert.equal(
     result.error,
