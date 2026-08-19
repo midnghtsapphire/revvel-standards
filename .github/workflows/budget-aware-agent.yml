@@ -65,10 +65,12 @@ jobs:
           echo "Budget: $PERCENT% used"
 
       - name: Route to appropriate agent
+        env:
+          REQUIRED_AGENTS: ${{ github.event.inputs.required_agents || 'devin' }}
         id: routing
         run: |
           # Parse required agents
-          REQUIRED="${{ github.event.inputs.required_agents || 'devin' }}"
+          REQUIRED="${REQUIRED_AGENTS}"
           STATUS="${{ steps.budget.outputs.status }}"
           
           # Decision tree based on budget
@@ -104,9 +106,11 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Execute with budget-aware agent
+        env:
+          AGENT_TASK: ${{ github.event.inputs.task }}
         run: |
           AGENT="${{ needs.assess-budget.outputs.selected_agent }}"
-          TASK="${{ github.event.inputs.task }}"
+          TASK="${AGENT_TASK}"
           REASON="${{ needs.assess-budget.outputs.routing_reason }}"
           
           echo "=== BUDGET-AWARE EXECUTION ==="

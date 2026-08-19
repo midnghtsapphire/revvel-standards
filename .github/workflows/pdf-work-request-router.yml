@@ -47,7 +47,7 @@ jobs:
             let labelNames;
 
             if (context.eventName === 'workflow_dispatch') {
-              issue_number = parseInt(String('${{ github.event.inputs.issue_number }}').trim(), 10);
+              issue_number = parseInt(String(process.env.ISSUE_NUMBER || '').trim(), 10);
               if (!Number.isFinite(issue_number)) {
                 core.setFailed('Invalid issue_number');
                 return;
@@ -323,5 +323,6 @@ jobs:
               );
             }
         env:
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
           MAKE_PDF_WR_WEBHOOK_URL: ${{ secrets.MAKE_PDF_WR_WEBHOOK_URL }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
