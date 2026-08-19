@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build deployment list
+        env:
+          URL_OVERRIDE: ${{ github.event.inputs.url }}
         id: urls
         run: |
           # Full deployment registry — add new URLs here.
@@ -39,7 +41,7 @@ jobs:
           EOF
           )
 
-          OVERRIDE="${{ github.event.inputs.url }}"
+          OVERRIDE="${URL_OVERRIDE}"
           if [ -n "$OVERRIDE" ]; then
             # Derive a label-safe name from the URL
             NAME=$(echo "$OVERRIDE" | sed 's|https\?://||;s|[^a-zA-Z0-9_-]|-|g' | head -c 60)
