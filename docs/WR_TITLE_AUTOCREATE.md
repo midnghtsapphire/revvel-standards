@@ -29,7 +29,7 @@ No LLM is required. The path is deterministic and keyless.
 
 | Signal | Behavior |
 | --- | --- |
-| Title already clean (`[WR] ` + no noise + ≤ max length) | Leave it alone (unless `/wr-title force`) |
+| Title already clean (`[WR]` prefix and its single trailing space + no noise + ≤ max length) | Leave it alone (unless `/wr-title force`) |
 | Double spaces / slash commands / URLs | Light normalize |
 | Keywords match a template | Rewrite with that template + subject |
 | Sparse title + Summary body section | Seed suggestion from Summary |
@@ -44,13 +44,13 @@ Max length default: **100** characters (see `defaults.max_length` in the registr
 1. Open <https://github.com/settings/replies>.
 2. Add each starter from [`docs/SAVED_REPLIES.md`](./SAVED_REPLIES.md) (the rows whose title begins with `WR title:`).
 3. Open **Issues → New issue → Work Request**.
-4. In the title box, delete the bare `[WR] ` if you will paste a full starter.
+4. In the title box, delete the bare `[WR]` prefix and the space after it if you will paste a full starter.
 5. Open the comment/title saved-reply picker (left-pointing reply arrow in a
    comment box — for the **title** field, paste from your notes or from the
    studio app; GitHub only injects saved replies into comment bodies).
 6. Prefer: open [WR Title Studio](../products/wr-title-studio/README.md), click
    a starter, click **Copy title**, paste into the issue title field.
-7. **Success looks like:** title is one line, starts with `[WR] `, no double
+7. **Success looks like:** title is one line, starts with `[WR]` followed by one space, no double
    spaces, no `/dragnet` in the title.
 
 ### B. Fix a messy title on an existing WR with `/wr-title`

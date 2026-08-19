@@ -9,4 +9,4 @@
 | Integration doc | `docs/MERGEME_INTEGRATION.md` |
 | Connections SSOT | `config/connections.yml` (`id: mergeme`) |
 | Live page | `docs/mergeme-status/index.html` |
-| WR | https://github.com/midnghtsapphire/revvel-standards/issues/16824 |
+| WR | <https://github.com/midnghtsapphire/revvel-standards/issues/16824> |
