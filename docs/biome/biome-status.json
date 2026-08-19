@@ -1,45 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-19T05:09:31.142Z",
+  "generated_at": "2026-08-19T06:09:31.555Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
+            "id": 32222071016,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32222071016",
+            "conclusion": "failure"
+          },
+          {
             "id": 32218328865,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32218328865",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32214909830,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32214909830",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32213860105,
-            "name": "Push on main",
-            "path": "dynamic/github-code-scanning/codeql",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32213860105",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32211613095,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32211613095",
             "conclusion": "failure"
           }
         ],
