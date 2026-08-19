@@ -123,11 +123,26 @@ function main() {
     // lane. Resolve by prefix, same as status:* below.
     if (raw.startsWith("research:")) {
       const s = raw.slice("research:".length).toLowerCase();
+      // Exact suffixes, not substrings: the `research:reviewer` lane contains
+      // "review" but is an ordinary research lane, not a review state, and a
+      // substring test silently mapped it to in-review.
       let target = "research";
-      if (s.includes("block")) target = "blocked";
-      else if (s.includes("review")) target = "in-review";
+      if (s === "blocked") target = "blocked";
+      else if (s === "review-needed") target = "in-review";
       if (allowed.has(target)) {
         mapped.push(`${raw} → ${target} (research: prefix)`);
+        continue;
+      }
+    }
+    // wr-pr-creation.yml derives a `deliver:*` label from the WR's Output Type
+    // (OUTPUT_TYPE_DELIVER_MAP) and applies it to the PR alongside the research
+    // labels. Per standards/DELIVERY_MATRIX.md each one activates the matching
+    // post-merge delivery workflow, so the whole family is delivery automation.
+    // The map is open-ended (a new Output Type adds a new deliver: value), so
+    // resolve by prefix rather than enumerating today's values.
+    if (raw.startsWith("deliver:")) {
+      if (allowed.has("automation")) {
+        mapped.push(`${raw} → automation (deliver: prefix)`);
         continue;
       }
     }

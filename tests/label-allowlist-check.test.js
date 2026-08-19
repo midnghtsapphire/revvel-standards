@@ -115,6 +115,9 @@ test('strict checker accepts the label set wr-pr-creation.yml puts on a WR PR', 
     'bito-ai',
     'awaiting-review',
     'wr:in-progress',
+    // wr-pr-creation.yml derives this from the WR's Output Type
+    // (production-app -> deliver:app) and applies it to the PR too.
+    'deliver:app',
     'research-engine',
     'research:marketing',
     'research:seo',
@@ -149,12 +152,42 @@ test('research:blocked and research:review-needed keep their distinct meaning', 
   assert.match(review.stdout, /research:review-needed → in-review/);
 });
 
-test('the allowlist fix adds no first-class labels (max_labels_total untouched)', () => {
+test('the allowlist fix adds no first-class labels (count pinned, not just under budget)', () => {
   const cfg = yaml.parse(fs.readFileSync(ALLOWLIST_PATH, 'utf8'));
   const names = cfg.labels.map((l) => (typeof l === 'string' ? l : l.name));
   assert.equal(cfg.max_labels_total, 80);
-  assert.ok(
-    names.length <= cfg.max_labels_total,
-    `allowlist grew to ${names.length}, over the ${cfg.max_labels_total} budget`,
+  // Pinned, not just `<= 80`: an under-budget check still passes while three
+  // more first-class labels are spent. Spending budget must be deliberate and
+  // update this number, since only 3 slots remain.
+  assert.equal(
+    names.length,
+    77,
+    `allowlist is ${names.length} labels, expected 77 — this fix is alias/prefix-only. `
+      + `If you deliberately added a first-class label, update this count.`,
   );
+});
+
+test('deliver:* resolves by prefix — WR PRs carry one per Output Type', () => {
+  for (const label of [
+    'deliver:app',
+    'deliver:pdf',
+    'deliver:docs',
+    'deliver:api',
+    'deliver:cli',
+    'deliver:docker',
+    'deliver:package',
+    'deliver:mcp',
+    'deliver:video',
+  ]) {
+    const result = runChecker(['--strict', label]);
+    assert.equal(result.status, 0, `${label}: ${result.stderr || result.stdout}`);
+    assert.match(result.stdout, new RegExp(`${label} → automation \\(deliver: prefix\\)`));
+  }
+});
+
+test('research:reviewer stays a research lane and is not read as a review state', () => {
+  const result = runChecker(['--strict', 'research:reviewer']);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /research:reviewer → research \(research: prefix\)/);
+  assert.doesNotMatch(result.stdout, /research:reviewer → in-review/);
 });
