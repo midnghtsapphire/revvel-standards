@@ -26,6 +26,21 @@ The revvel-standards repository has extensive automation infrastructure:
 
 ---
 
+## Update — 2026-08-19: lint-md.yml triggers on .markdown too
+
+`lint-md.yml` lints markdown with `files: .`, and markdownlint-cli expands a
+directory to both `*.md` and `*.markdown`. Its `paths:` filters listed only
+`**/*.md`, so a pull request or push that touched nothing but a `.markdown`
+file never started the gate — the file would reach `main` linted by nothing.
+
+Both trigger filters now list `**/*.markdown` alongside `**/*.md`.
+`tests/markdown-gates-agree.test.js` reads the trigger block back out of the
+workflow and asserts every extension the gate lints is one that starts it, so
+the trigger contract and the lint globs cannot drift apart again.
+
+The repo has no `.markdown` files today; this closes the hole before one
+arrives rather than after.
+
 ## Automation Inventory
 
 ### Active Workflows (58 total)
