@@ -1,0 +1,115 @@
+name: Bernstein Orchestrator
+
+# ── Bernstein multi-agent orchestrator ──────────────────────────────────────
+# Runs Bernstein (https://bernstein.run) — a deterministic, audit-grade
+# multi-agent orchestrator that spawns CLI coding agents (Claude Code, Codex,
+# Gemini, Qwen, +40 more adapters) in parallel git worktrees, verifies each
+# with lint/type-check/tests, and merges only the worktrees that pass.
+#
+# NOTE ON NAMING: this file is intentionally NOT named `octopus-*.yml`.
+# This repo already has an unrelated integration called "Octopus Review"
+# (octopus-review.ai, a PR-review SaaS bot — see octopus-cli.yml,
+# octopus-review-fallback.yml, octopus-route.yml, skills/octopus-expert/).
+# Bernstein has nothing to do with that product; keeping a distinct filename
+# avoids confusing the two in logs, PR history, or future edits.
+#
+# Chosen over the "Claude Octopus" plugin (nyldn/claude-octopus) after a
+# trust-score comparison: Bernstein scores 85.1/100 (Grade A) on HVTracker
+# with an HMAC-signed, tamper-evident audit chain, vs. claude-octopus's
+# 20.2/100 (Grade D, thin trust evidence). See PR description for the
+# full comparison.
+#
+# Use cases:
+#   - On-demand: give Bernstein a free-text goal (`task` input) and let it
+#     spawn agents, verify, and open a PR with the result.
+#   - On-demand: run a checked-in Bernstein plan file instead of a free-text
+#     goal (`plan` input) for repeatable, reviewed task lists.
+#   - Auto-fix: pass task="fix-ci" to have Bernstein pull failed job logs
+#     from a run and attempt a fix.
+#
+# Does NOT touch deployment/hosting — Vercel continues to build previews via
+# the native GitHub↔Vercel app integration, untouched by this workflow.
+#
+# Provenance: registered in docs/PROVENANCE_STANDARD.md under "Bernstein".
+# ──────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: >
+          Free-text goal for Bernstein, or the literal string "fix-ci" to
+          auto-diagnose and fix the most recent failed run. Mutually
+          exclusive with `plan`.
+        required: false
+        type: string
+        default: ""
+      plan:
+        description: "Path to a checked-in Bernstein plan YAML (e.g. plans/my-task.yaml). Mutually exclusive with `task`."
+        required: false
+        type: string
+        default: ""
+      cli:
+        description: "Which agent CLI Bernstein should drive"
+        required: false
+        type: choice
+        options:
+          - claude
+          - codex
+          - gemini
+          - qwen
+        default: claude
+      budget:
+        description: "Dollar cap for this run (0 = unlimited)"
+        required: false
+        type: string
+        default: "5.00"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+concurrency:
+  group: bernstein-orchestrator-${{ github.event.inputs.task || github.event.inputs.plan || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  orchestrate:
+    name: Run Bernstein
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Bernstein (Bernstein contributors) via sipyourdrink-ltd/bernstein@v2.7.0
+        id: bernstein
+        uses: sipyourdrink-ltd/bernstein@v2.7.0
+        with:
+          task: ${{ github.event.inputs.task }}
+          plan: ${{ github.event.inputs.plan }}
+          budget: ${{ github.event.inputs.budget }}
+          cli: ${{ github.event.inputs.cli }}
+          post-comment: "true"
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summarize run
+        if: always()
+        run: |
+          echo "### Bernstein run summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Tasks completed: ${{ steps.bernstein.outputs.tasks-completed }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Total cost: \$${{ steps.bernstein.outputs.total-cost }}" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${{ steps.bernstein.outputs.pr-url }}" ]; then
+            echo "- PR opened: ${{ steps.bernstein.outputs.pr-url }}" >> "$GITHUB_STEP_SUMMARY"
+          fi
