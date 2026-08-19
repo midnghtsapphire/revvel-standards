@@ -1,19 +1,26 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-19T04:13:56.374Z",
+  "generated_at": "2026-08-19T05:09:31.142Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "8/100 recent runs failed; 0 stuck item(s)",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 8,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 32218328865,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32218328865",
+            "conclusion": "failure"
+          },
           {
             "id": 32214909830,
             "name": "Hourly Star Growth & Prioritization Engine",
@@ -33,41 +40,6 @@
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32211613095",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32208432538,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32208432538",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207548249,
-            "name": "npm_and_yarn in /docs/Governance-ape-ci-errors, /products/bnat-sheaf-observatory, /products/graphify-evaluator, /products/greenfield-ui-lab, /products/hvac-calc-service, /products/life-insurance-lead-saas/build, /products/openmythos, /products/pplx-api-skills, /products/red-light-therapy-dosage-calculator, /products/revvel-skill-runner/build, /products/ugc-review-generator, /products/wr-title-studio, /reesereviews/vine-marketplace for brace-expansion, brace-expansion, brace-expansion, deepmerge-ts, fast-...",
-            "path": "dynamic/dependabot/dependabot-updates",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207548249",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207547070,
-            "name": "npm_and_yarn in /products/life-insurance-lead-engine/build for extract-zip, postcss, postcss, qs, uuid - Update #1531816984",
-            "path": "dynamic/dependabot/dependabot-updates",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207547070",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207106260,
-            "name": "npm_and_yarn in /products/life-insurance-lead-engine/build for extract-zip, postcss, postcss, qs, uuid - Update #1531802344",
-            "path": "dynamic/dependabot/dependabot-updates",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207106260",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207106183,
-            "name": "npm_and_yarn in /docs/Governance-ape-ci-errors, /products/bnat-sheaf-observatory, /products/graphify-evaluator, /products/greenfield-ui-lab, /products/hvac-calc-service, /products/life-insurance-lead-saas/build, /products/openmythos, /products/pplx-api-skills, /products/red-light-therapy-dosage-calculator, /products/revvel-skill-runner/build, /products/ugc-review-generator, /products/wr-title-studio, /reesereviews/vine-marketplace for brace-expansion, brace-expansion, brace-expansion, deepmerge-ts, fast-...",
-            "path": "dynamic/dependabot/dependabot-updates",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207106183",
             "conclusion": "failure"
           }
         ],
