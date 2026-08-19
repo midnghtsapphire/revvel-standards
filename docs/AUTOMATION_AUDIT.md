@@ -41,6 +41,33 @@ the trigger contract and the lint globs cannot drift apart again.
 The repo has no `.markdown` files today; this closes the hole before one
 arrives rather than after.
 
+## Update — 2026-08-19: security-fleet stopped scanning its own issues
+
+The `security-fleet` event lane triggers on `issues: [opened, edited]` and had
+no exclusion for the issues it files itself. Every finding it files renders the
+excerpt into the new issue body:
+
+```text
+- `exfil-directive`: upload-sarif`, with fallbacks for missing secrets
+```
+
+That line re-matches the rule that produced it — @sentinel's `exfil-directive`
+is `/\b(upload)\b[^.\n]{0,60}\b(secrets?)\b/i`, and the rendered line reads
+"upload ... secrets". So filing a finding raised a fresh `issues: opened`
+event, which scanned the new issue, matched again, and filed another.
+
+Observed chain: #17546 → #17709 → #17713, three `priority-p0` issues, every one
+a false positive, with no natural end.
+
+The existing dedup could not stop it: its key is `finding on #<subject>` and the
+subject is a different issue number at every link, so each one looked unseen.
+
+The `event-lane` job now skips issues carrying the `security-fleet` label.
+`pull_request` events are unaffected — `github.event.issue` is null there.
+`tests/security-fleet-does-not-scan-itself.test.js` pins the exclusion, pins
+that PRs still reach the lane, and keeps proving the filed body would otherwise
+re-trigger the detector.
+
 ## Automation Inventory
 
 ### Active Workflows (58 total)
