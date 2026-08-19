@@ -51,7 +51,19 @@ env:
 jobs:
   event-lane:
     name: "@sentinel + @exfil (event lane)"
-    if: github.event_name == 'issues' || github.event_name == 'issue_comment' || github.event_name == 'pull_request'
+    # Never scan the fleet's own output. Every issue this job files contains the
+    # finding excerpt in its body, and that excerpt re-matches the detector that
+    # produced it — `exfil-directive` fires on "upload ... secrets", which is
+    # exactly what the rendered finding line says. Filing therefore raises a new
+    # `issues: opened` event that scans the new issue and files another, forever.
+    # Observed chain: #17546 -> #17709 -> #17713.
+    #
+    # The dedup below cannot stop it: its key is "finding on #<subject>", and the
+    # subject is a different number every link, so each one looks new.
+    if: >-
+      github.event_name == 'pull_request' ||
+      ((github.event_name == 'issues' || github.event_name == 'issue_comment') &&
+       !contains(github.event.issue.labels.*.name, 'security-fleet'))
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
