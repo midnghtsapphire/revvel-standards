@@ -47,3 +47,102 @@ jobs:
         run: |
           echo "This workflow is disabled. Use jules-invoke.yml for real Jules runs."
           exit 1
+#
+# ── ORIGINAL CONTENT (archived per RVS-AGENT-001, do not re-enable) ──────────
+#
+# name: Jules Coding Agent
+#
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       issue_number:
+#         description: 'Issue number to work on'
+#         required: true
+#         type: string
+#   issue_comment:
+#     types: [created]
+#
+# permissions:
+#   contents: write
+#   issues: write
+#   pull-requests: write
+#
+# env:
+#   GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+#
+# jobs:
+#   jules-agent:
+#     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/jules'))
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 30
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+#           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+#
+#       - name: Setup Node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '20'
+#
+#       - name: Install dependencies
+#         run: npm ci
+#
+#       - name: Run Jules agent
+#         run: |
+#           echo "Running Jules coding agent for issue #${{ inputs.issue_number }}"
+#           # Agent logic would go here
+#
+#       - name: Create PR
+#         run: |
+#           BRANCH="jules/issue-${{ inputs.issue_number }}"
+#           git checkout -b "$BRANCH" || git checkout "$BRANCH"
+#           git config user.name "jules-bot"
+#           git config user.email "jules-bot@users.noreply.github.com"
+#           git add -A
+#           git diff --cached --quiet || git commit -m "chore: jules agent changes for #${{ inputs.issue_number }}"
+#           git push -u origin "$BRANCH" || true
+#           gh pr create --title "jules: fixes for #${{ inputs.issue_number }}" \
+#             --body "Closes #${{ inputs.issue_number }}" \
+#             --base main --head "$BRANCH" || true
+#           gh issue edit "${{ inputs.issue_number }}" --add-label "wr:pr-open" || true
+#       - name: Determine issue number
+#         id: issue
+#         run: |
+#           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+#             echo "number=${{ inputs.issue_number }}" >> $GITHUB_OUTPUT
+#           else
+#             echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+#           fi
+#
+#       - name: Create branch and stub commit
+#         id: branch
+#         run: |
+#           ISSUE=${{ steps.issue.outputs.number }}
+#           BRANCH="jules/issue-${ISSUE}"
+#           git config user.name "jules-agent[bot]"
+#           git config user.email "jules-agent[bot]@users.noreply.github.com"
+#           git checkout -b "$BRANCH"
+#           mkdir -p .jules
+#           echo "Working on issue #${ISSUE} at $(date -u +%FT%TZ)" > ".jules/issue-${ISSUE}.md"
+#           git add ".jules/issue-${ISSUE}.md"
+#           git commit -m "chore(jules): stub for #${ISSUE}"
+#           git push origin "$BRANCH"
+#           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+#
+#       - name: Open PR
+#         run: |
+#           ISSUE=${{ steps.issue.outputs.number }}
+#           gh pr create \
+#             --title "chore(jules): work on #${ISSUE}" \
+#             --body "Closes #${ISSUE}" \
+#             --head "${{ steps.branch.outputs.branch }}" \
+#             --base main
+#
+#       - name: Label issue
+#         run: |
+#           gh issue edit ${{ steps.issue.outputs.number }} --add-label "wr:pr-open" || true
+#
+# REVVEL-DISABLED-END

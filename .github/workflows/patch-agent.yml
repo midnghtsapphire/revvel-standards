@@ -43,3 +43,61 @@ jobs:
         run: |
           echo "This workflow is disabled: it never called an agent."
           exit 1
+#
+# ── ORIGINAL CONTENT (archived per RVS-AGENT-001, do not re-enable) ──────────
+#
+# name: Patch Agent
+#
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       issue_number:
+#         description: 'Issue number'
+#         required: true
+#         type: string
+#
+# permissions:
+#   contents: write
+#   issues: write
+#   pull-requests: write
+#
+# jobs:
+#   patch:
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 30
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+#           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+#
+#       - name: Setup Node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '20'
+#
+#       - name: Install dependencies
+#         run: npm ci
+#
+#       - name: Apply fixes and open PR
+#         env:
+#           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+#         run: |
+#           ISSUE_NUM="${{ inputs.issue_number }}"
+#           BRANCH="patch-agent/issue-${ISSUE_NUM}"
+#           git config user.name "patch-agent[bot]"
+#           git config user.email "patch-agent@users.noreply.github.com"
+#           git checkout -b "$BRANCH" || git checkout "$BRANCH"
+#           mkdir -p .patch-agent
+#           echo "Patch run for #${ISSUE_NUM} at $(date -u +%FT%TZ)" > ".patch-agent/issue-${ISSUE_NUM}.md"
+#           git add -A
+#           git commit -m "chore(patch-agent): scaffold changes for #${ISSUE_NUM}" || echo "No changes"
+#           git push -u origin "$BRANCH" || true
+#           gh pr create \
+#             --title "fix: patch-agent changes for #${ISSUE_NUM}" \
+#             --body "Closes #${ISSUE_NUM}" \
+#             --base main \
+#             --head "$BRANCH" || echo "PR may already exist"
+#
+# REVVEL-DISABLED-END
