@@ -35,9 +35,11 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Check if rate limited
+        env:
+          ERROR_MESSAGE: ${{ github.event.inputs.error_message }}
         id: check
         run: |
-          if [[ "${{ github.event.inputs.error_message }}" == *"rate"*limit* ]]; then
+          if [[ "${ERROR_MESSAGE}" == *"rate"*limit* ]]; then
             echo "is_rate_limit=true" >> $GITHUB_OUTPUT
           else
             echo "is_rate_limit=false" >> $GITHUB_OUTPUT

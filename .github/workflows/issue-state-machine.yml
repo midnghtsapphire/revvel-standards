@@ -215,13 +215,16 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.target_state
     steps:
       - name: Transition state
+        env:
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number || 0 }}
+          TARGET_STATE: ${{ github.event.inputs.target_state }}
         id: transition
         uses: actions/github-script@v9.0.0
         with:
           script: >
-            const targetState = '${{ github.event.inputs.target_state }}';
+            const targetState = process.env.TARGET_STATE || '';
 
-            const issueNumber = ${{ github.event.inputs.issue_number || 0 }};
+            const issueNumber = Number(process.env.ISSUE_NUMBER || 0);
 
 
             // Map target state to label

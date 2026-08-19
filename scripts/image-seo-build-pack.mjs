@@ -189,9 +189,20 @@ function main(argv = process.argv) {
   console.log(JSON.stringify({ ok: true, out: args.out, filename: pack.seo.filename }));
 }
 
-const isMain =
-  process.argv[1] &&
-  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+// Entry-point guard. Compare REALPATHS: process.argv[1] is the path the user
+// invoked, import.meta.url is this file's own location, and through a symlink
+// those are two different strings. Resolving only argv[1] made isMain false,
+// so main() never ran — and because nothing threw, the process exited 0 having
+// written nothing. A silent success over zero work is worse than a crash.
+const isMain = (() => {
+  const invoked = process.argv[1];
+  if (!invoked) return false;
+  try {
+    return fs.realpathSync(invoked) === fs.realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+})();
 
 if (isMain) {
   try {

@@ -83,5 +83,28 @@ const built = spawnSync(
 if (built.stdout) process.stdout.write(built.stdout);
 if (built.stderr) process.stderr.write(built.stderr);
 
-console.log(JSON.stringify({ ok: missing.length === 0 && built.status === 0, missing, wr: manifest.wr }, null, 2));
-if (missing.length || built.status !== 0) process.exit(2);
+// `built.status === 0` says the builder process finished, not that it built
+// anything. image-seo-build-pack.mjs could exit 0 having written nothing —
+// through a symlink its entry-point guard was false, so main() never ran and
+// it produced no file, no output and no error. Reporting ok:true over that is
+// the failure mode CLAUDE.md gotcha 6 names: an exit code must reflect the
+// postcondition. So check the postcondition — the pack exists and parses.
+const packPath = path.join(ROOT, "artifacts/image-automation/package.json");
+let packError = null;
+if (built.status === 0) {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(packPath, "utf8"));
+    if (!parsed || typeof parsed !== "object" || !parsed.seo) {
+      packError = `pack at ${packPath} has no seo section`;
+    }
+  } catch (err) {
+    packError = `builder exited 0 but its output is unusable: ${err.message}`;
+  }
+}
+
+const ok = missing.length === 0 && built.status === 0 && packError === null;
+console.log(JSON.stringify({ ok, missing, packError, wr: manifest.wr }, null, 2));
+if (!ok) {
+  if (packError) console.error(`::error::${packError}`);
+  process.exit(2);
+}
