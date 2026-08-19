@@ -31,10 +31,11 @@ jobs:
       - name: Verify required secrets
         id: check
         env:
+          ISSUE_NUMBER: ${{ github.event.issue.number || github.event.inputs.issue_number }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENHANDS_API_KEY: ${{ secrets.OPENHANDS_API_KEY }}
         run: |
-          ISSUE_NUMBER="${{ github.event.issue.number || github.event.inputs.issue_number }}"
+          ISSUE_NUMBER="${ISSUE_NUMBER}"
           echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
 
           if [[ -z "$OPENROUTER_API_KEY" && -z "$OPENHANDS_API_KEY" ]]; then

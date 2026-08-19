@@ -26,9 +26,11 @@ jobs:
             .env.example
 
       - name: Determine target repo
+        env:
+          TARGET_REPO: ${{ github.event.inputs.repo || github.event.repository.full_name }}
         id: target
         run: |
-          REPO="${{ github.event.inputs.repo || github.event.repository.full_name }}"
+          REPO="${TARGET_REPO}"
           echo "target_repo=$REPO" >> $GITHUB_OUTPUT
 
       - name: Enable error handling standard

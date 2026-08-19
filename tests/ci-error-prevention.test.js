@@ -454,12 +454,30 @@ test('issue-state-machine.yml keeps numeric dispatch input and github-script v9'
     1,
     'issue-state-machine.yml should keep transition-state input handling centralized in one step'
   );
+  // These assert that the step still CONSUMES each dispatch input, not the
+  // mechanism by which it reaches the script. Interpolating `${{ inputs.x }}`
+  // straight into a github-script body is template substitution performed
+  // before the script runs, so a quote in the value escapes the string literal
+  // and the remainder executes — the same hole zizmor flagged in
+  // auto-branch-update.yml. The value now arrives through the step's `env:`
+  // and is read with `process.env`, where it is never parsed as code.
+  //
+  // Checking for the literal expression in the script body would have made the
+  // safe form fail the test, which is how a guard ends up arguing for the
+  // defect it was written to prevent.
+  const transitionScript = String(transitionSteps[0]?.with?.script || '');
+  const transitionEnv = transitionSteps[0]?.env || {};
+  const consumes = (input, envVar) =>
+    transitionScript.includes(`github.event.inputs.${input}`) ||
+    (String(transitionEnv[envVar] || '').includes(`inputs.${input}`) &&
+      transitionScript.includes(`process.env.${envVar}`));
+
   assert.ok(
-    String(transitionSteps[0]?.with?.script || '').includes('github.event.inputs.target_state'),
+    consumes('target_state', 'TARGET_STATE'),
     'issue-state-machine.yml transition-state step must still read the dispatch target_state input'
   );
   assert.ok(
-    String(transitionSteps[0]?.with?.script || '').includes('github.event.inputs.issue_number'),
+    consumes('issue_number', 'ISSUE_NUMBER'),
     'issue-state-machine.yml transition-state step must still read the dispatch issue_number input'
   );
 
