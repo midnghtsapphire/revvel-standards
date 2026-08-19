@@ -23,7 +23,7 @@ export later for multi-repo clients.
 
 ## What Problem It Solves
 
-GitHub’s Work Request form only prefills `[WR] `. Humans paste brain dumps,
+GitHub’s Work Request form only prefills `[WR]` and a trailing space. Humans paste brain dumps,
 URLs, and `/dragnet` into the title. Saved replies help comment bodies but do
 not bind the title field. This app + the `wr-autotitle` workflow give:
 

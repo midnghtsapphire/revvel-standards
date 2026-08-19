@@ -10,7 +10,7 @@ Product-local Bill of Materials. Canonical registry:
 | TypeScript | ^5 | Types | `tsc --noEmit` lint |
 | Tailwind | ^3.4 | Styling | |
 | tsx | ^4.22 | Tests | `node:test` runner |
-| Perplexity API | https://api.perplexity.ai | Live LLM + tools | Needs `PERPLEXITY_API_KEY` |
+| Perplexity API | <https://api.perplexity.ai> | Live LLM + tools | Needs `PERPLEXITY_API_KEY` |
 | No-key bridge | helallao/perplexity-ai | Free research lane | Separate scripts path — not this app’s runtime |
 
 ## Skills surface

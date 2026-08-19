@@ -77,7 +77,7 @@ git log --oneline -10 && git status && git branch -a
 
 ## Commit Messages
 
-```
+```text
 <type>: <short description>
 
 Types: feat, fix, refactor, test, docs, chore, style
@@ -128,7 +128,7 @@ All apps targeting mobile (iOS + Android) MUST use Expo with React Native. This 
 - Expo has an MCP server for AI coding tools (Claude Code, Cursor)
 
 **Standard Expo Stack:**
-```
+```text
 expo (latest SDK)
 expo-router          # File-based routing
 nativewind           # Tailwind CSS for React Native
