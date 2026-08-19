@@ -1,87 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-19T03:18:13.159Z",
+  "generated_at": "2026-08-19T07:16:29.112Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "11/100 recent runs failed; 0 stuck item(s)",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 11,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32211613095,
+            "id": 32226984253,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32211613095",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32226984253",
             "conclusion": "failure"
           },
           {
-            "id": 32208432538,
+            "id": 32223410238,
+            "name": "WR-4600 Watchtower",
+            "path": ".github/workflows/watchtower.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32223410238",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32222343396,
+            "name": "App Artifact Audit",
+            "path": ".github/workflows/app-artifact-audit.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32222343396",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32222071016,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32208432538",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207548249,
-            "name": "npm_and_yarn in /docs/Governance-ape-ci-errors, /products/bnat-sheaf-observatory, /products/graphify-evaluator, /products/greenfield-ui-lab, /products/hvac-calc-service, /products/life-insurance-lead-saas/build, /products/openmythos, /products/pplx-api-skills, /products/red-light-therapy-dosage-calculator, /products/revvel-skill-runner/build, /products/ugc-review-generator, /products/wr-title-studio, /reesereviews/vine-marketplace for brace-expansion, brace-expansion, brace-expansion, deepmerge-ts, fast-...",
-            "path": "dynamic/dependabot/dependabot-updates",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207548249",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207547070,
-            "name": "npm_and_yarn in /products/life-insurance-lead-engine/build for extract-zip, postcss, postcss, qs, uuid - Update #1531816984",
-            "path": "dynamic/dependabot/dependabot-updates",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207547070",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207106260,
-            "name": "npm_and_yarn in /products/life-insurance-lead-engine/build for extract-zip, postcss, postcss, qs, uuid - Update #1531802344",
-            "path": "dynamic/dependabot/dependabot-updates",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207106260",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207106183,
-            "name": "npm_and_yarn in /docs/Governance-ape-ci-errors, /products/bnat-sheaf-observatory, /products/graphify-evaluator, /products/greenfield-ui-lab, /products/hvac-calc-service, /products/life-insurance-lead-saas/build, /products/openmythos, /products/pplx-api-skills, /products/red-light-therapy-dosage-calculator, /products/revvel-skill-runner/build, /products/ugc-review-generator, /products/wr-title-studio, /reesereviews/vine-marketplace for brace-expansion, brace-expansion, brace-expansion, deepmerge-ts, fast-...",
-            "path": "dynamic/dependabot/dependabot-updates",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207106183",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207105927,
-            "name": "npm_and_yarn in /products/life-insurance-lead-engine/build for extract-zip, postcss, postcss, qs, uuid - Update #1531802342",
-            "path": "dynamic/dependabot/dependabot-updates",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207105927",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207105459,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207105459",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207105015,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207105015",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32207064413,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32207064413",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32222071016",
             "conclusion": "failure"
           }
         ],
@@ -107,10 +65,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32226436636"
       }
     },
     "sheaf": {
