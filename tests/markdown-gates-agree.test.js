@@ -175,3 +175,29 @@ test('the local gate runs the cli through node, not the unix shim', () => {
     'a spawn failure must be reported, not exited on silently',
   );
 });
+
+test('lint-md.yml triggers on every extension the gate lints', () => {
+  // Widening the local glob is not enough on its own. lint-md.yml only ran on
+  // `**/*.md` paths, so a PR that added only a .markdown file never started
+  // the gate at all — the file would be linted by nothing, which is a wider
+  // hole than the one this file set out to close. The trigger contract and the
+  // lint globs have to move together, so derive one from the other.
+  const workflow = require('yaml').parse(
+    fs.readFileSync(path.join(repoRoot, '.github/workflows/lint-md.yml'), 'utf8'),
+  );
+
+  // `on` is the YAML 1.1 boolean true unless quoted; accept either spelling.
+  const on = workflow.on ?? workflow[true];
+  assert.ok(on, 'lint-md.yml has no trigger block');
+
+  for (const trigger of ['pull_request', 'push']) {
+    const paths = (on[trigger] && on[trigger].paths) || [];
+    for (const glob of ['**/*.md', '**/*.markdown']) {
+      assert.ok(
+        paths.includes(glob),
+        `lint-md.yml ${trigger}.paths is missing ${glob}, so changes to those ` +
+          'files would not start the gate that is supposed to lint them',
+      );
+    }
+  }
+});
