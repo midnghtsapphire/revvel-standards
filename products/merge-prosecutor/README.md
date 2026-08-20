@@ -1,0 +1,46 @@
+# Merge Prosecutor
+
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/merge-prosecutor/)**
+
+## What It Is
+
+Merge Prosecutor is a deterministic, mathematical GitHub Action that evaluates pull requests for merge quality. It guards against bad merges by:
+1. Detecting unresolved Git conflict markers.
+2. Using Levenshtein distance on sliding windows to detect duplicated blocks of code resulting from poorly resolved conflicts (where both "current" and "incoming" were kept).
+3. Running test suites to ensure the merge didn't break unintended functionality.
+4. Scanning pull request comments for dismissive language (e.g., "not my error", "leave it", "out of scope") and automatically generating Work Request (WR) tickets when developers try to punt on bugs.
+
+## Pricing (Polar.sh)
+
+- **Free Tier:** Basic unresolved conflict detection.
+- **Pro Tier ($29/month):** Advanced Levenshtein duplication detection, test stability prosecution, and WR generation for dismissive comments.
+- **Enterprise Tier ($199/month):** Custom comment regex logic and self-hosted runners.
+
+## Analytics Events
+
+- `merge_prosecuted`: Triggered when an action run starts.
+- `duplicate_blocks_found`: Triggered when bad merge duplications are found.
+- `dismissive_comment_detected`: Triggered when a WR is auto-generated for a comment.
+
+## Usage
+
+```yaml
+name: Prosecute Merge
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  prosecute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: midnghtsapphire/revvel-standards/products/merge-prosecutor@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          pr-number: ${{ github.event.pull_request.number }}
+          test-command: "npm test"
+```

@@ -204,6 +204,22 @@ jobs:
               return;
             }
 
+            if (labelSet.has('issue:done')) {
+              core.warning(
+                `Issue #${issueNumber} is open but labelled issue:done. ` +
+                'The label contradicts the state; removing it and continuing.'
+              );
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                name: 'issue:done',
+              }).catch((err) => {
+                if (err.status !== 404) throw err;
+              });
+              labelSet.delete('issue:done');
+            }
+
             // Skip bot-created issues (defensive — bot-spam should be filtered
             // by the job-level `if:` already).
             if (issue.user && issue.user.login === 'github-actions[bot]') {

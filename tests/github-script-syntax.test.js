@@ -54,9 +54,9 @@ const WORKFLOWS = path.join(ROOT, '.github', 'workflows');
  * Fixing one of these means deleting its name here in the same commit.
  */
 const KNOWN_BROKEN = Object.freeze([
-  'openrouter-auto-route.yml', // #17783 — duplicate `const title`, botched edit left both lines
-  'proposal-prosecution.yml', // #17784 — nested ternary missing its else branch
-  'ship-to-market.yml', // #17785 — duplicate `const chrome` / `const vscode`
+  // Empty, and it must stay that way. Every github-script body in
+  // .github/workflows/ parses. A name added here is not a fix — fix the
+  // workflow. The three that were listed are #17783, #17784, #17785.
 ]);
 
 function workflowFiles() {
@@ -120,10 +120,7 @@ test('every actions/github-script body parses as JavaScript', () => {
 test('the known-broken list is a ratchet — it may only shrink, and only by name', () => {
   // Adding a name here is not a fix. If this fails because a workflow was newly
   // broken, fix the workflow; if it fails because one was fixed, delete its name.
-  assert.deepEqual(
-    [...KNOWN_BROKEN].sort(),
-    ['openrouter-auto-route.yml', 'proposal-prosecution.yml', 'ship-to-market.yml'],
-  );
+  assert.deepEqual([...KNOWN_BROKEN].sort(), []);
 });
 
 test('fixing a workflow means deleting its name from the known-broken list', () => {

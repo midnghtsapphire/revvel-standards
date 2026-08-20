@@ -1,52 +1,24 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-20T19:13:31.103Z",
+  "generated_at": "2026-08-20T21:07:43.484Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "5/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 5,
+        "failed_runs": 1,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32407434443,
+            "id": 32417685773,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32407434443",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32407396188,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32407396188",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32407356358,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32407356358",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32407298269,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32407298269",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32407283306,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32407283306",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32417685773",
             "conclusion": "failure"
           }
         ],
