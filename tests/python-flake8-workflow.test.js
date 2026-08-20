@@ -143,6 +143,16 @@ test('parseArgs rejects flags that are missing values', () => {
   assert.throws(() => parseArgs(['--target']), /--target requires a value/);
 });
 
+
+test('no entry in baseline matches a path excluded by FLAKE8_EXCLUDE', () => {
+  const { isPathExcluded, loadBaseline } = require('../scripts/flake8-baseline-gate.js');
+  const baseline = loadBaseline(BASELINE);
+  for (const [key] of baseline.entries()) {
+    const filePath = key.split('::')[0];
+    assert.ok(!isPathExcluded(filePath), `baseline entry ${key} is excluded by FLAKE8_EXCLUDE`);
+  }
+});
+
 test('compareToBaseline flags only counts above baseline', () => {
   const baseline = new Map([
     ['a.py::F401', 2],
