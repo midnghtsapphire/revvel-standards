@@ -1,150 +1,44 @@
-# Legacy / out-of-scope workflow files excluded from rethab/actions-lint@v1.0.0.
-# The 2022 linter does not understand modern contexts (vars.*, concurrency inputs)
-# and treats secrets.* in non-workflow_call workflows as undeclared.
-# Do Not Under-Scope (WR-15860) allows exclusion patterns for legacy workflows.
-# New workflow files must NOT be added here — they must pass actions-lint.
+# actionlint known-issues ratchet — files with GENUINE findings, not yet fixed.
 #
-agent-audit-logger.yml
+# ── REDEFINED 2026-08-19 (WR #17734) ─────────────────────────────────────────
+# This file used to hold 150 workflows excluded because the old 2022 linter
+# (rethab/actions-lint@v1.0.0) false-positived on modern syntax it could not
+# parse. That linter has been replaced by actionlint, which understands the
+# `||` fallback operator, `secrets.*` outside workflow_call, and choice-typed
+# inputs — so 138 of those 150 files lint clean and are now actually covered.
+#
+# What remains below is the opposite of the old list: these are the ONLY files
+# where actionlint reports a REAL defect. They are excluded so the gate can be
+# green and stay meaningful, and each one is a bug to fix, not a quirk to
+# tolerate. Findings are tracked in WR #17742.
+#
+# THIS LIST MAY ONLY SHRINK. tests/actions-lint-workflow.test.js pins its
+# length; adding an entry fails the suite. Fix the workflow instead — that is
+# the point of a ratchet. Never add a NEW workflow file here.
+#
+# Current findings (actionlint 1.7.7, `-shellcheck= -pyflakes=`):
+#   agent-fallback.yml         step output `cursor_available` not defined
+#   auto-error-handler.yml     step output `issue_url` not defined
+#   auto-reset-stuck-issues.yml  stray top-level `description:` key
+#   bito-ai.yml                needs `pr-context` not defined
+#   budget-aware-agent.yml     needs `routing` / `assess-budget` not defined
+#   dprint-check.yml           `runner` context used where unavailable
+#   news-with-cache.yml        step output `date` not defined
+#   pr-review-status.yml       needs `determine-review-state` not defined
+#   release-banner-social.yml  `secrets` context used where unavailable
+#   reset-self-heal-issue.yml  stray top-level `description:` key
+#   security-fleet.yml         array evaluated inside ${{ }}
+#   wr-pr-creation.yml         input `issue_number` not defined (see #17736)
+#
 agent-fallback.yml
-agent-monitor.yml
-agent-scorecard.yml
-ai-ci-failure-helper.yml
-ai-pr-review-openrouter.yml
-ai-weekly-changelog.yml
-amplitude-events.yml
-amplitude-to-notion.yml
-anti-scaffolding-enforcer.yml
-api-rate-limit-handler.yml
-apisec-scan.yml
-app-artifact-audit.yml
-apply-revvel-command-project-fields.yml
-arsc-labels.yml
-auto-approve-clean-prs.yml
-auto-bootstrap.yml
-auto-deploy-to-stores.yml
-auto-merge.yml
+auto-error-handler.yml
 auto-reset-stuck-issues.yml
-biome-homeostat.yml
-biome-inspector.yml
-biome-medic.yml
-biome-sentinel.yml
-biome-sheaf.yml
 bito-ai.yml
-brain-dump-intake.yml
 budget-aware-agent.yml
-bulk-close-failure-spam.yml
-chaosmender.yml
-claude-renovate-review.yml
-close-linked-issue.yml
-codeql.yml
-commit-queue-monitor.yml
-content-automation.yml
-daily-diagnostic-audit.yml
-daily-news-briefing.yml
-daily-wr-summary.yml
-deep-search-research.yml
-default-project-v2-fields-pat.yml
-dependafix.yml
-deploy-oaudrey.yml
-deployment-health-check.yml
-devin-code-review.yml
-devinci-debug.yml
-dragnet-ci-autofix.yml
-dragnet-team-assignment.yml
-duplicate-detector.yml
-durability-mirror.yml
-eco-github-extensions.yml
-eeat-trust-cron.yml
-email-error-intake.yml
-fleet-controller.yml
-fleet-maintenance.yml
-flow-chart-sync.yml
-followup-checkbox-router.yml
-fork-audit-bot.yml
-formal-auto-wr.yml
-free-llm-router.yml
-goap-assignment-router.yml
-green-website.yml
-gumloop-pdf-pipeline.yml
-gumroad-covers.yml
-host.yml
-image-seo-pipeline.yml
-issue-state-machine.yml
-jules-coding-agent.yml
-jules-feedback.yml
-jules-invoke.yml
-jules-pr-comment.yml
-jules-pr-reviewer.yml
-lane-canary.yml
-mabl.yml
-mirror-malama.yml
-naukri-resume.yml
-neon-branch.yml
+dprint-check.yml
 news-with-cache.yml
-noimosai.yml
-octopus-cli.yml
-octopus-review-fallback.yml
-octopus-route.yml
-openhands-resolver.yml
-openrouter-agent.yml
-openrouter-assignee.yml
-openrouter-coder.yml
-openrouter-instantiation-check.yml
-openrouter-key-reset.yml
-openrouter-triage.yml
-panda-ops.yml
-patch-agent.yml
-pdf-work-request-router.yml
-perplexity-research-agent.yml
-persona-comment-trigger.yml
-pr-auto-review.yml
-pr-check-status.yml
-pr-review-request-handler.yml
 pr-review-status.yml
-print-project-v2-ids-pat.yml
-print-project-v2-ids.yml
-prioritize-stars.yml
-priority-router.yml
-project-board-sync.yml
-proof-of-life.yml
-ready-for-review.yml
-recovery-engine.yml
-recurse-ml.yml
 release-banner-social.yml
-repo-self-healer.yml
-research-engine.yml
-research-module.yml
 reset-self-heal-issue.yml
-revvel-engine-spine.yml
-run-human-testing-api.yml
-self-heal-pr.yml
-self-healing.yml
-set-default-project-v2-fields.yml
-ship-quality.yml
-ship-to-market.yml
-social-media-automation.yml
-stale-branch-cleanup.yml
-stuck-label-automation.yml
-stuck-pr-sweep.yml
-stuck-wr-detector.yml
-subscription-tracker.yml
-swe-agent.yml
-sync-labels.yml
-sync-oaudrey-dns.yml
-synopsys-action.yml
-test-bito-integration.yml
-third-party-action-audit.yml
-trusted-bot-auto-approve.yml
-ui-creation-engine.yml
-update-agent-creator-data.yml
-update-project-dashboard.yml
-veins-monitor.yml
-vine-to-marketplace.yml
-watchtower.yml
-website-publish.yml
-weekly-research.yml
-workflow-monitor.yml
-wr-auto-classify.yml
-wr-field-filler.yml
+security-fleet.yml
 wr-pr-creation.yml
-wr-rewrite.yml

@@ -1,15 +1,38 @@
-# Lint GitHub Actions workflow YAML with rethab/actions-lint@v1.0.0.
-# Catches reusable-workflow input/secret mistakes, missing action versions,
-# and parser-level YAML issues before they fail at runtime.
+# Lint GitHub Actions workflow YAML with actionlint (rhysd/actionlint).
 #
-# Scope notes (WR-15860):
-# - rethab/actions-lint accepts exactly one `files` path per invocation, so we
-#   discover the file list and fan out via matrix.
-# - Legacy workflows that trip the 2022 parser/rules (vars.* context, secrets
-#   used outside workflow_call, etc.) live in .github/actions-lint-exclude.txt.
-#   New workflow files must pass and must not be added to that exclude list.
-# - Node 16 runtime is forced onto Node 24 via FORCE_JAVASCRIPT_ACTIONS_TO_NODE24
-#   (same pattern as trusted-bot-auto-approve / stuck-label-watchdog).
+# ── LINTER REPLACED 2026-08-19 (WR #17734) ───────────────────────────────────
+# Previously rethab/actions-lint@v1.0.0, a 2022-era linter that had been
+# failing on EVERY run on main for days while it was configured as a required
+# check. Its failures were false positives, not defects. Two representative
+# cases:
+#
+#   auto-branch-update.yml:44
+#     Secret "AGENT_PR_TOKEN || secrets.GITHUB_TOKEN" is not declared
+#     -> it parsed the whole `${{ secrets.A || secrets.B }}` expression as one
+#        secret name; it does not understand the `||` fallback operator. That
+#        fallback is the pattern CLAUDE.md gotcha #3 actually mandates.
+#
+#   bernstein-orchestrator.yml:101-104
+#     Secret "ANTHROPIC_API_KEY" is not declared
+#     -> it treats `secrets.*` in non-workflow_call workflows as undeclared,
+#        a limitation the old exclude-list header documented in its own words.
+#
+# It also could not resolve `choice`-typed inputs (see #17644), which is why
+# four attempts to route agent-dispatcher.yml through `env:` were blocked.
+#
+# To keep the gate green, 150 of 227 workflow files had been excluded from
+# linting entirely — so the required check covered a third of the surface and
+# still failed. actionlint parses all 227 and reports 14 genuine findings.
+#
+# Docs already named actionlint as the intended tool before this change:
+# standards/CLI_MCP_AUTOMATION.md, docs/TEST_HARNESS_RESEARCH.md §4.2, and
+# docs/AUTOMATION_AUDIT.md ("Fixing it needs the linter replaced").
+#
+# Scope note: shellcheck/pyflakes integration is deliberately disabled here so
+# this gate covers workflow syntax, expressions and contexts. Shell linting is
+# a separate concern (super-linter.yml, .pre-commit-hooks). This is strictly
+# more coverage than the old gate, not less.
+# ──────────────────────────────────────────────────────────────────────────────
 name: Actions Lint
 
 on:
@@ -33,22 +56,44 @@ concurrency:
   group: actions-lint-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Pin the linter by version AND verify the download by checksum, so a
+  # compromised or swapped release cannot silently execute here
+  # (CLAUDE.md gotcha #8 — pin third-party tooling, not floating tags).
+  ACTIONLINT_VERSION: "1.7.7"
+  ACTIONLINT_SHA256: "023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757"
+
 jobs:
-  discover:
-    name: Discover workflow files
+  # Single stable job name so branch protection can require one check.
+  # This replaces the previous discover + 200-way matrix + gate arrangement:
+  # actionlint lints every file in one invocation, so the fan-out bought
+  # nothing but ~215 check runs of noise on every pull request.
+  actions-lint:
+    name: actions-lint
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      files: ${{ steps.list.outputs.files }}
-      count: ${{ steps.list.outputs.count }}
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
 
-      - name: Build lint matrix (respect exclude list)
-        id: list
+      - name: Install actionlint (pinned + checksum-verified)
+        shell: bash
+        run: |
+          set -euo pipefail
+          tarball="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          url="https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${tarball}"
+
+          curl -fsSL --retry 3 --retry-delay 2 -o "$tarball" "$url"
+
+          echo "${ACTIONLINT_SHA256}  ${tarball}" | sha256sum -c -
+
+          tar xzf "$tarball" actionlint
+          chmod +x actionlint
+          ./actionlint --version
+
+      - name: Lint workflows
         shell: bash
         run: |
           set -euo pipefail
@@ -57,7 +102,6 @@ jobs:
           declare -A EXCLUDE=()
           if [[ -f "$EXCLUDE_FILE" ]]; then
             while IFS= read -r line || [[ -n "$line" ]]; do
-              # Strip comments and whitespace.
               line="${line%%#*}"
               line="$(echo "$line" | xargs)"
               [[ -z "$line" ]] && continue
@@ -66,120 +110,25 @@ jobs:
           fi
 
           files=()
+          skipped=0
           shopt -s nullglob
           for path in .github/workflows/*.yml .github/workflows/*.yaml; do
             base="$(basename "$path")"
             if [[ -n "${EXCLUDE[$base]+x}" ]]; then
-              echo "exclude: $path"
+              skipped=$((skipped + 1))
               continue
             fi
             files+=("$path")
           done
 
-          count="${#files[@]}"
-          echo "Linting ${count} workflow file(s)."
+          echo "Linting ${#files[@]} workflow file(s); ${skipped} on the known-issues ratchet."
 
-          if [[ "$count" -eq 0 ]]; then
-            echo "files=[]" >> "$GITHUB_OUTPUT"
-            echo "count=0" >> "$GITHUB_OUTPUT"
-            echo "::warning::No workflow files left to lint after excludes."
-            exit 0
-          fi
-
-          # Compact JSON array for matrix.file
-          json="["
-          first=1
-          for f in "${files[@]}"; do
-            if [[ "$first" -eq 1 ]]; then
-              first=0
-            else
-              json+=","
-            fi
-            json+="\"${f}\""
-          done
-          json+="]"
-
-          {
-            echo "files<<EOF"
-            echo "$json"
-            echo "EOF"
-            echo "count=${count}"
-          } >> "$GITHUB_OUTPUT"
-
-  lint:
-    name: Lint ${{ matrix.file }}
-    needs: discover
-    if: needs.discover.outputs.count != '0'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      # rethab/actions-lint@v1.0.0 ships a node16 action; force modern runtime.
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-    strategy:
-      fail-fast: false
-      max-parallel: 12
-      matrix:
-        file: ${{ fromJson(needs.discover.outputs.files) }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-
-      - name: Verify target exists
-        shell: bash
-        env:
-          TARGET_FILE: ${{ matrix.file }}
-        run: |
-          set -euo pipefail
-          if [[ ! -f "$TARGET_FILE" ]]; then
-            echo "::error::Workflow file missing: $TARGET_FILE"
-            exit 1
-          fi
-          echo "Linting $TARGET_FILE"
-
-      - name: actions-lint
-        # Pin to full commit SHA (CLAUDE.md gotcha #8 / supply-chain policy).
-        # Tag v1.0.0 → c449a3994b36a467abb90c24a1c0d5c30b6db0d4
-        uses: rethab/actions-lint@c449a3994b36a467abb90c24a1c0d5c30b6db0d4 # v1.0.0
-        with:
-          files: ${{ matrix.file }}
-
-  # Gate job so branch protection can require a single stable check name
-  # even though the matrix expands/contracts with the exclude list.
-  actions-lint:
-    name: actions-lint
-    needs: [discover, lint]
-    if: always()
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Enforce lint outcome
-        shell: bash
-        run: |
-          set -euo pipefail
-          discover_count="${{ needs.discover.outputs.count }}"
-          lint_result="${{ needs.lint.result }}"
-          discover_result="${{ needs.discover.result }}"
-
-          echo "discover=${discover_result} count=${discover_count} lint=${lint_result}"
-
-          if [[ "$discover_result" != "success" ]]; then
-            echo "::error::Discover job failed."
+          if [[ "${#files[@]}" -eq 0 ]]; then
+            echo "::error::No workflow files left to lint — the ratchet has swallowed the gate."
             exit 1
           fi
 
-          # No files to lint (everything excluded) is a soft pass with warning
-          # already emitted upstream — still green so empty matrices don't
-          # wedge required checks.
-          if [[ "${discover_count}" == "0" ]]; then
-            echo "No files to lint; treating as success."
-            exit 0
-          fi
+          # Quote the array expansion (CLAUDE.md gotcha #5 / SC2128).
+          ./actionlint -shellcheck= -pyflakes= "${files[@]}"
 
-          if [[ "$lint_result" != "success" ]]; then
-            echo "::error::One or more workflow files failed actions-lint."
-            exit 1
-          fi
-
-          echo "All targeted workflow files passed actions-lint."
+          echo "All linted workflow files passed actionlint."
