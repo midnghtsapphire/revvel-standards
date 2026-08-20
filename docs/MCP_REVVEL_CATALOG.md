@@ -240,7 +240,69 @@ Heterogeneous-ensemble Analytic Hierarchy Process (AHP) decision engine. Three j
 
 ---
 
-### 5. `chrome-devtools-mcp`
+### 5. `claude-notebook-mcp` (in-tree, WR #17733)
+
+| Field | Value |
+|---|---|
+| **Repo** | In-tree: `mcp-servers/claude-notebook-mcp/` (revvel-standards) |
+| **Language** | Python (FastMCP) |
+| **Transport** | stdio |
+| **Database** | Local JSON under `CLAUDE_NOTEBOOK_DIR` (default `~/.claude-notebook-mcp/notebooks`) |
+| **Run** | `uv run python ./mcp-servers/claude-notebook-mcp/claude_notebook_mcp/server.py` |
+| **Example** | `PYTHONPATH=mcp-servers/claude-notebook-mcp python3 mcp-servers/claude-notebook-mcp/examples/example_call.py` |
+| **MCP Status** | ✅ Complete (disabled by default until deps installed) |
+| **WR** | [#17733](https://github.com/midnghtsapphire/revvel-standards/issues/17733) |
+| **Inspired by** | [jacob-bd/gemini-notebook-mcp-cli](https://github.com/jacob-bd/gemini-notebook-mcp-cli) |
+
+**What it does:**
+Local notebook cell runtime for Claude Desktop / Claude Code. Create notebooks, manage code/markdown/raw cells, execute Python with a **persistent per-notebook kernel** (or JavaScript via `node`), render markdown, attach files, drive interactive widgets, and export/import ipynb sessions — fully offline, no Google auth. The vendored Gemini NotebookLM MCP remains available as `gemini-notebook-mcp` (disabled until `nlm login`).
+
+**Tools (28):** notebook CRUD, cell CRUD + execute/execute_all, kernel_variables/reset, markdown_render, attachment_*, widget_*, notebook_export/import, session save/load, `render_claude_notebook_mcp_entry`, `list_server_tools`.
+
+**Resources (2):**
+
+| Resource | Description |
+|---|---|
+| `data://claude-notebook/env-schema` | Optional `CLAUDE_NOTEBOOK_DIR` |
+| `data://claude-notebook/architecture` | WR binding + capability list |
+
+**`.mcp.json` entry:**
+```json
+"claude-notebook-mcp": {
+  "command": "uv",
+  "args": [
+    "run", "python",
+    "./mcp-servers/claude-notebook-mcp/claude_notebook_mcp/server.py"
+  ],
+  "env": {
+    "CLAUDE_NOTEBOOK_DIR": "${CLAUDE_NOTEBOOK_DIR:-.claude-notebooks}"
+  }
+}
+```
+
+**When to use:** Interactive computational notebooks inside Claude (data analysis scratchpads, multi-step code with shared state, markdown lab notes). Prefer this over the Gemini NotebookLM server when you need offline/keyless operation or true cell execution.
+
+**Claude Desktop:** Settings → Developer → Edit Config → paste the `python3 -m claude_notebook_mcp` snippet from `mcp-servers/claude-notebook-mcp/README.md` → quit and reopen Claude → confirm tools under the hammer icon.
+
+---
+
+### 6. `gemini-notebook-mcp` (vendored Claude link)
+
+| Field | Value |
+|---|---|
+| **Repo** | Vendored: `mcp-servers/gemini-notebook-mcp-cli/` · upstream [jacob-bd/gemini-notebook-mcp-cli](https://github.com/jacob-bd/gemini-notebook-mcp-cli) |
+| **Language** | Python (FastMCP) |
+| **Transport** | stdio |
+| **Auth** | Google account via `nlm login` (browser cookies) |
+| **Run** | `nlm setup add claude-desktop` or enable `.mcp.json` entry after install |
+| **MCP Status** | Vendored upstream; disabled until auth |
+| **WR** | [#17733](https://github.com/midnghtsapphire/revvel-standards/issues/17733) (Claude link) |
+
+**What it does:** Programmatic access to Google Gemini Notebook (NotebookLM): notebooks, sources, studio artifacts (audio/video/slides), research, chat sessions. This is the original Claude-link target of WR #17733; use when you need live Gemini Notebook cloud features.
+
+---
+
+### 7. `chrome-devtools-mcp`
 
 | Field | Value |
 |---|---|

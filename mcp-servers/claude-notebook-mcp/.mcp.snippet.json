@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "claude-notebook-mcp": {
+      "_comment": "WR #17733 — local notebook cell runtime for Claude Desktop / Claude Code. Inspired by jacob-bd/gemini-notebook-mcp-cli. No API keys required.",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "./mcp-servers/claude-notebook-mcp/claude_notebook_mcp/server.py"
+      ],
+      "env": {
+        "CLAUDE_NOTEBOOK_DIR": "${CLAUDE_NOTEBOOK_DIR:-.claude-notebooks}"
+      }
+    },
+    "gemini-notebook-mcp": {
+      "_comment": "Claude link to vendored jacob-bd/gemini-notebook-mcp-cli (Google Gemini Notebook / NotebookLM). Requires `nlm login` auth cookies.",
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "./mcp-servers/gemini-notebook-mcp-cli",
+        "notebooklm-mcp"
+      ],
+      "env": {},
+      "disabled": true,
+      "disabledReason": "Enable after: cd mcp-servers/gemini-notebook-mcp-cli && pip install -e . && nlm login. This talks to Google Gemini Notebook and needs browser auth."
+    }
+  }
+}
