@@ -54,7 +54,6 @@ const WORKFLOWS = path.join(ROOT, '.github', 'workflows');
  * Fixing one of these means deleting its name here in the same commit.
  */
 const KNOWN_BROKEN = Object.freeze([
-  'proposal-prosecution.yml', // #17784 — nested ternary missing its else branch
   'ship-to-market.yml', // #17785 — duplicate `const chrome` / `const vscode`
 ]);
 
@@ -121,7 +120,7 @@ test('the known-broken list is a ratchet — it may only shrink, and only by nam
   // broken, fix the workflow; if it fails because one was fixed, delete its name.
   assert.deepEqual(
     [...KNOWN_BROKEN].sort(),
-    ['proposal-prosecution.yml', 'ship-to-market.yml'],
+    ['ship-to-market.yml'],
   );
 });
 
