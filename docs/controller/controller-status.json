@@ -3,22 +3,22 @@
   "generated_at": "2026-08-19T22:57:32.143Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 10,
+    "running": 28,
     "cap": 20,
-    "over_capacity": false
+    "over_capacity": true
   },
   "counts": {
-    "total": 18,
-    "running": 10,
-    "queued": 8,
+    "total": 41,
+    "running": 28,
+    "queued": 13,
     "done": 0,
-    "healthy": 2,
+    "healthy": 20,
     "stalled": 0,
     "runaway": 8,
     "protected": 1,
-    "occupancy": 10,
+    "occupancy": 28,
     "occupancyCap": 20,
-    "overCapacity": false
+    "overCapacity": true
   },
   "orchestrators": [
     {
