@@ -1,19 +1,33 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-20T08:12:04.190Z",
+  "generated_at": "2026-08-20T09:11:18.319Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 32352484423,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32352484423",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32347993321,
+            "name": "Vine → Marketplace Automation",
+            "path": ".github/workflows/vine-to-marketplace.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32347993321",
+            "conclusion": "failure"
+          },
           {
             "id": 32347508563,
             "name": "Hourly Star Growth & Prioritization Engine",
