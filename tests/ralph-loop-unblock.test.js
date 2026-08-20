@@ -116,3 +116,43 @@ test('the success comment does not claim more than was verified', () => {
   );
   assert.match(body, /Verified/, 'the comment should state what was verified');
 });
+
+test('a removeLabel failure that is not 404 must surface, not be swallowed', () => {
+  // Both label-removal loops in this workflow read `} catch (_) {}` — every
+  // error discarded, silently.
+  //
+  // CLAUDE.md gotcha #1 asks for a catch around `removeLabel` because the call
+  // is not idempotent: removing a label that is already absent 404s, and that
+  // 404 is the desired end state. But a bare catch swallows 401 and 403 too. On
+  // a restricted token the labels stay on the PR, the loop moves on, and the
+  // very next statement posts "merge block removed" — the block still in place,
+  // the failure invisible. That is gotcha #6: the exit path claims a
+  // postcondition nothing established.
+  //
+  // The narrow catch keeps the idempotence and lets a real failure fail.
+  const raw = fs.readFileSync(WORKFLOW, 'utf8');
+
+  assert.doesNotMatch(
+    raw,
+    /catch \(_\) \{\}/,
+    'a catch that discards every error cannot tell "already absent" from "not permitted"'
+  );
+
+  const removals = [...raw.matchAll(/removeLabel\(\{/g)];
+  assert.ok(removals.length > 0, 'expected at least one removeLabel call to guard');
+
+  for (const match of removals) {
+    // The catch belongs to this call, so look only as far as the next one.
+    const rest = raw.slice(match.index);
+    const nextCall = rest.slice(1).indexOf('removeLabel({');
+    const scope = nextCall === -1 ? rest : rest.slice(0, nextCall + 1);
+    // The condition must be exactly `!== 404`. A widened guard such as
+    // `!== 404 && !== 403` reads as narrow but restores the original defect for
+    // the status that actually matters — a token without `issues: write`.
+    assert.match(
+      scope,
+      /catch \((\w+)\) \{[\s\S]*?if \(\1\.status !== 404\) throw \1;/,
+      'every removeLabel catch must re-throw anything that is not a 404'
+    );
+  }
+});

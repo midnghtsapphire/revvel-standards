@@ -140,7 +140,13 @@ jobs:
                   issue_number: pr_number,
                   name: label,
                 });
-              } catch (_) {}
+              } catch (err) {
+                // The label already being absent is the desired end state, so a
+                // 404 is success (CLAUDE.md gotcha #1). Anything else — 401, 403
+                // on a restricted token, a 5xx — means the block may still be in
+                // place, and must not be reported as removed (gotcha #6).
+                if (err.status !== 404) throw err;
+              }
             }
             try {
               await github.rest.issues.addLabels({
@@ -268,7 +274,13 @@ jobs:
                   issue_number: pr_number,
                   name: label,
                 });
-              } catch (_) {}
+              } catch (err) {
+                // The label already being absent is the desired end state, so a
+                // 404 is success (CLAUDE.md gotcha #1). Anything else — 401, 403
+                // on a restricted token, a 5xx — means the block may still be in
+                // place, and must not be reported as removed (gotcha #6).
+                if (err.status !== 404) throw err;
+              }
             }
 
             await github.rest.issues.createComment({
