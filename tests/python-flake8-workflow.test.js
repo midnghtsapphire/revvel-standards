@@ -276,14 +276,28 @@ test('every path in .flake8ignore is genuinely excluded by the gate', () => {
   }
 });
 
-test('.flake8 exclude also covers what the gate excludes (no silent divergence)', () => {
+test('.flake8 and the gate exclude exactly the same set (drift in EITHER direction)', () => {
   const { FLAKE8_EXCLUDE } = require('../scripts/flake8-baseline-gate.js');
-  const cfg = new Set(excludesFromFlake8Cfg());
-  for (const p of FLAKE8_EXCLUDE.split(',').map((s) => s.trim())) {
-    assert.ok(
-      cfg.has(p),
-      `the gate excludes "${p}" but .flake8 does not. A developer running `
-        + '`flake8` locally would then see findings CI does not, or vice versa.',
-    );
-  }
+  const cfg = excludesFromFlake8Cfg();
+  const gate = FLAKE8_EXCLUDE.split(',').map((s) => s.trim()).filter(Boolean);
+
+  // Equality, not subset. A one-directional check misses the inverse drift:
+  // adding an exclusion to .flake8 alone would pass while the gate still lints
+  // the path, so a developer running `flake8` locally sees a clean tree and CI
+  // does not. Both directions are the same bug wearing different hats.
+  const onlyInGate = gate.filter((p) => !cfg.includes(p));
+  const onlyInCfg = cfg.filter((p) => !gate.includes(p));
+
+  assert.deepEqual(
+    onlyInGate,
+    [],
+    `the gate excludes ${JSON.stringify(onlyInGate)} but .flake8 does not — `
+      + 'a local `flake8` run would report findings CI never sees',
+  );
+  assert.deepEqual(
+    onlyInCfg,
+    [],
+    `.flake8 excludes ${JSON.stringify(onlyInCfg)} but the gate does not — `
+      + 'a local `flake8` run would look clean while CI fails on those paths',
+  );
 });
