@@ -127,8 +127,62 @@ spec:
 
 ---
 
+## GitHub Container Registry (GHCR)
+
+Default registry for midnghtsapphire container images is **GitHub Container Registry**
+(`ghcr.io`), not Docker Hub.
+
+| Item | Value |
+| --- | --- |
+| Registry host | `ghcr.io` |
+| Image naming | **lowercase only** — `ghcr.io/<owner>/<repo>/<package>:<tag>` |
+| Same-repo push auth | Job `GITHUB_TOKEN` + workflow `permissions.packages: write` |
+| Private pull (external host) | Secret **name** `GHCR_READ_TOKEN` (`read:packages`) — see `docs/SECRETS_MAP.md` |
+| Publish workflow | `.github/workflows/ghcr-publish.yml` |
+| Setup console | `products/ghcr-console` (port 3012) |
+| Auditor | `node scripts/ghcr-setup.js` (exit 0 = wired) |
+| Human runbook | `docs/GHCR_SETUP.md` |
+
+### Example publish (Actions)
+
+```yaml
+permissions:
+  contents: read
+  packages: write
+
+steps:
+  - uses: docker/login-action@… # pin full SHA
+    with:
+      registry: ghcr.io
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+  - uses: docker/build-push-action@… # pin full SHA
+    with:
+      context: products/ghcr-console
+      push: true
+      tags: ghcr.io/midnghtsapphire/revvel-standards/ghcr-console:latest
+```
+
+### Example pull / run
+
+```bash
+docker pull ghcr.io/midnghtsapphire/revvel-standards/ghcr-console:latest
+docker run --rm -p 3012:3012 ghcr.io/midnghtsapphire/revvel-standards/ghcr-console:latest
+```
+
+Login for **private** packages (token on stdin — never argv):
+
+```bash
+echo "$GHCR_READ_TOKEN" | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+```
+
+Reference: [Introducing GitHub Container Registry](https://github.blog/news-insights/product-news/introducing-github-container-registry/)
+
+---
+
 ## Notes
 
 - Always use health endpoints for container health checks
 - Set appropriate resource limits
 - Use secrets for sensitive data
+- Prefer GHCR (`ghcr.io`) for images built from this monorepo; document package names in `docs/GHCR_SETUP.md`
