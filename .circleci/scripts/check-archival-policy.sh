@@ -13,8 +13,11 @@
 #
 # Env:
 #   ALLOW_DESTROY   'true' when the PR carries the allow-destroy label (skips
-#                   file-deletion check; mirrors no-destroy-guard.js behaviour)
+#                   file-deletion check; mirrors no-destroy-guard.js behaviour).
+#                   When unset, and CIRCLE_PULL_REQUEST names a PR, the label is
+#                   resolved from the GitHub API — see resolve_allow_destroy().
 #   BASE_SHA        merge-base commit to diff against (auto-detected when unset)
+#   GITHUB_TOKEN    (or GH_TOKEN) read access, for that label lookup
 #
 # Usage in CI (CircleCI):
 #   - run:
@@ -25,7 +28,84 @@
 
 set -euo pipefail
 
-ALLOW_DESTROY="${ALLOW_DESTROY:-false}"
+# ── allow-destroy resolution ──────────────────────────────────────────────────
+#
+# RVS-AGENT-001 §7 reserves deletion to a human, and the sanctioned way for a
+# human to ratify one is the `allow-destroy` label. GitHub Actions'
+# no-destroy-guard.yml reads that label. CircleCI's policy-check hardcoded
+#
+#     ALLOW_DESTROY: "false"
+#
+# in .circleci/config.yml, with a comment saying the label "is not available in
+# CircleCI context" — so the sanctioned path had a required check that could
+# never turn green, and a ratified deletion could not merge (#17829).
+#
+# The label IS reachable: CIRCLE_PULL_REQUEST carries the PR URL on every PR
+# build. It needs a token, because this repository is private.
+#
+# Fails CLOSED, and says why. An unreadable label is not permission.
+resolve_allow_destroy() {
+  # An explicit setting always wins — a human or another job may have decided.
+  if [ -n "${ALLOW_DESTROY:-}" ]; then
+    echo "${ALLOW_DESTROY}"
+    return 0
+  fi
+  if [ -z "${CIRCLE_PULL_REQUEST:-}" ]; then
+    echo "false"
+    return 0
+  fi
+
+  local pr_number="${CIRCLE_PULL_REQUEST##*/}"
+  case "$pr_number" in
+    ''|*[!0-9]*)
+      echo "::warn:: could not read a PR number from CIRCLE_PULL_REQUEST" >&2
+      echo "false"; return 0 ;;
+  esac
+
+  local token="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+  if [ -z "$token" ]; then
+    echo "   ℹ️  allow-destroy cannot be checked: no GITHUB_TOKEN in this job." >&2
+    echo "      Add GITHUB_TOKEN (read access) to the CircleCI project or a" >&2
+    echo "      context attached to policy-check, and a human's allow-destroy" >&2
+    echo "      label will ratify a deletion here as it already does in" >&2
+    echo "      no-destroy-guard.yml. Until then this check stays strict." >&2
+    echo "false"; return 0
+  fi
+
+  # Secret on stdin, never in argv — `curl -H "Authorization: Bearer $T"` puts
+  # the token in the process list for anything that can read /proc
+  # (CLAUDE.md gotcha #4). --config - takes the header from stdin instead.
+  local slug="${CIRCLE_PROJECT_USERNAME:-}/${CIRCLE_PROJECT_REPONAME:-}"
+  local body
+  if ! body="$(
+    printf 'header = "Authorization: Bearer %s"\nheader = "Accept: application/vnd.github+json"\n' "$token" \
+      | curl --config - --silent --show-error --fail --max-time 20 \
+          "https://api.github.com/repos/${slug}/pulls/${pr_number}" 2>/dev/null
+  )"; then
+    echo "   ℹ️  allow-destroy lookup failed (API unreachable or token lacks" >&2
+    echo "      access to ${slug}). Staying strict." >&2
+    echo "false"; return 0
+  fi
+
+  # Match the label by name inside the labels array, not anywhere in the body:
+  # a PR whose TITLE or BODY merely says "allow-destroy" must not ratify itself.
+  if printf '%s' "$body" | node -e '
+      let raw = "";
+      process.stdin.on("data", (c) => { raw += c; });
+      process.stdin.on("end", () => {
+        let pr;
+        try { pr = JSON.parse(raw); } catch { process.exit(1); }
+        const names = (pr.labels || []).map((l) => (typeof l === "string" ? l : l.name));
+        process.exit(names.includes("allow-destroy") ? 0 : 1);
+      });
+    '; then
+    echo "   ✅ allow-destroy label found on PR #${pr_number} — deletions ratified." >&2
+    echo "true"; return 0
+  fi
+  echo "false"
+}
+
+ALLOW_DESTROY="$(resolve_allow_destroy)"
 ERRORS=0
 
 # ── Determine diff base ────────────────────────────────────────────────────────
