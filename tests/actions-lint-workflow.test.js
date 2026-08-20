@@ -42,18 +42,11 @@ const WORKFLOWS_DIR = path.join(ROOT, '.github', 'workflows');
 // which is what left this gate red and two-thirds blind in the first place.
 // Fixing them is tracked in #17742.
 const RATCHET = Object.freeze([
-  'agent-fallback.yml',
-  'auto-error-handler.yml',
-  'auto-reset-stuck-issues.yml',
-  'bito-ai.yml',
-  'budget-aware-agent.yml',
-  'dprint-check.yml',
-  'news-with-cache.yml',
-  'pr-review-status.yml',
-  'release-banner-social.yml',
-  'reset-self-heal-issue.yml',
-  'security-fleet.yml',
-  'wr-pr-creation.yml',
+  // Empty, and it must stay that way (#17742). actionlint 1.7.7 reports zero
+  // findings across all 227 workflows with no exclusions. Adding a name here is
+  // not a fix — fix the workflow. The twelve that were listed are documented in
+  // .github/actions-lint-exclude.txt with what each one actually turned out to
+  // be; none was a style nit, every one was dead or broken code.
 ]);
 
 function readWorkflow() {
