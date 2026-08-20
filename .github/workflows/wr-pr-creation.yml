@@ -1069,17 +1069,13 @@ jobs:
               );
 
             for (const name of labelsToRemove) {
-              try {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issueNumber,
-                  name,
-                });
-                core.info(`Removed recovered WR label: ${name}`);
-              } catch (error) {
-                core.notice(`Could not remove label "${name}": ${error.message}`);
-              }
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                name,
+              }).catch(err => { if (err.status !== 404) throw err; });
+              core.info(`Removed recovered WR label: ${name}`);
             }
       - name: Handle workflow failure
         if: failure()

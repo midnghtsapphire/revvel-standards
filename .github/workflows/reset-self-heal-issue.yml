@@ -74,19 +74,13 @@ jobs:
             const SELF_HEAL_LABELS = ['auto-fix', 'ralph-loop', 'scorecard'];
             
             for (const label of SELF_HEAL_LABELS) {
-              try {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issueNumber,
-                  name: label,
-                });
-                console.log(`Removed label: ${label}`);
-              } catch (error) {
-                if (error.status !== 404) {
-                  console.log(`Could not remove ${label}: ${error.message}`);
-                }
-              }
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                name: label,
+              }).catch(err => { if (err.status !== 404) throw err; });
+              console.log(`Removed label: ${label}`);
             }
 
       - name: Add self-heal labels back
