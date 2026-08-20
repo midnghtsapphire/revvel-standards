@@ -64,6 +64,13 @@ jobs:
       - name: Parse issue or use workflow inputs
         id: parse
         uses: actions/github-script@v9.0.0
+        env:
+          IN_BUSINESS: ${{ inputs.business }}
+          IN_INDUSTRY: ${{ inputs.industry }}
+          IN_LOCATION: ${{ inputs.location }}
+          IN_SERVICES: ${{ inputs.services }}
+          IN_PLATFORM: ${{ inputs.platform }}
+          IN_ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
           script: |
             const fs = require('fs');
@@ -71,12 +78,12 @@ jobs:
             let business, industry, location, services, platform, issueNumber;
             
             if (context.eventName === 'workflow_dispatch') {
-              business = '${{ inputs.business }}';
-              industry = '${{ inputs.industry }}';
-              location = '${{ inputs.location }}';
-              services = '${{ inputs.services }}' || '';
-              platform = '${{ inputs.platform }}' || 'website';
-              issueNumber = '${{ inputs.issue_number }}' || '';
+              business = process.env.IN_BUSINESS || '';
+              industry = process.env.IN_INDUSTRY || '';
+              location = process.env.IN_LOCATION || '';
+              services = process.env.IN_SERVICES || '';
+              platform = process.env.IN_PLATFORM || 'website';
+              issueNumber = process.env.IN_ISSUE_NUMBER || '';
             } else {
               issueNumber = context.issue.number;
               const issueBody = context.payload.issue?.body || '';
@@ -144,10 +151,12 @@ jobs:
       - name: Create summary comment
         if: steps.parse.outputs.issue_number != ''
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.parse.outputs.issue_number }}
         with:
           script: |
             const fs = require('fs');
-            const issueNumber = ${{ steps.parse.outputs.issue_number }};
+            const issueNumber = Number(process.env.ISSUE_NUMBER);
             
             // Read the README from output
             const readmePath = './ui-creation-output/README.md';
@@ -205,11 +214,13 @@ jobs:
       - name: Label issue as complete
         if: steps.parse.outputs.issue_number != '' && github.event_name == 'issues'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.parse.outputs.issue_number }}
         with:
           script: |
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: ${{ steps.parse.outputs.issue_number }},
+              issue_number: Number(process.env.ISSUE_NUMBER),
               labels: ['ui-creation-complete']
             });

@@ -32,11 +32,13 @@ jobs:
       - name: Fetch stuck issues
         id: fetch
         uses: actions/github-script@v9.0.0
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
           script: |
-            const thresholdHours = parseInt('${{ env.STUCK_THRESHOLD_HOURS }}');
-            const pendingHours = parseInt('${{ env.PENDING_THRESHOLD_HOURS }}');
-            const dryRun = ${{ github.event.inputs.dry_run == 'true' }};
+            const thresholdHours = parseInt(process.env.STUCK_THRESHOLD_HOURS || '', 10);
+            const pendingHours = parseInt(process.env.PENDING_THRESHOLD_HOURS || '', 10);
+            const dryRun = process.env.DRY_RUN === 'true';
             
             // Guard each list call: an installation rate-limit 403 here must
             // degrade gracefully (skip that label bucket) instead of
@@ -112,12 +114,15 @@ jobs:
         if: steps.fetch.outputs.count != '0'
         id: analyze
         uses: actions/github-script@v9.0.0
+        env:
+          STUCK_ISSUES: ${{ steps.fetch.outputs.stuck_issues }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
           script: |
-            const issues = JSON.parse('${{ steps.fetch.outputs.stuck_issues }}');
-            const thresholdHours = parseInt('${{ env.STUCK_THRESHOLD_HOURS }}');
-            const pendingHours = parseInt('${{ env.PENDING_THRESHOLD_HOURS }}');
-            const dryRun = ${{ github.event.inputs.dry_run == 'true' }};
+            const issues = JSON.parse(process.env.STUCK_ISSUES || '[]');
+            const thresholdHours = parseInt(process.env.STUCK_THRESHOLD_HOURS || '', 10);
+            const pendingHours = parseInt(process.env.PENDING_THRESHOLD_HOURS || '', 10);
+            const dryRun = process.env.DRY_RUN === 'true';
             
             const diagnoses = [];
             

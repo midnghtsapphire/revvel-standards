@@ -58,15 +58,9 @@ const UNSAFE = /\$\{\{[^}]*\b(?:steps|needs|inputs|env|matrix)\./;
  */
 const AWAITING_CONVERSION = Object.freeze([
   'auto-deploy-to-stores.yml',
-  'auto-error-handler.yml',
-  'eeat-trust-cron.yml',
   'needs-action-router.yml',
   'openrouter-assignee.yml',
   'ralph-loop.yml',
-  'stuck-check-watchdog.yml',
-  'ui-creation-engine.yml',
-  'weekly-research.yml',
-  'wr-pr-creation.yml',
 ]);
 
 function scriptBodies() {
