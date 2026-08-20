@@ -490,3 +490,16 @@ detector), `tests/chaosmender.test.js` (the regression tests).
 
 **Next Action:** Human (`midnghtsapphire`) reviews/merges the fix PR; do not reopen #16791. Optionally wire `node scripts/check-dependabot-split-deps.js` into `automation-doctor` / CI later.
 **Next Action:** Fleet review focus for this PR should be *checking the two proven fixes* (WR-01, WR-02/03) and the two small dependency fixes (WR-04), not re-deriving them. Three items need an owner/product decision before any agent writes code: WR-05 (`ship-to-market.yml`'s missing `record.js` — build it or comment out the video-deliverable step), WR-06/WR-07 (`label-inventory.js` / `validate_jsonl.py` — wire in or archive-with-attribution, never delete per standing owner preference). WR-08 flags that the WR-drafting pipeline itself — 35 fully-drafted WRs across two prior audits, never filed as GitHub issues — is the largest unwired-flow pattern in the repo by volume; needs an owner pass over `wr/pending/` to mark stale/superseded items before a bulk-filing workflow gets built. WR-09's 16 scanner hits are queued for the next audit to individually root-cause. Two proposed CI vaccines from this session (`find-duplicate-json-keys.js`-style package.json lint; "named test/workflow file must exist" check for `scripts/**` and `skills/**/SKILL.md`) are not yet wired into `scripts/automation-doctor.js` — good candidates for a fast follow-up WR once this PR lands.
+
+---
+**Date/Time:** 2026-08-20T21:50:00Z
+
+**Task Attempted:** BIOME inspector #17774 — 19 projects not testable-live (live URLs returned HTTP 402).
+
+**Outcome:** Success. Pointed `docs/app-deployments.yml` `deployment.base_url` at the working GitHub Pages host; regenerated auditor docs/READMEs; hardened `vercel_sync` + auditor so a disabled Vercel project cannot clobber the live base or wipe custom SPAs.
+
+**Root Cause of Failure (If any):** Entire `revvel-standards.vercel.app` project returns `402` with `x-vercel-error: DEPLOYMENT_DISABLED` (billing/disabled deployment). BIOME inspector correctly marked every derived `/docs/<app>/` URL unreachable. GitHub Pages (`static.yml` → `https://midnghtsapphire.github.io/revvel-standards/`) already served all 19 docs pages with HTTP 200, but the registry still preferred the dead Vercel base.
+
+**Self-Healing Fix / Learned Lesson:** (1) Prefer the credit-free GitHub Pages host as `deployment.base_url` whenever Vercel is disabled. (2) `vercel_sync.url_is_live` must HTTP-check before writing base_url/live_url — never promote a 402 DEPLOYMENT_DISABLED URL. (3) `app_artifact_auditor` must not overwrite docs pages that lack the auditor marker (custom SPAs like caspian-channel-console). (4) README Live Deployment rewrites must swap the URL in-place and preserve notes under the section. (5) Symptom → fix lookup: inspector worklist of 402s on `*.vercel.app` ⇒ check Pages first, then retarget base_url.
+
+**Next Action:** After merge, biome-inspector scheduled run should auto-close #17774 when scoreboard is all-testable-live. Re-enable Vercel separately (billing) if a Vercel production URL is desired again — sync will only adopt it when 2xx.

@@ -2,7 +2,7 @@
 
 ## Live Deployment
 
-▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/caspian-channel-console/)**
+▶️ **[Open the live app & test it](https://midnghtsapphire.github.io/revvel-standards/docs/caspian-channel-console/)**
 
 Static product path (also deployable as its own Vercel project with
 `outputDirectory=public`):

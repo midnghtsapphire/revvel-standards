@@ -1,20 +1,22 @@
 # Live Deployment Registry — source of truth for each app's clickable test link.
 #
-# Definition of Done #1: every app ships a live Vercel URL, surfaced in its README
-# under "## Live Deployment". This file feeds scripts/app_artifact_auditor.py.
+# Definition of Done #1: every app ships a live URL, surfaced in its README
+# under "## Live Deployment". This file feeds scripts/app_artifact_auditor.py
+# and scripts/biome/inspector.js (HTTP 2xx = testable-live).
 #
-# `live_url` is filled manually now. When a VERCEL_TOKEN secret is present, the
-# audit workflow runs scripts/vercel_sync.py to auto-refresh these from Vercel.
+# Primary live surface is GitHub Pages (credit-free, always-on via static.yml).
+# Vercel remains optional: when a VERCEL_TOKEN secret is present AND the
+# production deployment returns 2xx, scripts/vercel_sync.py may refresh
+# base_url / per-app live_url. A disabled Vercel project (HTTP 402
+# DEPLOYMENT_DISABLED) must never clobber this working base_url.
 #
-# Fill in live_url as each app deploys. Leave "" if not yet live (the auditor
-# will flag it as a gap rather than writing a placeholder into the README).
+# Fill in live_url only for standalone deployments. Leave "" to derive
+# <base_url>/docs/<app>/ (preferred for docs-served apps).
 
-# Single static Vercel project serves the docs site; each app runs from its
-# docs folder at <base_url>/docs/<app>/. Set base_url to the production domain
-# (or let scripts/vercel_sync.py fill it from Vercel when VERCEL_TOKEN is set).
+# Static docs site: each app is reachable at <base_url>/docs/<app>/.
 deployment:
   project: revvel-standards
-  base_url: "https://revvel-standards.vercel.app"
+  base_url: "https://midnghtsapphire.github.io/revvel-standards"
 
 apps:
   affiliate-hub:          { path: products/affiliate-hub,          type: web, live_url: "" }
@@ -30,7 +32,7 @@ apps:
   revvel-skill-runner:    { path: products/revvel-skill-runner,    type: web, live_url: "" }
   screen-recorder-finder: { path: products/screen-recorder-finder, type: web, live_url: "" }
   ugc-review-generator:   { path: products/ugc-review-generator,   type: web, live_url: "" }
-  caspian-channel-console: { path: products/caspian-channel-console, type: web, live_url: "https://revvel-standards.vercel.app/docs/caspian-channel-console/" }
+  caspian-channel-console: { path: products/caspian-channel-console, type: web, live_url: "" }
   coldtrace:              { path: coldtrace,                        type: web, live_url: "" }
   fieldwork:              { path: fieldwork,                        type: web, live_url: "" }
   osint-hub:              { path: osint-hub,                        type: web, live_url: "" }

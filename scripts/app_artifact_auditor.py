@@ -2,9 +2,9 @@
 """
 App Artifact Auditor — enforces Definition of Done across every app.
 
-Deployment model: a single static Vercel project publishes the repo's docs site,
-so each app is run/tested from its docs folder at `<base_url>/docs/<app>/`. This
-script, for each app in docs/app-deployments.yml:
+Deployment model: the static docs site (GitHub Pages primary; Vercel optional)
+publishes each app at `<base_url>/docs/<app>/`. This script, for each app in
+docs/app-deployments.yml:
 
   1. Writes docs/<app>/ARTIFACTS.md — the required-deliverable checklist with
      auto-detected status (the "required list for every app").
@@ -15,8 +15,9 @@ script, for each app in docs/app-deployments.yml:
   4. Writes docs/APP_DELIVERY_STATUS.md — a one-glance dashboard.
 
 A per-app `live_url` in the manifest overrides the derived docs URL (use it when
-an app has its own standalone deployment). `deployment.base_url` is filled by
-scripts/vercel_sync.py when a VERCEL_TOKEN is present.
+an app has its own standalone deployment). `deployment.base_url` defaults to
+the GitHub Pages host; scripts/vercel_sync.py may refresh it only when a Vercel
+production URL actually returns HTTP 2xx.
 
 Status per requirement: True (✅ met), False (❌ gap), None (➖ n/a). n/a items
 don't count toward the DoD score.
@@ -44,6 +45,18 @@ MONETIZE_PROVIDERS = ("stripe", "polar", "gumroad", "paddle", "lemonsqueezy", "l
 TEST_FILE_RE = re.compile(r"\.(test|spec)\.[jt]sx?$|\.spec\.py$")
 SKIP_DIRS = ("node_modules", ".next", "dist", "build", ".git", "__pycache__")
 TICK = {True: "✅", False: "❌", None: "➖"}
+AUDITOR_MARKER = "app_artifact_auditor.py"
+
+
+def auditor_owned(path):
+    """True when path is missing or was previously written by this auditor.
+
+    Custom docs surfaces (e.g. caspian-channel-console SPA) must not be clobbered
+    on re-audit — only pages that carry our marker (or do not exist yet) are ours.
+    """
+    body = read(path)
+    return (not body) or (AUDITOR_MARKER in body)
+
 
 
 def read(path):
@@ -182,7 +195,10 @@ def write_artifacts_md(name, meta, checks, valid_url, live_url, external):
         "_See `standards/DELIVERY_MATRIX.md` and `docs/DEFINITION_OF_DONE.md`._",
         "",
     ]
-    with open(os.path.join(out_dir, "ARTIFACTS.md"), "w", encoding="utf-8") as f:
+    out_path = os.path.join(out_dir, "ARTIFACTS.md")
+    if not auditor_owned(out_path):
+        return  # preserve hand-written delivery notes
+    with open(out_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 
 
@@ -241,7 +257,10 @@ def write_index_html(name, meta, checks, valid_url, live_url, external):
 </body>
 </html>
 """
-    with open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8") as f:
+    out_path = os.path.join(out_dir, "index.html")
+    if not auditor_owned(out_path):
+        return  # preserve custom SPA / hand-built docs pages
+    with open(out_path, "w", encoding="utf-8") as f:
         f.write(page)
 
 
@@ -253,9 +272,39 @@ def ensure_readme_link(meta, valid_url, live_url):
     text = read(readme_path)
     if not text:
         return
+    # Already points at the current live URL — leave custom notes alone.
+    if live_url in text and "## Live Deployment" in text:
+        return
     section = f"\n## Live Deployment\n\n▶️ **[Open the live app & test it]({live_url})**\n"
     if "## Live Deployment" in text:
-        new = SECTION_RE.sub(section, text, count=1)
+        def _rewrite(match):
+            sec = match.group(0)
+            # Swap the first "Open the live app" markdown target in-place so
+            # any notes under the section (static paths, deploy hints) survive.
+            replaced, n = re.subn(
+                r"(\[[^\]]*Open the live app[^\]]*\]\()https?://[^\s)]+(\) )",
+                rf"\g<1>{live_url}\2",
+                sec,
+                count=1,
+            )
+            if n:
+                return replaced
+            replaced, n = re.subn(
+                r"(\[[^\]]*Open the live app[^\]]*\]\()https?://[^\s)]+(\))",
+                rf"\g<1>{live_url}\2",
+                sec,
+                count=1,
+            )
+            if n:
+                return replaced
+            # No standard button — insert one after the heading, keep the rest.
+            return re.sub(
+                r"(## Live Deployment[^\n]*\n)",
+                rf"\1\n▶️ **[Open the live app & test it]({live_url})**\n",
+                sec,
+                count=1,
+            )
+        new = SECTION_RE.sub(_rewrite, text, count=1)
     else:
         m = re.search(r"^# .*$", text, re.M)
         idx = m.end() if m else 0
