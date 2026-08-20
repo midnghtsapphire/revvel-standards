@@ -30,6 +30,12 @@ python3 -m venv "$VENV"
 # The gate spawns a bare `python3`, so the venv has to win on PATH for every
 # subsequent step. BASH_ENV is sourced by each CircleCI step; exporting in this
 # step's shell alone would not survive.
+#
+# Default it rather than dereferencing it bare: under `set -u` an unset
+# BASH_ENV aborts this script with "unbound variable", which would turn a
+# missing CircleCI convenience variable into a hard CI failure.
+BASH_ENV="${BASH_ENV:-$HOME/.bash_env}"
+touch "$BASH_ENV"
 echo "export PATH=\"${VENV}/bin:\$PATH\"" >> "$BASH_ENV"
 export PATH="${VENV}/bin:$PATH"
 

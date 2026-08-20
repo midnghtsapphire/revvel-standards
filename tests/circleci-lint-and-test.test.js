@@ -81,6 +81,18 @@ test('the venv is prepended to PATH for later steps, not just this one', () => {
   );
 });
 
+test('BASH_ENV is defaulted, not dereferenced bare under set -u', () => {
+  const raw = fs.readFileSync(INSTALL_SH, 'utf8');
+  // `set -u` plus an unset BASH_ENV aborts the script with "unbound variable",
+  // turning a missing CircleCI convenience variable into a hard CI failure —
+  // in the very step whose job is to stop CI failing for environment reasons.
+  assert.match(
+    raw,
+    /BASH_ENV="\$\{BASH_ENV:-/,
+    'BASH_ENV must be defaulted before use',
+  );
+});
+
 test('the pinned flake8 matches the gate fallback pin (no split-brain versions)', () => {
   const shPin = fs.readFileSync(INSTALL_SH, 'utf8').match(/FLAKE8_VERSION="([^"]+)"/);
   const gatePin = fs.readFileSync(GATE, 'utf8').match(/flake8==([\d.]+)/);
