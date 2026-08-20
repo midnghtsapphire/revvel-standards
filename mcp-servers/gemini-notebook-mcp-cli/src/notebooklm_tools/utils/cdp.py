@@ -1475,7 +1475,8 @@ def extract_cookies_via_cdp(
             # Profile locked but no browser found on known ports - stale lock?
             raise AuthenticationError(
                 message="The NLM auth profile is locked but no browser instance was found",
-                hint=f"Close any stuck browser processes or delete the SingletonLock file in the {profile_name} browser profile.",
+                hint=("Close any stuck browser processes or delete the SingletonLock "
+                      f"file in the {profile_name} browser profile."),
             )
 
         # Find an available port

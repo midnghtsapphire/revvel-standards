@@ -1,1 +1,14 @@
+# NOT READ BY FLAKE8 — kept only so this filename cannot mislead again.
+#
+# flake8 has no `.flake8ignore` concept. It reads `exclude =` from `.flake8`
+# (or setup.cfg / tox.ini). This file was added alongside #17740 intending to
+# exclude the vendored MCP server, but because nothing reads it the exclusion
+# silently did nothing and `main` went red on the flake8 baseline gate with 33
+# new findings.
+#
+# The real exclusion now lives in `.flake8` under `exclude =`.
+# `tests/python-flake8-workflow.test.js` asserts every path listed here is also
+# excluded there, so this file can never again look effective while doing
+# nothing. Add paths to `.flake8` first; list them here only to mirror it.
+#
 mcp-servers/gemini-notebook-mcp-cli

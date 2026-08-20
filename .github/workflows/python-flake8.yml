@@ -57,7 +57,7 @@ jobs:
           path: "."
           max-line-length: "120"
           # Keep tests/scripts/tools/products in scope; only skip cache/vendor trees.
-          exclude: ".git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,.pytest_cache"
+          exclude: ".git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,.pytest_cache,mcp-servers/gemini-notebook-mcp-cli"
           args: "--select=E,W,F --max-complexity=15 --show-source --statistics"
 
       - name: Setup Node.js (baseline gate)
