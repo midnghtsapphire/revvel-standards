@@ -31,7 +31,8 @@ from .retry import execute_with_retry
 
 
 class _NotebookLookupProtocol(Protocol):
-    def get_notebook(self, notebook_id: str) -> Any: ...
+    def get_notebook(self, notebook_id: str) -> Any:
+        ...
 
 
 def _resolve_source_type_name(source_type: object, metadata: list[Any]) -> str:
@@ -946,7 +947,11 @@ class SourceMixin(BaseClient):
 
         Supported local-admission formats are defined by the official 43-extension
         registry in core.constants. Provider processing can still fail after upload.
-        OFFICIAL_FILE_EXTENSIONS: .pdf, .txt, .md, .docx, .csv, .pptx, .epub, .avif, .bmp, .gif, .heic, .heif, .ico, .jp2, .jpe, .jpeg, .jpg, .png, .tif, .tiff, .webp, .3g2, .3gp, .aac, .aif, .aifc, .aiff, .amr, .au, .avi, .cda, .m4a, .mid, .mp3, .mp4, .mpeg, .ogg, .opus, .ra, .ram, .snd, .wav, .wma
+        OFFICIAL_FILE_EXTENSIONS: .pdf, .txt, .md, .docx, .csv, .pptx, .epub,
+        .avif, .bmp, .gif, .heic, .heif, .ico, .jp2, .jpe, .jpeg, .jpg, .png,
+        .tif, .tiff, .webp, .3g2, .3gp, .aac, .aif, .aifc, .aiff, .amr, .au,
+        .avi, .cda, .m4a, .mid, .mp3, .mp4, .mpeg, .ogg, .opus, .ra, .ram,
+        .snd, .wav, .wma
 
         Args:
             notebook_id: The notebook ID to add the source to

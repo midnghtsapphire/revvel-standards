@@ -51,7 +51,8 @@ def download_artifact(
     Example:
         download_artifact(notebook_id="abc123", artifact_type="audio", output_path="podcast.mp3")
         download_artifact(notebook_id="abc123", artifact_type="quiz", output_path="quiz.html", output_format="html")
-        download_artifact(notebook_id="abc123", artifact_type="slide_deck", output_path="slides.pptx", slide_deck_format="pptx")
+        download_artifact(notebook_id="abc123", artifact_type="slide_deck",
+                         output_path="slides.pptx", slide_deck_format="pptx")
     """
     try:
         client = get_client()

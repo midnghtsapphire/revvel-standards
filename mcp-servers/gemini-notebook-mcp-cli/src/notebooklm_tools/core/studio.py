@@ -10,7 +10,10 @@ from .utils import is_mind_map_json, parse_timestamp
 
 
 class _SourceLookupProtocol(Protocol):
-    def get_notebook_sources_with_types(self, notebook_id: str) -> list[dict[str, Any]]: ...
+    def get_notebook_sources_with_types(
+        self, notebook_id: str
+    ) -> list[dict[str, Any]]:
+        ...
 
 
 class StudioMixin(BaseClient):

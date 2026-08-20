@@ -398,7 +398,11 @@ def login_callback(
                     "\n[bold]Step 1:[/bold] Open [cyan]Windows PowerShell as Administrator[/cyan] and run:"
                 )
                 console.print(
-                    f'\n  New-NetFirewallRule -DisplayName "NotebookLM-CDP-{wsl_port}" -Direction Inbound -Action Allow -Protocol TCP -LocalPort {wsl_port} -RemoteAddress LocalSubnet\n'
+                    (
+                        f'\n  New-NetFirewallRule -DisplayName "NotebookLM-CDP-{wsl_port}"'
+                        f' -Direction Inbound -Action Allow -Protocol TCP'
+                        f' -LocalPort {wsl_port} -RemoteAddress LocalSubnet\n'
+                    )
                 )
                 console.print(
                     "[bold]Step 2:[/bold] After running the command above, press [bold]Enter[/bold] here to continue..."

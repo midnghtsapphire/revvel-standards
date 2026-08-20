@@ -153,7 +153,8 @@ def create_video_verb(
         None,
         "--style",
         "-s",
-        help="Visual style: auto_select, custom, classic, whiteboard, kawaii, anime, watercolor, retro_print, heritage, paper_craft",
+        help="Visual style: auto_select, custom, classic, whiteboard, kawaii, anime,
+             watercolor, retro_print, heritage, paper_craft",
     ),
     style_prompt: str | None = typer.Option(
         None,
@@ -227,7 +228,8 @@ def create_infographic_verb(
     style: str | None = typer.Option(
         None,
         "--style",
-        help="Visual style: auto_select, sketch_note, professional, bento_grid, editorial, instructional, bricks, clay, anime, kawaii, scientific",
+        help="Visual style: auto_select, sketch_note, professional, bento_grid, editorial,
+             instructional, bricks, clay, anime, kawaii, scientific",
     ),
     language: str | None = typer.Option(None, "--language", help="BCP-47 language code"),
     focus: str | None = typer.Option(None, "--focus", help="Optional focus topic"),

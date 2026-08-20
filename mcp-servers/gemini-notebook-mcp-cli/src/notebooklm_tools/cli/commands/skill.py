@@ -726,7 +726,8 @@ def list_tools() -> None:
     console.print("\n[dim]Legend: ✓ = installed, - = not installed, N/A = not applicable[/dim]")
     if has_outdated:
         console.print(
-            f"[yellow]⚠  Some skills are outdated (current: v{__version__}). Run 'nlm skill update' to update all.[/yellow]"
+            f"[yellow]⚠  Some skills are outdated (current: v{__version__})."
+            " Run 'nlm skill update' to update all.[/yellow]"
         )
 
 

@@ -877,7 +877,11 @@ class DownloadMixin(BaseClient):
             if not isinstance(layer4, list) or len(layer4) < 5:
                 raise ArtifactParseError(
                     "data_table",
-                    details=f"Invalid structure at raw_data[0][0][0][0]: expected list with at least 5 elements, got {len(layer4) if isinstance(layer4, list) else type(layer4).__name__}",
+                    details=(
+                        f"Invalid structure at raw_data[0][0][0][0]:"
+                        f" expected list with at least 5 elements,"
+                        f" got {len(layer4) if isinstance(layer4, list) else type(layer4).__name__}"
+                    ),
                 )
 
             # Navigate: [0][0][0][0][4] - table content section
@@ -885,7 +889,11 @@ class DownloadMixin(BaseClient):
             if not isinstance(table_section, list) or len(table_section) < 3:
                 raise ArtifactParseError(
                     "data_table",
-                    details=f"Invalid table section at raw_data[0][0][0][0][4]: expected list with at least 3 elements, got {len(table_section) if isinstance(table_section, list) else type(table_section).__name__}",
+                    details=(
+                        f"Invalid table section at raw_data[0][0][0][0][4]:"
+                        f" expected list with at least 3 elements,"
+                        f" got {len(table_section) if isinstance(table_section, list) else type(table_section).__name__}"
+                    ),
                 )
 
             # Navigate: [0][0][0][0][4][2] - rows array
@@ -893,7 +901,10 @@ class DownloadMixin(BaseClient):
             if not isinstance(rows_array, list):
                 raise ArtifactParseError(
                     "data_table",
-                    details=f"Invalid rows array at raw_data[0][0][0][0][4][2]: expected list, got {type(rows_array).__name__}",
+                    details=(
+                        f"Invalid rows array at raw_data[0][0][0][0][4][2]:"
+                        f" expected list, got {type(rows_array).__name__}"
+                    ),
                 )
 
             if not rows_array:

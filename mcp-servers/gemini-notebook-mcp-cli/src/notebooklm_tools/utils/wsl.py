@@ -643,7 +643,11 @@ def diagnose_wsl_connectivity(host_ip: str, port: int = DEFAULT_WSL_CDP_PORT) ->
     # Test 5: Port binding on Windows
     if ps_path:
         try:
-            ps_cmd = f"Get-NetTCPConnection -LocalPort {port} -ErrorAction SilentlyContinue | Select-Object LocalAddress, LocalPort, State"
+            ps_cmd = (
+                f"Get-NetTCPConnection -LocalPort {port}"
+                " -ErrorAction SilentlyContinue"
+                " | Select-Object LocalAddress, LocalPort, State"
+            )
             result = subprocess.run(
                 [str(ps_path), "-Command", ps_cmd],
                 capture_output=True,

@@ -615,7 +615,8 @@ def create_infographic(
     style: str = typer.Option(
         "auto_select",
         "--style",
-        help="Visual style: auto_select, sketch_note, professional, bento_grid, editorial, instructional, bricks, clay, anime, kawaii, scientific",
+        help="Visual style: auto_select, sketch_note, professional, bento_grid, editorial,
+             instructional, bricks, clay, anime, kawaii, scientific",
     ),
     language: str = typer.Option(
         "", "--language", help="BCP-47 language code (default: NOTEBOOKLM_HL or en)"
@@ -660,12 +661,14 @@ def create_video(
         "auto_select",
         "--style",
         "-s",
-        help="Visual style: auto_select, custom, classic, whiteboard, kawaii, anime, watercolor, retro_print, heritage, paper_craft",
+        help="Visual style: auto_select, custom, classic, whiteboard, kawaii, anime,
+             watercolor, retro_print, heritage, paper_craft",
     ),
     style_prompt: str = typer.Option(
         "",
         "--style-prompt",
-        help="Custom visual style description. For explainer/brief: implies --style custom. For cinematic/short: mapped to --focus (custom_instructions).",
+        help="Custom visual style description. For explainer/brief: implies --style custom.
+             For cinematic/short: mapped to --focus (custom_instructions).",
     ),
     language: str = typer.Option(
         "",
@@ -675,7 +678,8 @@ def create_video(
     focus: str = typer.Option(
         "",
         "--focus",
-        help="Focus topic or creative direction. For cinematic/short formats, this is the full steering prompt (visual style, audience, narrative).",
+        help="Focus topic or creative direction. For cinematic/short formats, this is the
+             full steering prompt (visual style, audience, narrative).",
     ),
     source_ids: str | None = typer.Option(None, "--source-ids", help="Comma-separated source IDs"),
     confirm: bool = typer.Option(False, "--confirm", "-y", help="Skip confirmation"),

@@ -166,7 +166,8 @@ def test_extract_rpc_result_raises_rpc_error_on_transient():
                         None,
                         [
                             [
-                                "type.googleapis.com/google.internal.labs.tailwind.orchestration.v1.DeepResearchErrorDetail",
+                                "type.googleapis.com/google.internal.labs.tailwind"
+                                ".orchestration.v1.DeepResearchErrorDetail",
                                 [4],
                             ]
                         ],
@@ -305,7 +306,8 @@ def test_extract_rpc_result_raises_resource_exhausted_on_code_8():
                         None,
                         [
                             [
-                                "type.googleapis.com/google.internal.labs.tailwind.orchestration.v1.UserDisplayableError",
+                                "type.googleapis.com/google.internal.labs.tailwind"
+                                ".orchestration.v1.UserDisplayableError",
                                 ["Too many requests, please try again later"],
                             ]
                         ],

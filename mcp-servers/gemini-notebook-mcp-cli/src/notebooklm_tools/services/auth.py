@@ -36,7 +36,7 @@ from notebooklm_tools.services.auth_replay import (
 
 logger = logging.getLogger(__name__)
 
-__all__ = [
+__all__ = [  # noqa: F822 — AuthManager and AuthTokens are provided via PEP 562 __getattr__
     "AuthHealthChecker",  # defined locally in this module
     "AuthHealthReport",  # defined locally in this module
     "AuthReplayDiagnostic",  # provided by services.auth_replay

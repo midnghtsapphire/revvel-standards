@@ -49,7 +49,8 @@ class QueryRejectedError(NotebookLMError):
 
 
 class _NotebookLookupProtocol(Protocol):
-    def get_notebook(self, notebook_id: str) -> Any: ...
+    def get_notebook(self, notebook_id: str) -> Any:
+        ...
 
 
 class ConversationMixin(BaseClient):

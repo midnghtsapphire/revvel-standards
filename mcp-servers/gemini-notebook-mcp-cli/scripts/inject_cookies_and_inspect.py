@@ -130,7 +130,8 @@ def inspect_dom():
 
             // Look for "PDF / Text file" options in the menu that might trigger the input
             const menuOptions = Array.from(document.querySelectorAll('button, [role=menuitem]'))
-                .filter(el => el.textContent.includes('PDF') || el.textContent.includes('File') || el.textContent.includes('Upload'))
+                .filter(el => el.textContent.includes('PDF')
+                    || el.textContent.includes('File') || el.textContent.includes('Upload'))
                 .map(el => ({
                     text: el.textContent.trim(),
                     className: el.className

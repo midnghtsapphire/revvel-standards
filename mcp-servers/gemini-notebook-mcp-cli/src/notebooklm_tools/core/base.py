@@ -378,7 +378,10 @@ class BaseClient:
     EXPORT_TYPE_SHEETS = constants.EXPORT_TYPE_SHEETS
 
     # Query endpoint (different from batchexecute - streaming gRPC-style)
-    QUERY_ENDPOINT = "/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1.LabsTailwindOrchestrationService/GenerateFreeFormStreamed"
+    QUERY_ENDPOINT = (
+        "/_/LabsTailwindUi/data/google.internal.labs.tailwind.orchestration.v1"
+        ".LabsTailwindOrchestrationService/GenerateFreeFormStreamed"
+    )
 
     # Headers required for page fetch (must look like a browser navigation).
     # We use a generic Linux Chrome UA and omit sec-ch-ua* Client Hints intentionally:
@@ -386,7 +389,10 @@ class BaseClient:
     # to reject requests when the session cookies were captured on a different OS (e.g.
     # Windows). Client Hints are optional — omitting them is safe and platform-neutral.
     _PAGE_FETCH_HEADERS = {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "User-Agent": (
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
+            " (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        ),
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
         "Sec-Fetch-Dest": "document",
@@ -1156,7 +1162,9 @@ class BaseClient:
             # Check if redirected to login (cookies expired)
             if "accounts.google.com" in str(response.url):
                 raise ValueError(
-                    "Authentication expired. AI assistants: Run `nlm login` via Bash/terminal tool to re-authenticate automatically. Users: Run `nlm login` in your terminal."
+                    "Authentication expired. AI assistants: Run `nlm login` via"
+                    " Bash/terminal tool to re-authenticate automatically."
+                    " Users: Run `nlm login` in your terminal."
                 )
 
             if response.status_code != 200:

@@ -39,7 +39,11 @@ def source_add(
             - file: Local file upload. The canonical local-admission contract has
                 43 case-insensitive extensions. Admission does not guarantee provider
                 processing success for an individual file.
-                OFFICIAL_FILE_EXTENSIONS: .pdf, .txt, .md, .docx, .csv, .pptx, .epub, .avif, .bmp, .gif, .heic, .heif, .ico, .jp2, .jpe, .jpeg, .jpg, .png, .tif, .tiff, .webp, .3g2, .3gp, .aac, .aif, .aifc, .aiff, .amr, .au, .avi, .cda, .m4a, .mid, .mp3, .mp4, .mpeg, .ogg, .opus, .ra, .ram, .snd, .wav, .wma
+                OFFICIAL_FILE_EXTENSIONS: .pdf, .txt, .md, .docx, .csv, .pptx,
+                .epub, .avif, .bmp, .gif, .heic, .heif, .ico, .jp2, .jpe, .jpeg,
+                .jpg, .png, .tif, .tiff, .webp, .3g2, .3gp, .aac, .aif, .aifc,
+                .aiff, .amr, .au, .avi, .cda, .m4a, .mid, .mp3, .mp4, .mpeg,
+                .ogg, .opus, .ra, .ram, .snd, .wav, .wma
                 Image-bearing sources may feed Studio video generation's visual-crop
                 pipeline; charts, photos, and diagrams may be extracted as on-screen aids.
         url: URL to add (for source_type=url)

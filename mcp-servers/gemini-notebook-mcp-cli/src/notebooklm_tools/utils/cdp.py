@@ -372,7 +372,6 @@ _detected_browser_name: str | None = None
 
 def get_browser_display_name() -> str:
     """Return the display name of the browser that will be (or was) launched."""
-    global _detected_browser_name
     if _detected_browser_name:
         return _detected_browser_name
     return "browser"
@@ -411,7 +410,6 @@ def _get_chromium_path(preferred: str | None = None) -> str | None:
     Set via ``nlm config set auth.browser <name>`` or ``NLM_BROWSER`` env var.
     Valid names: auto, chrome, arc, brave, edge, chromium, vivaldi, opera.
     """
-    global _detected_browser_name
     if preferred is None:
         preferred = _get_preferred_browser()
         if preferred not in {"auto", *_BROWSER_CONFIG_MAP}:
@@ -943,7 +941,7 @@ def terminate_chrome(process: subprocess.Popen | None = None, port: int | None =
     Returns:
         True if Chrome was terminated, False if no process to terminate.
     """
-    global _chrome_process, _chrome_port, _cached_ws, _cached_ws_url
+    global _chrome_process, _chrome_port
     process = process or _chrome_process
     port = port or _chrome_port
     if process is None:
@@ -1476,7 +1474,10 @@ def extract_cookies_via_cdp(
             # Profile locked but no browser found on known ports - stale lock?
             raise AuthenticationError(
                 message="The NLM auth profile is locked but no browser instance was found",
-                hint=f"Close any stuck browser processes or delete the SingletonLock file in the {profile_name} browser profile.",
+                hint=(
+                    f"Close any stuck browser processes or delete the"
+                    f" SingletonLock file in the {profile_name} browser profile."
+                ),
             )
 
         # Find an available port
