@@ -372,7 +372,7 @@ _detected_browser_name: str | None = None
 
 def get_browser_display_name() -> str:
     """Return the display name of the browser that will be (or was) launched."""
-    global _detected_browser_name
+
     if _detected_browser_name:
         return _detected_browser_name
     return "browser"
@@ -411,7 +411,7 @@ def _get_chromium_path(preferred: str | None = None) -> str | None:
     Set via ``nlm config set auth.browser <name>`` or ``NLM_BROWSER`` env var.
     Valid names: auto, chrome, arc, brave, edge, chromium, vivaldi, opera.
     """
-    global _detected_browser_name
+
     if preferred is None:
         preferred = _get_preferred_browser()
         if preferred not in {"auto", *_BROWSER_CONFIG_MAP}:
@@ -425,7 +425,7 @@ def _get_chromium_path(preferred: str | None = None) -> str | None:
 
     def _found(name: str, path: str, fallback: bool = False) -> str:
         """Record detected browser name and return the path."""
-        global _detected_browser_name
+
         _detected_browser_name = name
         if fallback:
             _logger.info("Preferred browser not found, falling back to %s", name)
