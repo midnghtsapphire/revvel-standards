@@ -242,9 +242,9 @@ jobs:
                     name: label,
                   });
                 } catch (e) {
-                  if (e.status !== 404) {
-                    core.notice(`Could not remove label "${label}": ${e.message}`);
-                  }
+                  // This branch used to `core.notice` a non-404 and carry on —
+                  // a notice is not a control. Re-throw it.
+                  if (e.status !== 404) throw e;
                 }
               }
 

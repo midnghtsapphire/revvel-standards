@@ -88,8 +88,28 @@ function matchingIndex(src, open) {
  * `!== 404 && !== 403` reads as narrow while restoring the defect for the
  * status that actually matters — a token without `issues: write`.
  */
+/**
+ * True when this catch body lets a non-404 escape.
+ *
+ * Two shapes do that, and both are correct. #17787 taught this function the
+ * first; `arsc-labels.yml` writes the second, and was reported as unguarded
+ * for it — a check that fails correct code is one people learn to ignore,
+ * which is the failure mode this whole rule exists to avoid.
+ *
+ *   if (err.status !== 404) throw err;        // guard-and-throw
+ *   if (err.status === 404) { …; continue; }  // handle-404-then-fall-through
+ *   throw err;                                // …to an unconditional throw
+ *
+ * The second is only safe because the 404 branch LEAVES — `continue`, `break`,
+ * or `return` — so the trailing `throw` is unreachable for a 404 and reachable
+ * for everything else. A 404 branch that merely logs and falls through would
+ * re-throw the 404 too, which is a different bug; it is not accepted here.
+ */
 function rethrowsNon404(handler) {
-  return /\b(\w+)\.status\s*!==\s*404\s*\)\s*throw\s+\1\b/.test(handler);
+  const guardAndThrow = /\b(\w+)\.status\s*!==\s*404\s*\)\s*throw\s+\1\b/;
+  const handleThenThrow =
+    /\b(\w+)\.status\s*===\s*404\s*\)\s*\{[\s\S]*?\b(?:continue|break|return)\b[\s\S]*?\}[\s\S]*?\bthrow\s+\1\b/;
+  return guardAndThrow.test(handler) || handleThenThrow.test(handler);
 }
 
 /**
@@ -522,6 +542,7 @@ function parseArgs(argv) {
     ledger: DEFAULT_LEDGER,
     scope: null,
     changedOnly: false,
+    root: REPO_ROOT,
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
@@ -531,6 +552,12 @@ function parseArgs(argv) {
     else if (a === '--ledger' && next) { opts.ledger = next; i++; }
     else if (a === '--scope' && next) { opts.scope = next; i++; }
     else if (a === '--changed-only') opts.changedOnly = true;
+    // --root scans a tree other than this repository. Only tests use it: a
+    // guard that needs a live finding to prove it is not vacuous cannot get
+    // one from a repo that is clean, and the alternative — leaving a real
+    // defect in the tree so a test has something to find — is worse than the
+    // defect (tests/chaosmender-scope-is-real.test.js).
+    else if (a === '--root' && next) { opts.root = path.resolve(next); i++; }
   }
   return opts;
 }
@@ -558,7 +585,7 @@ async function main() {
     process.exit(1);
   }
 
-  let findings = runChecks(REPO_ROOT, ledger);
+  let findings = runChecks(opts.root, ledger);
   if (opts.changedOnly) {
     const changed = loadChangedFiles();
 
