@@ -100,10 +100,14 @@ test('a workflow_dispatch run parses the issue number from its input', async () 
   assert.equal(comment.issue_number, 4242);
 });
 
-test('parseInt tolerates a human-typed input', async () => {
-  // ' 77 ' and '#77' are what people actually type into a dispatch box.
-  for (const input of [' 77 ', '77abc']) {
-    const { comment } = await run({ inputs: { issue_number: input } }, 'workflow_dispatch');
+test('the dispatch input tolerates what people actually type', async () => {
+  // '#77' is the case #17794 advertised and never tested: the comment said it
+  // was handled, the array said '77abc', and `parseInt('#77', 10)` is NaN — so
+  // the guard rejected the input the docs promised. Copilot and Jules both
+  // caught it. Every advertised form is now in the list.
+  for (const input of ['77', ' 77 ', '#77', ' #77 ', '77abc']) {
+    const { comment, failure } = await run({ inputs: { issue_number: input } }, 'workflow_dispatch');
+    assert.equal(failure, null, `should not fail on ${JSON.stringify(input)}`);
     assert.equal(comment.issue_number, 77, `input: ${JSON.stringify(input)}`);
   }
 });
