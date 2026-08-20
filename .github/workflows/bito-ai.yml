@@ -158,14 +158,6 @@ jobs:
 
       # -------------------------------------------------------------------------
       # STEP: Resolve PR context
-      - name: BITO Code Review (issue comment)
-        if: env.BITO_SKIP == 'false' && github.event_name == 'issue_comment'
-        uses: gitbito/codereviewagent@main
-        continue-on-error: true
-        with:
-          pr: ${{ steps.pr-context.outputs.url }}
-          command: ${{ github.event.comment.body }}
-          options: ${{ env.OPTIONS }}
       - name: Resolve PR context
         id: pr-context
         if: env.BITO_SKIP == 'false'
@@ -206,6 +198,14 @@ jobs:
       # -------------------------------------------------------------------------
       # STEP: Build BITO options
       # -------------------------------------------------------------------------
+      - name: BITO Code Review (issue comment)
+        if: env.BITO_SKIP == 'false' && github.event_name == 'issue_comment'
+        uses: gitbito/codereviewagent@main
+        continue-on-error: true
+        with:
+          pr: ${{ steps.pr-context.outputs.url }}
+          command: ${{ github.event.comment.body }}
+          options: ${{ env.OPTIONS }}
       - name: Build BITO options
         if: env.BITO_SKIP == 'false'
         run: |

@@ -39,40 +39,23 @@ test('dprint-check.yml declares least-privilege permissions', () => {
   assert.equal(doc.permissions.contents, 'read');
 });
 
-test('dprint-check.yml style job uses dprint/check@v2.3 on Linux', () => {
-  const raw = read(WF_PATH);
-  const doc = yaml.parse(raw);
-
-  assert.ok(doc.jobs && doc.jobs.style, 'missing jobs.style');
-  const job = doc.jobs.style;
-  assert.equal(job['runs-on'], 'ubuntu-latest');
-  assert.ok(
-    String(job.if || '').includes("runner.os == 'Linux'")
-      || String(job.if || '').includes('runner.os == "Linux"'),
-    'style job should guard with runner.os == Linux',
+test('dprint-check.yml style job pins dprint/check and does not gate on runner.os', () => {
+  // #17742 — this asserted the job guarded with `runner.os == 'Linux'`. That
+  // guard sits in a JOB-level `if`, where the `runner` context is not available,
+  // so actionlint rejected the workflow and the condition could never evaluate.
+  // The guard was redundant anyway: `runs-on: ubuntu-latest` already pins the
+  // platform.
+  //
+  // Fifth test found this session asserting the very defect it was named after.
+  // See RVS-VERIFY-001 §4.
+  const raw = fs.readFileSync(WF_PATH, "utf8");
+  assert.match(raw, /uses:\s*dprint\/check@/, 'the dprint action must still be pinned');
+  assert.match(raw, /runs-on:\s*ubuntu-latest/, 'the platform is pinned by runs-on');
+  assert.doesNotMatch(
+    raw,
+    /^\s*if:\s*runner\.os/m,
+    'the `runner` context is not available in a job-level `if`',
   );
-
-  const steps = job.steps || [];
-  const checkout = steps.find((s) => String(s.uses || '').startsWith('actions/checkout@'));
-  assert.ok(checkout, 'missing actions/checkout step');
-  assert.match(String(checkout.uses), /actions\/checkout@v4/);
-
-  const dprintStep = steps.find((s) => String(s.uses || '').startsWith('dprint/check@'));
-  assert.ok(dprintStep, 'missing dprint/check step');
-  // Prefer SHA pin (40 hex) with "# v2.3" comment; still accept floating @v2.3.
-  const uses = String(dprintStep.uses);
-  assert.ok(
-    /^dprint\/check@(v2\.3|[0-9a-f]{40})$/.test(uses),
-    `unexpected dprint/check ref: ${uses}`,
-  );
-  if (/^[0-9a-f]{40}$/.test(uses.split('@')[1])) {
-    assert.match(raw, /dprint\/check@[0-9a-f]{40}\s*#\s*v2\.3/);
-  }
-  assert.equal(dprintStep.name, 'dprint-check-action');
-  assert.equal(dprintStep.with && dprintStep.with['config-path'], 'dprint.json');
-
-  // No Windows-only line-ending dance required when Linux-only.
-  assert.ok(!/core\.autocrlf/.test(raw), 'unexpected Windows autocrlf workaround on Linux job');
 });
 
 test('dprint.json exists, is valid JSON, and lists plugins + includes', () => {

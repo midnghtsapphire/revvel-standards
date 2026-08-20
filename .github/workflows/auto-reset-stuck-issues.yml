@@ -1,8 +1,10 @@
 name: 🔄 Auto-Reset Stuck Issues
 
-description: >
-  Cron job that detects stuck self-heal issues and auto-resets them.
-  Runs every 30 minutes to find issues stuck in triage:new for >1 hour.
+# `description:` is not a workflow-level key — GitHub ignores it and
+# actionlint rejects it (#17742). Kept as a comment, which is where this
+# text was always going to be read from anyway.
+# Cron job that detects stuck self-heal issues and auto-resets them.
+# Runs every 30 minutes to find issues stuck in triage:new for >1 hour.
 
 on:
   workflow_dispatch:  # Manual trigger

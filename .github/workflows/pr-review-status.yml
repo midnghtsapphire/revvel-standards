@@ -131,6 +131,10 @@ jobs:
       github.event_name == 'pull_request_review_comment'
     steps:
       - name: Determine review state and update labels
+        # The `id` this step's own output reference depends on (#17742). Without
+        # it, `steps.determine-review-state.outputs.review_status` below resolved
+        # to an empty string and the approval notice could never fire.
+        id: determine-review-state
         uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}

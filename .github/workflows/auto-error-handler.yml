@@ -54,6 +54,11 @@ jobs:
     outputs:
       issue_number: ${{ steps.create_issue.outputs.issue_number }}
       recovery_needed: ${{ steps.analyze.outputs.recovery_needed }}
+      # `create_issue` calls core.setOutput('issue_url', ...) but the job never
+      # exported it, so the summary line in `attempt-recovery` read
+      # `needs.capture-and-create-issue.outputs.issue_url` and printed
+      # "View issue: " with nothing after it (#17742).
+      issue_url: ${{ steps.create_issue.outputs.issue_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

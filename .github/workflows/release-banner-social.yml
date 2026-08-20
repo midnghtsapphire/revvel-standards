@@ -22,6 +22,10 @@ concurrency:
 jobs:
   banner:
     runs-on: ubuntu-latest
+    env:
+      # Hoisted from the Discord step so its `if:` can test for presence — a
+      # step's own `env` is not in scope for that step's `if`.
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
@@ -75,10 +79,11 @@ jobs:
 
       # Optional: only fires when the secret name listed in
       # config/connections.image-automation.yml is present. Never put the value in git.
+      # `secrets` is not available in a step-level `if` (#17742), so the presence
+      # check reads the job-level env below instead — `env` IS available there.
+      # The value still never appears in a log or in argv.
       - name: Notify Discord (optional)
-        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        if: env.DISCORD_WEBHOOK_URL != ''
         run: |
           set -euo pipefail
           MSG=$(node -e "const p=require('./artifacts/image-automation/release-pack.json'); process.stdout.write('Release banner pack ready: ' + p.seo.filename + ' — ' + p.seo.altText)")
