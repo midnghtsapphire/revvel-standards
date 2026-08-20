@@ -177,10 +177,10 @@ jobs:
     # Sweep only when this is a cron or an untargeted manual dispatch. A
     # targeted issue_number dispatch is handled by targeted-triage above so we
     # do not fan out a full-repo sweep on every reset (WR #17736).
+    # Note: omitted workflow_dispatch inputs resolve to '' in expressions, never null.
     if: >-
       github.event_name == 'schedule' ||
-      (github.event_name == 'workflow_dispatch' &&
-       (inputs.issue_number == '' || inputs.issue_number == null))
+      (github.event_name == 'workflow_dispatch' && inputs.issue_number == '')
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.collect.outputs.matrix }}

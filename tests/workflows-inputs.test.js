@@ -83,11 +83,12 @@ test('openrouter-triage.yml declares workflow_dispatch.issue_number and a target
     /issue_number/,
     'targeted-triage requires issue_number'
   );
-  // Sweep must not fan out on every targeted reset.
+  // Sweep must only run on untargeted dispatch (issue_number empty), never on
+  // a reset that already named its target.
   assert.match(
     raw,
     /inputs\.issue_number\s*==\s*''/,
-    'sweep-discover must skip when issue_number is provided'
+    'sweep-discover must only run when issue_number is empty'
   );
   assert.match(
     raw,
