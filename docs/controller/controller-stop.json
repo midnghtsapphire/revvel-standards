@@ -1,82 +1,46 @@
 {
   "schema": "fleet-controller-stop/v1",
-<<<<<<< HEAD
-  "generated_at": "2026-08-19T22:57:32.143Z",
-=======
-  "generated_at": "2026-08-20T00:22:23.198Z",
->>>>>>> a052b59 (chore(controller): persist semantic fleet state)
+  "generated_at": "2026-08-20T06:34:11.052Z",
   "stop": [
     {
       "id": 31608261441,
       "name": "Devin Code Review",
-<<<<<<< HEAD
-      "reason": "running 10575m ≥ 60m budget"
-=======
-      "reason": "running 10660m ≥ 60m budget"
->>>>>>> a052b59 (chore(controller): persist semantic fleet state)
+      "reason": "running 11032m ≥ 60m budget"
     },
     {
       "id": 31607544739,
       "name": "PR Lifecycle",
-<<<<<<< HEAD
-      "reason": "running 10583m ≥ 60m budget"
-=======
-      "reason": "running 10668m ≥ 60m budget"
->>>>>>> a052b59 (chore(controller): persist semantic fleet state)
+      "reason": "running 11040m ≥ 60m budget"
     },
     {
       "id": 31607480387,
       "name": "AI PR Review (OpenRouter)",
-<<<<<<< HEAD
-      "reason": "running 10584m ≥ 60m budget"
-=======
-      "reason": "running 10668m ≥ 60m budget"
->>>>>>> a052b59 (chore(controller): persist semantic fleet state)
+      "reason": "running 11040m ≥ 60m budget"
     },
     {
       "id": 31607475332,
       "name": "Agent Fingerprint Gate",
-<<<<<<< HEAD
-      "reason": "running 10584m ≥ 60m budget"
-=======
-      "reason": "running 10668m ≥ 60m budget"
->>>>>>> a052b59 (chore(controller): persist semantic fleet state)
+      "reason": "running 11040m ≥ 60m budget"
     },
     {
       "id": 31607177890,
       "name": "GOAP Assignment Router",
-<<<<<<< HEAD
-      "reason": "running 10587m ≥ 60m budget"
-=======
-      "reason": "running 10672m ≥ 60m budget"
->>>>>>> a052b59 (chore(controller): persist semantic fleet state)
+      "reason": "running 11043m ≥ 60m budget"
     },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-<<<<<<< HEAD
-      "reason": "running 53723m ≥ 60m budget"
-=======
-      "reason": "running 53808m ≥ 60m budget"
->>>>>>> a052b59 (chore(controller): persist semantic fleet state)
+      "reason": "running 54179m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-<<<<<<< HEAD
-      "reason": "running 53793m ≥ 60m budget"
-=======
-      "reason": "running 53878m ≥ 60m budget"
->>>>>>> a052b59 (chore(controller): persist semantic fleet state)
+      "reason": "running 54250m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-<<<<<<< HEAD
-      "reason": "running 53864m ≥ 60m budget"
-=======
-      "reason": "running 53949m ≥ 60m budget"
->>>>>>> a052b59 (chore(controller): persist semantic fleet state)
+      "reason": "running 54321m ≥ 60m budget"
     }
   ]
 }
