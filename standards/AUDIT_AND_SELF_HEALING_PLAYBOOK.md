@@ -158,7 +158,7 @@ This is the method actually used on 2026-07-13, not a theoretical one.
 
 ## Self-Healing Correction Pattern Catalog
 
-Eight patterns, each observed and fixed in the cited PR. Format:
+Nine patterns, each observed and fixed in the cited PR. Format:
 **Symptom** → **Root cause** → **Fix**.
 
 ### 1. Unguarded `removeLabel` race (PR #15821)
@@ -349,6 +349,11 @@ investigation.
 - **Fix:** Pin third-party Actions by full commit SHA, not by tag or
   branch. When an Action is genuinely abandoned, remove the workflow
   and record the removal in `learnings.md`.
+
+### 1. Unguarded `removeLabel` race (PR #15821)
+
+- **Symptom:** Workflow step fails with `HttpError: Label does not exist on
+  this issue` when two workflows race to remove the same label.
 - **Root cause:** `removeLabel` is not idempotent; second caller 404s.
 - **Fix:** Wrap in a `try`/`catch` that swallows 404, or check
   `listLabelsOnIssue` first. Never call `removeLabel` without a guard.
