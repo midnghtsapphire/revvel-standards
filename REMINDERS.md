@@ -132,6 +132,46 @@ Older templates are archived under `templates/issue-template-archive/`.
 
 ---
 
+## Disconnecting blocked Vercel checks (PR signal hygiene)
+
+**When:** any PR shows `Vercel – standards` / `Vercel – revvel-standards` /
+`Vercel – marketplace-relister` as **Account is blocked.**
+
+**Read first:** [`docs/PR_SIGNAL_HYGIENE.md`](./docs/PR_SIGNAL_HYGIENE.md) §1
+(full click-by-click for GitHub Path A and Vercel dashboard Path B).
+
+**Decision:** D022 — disconnect until a real deploy succeeds; do not leave
+three permanent red checks.
+
+**Why before coding:** no PR can clear an account block. Agents document and
+file a WR-BLOCKER; only the owner session can remove the App's repo access.
+
+---
+
+## Muting Octopus Review after the free-tier 20 reviews are used
+
+**When:** `Octopus Review` check says `Your organization is out of credits.`
+(or the bot comments "add your own API keys" / usage limit / quota).
+
+**Read first:** [`docs/PR_SIGNAL_HYGIENE.md`](./docs/PR_SIGNAL_HYGIENE.md) §2
+and [`skills/octopus-expert/SKILL.md`](./skills/octopus-expert/SKILL.md)
+playbook 7.
+
+**Decision:** D023 — keep Octopus installed (20 free reviews/month are wanted).
+Mute is **manual monthly**, not a workflow:
+
+1. Confirm quota death on a PR.
+2. GitHub → Settings → Integrations → GitHub Apps → **Octopus Review** →
+   **Configure** → **Only select repositories** → uncheck `revvel-standards` →
+   Save.
+3. On monthly reset, re-check `revvel-standards` (unmute).
+4. While muted, rely on `.github/workflows/octopus-review-fallback.yml`.
+
+**Success:** new commits stop getting a red `Octopus Review`; fallback may
+still post a fleet review.
+
+---
+
 ## Editing this file
 
 - New activity? Add a heading. Sort alphabetically *only* if you genuinely can't pick a "natural" reading order; otherwise group by user journey.

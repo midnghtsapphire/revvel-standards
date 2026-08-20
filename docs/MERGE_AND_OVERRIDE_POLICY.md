@@ -17,13 +17,31 @@ let real work stall behind noise. This policy draws the line.
 | PR has **conflicts** (`dirty`) | ❌ No | Resolve the conflict — no override exists |
 | `ci/circleci: lint-and-test` is **red** | ⛔ No | Fix the failure. Do **not** override |
 
-## Required check (the only true gate)
+## Required checks (ruleset `main`, id 17149543)
 
-- **`ci/circleci: lint-and-test`** — the real test + lint suite. This is the one
-  check that protects `main`. If it is red, the change can break the repo. **Never
-  force-merge over a red `lint-and-test`.**
-- **`Vercel`** — deployment preview. Informational; a failure here is a deploy
-  concern, not a reason to block a docs/logic merge, but investigate before override.
+Codified in [`config/required-checks.yml`](../config/required-checks.yml) and
+enforced by the active GitHub ruleset. These three protect `main`:
+
+- **`ci/circleci: lint-and-test`** — the real test + lint suite. If it is red,
+  the change can break the repo. **Never force-merge over a red `lint-and-test`.**
+- **`check-for-scaffolding`** — anti-scaffolding gate (incomplete agent drafts).
+- **`GitGuardian Security Checks`** — secret scan. A real finding is a stop sign.
+
+### Informational only (never required)
+
+See `config/required-checks.yml` → `informational` and
+`config/known-red-checks.yml`. Includes:
+
+- **Vercel ×3** (`standards`, `revvel-standards`, `marketplace-relister`) —
+  account-blocked as of 2026-08-17. D022: disconnect until a deploy succeeds
+  (`docs/PR_SIGNAL_HYGIENE.md`). Not a merge gate.
+- **Octopus Review** — free-tier end-of-quota is expected (D023). Mute when
+  exhausted; do not add as required.
+- **RecurseML / Devin / AI PR review** — vendor/credit lanes; informational.
+
+Do **not** add always-red vendor checks to the ruleset to "be safer," and do
+**not** remove a real required check to make the list look green
+(`GREEN_MAIN_STANDARD.md` rule 5 / WR #17738).
 
 ## Cosmetic automation (safe to bypass)
 

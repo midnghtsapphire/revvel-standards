@@ -1,0 +1,73 @@
+# Required vs informational checks for merge (WR #17738).
+#
+# Source of truth for "what must be green before merge" lives in two places that
+# must agree:
+#   1. This file (readable, reviewable, testable).
+#   2. The active GitHub ruleset on `main` (enforcement).
+#
+# Observed ruleset (id 17149543, name "main", 2026-08-20):
+#   - check-for-scaffolding
+#   - ci/circleci: lint-and-test
+#   - GitGuardian Security Checks
+#
+# ── WHAT THIS FILE IS NOT ────────────────────────────────────────────────────
+# It does NOT change the ruleset. Agents and PRs cannot silently weaken or
+# expand required checks from here. GREEN_MAIN_STANDARD.md rule 5 forbids
+# de-requiring a real gate to look green; #17738 forbids the same move.
+#
+# ── WHY THE LIST IS SHORT ────────────────────────────────────────────────────
+# Always-red third-party apps (Vercel account-blocked, Octopus out-of-credits,
+# RecurseML intermittent App errors) must never be required. Required means
+# "a red result blocks merge because the postcondition failed." Quota and
+# account state are not postconditions of the diff.
+version: 1
+updated: 2026-08-20
+owner: midnghtsapphire
+tracked_in: 17738
+ruleset:
+  name: main
+  id: 17149543
+  html_url: https://github.com/midnghtsapphire/revvel-standards/rules/17149543
+
+# Contexts that MUST be green (or skipped/neutral) before merge.
+required:
+  - context: check-for-scaffolding
+    owner_lane: repo-workflow
+    why: Anti-scaffolding gate — incomplete agent drafts must not land on main.
+
+  - context: "ci/circleci: lint-and-test"
+    owner_lane: circleci
+    why: The real test + lint suite. Never force-merge over a red result.
+
+  - context: "GitGuardian Security Checks"
+    owner_lane: gitguardian
+    why: Secret-scan gate. A real finding is a stop sign, not noise.
+
+# Contexts that report on PRs but MUST NOT be required for merge.
+# Keeping them informational is not "weakening a gate" — none of these were
+# ever a postcondition of the diff. Documenting that explicitly is the point.
+informational:
+  - context: "Vercel – standards"
+    why: Account-blocked (see config/known-red-checks.yml). Hosting signal only.
+  - context: "Vercel – revvel-standards"
+    why: Same Vercel account block.
+  - context: "Vercel – marketplace-relister"
+    why: Same Vercel account block.
+  - context: "Octopus Review"
+    why: >
+      Free tier is 20 reviews/month. End-of-quota red is expected (D023).
+      Keep installed; mute when exhausted. Fallback:
+      octopus-review-fallback.yml.
+  - context: "recurseml/analysis"
+    why: >
+      GitHub App lane (D014). Intermittent upstream errors. Workflow lane is
+      separately inert until RECURSE_ML_API_KEY is set (#17739 / #17732).
+  - context: "Devin Review"
+    why: Trial/credits exhausted; reports success so it does not redden PRs.
+  - context: "AI PR review"
+    why: OpenRouter balance lane; fund at openrouter.ai/settings/credits.
+
+# Operator note: changing `required` above does nothing until a human updates
+# the ruleset at ruleset.html_url to match. tests/required-checks.test.js
+# pins the intended list so drift is visible in CI even when the ruleset
+# cannot be read from the sandbox.

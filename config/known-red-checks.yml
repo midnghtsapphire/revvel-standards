@@ -33,9 +33,10 @@ checks:
     cause: account-state
     owner: midnghtsapphire
     unblocked_by: >
-      Resolve the Vercel account block, or disconnect the integration from this
-      repository. #17738 is explicit that leaving three permanent red checks is
-      the one option off the table.
+      D022: disconnect the Vercel GitHub App from this repo (or disconnect Git
+      on the three Vercel projects) until a deploy succeeds on a healthy
+      account. Click-by-click: docs/PR_SIGNAL_HYGIENE.md §1. Leaving three
+      permanent red checks is off the table (#17738).
     tracked_in: 17738
     expected: false
 
@@ -43,7 +44,10 @@ checks:
     message: "Account is blocked."
     cause: account-state
     owner: midnghtsapphire
-    unblocked_by: Same account block as `Vercel – standards`.
+    unblocked_by: >
+      Same account block as `Vercel – standards`. Follow D022 +
+      docs/PR_SIGNAL_HYGIENE.md §1 (disconnect, then reconnect only after a
+      successful deploy).
     tracked_in: 17738
     expected: false
 
@@ -51,7 +55,10 @@ checks:
     message: "Account is blocked."
     cause: account-state
     owner: midnghtsapphire
-    unblocked_by: Same account block as `Vercel – standards`.
+    unblocked_by: >
+      Same account block as `Vercel – standards`. Follow D022 +
+      docs/PR_SIGNAL_HYGIENE.md §1 (disconnect, then reconnect only after a
+      successful deploy).
     tracked_in: 17738
     expected: false
 
@@ -60,12 +67,12 @@ checks:
     cause: quota-exhausted
     owner: midnghtsapphire
     unblocked_by: >
-      Nothing, and deliberately so. The free tier gives 20 code reviews a month
-      and the owner has stated Octopus is NOT to be uninstalled — the 20 are real
-      value. `out of credits` is the expected end-of-quota state, not a
-      malfunction, and it clears on the monthly reset. The only open question in
-      #17738 is whether to mute the bot once the month's 20 are consumed and
-      unmute on reset; that is an App-settings action, not a repo change.
+      Deliberate steady state at end-of-quota. The free tier gives 20 code
+      reviews a month and Octopus is NOT to be uninstalled — the 20 are real
+      value (D023). When credits hit zero: mute repo access for the rest of
+      the period (REMINDERS.md + docs/PR_SIGNAL_HYGIENE.md §2); unmute on
+      monthly reset. Fallback reviews run via octopus-review-fallback.yml.
+      Mute is manual — not automatable with GITHUB_TOKEN.
     tracked_in: 17738
     expected: true
 

@@ -490,3 +490,38 @@ detector), `tests/chaosmender.test.js` (the regression tests).
 
 **Next Action:** Human (`midnghtsapphire`) reviews/merges the fix PR; do not reopen #16791. Optionally wire `node scripts/check-dependabot-split-deps.js` into `automation-doctor` / CI later.
 **Next Action:** Fleet review focus for this PR should be *checking the two proven fixes* (WR-01, WR-02/03) and the two small dependency fixes (WR-04), not re-deriving them. Three items need an owner/product decision before any agent writes code: WR-05 (`ship-to-market.yml`'s missing `record.js` — build it or comment out the video-deliverable step), WR-06/WR-07 (`label-inventory.js` / `validate_jsonl.py` — wire in or archive-with-attribution, never delete per standing owner preference). WR-08 flags that the WR-drafting pipeline itself — 35 fully-drafted WRs across two prior audits, never filed as GitHub issues — is the largest unwired-flow pattern in the repo by volume; needs an owner pass over `wr/pending/` to mark stale/superseded items before a bulk-filing workflow gets built. WR-09's 16 scanner hits are queued for the next audit to individually root-cause. Two proposed CI vaccines from this session (`find-duplicate-json-keys.js`-style package.json lint; "named test/workflow file must exist" check for `scripts/**` and `skills/**/SKILL.md`) are not yet wired into `scripts/automation-doctor.js` — good candidates for a fast follow-up WR once this PR lands.
+
+### TM-0007 — Decision retired the workflow, App kept failing every PR
+
+**Discovered:** 2026-08-20  **Discovered-by:** copilot on WR #17738  **PR/issue:** #17738, D022–D024
+**Category:** integration-lifecycle / signal-hygiene
+
+**Symptom:** Every PR is born with multiple red checks (`Vercel – *` Account
+is blocked; `Octopus Review` out of credits) unrelated to the diff. Reviewers
+and agents treat red as ambient noise. Same class as permanently-red OSSAR
+(D015) and the RecurseML App-vs-workflow conflation (D014).
+
+**Root cause:** A decision wrote off or replaced a **workflow lane**, but the
+**GitHub App** was never uninstalled or muted. Apps keep posting commit
+statuses / check runs. Repo CI tokens cannot toggle App installation
+membership — only an owner UI session can.
+
+**Detection heuristic:** If a check is red on every PR with the same message
+for days, ask: is this the diff, or account/quota state? If the latter, it
+belongs in `config/known-red-checks.yml` with an owner and unblock path, and
+the App must be disconnected or muted — not merely documented forever.
+
+**Autofix pattern:**
+1. Record the check in `config/known-red-checks.yml` (reason, owner, unblock).
+2. Decide: disconnect (Vercel account block) vs keep+mute-on-quota (Octopus).
+3. Owner click-by-click in `docs/PR_SIGNAL_HYGIENE.md` / `REMINDERS.md`.
+4. Keep required merge checks = real postconditions only
+   (`config/required-checks.yml`); never require vendor account/quota checks.
+5. File a WR-BLOCKER for owner-only App actions — do not silently drop scope.
+
+**Prevention rule:** When cutting or replacing a review/deploy tool, the
+Definition of Done includes the App installation state (connected / muted /
+removed), not only the workflow YAML triggers.
+
+**Related:** D014, D015, D022, D023, D024, `config/known-red-checks.yml`,
+`docs/PR_SIGNAL_HYGIENE.md`, GREEN_MAIN_STANDARD.md rule 5.

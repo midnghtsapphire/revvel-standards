@@ -149,6 +149,24 @@ covers that gap:
   auto-descriptions, or `/improve`-style commands — it speaks OpenRouter natively
   so the `review` profile models carry over.
 
+### 7 — Monthly mute cycle (keep installed; stop red noise after the 20)
+
+**D023 / WR #17738.** Octopus is **not** uninstalled — the free tier's ~20
+reviews/month are wanted. `out of credits` is end-of-quota, not a fault. After
+the 20 are used, the App still posts a failing `Octopus Review` check on every
+PR, which destroys signal hygiene.
+
+| Step | Who | Action |
+| --- | --- | --- |
+| During the 20 | App | Let Octopus review normally |
+| Credits hit zero | Owner (manual) | Mute: GitHub → Apps → Octopus Review → Configure → uncheck `revvel-standards` |
+| Rest of month | Fallback workflow | `octopus-review-fallback.yml` supplies reviews |
+| Monthly reset | Owner (manual) | Unmute: re-check `revvel-standards` on the same Configure page |
+
+**Not automatable** with `GITHUB_TOKEN` (installation membership needs owner UI
+or a privileged admin token this fleet does not use for App toggles). Full
+click-by-click: `docs/PR_SIGNAL_HYGIENE.md` §2 and `REMINDERS.md`.
+
 ## Guardrails
 
 - `OCTOPUS_TOKEN`, provider keys, and any OpenRouter key live in repo/org secrets —

@@ -63,10 +63,12 @@ subscriptions:
     currency: USD
     repositories: all
     dashboard_url: https://vercel.com/oaudrey-projects
-    decision_doc: null
+    decision_doc: docs/PR_SIGNAL_HYGIENE.md
     notes: >-
-      Website-in-Test + production deploys for Revvel projects (required for DB
-      integrations). Usage-based; no fixed renewal date.
+      Account BLOCKED as of 2026-08-17 — three projects post "Account is
+      blocked." on every commit. D022: disconnect GitHub integrations until a
+      deploy succeeds (docs/PR_SIGNAL_HYGIENE.md §1). Usage-based; no fixed
+      renewal date. Do not treat red Vercel checks as diff failures.
 
   - name: OpenRouter
     vendor: OpenRouter
@@ -150,11 +152,12 @@ subscriptions:
     currency: USD
     repositories: all
     dashboard_url: https://octopus-review.ai
-    decision_doc: null
+    decision_doc: docs/PR_SIGNAL_HYGIENE.md
     notes: >-
-      SaaS bot. Hit "organization has reached monthly AI usage limit" multiple
-      times this session — fill in plan tier + monthly limit once known.
-      Separate from OCTOPUS_TOKEN repo-secret CLI lane.
+      Free tier ≈ 20 code reviews/month. D023: KEEP installed; when out of
+      credits, MUTE repo access for the rest of the period and UNMUTE on
+      reset (manual — REMINDERS.md + docs/PR_SIGNAL_HYGIENE.md §2). Fallback:
+      octopus-review-fallback.yml. Separate from OCTOPUS_TOKEN CLI lane.
 
   - name: cubic
     vendor: cubic.dev
