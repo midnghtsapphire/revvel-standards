@@ -155,8 +155,11 @@ jobs:
               });
               core.info('✅ Removed needs-action label (routing complete)');
             } catch (error) {
-              // Label might have been removed already by another process
-              core.notice(`Could not remove needs-action label: ${error.message}`);
+              // 404 = another process already removed it, which is the end state
+              // we wanted. Anything else means the label is STILL there and the
+              // item stays in the needs-action queue forever.
+              if (error.status !== 404) throw error;
+              core.notice(`needs-action label already gone: ${error.message}`);
             }
       - name: Post routing comment
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'

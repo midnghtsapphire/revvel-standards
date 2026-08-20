@@ -49,20 +49,49 @@ function run(args, env = {}) {
   return { status: res.status, out: `${res.stdout}${res.stderr}` };
 }
 
-/** A repo file that genuinely trips a scanner — the fixtures below depend on one existing. */
-function fileWithAFinding() {
-  const { out } = run([]);
-  const m = out.match(/\.github\/workflows\/[A-Za-z0-9._-]+\.ya?ml/);
-  assert.ok(m, 'the whole-repo scan must report at least one finding, or every ' +
-    'scoping assertion below is vacuous');
-  return m[0];
+/**
+ * A throwaway tree containing exactly one file that trips a scanner.
+ *
+ * These assertions need a live finding to prove the `--changed-only` filter is
+ * not vacuous, and they used to take one from this repository — which worked
+ * only while the repository had an unfixed defect in it. It had sixteen; they
+ * are gone, and the tests went red for the repo being CLEAN.
+ *
+ * Depending on a real defect makes fixing it look like a regression, and the
+ * alternative — leaving one in the tree so a test has something to find — is
+ * worse than the defect. The fixture is synthetic now, via `--root`.
+ */
+function repoWithAFinding() {
+  const dir = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'chaosmender-scope-'));
+  const wf = path.join(dir, '.github', 'workflows');
+  fs.mkdirSync(wf, { recursive: true });
+  fs.writeFileSync(path.join(wf, 'unguarded.yml'), [
+    'name: Fixture', 'on: [push]', 'jobs:', '  j:', '    steps:',
+    '      - uses: actions/github-script@v9.0.0', '        with:', '          script: |',
+    '            await github.rest.issues.removeLabel({ owner, repo, issue_number: 1, name: "x" });',
+  ].join('\n') + '\n');
+  return { dir, file: '.github/workflows/unguarded.yml' };
 }
 
 test('the whole-repo scan is not vacuous', () => {
-  // Guards the guard: if the scanners stop finding anything repo-wide, the
+  // Guards the guard: if the scanners stop finding anything at all, the
   // filtering tests would pass by finding nothing rather than by filtering.
-  const file = fileWithAFinding();
-  assert.match(file, /^\.github\/workflows\//);
+  const { dir, file } = repoWithAFinding();
+  try {
+    const { out } = run(['--root', dir]);
+    assert.match(out, new RegExp(file.replace(/[.]/g, '\\.')),
+      'the scanners must still report a genuinely unguarded call');
+    assert.match(file, /^\.github\/workflows\//);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('this repository itself is clean', () => {
+  // The outcome the fixture above exists to let us assert separately: no
+  // finding anywhere in the tree, and an exit code that says so.
+  const { status, out } = run([]);
+  assert.equal(status, 0, `ChaosMender is red on this tree:\n${out}`);
 });
 
 test('an empty changed-file set fails instead of reporting a clean diff', () => {
@@ -80,15 +109,21 @@ test('an empty changed-file set fails instead of reporting a clean diff', () => 
 });
 
 test('findings inside the diff survive the filter', () => {
-  const file = fileWithAFinding();
-  const { out } = run(['--changed-only'], { CHAOSMENDER_CHANGED_FILES: file });
-  const m = out.match(/(\d+) finding\(s\) attributable/);
-  assert.ok(m, 'the changed-only summary line must be printed');
-  assert.ok(
-    Number(m[1]) > 0,
-    `${file} trips a scanner in the whole-repo scan, so scoping to it must ` +
-      'attribute at least one finding — zero here means the keys never match'
-  );
+  const { dir, file } = repoWithAFinding();
+  try {
+    const { out } = run(['--changed-only', '--root', dir], {
+      CHAOSMENDER_CHANGED_FILES: file,
+    });
+    const m = out.match(/(\d+) finding\(s\) attributable/);
+    assert.ok(m, 'the changed-only summary line must be printed');
+    assert.ok(
+      Number(m[1]) > 0,
+      `${file} trips a scanner in the whole-repo scan, so scoping to it must ` +
+        'attribute at least one finding — zero here means the keys never match'
+    );
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test('findings outside the diff are filtered out', () => {
@@ -104,20 +139,25 @@ test('every finding path is in `git diff --name-only` format', () => {
   // git's output; `f.file` comes from the scanners. If the two ever diverge,
   // `changed.has(f.file)` misses every time and the gate silently passes
   // everything — with no error anywhere, because "0 findings" reads as success.
-  const { out } = run([]);
-  // Report lines read:  `   File  : .github/workflows/foo.yml:288`
-  const paths = [...out.matchAll(/^\s*File\s*:\s*(\S+?):\d+\s*$/gm)].map((m) => m[1]);
+  const { dir } = repoWithAFinding();
+  try {
+    const { out } = run(['--root', dir]);
+    // Report lines read:  `   File  : .github/workflows/foo.yml:288`
+    const paths = [...out.matchAll(/^\s*File\s*:\s*(\S+?):\d+\s*$/gm)].map((m) => m[1]);
 
-  assert.ok(paths.length > 0, 'expected the report to name file paths');
+    assert.ok(paths.length > 0, 'expected the report to name file paths');
 
-  for (const p of new Set(paths)) {
-    assert.ok(!path.isAbsolute(p), `${p} must be repo-relative, not absolute`);
-    assert.ok(!p.startsWith('./'), `${p} must not carry a ./ prefix — git omits it`);
-    assert.ok(!p.includes('\\'), `${p} must use forward slashes`);
-    assert.ok(
-      fs.existsSync(path.join(REPO, p)),
-      `${p} must resolve from the repo root, the same way git diff --name-only reports it`
-    );
+    for (const p of new Set(paths)) {
+      assert.ok(!path.isAbsolute(p), `${p} must be repo-relative, not absolute`);
+      assert.ok(!p.startsWith('./'), `${p} must not carry a ./ prefix — git omits it`);
+      assert.ok(!p.includes('\\'), `${p} must use forward slashes`);
+      assert.ok(
+        fs.existsSync(path.join(dir, p)),
+        `${p} must resolve from the scanned root, the same way git diff --name-only reports it`
+      );
+    }
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
   }
 });
 

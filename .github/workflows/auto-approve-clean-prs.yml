@@ -214,7 +214,7 @@ jobs:
                   if (labelNames.includes(label)) {
                     try {
                       await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
-                    } catch (e) { /* label may already be removed */ }
+                    } catch (e) { if (e.status !== 404) throw e; /* 404 = already gone */ }
                   }
                 }
 
