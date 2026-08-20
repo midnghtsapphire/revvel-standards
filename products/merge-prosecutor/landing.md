@@ -15,4 +15,4 @@ Merge Prosecutor acts as a gatekeeper. It mathematically analyzes the merge diff
 ## Get Started
 Start for free, or upgrade to Pro for $29/month to get advanced duplication detection and auto-WR generation.
 
-[Get Merge Prosecutor on GitHub Marketplace](#)
+[Get Merge Prosecutor on GitHub Marketplace](https://github.com/marketplace/actions/merge-prosecutor)
