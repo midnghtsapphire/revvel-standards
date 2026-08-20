@@ -5,7 +5,7 @@
 **Created:** 2026-08-20  
 **Research Date:** 2026-08-20  
 **Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
+**WR Status:** ✅ Complete
 
 ---
 
@@ -280,11 +280,24 @@ jobs:
 
 ## Scope
 
-<!-- Detailed scope: what's in, what's out, boundaries with other WRs. -->
+**In Scope:**
+- Migrating the OSSAR-Scan GitHub Actions workflow (`.github/workflows/ossar-analysis.yml` or similar) to use Linux runners (`ubuntu-latest`).
+- Updating error handling in the workflow to clearly distinguish tool/infrastructure failures (like path length issues) from actual security findings.
+- Adding a regression guard to ensure the bandit scanner actually executes and produces SARIF output.
+
+**Out of Scope:**
+- Full migration to GitHub CodeQL (this is a strategic recommendation for a future WR).
+- Fixing underlying Guardian NuGet path limits (this is an upstream issue).
 
 ## Approach
 
-<!-- Proposed approach / design sketch. Alternatives considered. -->
+1. **Runner Migration:** Modify the existing OSSAR-Scan workflow file to run on `ubuntu-latest` instead of `windows-latest`. This circumvents the Windows 260-character path limit that causes the Guardian bandit redistributable to fail to launch.
+2. **Error Differentiation:** Implement a wrapper script or workflow step logic to check the exit code and logs of the OSSAR tool. If the failure is due to 'The filename or extension is too long' or other infrastructure errors, exit with a distinct code or print a specific error message so it is not conflated with a 'BreakException' for security findings.
+3. **Regression Guard:** Add a post-scan validation step that greps the generated SARIF file (or results directory) to assert that `bandit` results are present. If missing, fail the workflow explicitly indicating that the tool did not run.
+
+**Alternatives Considered:**
+- *Enable Windows Long Paths:* Requires runner-level configuration (`git config --system core.longpaths true` and registry tweaks) which might not be fully supported or reliable on GitHub-hosted Windows runners. Linux migration is simpler and more robust for a Python-based tool.
+- *Immediate CodeQL Migration:* Rejected as the immediate fix because it requires more extensive configuration and testing across the codebase; a targeted fix to the existing workflow is faster to restore CI reliability.
 
 ## Acceptance Criteria
 
@@ -295,27 +308,12 @@ jobs:
 
 ## Risks & Mitigations
 
-<!-- Known risks, fragile files touched, rollback plan. -->
-
-## Competitor & Pricing Intelligence
-
-<!--
-For Competitor and GitHub Star Intelligence WRs, the competitor/pricing table
-must list actual prices (e.g. "$99-299/month"), not vague labels like "Paid tiers".
-If a competitor's price is unknown, write:
-"Pricing data pending — competitive benchmark research required."
-Do not ship incomplete competitive intelligence. This rule is kept in sync with
-scripts/research-engine.js by tests/research-engine.test.js.
--->
+- **Risk:** Moving to a Linux runner might expose Linux-specific pathing or environment issues with the OSSAR action that were not present on Windows.
+- **Mitigation:** Test the modified workflow on a dedicated branch/PR before merging to `main`.
+- **Rollback:** Revert the workflow runner back to `windows-latest` if the Linux runner introduces blocking issues.
 
 ## Learnings — What & Why
 
-N/A — pending Jules refinement
+The OSSAR-Scan failure is an infrastructure issue (Windows `MAX_PATH` limit on runners) incorrectly reported as a security finding. This false positive trains developers to ignore security alerts ("alert fatigue"). The immediate fix is migrating the workflow to a Linux runner, as the bandit scanner is Python-based and fully supported on Linux. Long-term, migrating to GitHub CodeQL provides better integration and error handling without these path limit issues.
 
-<!--
-Guidance: agents completing other WR types should fill this in themselves once
-done — capture what was learned and _why_ it matters, not just what changed.
-For follow-up-generated WRs this section is populated automatically by the
-Follow-up Checkbox Router with the original follow-up text, a link to the
-source PR/issue, and (if applicable) a note that this is a chained follow-up.
--->
+
