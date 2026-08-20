@@ -1,11 +1,19 @@
 name: No Root Junk
-# Catches the #14119-class defect: throwaway development scripts
-# (plan.md, finish_clean.js, fix_boilerplate.js, update_wr.js, tmp_*, scratch*)
-# committed to the repo root. Per Octopus review of the recent WR-PR cluster.
+# Catches the #14119-class defect: throwaway development scripts committed to
+# the repo root.
+#
+# Two rules, because one name list was not enough:
+#
+#   1. A DENYLIST of names that leaked once (plan.md, finish_clean.js, tmp_*,
+#      scratch*, …). This was the original rule.
+#   2. An ALLOWLIST of executables. Every new one-shot patcher arrives under a
+#      new name, so rule 1 can only ever catch the last one. Four of them
+#      reached main under names rule 1 never mentioned — patch_ossar.js,
+#      update_uv_lock.py, fix-semgrep.js, fix-zizmor.js (#17764). Rule 2 denies
+#      any script at the repo root that is not named as allowed, whatever it is
+#      called.
 #
 # Runs on every PR, regardless of paths — junk can land anywhere.
-# If a file legitimately needs one of these names, edit the grep -E
-# pattern below to add an exception (and leave a comment explaining why).
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -24,19 +32,55 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
-          # Repo-root only — depth-1 entries that match the throwaway pattern.
-          # Subdir files (scripts/finish_clean.js, etc.) are out of scope here;
-          # those have legitimate places to live.
+
+          # Repo-root only — depth-1 entries. Subdir files (scripts/*.js, etc.)
+          # are out of scope here; those have legitimate places to live.
+          #
           # AMR filter: Added | Modified | Renamed. Without R, renaming a
           # legitimate file into a forbidden root name would bypass the gate.
           # Per Copilot review.
-          CHANGED="$(git diff --name-only --diff-filter=AMR "${BASE_SHA}...${HEAD_SHA}")"
-          JUNK="$(printf '%s\n' "$CHANGED" \
+          CHANGED="$(git diff --name-only --diff-filter=AMR "${BASE_SHA}...${HEAD_SHA}" -- ':(top)*' ':(exclude,top)*/*')"
+
+          # Depth-1 again, in the script. The pathspec above already does this,
+          # but the restriction is the only thing keeping rule 2 from flagging
+          # every scripts/*.js in the repo — so it must not depend on one
+          # argument in one git invocation staying correct.
+          CHANGED="$(printf '%s\n' "$CHANGED" | grep -v '/' || true)"
+
+          # Rule 1 — names that leaked before.
+          JUNK_BY_NAME="$(printf '%s\n' "$CHANGED" \
             | grep -E '^(plan|finish_clean|fix_boilerplate|update_wr|tmp[_-].*|scratch.*|temp[_-].*|throwaway.*|notes)\.(js|mjs|ts|md|sh|py|txt)$' \
             || true)"
+
+          # Rule 2 — any executable at the root that is not named as allowed.
+          #
+          # ALLOWED is generated browser data that is loaded from the root by
+          # agent-creator.html and by publish-site.yml / website-publish.yml.
+          # Both carry a "do not edit" header and are rebuilt by scripts/.
+          #
+          # RATCHET is the known offenders already at the root. It may only
+          # shrink, and only by name — removing a file means removing its line
+          # here in the same commit. Adding a name is not a fix.
+          #
+          # None of these can be deleted by an agent. RVS-AGENT-001 reserves
+          # deletion to a human ("Agents may never take it",
+          # standards/COMMENT-DONT-DELETE.md §259-260), so they are tracked here
+          # until the owner ratifies removal — #17790.
+          ALLOWED='^(agent-creator-data|hub-registry)\.js$'
+          RATCHET='^(update_uv_lock\.py|patch_ossar\.js|fix-semgrep\.js|fix-zizmor\.js)$'
+          JUNK_BY_KIND="$(printf '%s\n' "$CHANGED" \
+            | grep -E '\.(js|mjs|cjs|ts|py|sh|bash|rb|pl)$' \
+            | grep -Ev "$ALLOWED" \
+            | grep -Ev "$RATCHET" \
+            || true)"
+
+          JUNK="$(printf '%s\n%s\n' "$JUNK_BY_NAME" "$JUNK_BY_KIND" | grep -v '^$' | sort -u || true)"
+
           if [ -n "$JUNK" ]; then
             echo "::error::Throwaway dev files at repo root are not allowed. Move them under scripts/, docs/, or wr/ — or delete them before merge."
-            printf '  • %s\n' $JUNK
+            # Quoted: an unquoted expansion word-splits a filename containing a
+            # space and prints it as two bogus entries (CLAUDE.md gotcha #5).
+            printf '%s\n' "$JUNK" | sed 's/^/  • /'
             exit 1
           fi
           echo "✓ no throwaway files at repo root"

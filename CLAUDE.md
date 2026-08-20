@@ -54,6 +54,15 @@ catalog with PR citations.
 8. **Pin third-party GitHub Actions to a full commit SHA.** Floating tags
    (`@v3`, `@main`) break every PR when upstream ships a breaking change or
    archives the repo. Add Dependabot for `github-actions`.
+9. **A marker nobody checks is decoration.** Before writing or trusting a
+   label, an exit code, a `Closes #N`, a count, or a comment claiming a
+   behaviour, ask: *what would fail if this were false?* If the answer is
+   "nothing," it is not a control. Eight instances landed in one day — an
+   `issue:done` on an undelivered issue, `Fixes #N` on a zero-file PR, a
+   ratchet counting to 12 instead of naming twelve files, four tests pinned to
+   a function that only existed in dead code. Every instance has a producer and
+   a consumer; fix both, and repair the residue. Full rule:
+   `standards/VERIFY_THE_POSTCONDITION.md` (RVS-VERIFY-001).
 
 ## Found a bug? Open a PR for it — even if it isn't yours
 
@@ -104,3 +113,6 @@ per PR, with a regression test.
 - **`standards/GREEN_MAIN_STANDARD.md`** — outcome contract for main.
 - **`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md`** — audit methodology
   and fix-pattern catalog with PR citations.
+- **`standards/VERIFY_THE_POSTCONDITION.md`** — RVS-VERIFY-001, the
+  marker-without-verification pattern and how to write a guard for it that
+  is not itself a decoration.

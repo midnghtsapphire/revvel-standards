@@ -171,6 +171,26 @@ Eight patterns, each observed and fixed in the cited PR. Format:
   or use the internal `removeLabelIfPresent` helper. Never call `removeLabel`
   bare in a workflow that can race.
 
+### 9. A marker asserting a postcondition nothing verified (PRs #17782, #17791, #17792, #17793, #17797)
+
+- **Symptom:** A label, exit code, `Closes #N`, count, or comment states that
+  something happened. Every check is green. The thing did not happen. Often the
+  marker also *blocks* the work that would clear it, so the state cannot be
+  left — an open issue labelled `issue:done` could never receive another WR PR,
+  and nothing could remove the label.
+- **Root cause:** The signal was written without confirming the state, and read
+  without confirming it either. Both halves are needed for the defect and both
+  are single missing lines, so review sees nothing wrong: the defect is the
+  *absence* of a check elsewhere.
+- **Fix:** Establish the state first, then write the marker — and if you cannot
+  confirm the state, write no marker. On the consuming side, decide on the
+  state, and treat a marker that contradicts it as damage to repair rather than
+  a fact to obey. Guard it by **naming, not counting**; by asserting behaviour
+  rather than the presence of a string; by stripping comments before matching
+  source; and by mutation-testing the guard against the exact defect. Full
+  rule, with all eight observed instances:
+  `standards/VERIFY_THE_POSTCONDITION.md` (RVS-VERIFY-001).
+
 ### 2. Missing `allowError` on internal API helpers (PR #15824)
 
 - **Symptom:** A helper that is *meant* to be best-effort (e.g. "comment on

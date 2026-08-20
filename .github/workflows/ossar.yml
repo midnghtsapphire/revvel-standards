@@ -61,6 +61,27 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    # REMOVED: "Enable Windows Long Paths" (added by #17758, removed by #17764).
+    #
+    # It set LongPathsEnabled=1 and git core.longpaths as the job's first step,
+    # on the theory that OSSAR failed because bandit's launcher path exceeded
+    # the 260-character MAX_PATH limit. That theory does not survive
+    # measurement. From the failing log (#17748):
+    #
+    #   D:\a\revvel-standards\revvel-standards\.gdn\i\nuget\
+    #     Microsoft.Guardian.BanditRedist_windows_amd64.1.8.6.12\tools\
+    #     bandit_runner.exe
+    #   length = 130
+    #
+    # 130 of 260. Win32 error 206 also fires when the command LINE exceeds
+    # ~32KB, which fits a per-file argument list over a repo this size — a
+    # different cause the registry key does nothing for.
+    #
+    # Left as a comment rather than deleted so that reviving OSSAR does not
+    # start by re-adding it. If it is revived, keep "Verify OSSAR Execution"
+    # below: asserting the postcondition is the part that addressed the real
+    # defect (CLAUDE.md gotcha #6).
+
     - name: Checkout repository
       uses: actions/checkout@v4
 

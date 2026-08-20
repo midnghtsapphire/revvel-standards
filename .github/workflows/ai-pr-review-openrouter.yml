@@ -65,6 +65,6 @@ jobs:
 
             Diff to review:
             {{DIFF}}
-    timeout-minutes: 30
+    timeout-minutes: 60
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
