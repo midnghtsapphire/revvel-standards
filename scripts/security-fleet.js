@@ -95,7 +95,9 @@ const INJECTION_ALLOWLIST = [
       if (!/\bupload\b/i.test(text) || !/\bas an artifact\b/i.test(text)) return false;
       const parts = text.split(/\bas an artifact\b/i);
       const beforeArtifact = parts[0];
-      const afterArtifact = parts.slice(1).join(' as an artifact ');
+      // Rejoin with the same token the split removed (casing normalized is fine;
+      // secretNoun is case-insensitive). Avoid inventing extra spaces.
+      const afterArtifact = parts.slice(1).join('as an artifact');
       const secretNoun =
         /\b(secrets?|tokens?|credentials?|api keys?|env(?:ironment)? variables?)\b/i;
       if (secretNoun.test(beforeArtifact)) return false;
