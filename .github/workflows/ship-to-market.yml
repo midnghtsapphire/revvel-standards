@@ -293,9 +293,11 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          PDF_COUNT: ${{ steps.build_pdf.outputs.count }}
         with:
           script: >
-            const count = '${{ steps.build_pdf.outputs.count }}';
+            const count = (process.env.PDF_COUNT || '');
 
             const run = '${{ github.run_id }}';
 
@@ -336,9 +338,11 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          PUBLISH_RESULT: ${{ steps.publish.outputs.result }}
         with:
           script: >
-            const result = '${{ steps.publish.outputs.result }}';
+            const result = (process.env.PUBLISH_RESULT || '');
 
             const ok = !result.includes('SKIPPED');
 
@@ -525,9 +529,11 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          VIDEO_RECORDED: ${{ steps.record.outputs.recorded }}
         with:
           script: >
-            const recorded = '${{ steps.record.outputs.recorded }}';
+            const recorded = (process.env.VIDEO_RECORDED || '');
 
             const run = '${{ github.run_id }}';
 
@@ -553,14 +559,19 @@ jobs:
       - name: Dispatch auto-deploy-to-stores workflow
         id: dispatch
         uses: actions/github-script@v9.0.0
+        env:
+          RUN_ANDROID: ${{ needs.gate.outputs.run_android }}
+          RUN_MOBILE: ${{ needs.gate.outputs.run_mobile }}
+          RUN_IOS: ${{ needs.gate.outputs.run_ios }}
+          ISSUE_NUM: ${{ needs.gate.outputs.issue_num }}
         with:
           script: |
             // Resolve which platforms are requested
-            const wantsAndroid = '${{ needs.gate.outputs.run_android }}' === 'true' || '${{ needs.gate.outputs.run_mobile }}' === 'true';
-            const wantsIos     = '${{ needs.gate.outputs.run_ios }}'     === 'true' || '${{ needs.gate.outputs.run_mobile }}' === 'true';
+            const wantsAndroid = (process.env.RUN_ANDROID || '') === 'true' || (process.env.RUN_MOBILE || '') === 'true';
+            const wantsIos     = (process.env.RUN_IOS || '')     === 'true' || (process.env.RUN_MOBILE || '') === 'true';
             const platform     = wantsAndroid && wantsIos ? 'both' : wantsAndroid ? 'android' : 'ios';
 
-            const issueNumber = '${{ needs.gate.outputs.issue_num }}';
+            const issueNumber = (process.env.ISSUE_NUM || '');
 
             core.info(`Dispatching auto-deploy-to-stores.yml — platform: ${platform}, issue: ${issueNumber || 'none'}`);
 
@@ -585,10 +596,13 @@ jobs:
       - name: Comment dispatch result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          DISPATCHED: ${{ steps.dispatch.outputs.dispatched }}
+          ISSUE_NUM: ${{ needs.gate.outputs.issue_num }}
         with:
           script: |
-            const dispatched = '${{ steps.dispatch.outputs.dispatched }}';
-            const issueNumber = '${{ needs.gate.outputs.issue_num }}'.trim();
+            const dispatched = (process.env.DISPATCHED || '');
+            const issueNumber = (process.env.ISSUE_NUM || '').trim();
             const actionsUrl = `https://github.com/${{ github.repository }}/actions/workflows/auto-deploy-to-stores.yml`;
             const body = dispatched === 'true'
               ? `📱 **Mobile store deployment dispatched** → [View progress in auto-deploy-to-stores.yml](${actionsUrl})\n\n> Deployment enforces the **deep research gate** — the originating WR issue must have \`deep-research\` + \`research:complete\` labels before stores are updated.`
@@ -651,9 +665,11 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          PUBLISH_RESULT: ${{ steps.publish.outputs.result }}
         with:
           script: |
-            const result = '${{ steps.publish.outputs.result }}';
+            const result = (process.env.PUBLISH_RESULT || '');
             const ok = result && !result.includes('SKIPPED');
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -768,9 +784,11 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          VALIDATE_RESULT: ${{ steps.validate.outputs.result }}
         with:
           script: |
-            const result = '${{ steps.validate.outputs.result }}';
+            const result = (process.env.VALIDATE_RESULT || '');
             const ok = result && !result.includes('SKIPPED');
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -821,9 +839,11 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          OPENAPI_RESULT: ${{ steps.openapi.outputs.result }}
         with:
           script: |
-            const result = '${{ steps.openapi.outputs.result }}';
+            const result = (process.env.OPENAPI_RESULT || '');
             const ok = result && !result.includes('SKIPPED') && !result.includes('FAILED');
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -870,9 +890,11 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          MIGRATE_RESULT: ${{ steps.migrate.outputs.result }}
         with:
           script: |
-            const result = '${{ steps.migrate.outputs.result }}';
+            const result = (process.env.MIGRATE_RESULT || '');
             const ok = result && !result.includes('SKIPPED') && !result.includes('FAILED');
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -967,9 +989,11 @@ jobs:
       - name: Label needs-human on failure
         if: steps.check.outputs.status == 'failed' && needs.gate.outputs.issue_num != ''
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUM: ${{ needs.gate.outputs.issue_num }}
         with:
           script: >
-            const issue = parseInt('${{ needs.gate.outputs.issue_num }}');
+            const issue = parseInt((process.env.ISSUE_NUM || ''));
 
             if (!issue) return;
 
