@@ -133,14 +133,19 @@ jobs:
 
             // Swap labels to human-review state
             for (const label of ['won\'t-merge', 'auto-fix']) {
-              try {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: pr_number,
-                  name: label,
-                });
-              } catch (_) {}
+              // The label already being absent is the desired end state, so a
+              // 404 is success (CLAUDE.md gotcha #1, LABEL-RACE-001). Anything
+              // else — 401, 403 on a restricted token, a 5xx — means the block
+              // may still be in place, and must not be reported as removed
+              // (gotcha #6).
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr_number,
+                name: label,
+              }).catch((err) => {
+                if (err.status !== 404) throw err;
+              });
             }
             try {
               await github.rest.issues.addLabels({
@@ -261,21 +266,26 @@ jobs:
 
             // Remove blocking labels
             for (const label of ["won't-merge", 'auto-fix']) {
-              try {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: pr_number,
-                  name: label,
-                });
-              } catch (_) {}
+              // The label already being absent is the desired end state, so a
+              // 404 is success (CLAUDE.md gotcha #1, LABEL-RACE-001). Anything
+              // else — 401, 403 on a restricted token, a 5xx — means the block
+              // may still be in place, and must not be reported as removed
+              // (gotcha #6).
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr_number,
+                name: label,
+              }).catch((err) => {
+                if (err.status !== 404) throw err;
+              });
             }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr_number,
-              body: `✅ **Ralph Loop — merge block removed**\n\nVerified on \\`${ref.slice(0, 7)}\\`: every check run completed without failure, and the combined commit status is not failing. Blocking labels cleared.`,
+              body: `✅ **Ralph Loop — merge block removed**\n\nVerified on \`${ref.slice(0, 7)}\`: every check run completed without failure, and the combined commit status is not failing. Blocking labels cleared.`,
             });
     timeout-minutes: 30
 env:
