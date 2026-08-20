@@ -38,10 +38,13 @@ jobs:
     steps:
       - name: Close matching failure-spam issues
         uses: actions/github-script@v9.0.0
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          MAX_TO_CLOSE: ${{ inputs.max_to_close }}
         with:
           script: |
-            const dryRun = `${{ inputs.dry_run }}` !== 'false';
-            const maxToClose = parseInt(`${{ inputs.max_to_close }}`, 10) || 500;
+            const dryRun = (process.env.DRY_RUN || '') !== 'false';
+            const maxToClose = parseInt(process.env.MAX_TO_CLOSE || '', 10) || 500;
             const { owner, repo } = context.repo;
 
             let processed = 0;
