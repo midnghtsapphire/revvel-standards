@@ -1,5 +1,9 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-08-19T23:12:21.750Z",
+<<<<<<< HEAD
+  "updated_at": "2026-08-19T22:57:32.143Z",
+=======
+  "updated_at": "2026-08-20T00:22:23.198Z",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
   "workflows": {}
 }
