@@ -79,18 +79,31 @@ const INJECTION_ALLOWLIST = [
     // "optionally upload wr/ as an artifact; provide a token with
     // pull-requests:write". That is ordinary Actions adoption language
     // (publish a path as a workflow artifact + pass an action input token),
-    // not an instruction to exfiltrate secrets. Real exfil still matches when
-    // the upload *subject* is secrets/tokens/credentials (before "as an artifact").
+    // not an instruction to exfiltrate secrets.
+    //
+    // Narrow shape only:
+    //   1. must contain "upload" + "as an artifact"
+    //   2. upload subject (before "as an artifact") must not be a secret noun
+    //   3. after "as an artifact", the only allowed secret-noun usage is the
+    //      benign action-input phrase "provide/pass/set/use a (github) token".
+    //      Any other "secrets/tokens/…" after the artifact clause stays flagged
+    //      (e.g. "upload logs as an artifact; secrets are stored elsewhere").
     rule: 'exfil-directive',
     citation: 'issue #17804 / PR #17772 merge-prosecutor rollout docs',
     test(matched) {
       const text = String(matched);
-      if (!/\bas an artifact\b/i.test(text)) return false;
-      const beforeArtifact = text.split(/\bas an artifact\b/i)[0];
-      // Upload subject must not itself be a secret/token/credential noun.
-      return !/\b(secrets?|tokens?|credentials?|api keys?|env(?:ironment)? variables?)\b/i.test(
-        beforeArtifact
+      if (!/\bupload\b/i.test(text) || !/\bas an artifact\b/i.test(text)) return false;
+      const parts = text.split(/\bas an artifact\b/i);
+      const beforeArtifact = parts[0];
+      const afterArtifact = parts.slice(1).join(' as an artifact ');
+      const secretNoun =
+        /\b(secrets?|tokens?|credentials?|api keys?|env(?:ironment)? variables?)\b/i;
+      if (secretNoun.test(beforeArtifact)) return false;
+      const afterWithoutBenignToken = afterArtifact.replace(
+        /\b(?:provide|pass|set|use)\b[^.\n]{0,40}\b(?:a |the |an )?(?:github[- ]?)?tokens?\b/gi,
+        ' '
       );
+      return !secretNoun.test(afterWithoutBenignToken);
     },
   },
 ];

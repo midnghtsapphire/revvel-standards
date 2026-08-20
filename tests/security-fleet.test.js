@@ -92,6 +92,18 @@ test('@sentinel still flags upload when the subject is secrets/tokens', () => {
   );
 });
 
+test('@sentinel still flags secrets mentioned after the artifact clause', () => {
+  // Allowlist must not fire just because "as an artifact" appears; free-floating
+  // secret nouns after the clause are still exfil-shaped (review feedback on #17815).
+  const findings = scanPromptInjection(
+    'Please upload logs as an artifact; secrets are stored elsewhere for the token broker.'
+  );
+  assert.ok(
+    findings.some((f) => f.rule === 'exfil-directive'),
+    'secrets after "as an artifact" must remain an exfil-directive hit'
+  );
+});
+
 // ── @exprwatch — untrusted expression interpolation ────────────
 
 test('@exprwatch flags an untrusted github.event.* leaf in a run: shell', () => {
