@@ -51,7 +51,7 @@ def _next_cdp_command_id() -> int:
 
 def _reset_cached_ws_unlocked() -> None:
     """Close and clear the cached CDP websocket. Caller must hold _cdp_ws_lock."""
-    global _cached_ws, _cached_ws_url
+    global _cached_ws_url
     if _cached_ws is not None:
         with contextlib.suppress(Exception):
             _cached_ws.close()
@@ -372,7 +372,7 @@ _detected_browser_name: str | None = None
 
 def get_browser_display_name() -> str:
     """Return the display name of the browser that will be (or was) launched."""
-    global _detected_browser_name
+
     if _detected_browser_name:
         return _detected_browser_name
     return "browser"
@@ -411,7 +411,7 @@ def _get_chromium_path(preferred: str | None = None) -> str | None:
     Set via ``nlm config set auth.browser <name>`` or ``NLM_BROWSER`` env var.
     Valid names: auto, chrome, arc, brave, edge, chromium, vivaldi, opera.
     """
-    global _detected_browser_name
+
     if preferred is None:
         preferred = _get_preferred_browser()
         if preferred not in {"auto", *_BROWSER_CONFIG_MAP}:
@@ -425,7 +425,7 @@ def _get_chromium_path(preferred: str | None = None) -> str | None:
 
     def _found(name: str, path: str, fallback: bool = False) -> str:
         """Record detected browser name and return the path."""
-        global _detected_browser_name
+
         _detected_browser_name = name
         if fallback:
             _logger.info("Preferred browser not found, falling back to %s", name)
@@ -1183,7 +1183,7 @@ def execute_cdp_command(
     Returns:
         The result of the CDP command
     """
-    global _cached_ws, _cached_ws_url
+    global _cached_ws_url
 
     if retry:
         # Retry once in case of stale cached connection. Close stale sockets so

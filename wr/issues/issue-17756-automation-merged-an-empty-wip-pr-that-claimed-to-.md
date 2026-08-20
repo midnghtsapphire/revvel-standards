@@ -1,11 +1,11 @@
-# WR: [WR] Automation merged an empty `[WIP]` PR that claimed to deliver a WR — nothing gates on the diff containing anything
+# WR: [WR] Automation merged an empty "WIP" PR that claimed to deliver a WR — nothing gates on the diff containing anything
 
 **Issue:** #17756  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Created:** 2026-08-20  
 **Research Date:** 2026-08-20  
 **Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
+**WR Status:** ✅ Complete
 
 ---
 
@@ -14,15 +14,15 @@
 
 Source packet: `docs/research-engine/run-32320474855.md`
 
-## WR-Ready Research Packet: Automation Merged Empty `[WIP]` PR
+## WR-Ready Research Packet: Automation Merged Empty "WIP" PR
 
 ## 1. Executive Decision
 
-**SHIP IT** - Critical automation vulnerability requires immediate patching. An empty PR with `[WIP]` title and zero file changes was auto-merged, claiming to deliver a major feature. This represents a fundamental failure in merge gate logic that undermines delivery integrity.
+**SHIP IT** - Critical automation vulnerability requires immediate patching. An empty PR with "WIP" title and zero file changes was auto-merged, claiming to deliver a major feature. This represents a fundamental failure in merge gate logic that undermines delivery integrity.
 
 **Primary Fix**: Add workflow validation requiring `changed_files > 0` before auto-merge.
 
-**Secondary Fixes**: Block `[WIP]` titles, enforce checklist completion, resolve contradictory labels.
+**Secondary Fixes**: Block "WIP" titles, enforce checklist completion, resolve contradictory labels.
 
 ## 2. Audience We Are Going After and Why
 
@@ -74,7 +74,7 @@ Source packet: `docs/research-engine/run-32320474855.md`
 
 ### Unmet Needs
 - Auto-merge must refuse empty diffs
-- Title-based gating for `[WIP]`/`DO NOT MERGE`
+- Title-based gating for "WIP"/`DO NOT MERGE`
 - Enforcement that "Fixes #N" PRs must deliver something
 - Checklist state blocking if all unchecked
 
@@ -83,7 +83,7 @@ Source packet: `docs/research-engine/run-32320474855.md`
 ### Verified Claims
 - PR #17058 merged with 0 files changed ✓
 - All 8 checklist boxes unchecked ✓
-- Title still contained `[WIP]` ✓
+- Title still contained "WIP" ✓
 - Contradictory labels present ✓
 
 ### Evidence Gaps
@@ -97,7 +97,7 @@ Source packet: `docs/research-engine/run-32320474855.md`
 
 ### Immediate Requirements
 1. **Empty Diff Gate**: Block auto-merge if `changed_files === 0`
-2. **Title Validation**: Block `[WIP]`, `WIP:`, `DO NOT MERGE` markers
+2. **Title Validation**: Block "WIP", `WIP:`, `DO NOT MERGE` markers
 3. **Label Consistency**: Make contradictory pairs mutually exclusive
 4. **Regression Test**: Simulate PR #17058 conditions
 
@@ -161,8 +161,10 @@ const contradictoryPairs = [
 ### Priority 2: Title Gate Implementation
 ```yaml
 - name: Check title markers
+  env:
+    PR_TITLE: ${{ github.event.pull_request.title }}
   run: |
-    title="${{ github.event.pull_request.title }}"
+    title="$PR_TITLE"
     if [[ "$title" =~ \[WIP\]|^WIP:|DO\ NOT\ MERGE ]]; then
       gh pr edit ${{ github.event.pull_request.number }} --remove-label "ready-to-merge"
       echo "Auto-merge blocked by title marker: $title"
@@ -241,7 +243,7 @@ scripts/research-engine.js by tests/research-engine.test.js.
 
 ## Learnings — What & Why
 
-N/A — pending Jules refinement
+Automated merging of empty PRs can mask incomplete work. We need explicit workflow validation checks to avoid false completions and maintain delivery integrity.
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once
