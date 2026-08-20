@@ -33,6 +33,7 @@
     "dashboard:generate": "node scripts/aggregate-project-dashboard.js",
     "agent-creator:data": "node scripts/build-agent-creator-data.js",
     "automation:doctor": "node scripts/automation-doctor.js",
+    "copilot:timeouts": "node scripts/copilot-timeout-audit.js",
     "workflows:validate": "node scripts/automation-doctor.js --validate",
     "package:check": "node scripts/check-package-integrity.js",
     "labels:check": "node scripts/automation-doctor.js --labels",

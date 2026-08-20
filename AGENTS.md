@@ -170,6 +170,7 @@ collisions:
 | Greenfield UI Lab | `products/greenfield-ui-lab` | 3012 | Next.js. Modernized idea board + day wallet from rgn/greenfield-ui research patterns. |
 | Groq Code Review | `products/groq-code-review` | 3012 | Next.js. Groq-powered PR review SaaS + composite Action with large-diff chunking and local fallback. |
 | Star Optimizer | `products/star-optimizer` | 3012 | Next.js. Rank starred GitHub repos by activity/recency; pairs with `scripts/prioritize_stars.py` automation. |
+| Copilot Timeout Console | `products/copilot-timeout-console` | 3012 | Next.js. 60m floor status console for Copilot / OpenRouter / visiting-LLM job timeouts (WR #17775). |
 
 Start a specific product on its assigned port:
 
@@ -195,6 +196,7 @@ cd products/pplx-api-skills      && npm run dev -- -p 3012
 cd products/greenfield-ui-lab     && npm run dev -- -p 3012
 cd products/groq-code-review      && npm run dev -- -p 3012
 cd products/star-optimizer       && npm run dev -- -p 3012
+cd products/copilot-timeout-console && npm run dev -- -p 3012
 ```
 
 ### Running and testing

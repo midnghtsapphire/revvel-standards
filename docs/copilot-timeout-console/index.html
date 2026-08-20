@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>copilot-timeout-console — Revvel app</title>
+<meta name="description" content="Is the 60-minute floor held for Copilot, OpenRouter, and visiting LLM jobs in revvel-standards? Policy, auditor, and recovery steps for the 10m0s timeout error.">
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 16px/1.5 system-ui, sans-serif; max-width: 760px; margin: 3rem auto; padding: 0 1.2rem; }
+  h1 { margin-bottom: .2rem; }
+  .meta { color: #888; margin-bottom: 1.5rem; }
+  .score { font-weight: 700; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid #8883; }
+  td:first-child { width: 2rem; text-align: center; }
+  .btn { display: inline-block; padding: .55rem 1rem; margin: .2rem .4rem .2rem 0;
+          border: 1px solid #8886; border-radius: 8px; text-decoration: none; }
+  .answer { padding: .75rem 1rem; border-radius: 8px; border: 1px solid #3fb95066; background: #3fb95014; margin: 1rem 0; font-weight: 700; }
+  .err { padding: .65rem .85rem; border-radius: 8px; border: 1px solid #f8514966; background: #f8514914; font-family: ui-monospace, monospace; font-size: .9em; margin: 1rem 0; }
+  code { font-size: .9em; }
+  ol { line-height: 1.55; }
+</style>
+</head>
+<body>
+<main>
+  <h1>copilot-timeout-console</h1>
+  <p class="meta">Revvel app · <span class="score">60m visiting-LLM floor</span> · WR #17775</p>
+
+  <div class="answer" role="status">YES — Copilot / OpenRouter / visiting LLM execution jobs hold the 60-minute floor.</div>
+
+  <div class="err">The job has exceeded the maximum execution time of 10m0s</div>
+  <p>That error is what this policy eliminates for coding-agent jobs.</p>
+
+  <nav aria-label="App actions">
+    <a class="btn" href="https://github.com/midnghtsapphire/revvel-standards/tree/main/products/copilot-timeout-console">View source</a>
+    <a class="btn" href="https://github.com/midnghtsapphire/revvel-standards/blob/main/config/copilot-timeouts.yml">Policy YAML</a>
+    <a class="btn" href="https://github.com/midnghtsapphire/revvel-standards/blob/main/standards/COPILOT_TIMEOUT_STANDARD.md">Standard</a>
+    <a class="btn" href="https://github.com/midnghtsapphire/revvel-standards/issues/17775">Issue #17775</a>
+    <a class="btn" href="./ARTIFACTS.md">Delivery artifacts</a>
+  </nav>
+
+  <h2>What this answers</h2>
+  <p>
+    Are <strong>Copilot</strong>, <strong>OpenRouter</strong>, and other
+    <strong>visiting LLM</strong> execution jobs allowed to run for a full hour
+    instead of dying at 10 minutes? Yes — enforced by
+    <code>config/copilot-timeouts.yml</code> +
+    <code>scripts/copilot-timeout-audit.js</code>.
+  </p>
+
+  <h2>Policy numbers</h2>
+  <table>
+    <thead><tr><th></th><th>Setting</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>✅</td><td>Floor</td><td><code>60</code> minutes</td></tr>
+      <tr><td>✅</td><td>Ceiling (proven need)</td><td><code>90</code> minutes</td></tr>
+      <tr><td>✅</td><td>Host / schema default</td><td><code>60</code> minutes</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Verify (copy-paste)</h2>
+  <pre><code>node scripts/copilot-timeout-audit.js --markdown
+node --test tests/copilot-timeout-audit.test.js</code></pre>
+  <p>Success: exit code 0 and <code>Answer: YES — floor 60m is held.</code></p>
+
+  <h2>Click-by-click if a job still dies at 10m</h2>
+  <ol>
+    <li>GitHub → this repo → <strong>Actions</strong> → open the red run.</li>
+    <li>Read the job name at the top of the failed log (example: <code>execute</code> on agent-fallback).</li>
+    <li>Locally run <code>node scripts/copilot-timeout-audit.js --markdown</code>.</li>
+    <li>If the table shows ❌ for that workflow/job, set its <code>timeout-minutes: 60</code>.</li>
+    <li>Re-run the auditor until it prints YES, then open a PR.</li>
+  </ol>
+
+  <h2>Product UI</h2>
+  <p>
+    Next.js console: <code>products/copilot-timeout-console</code> on port
+    <strong>3012</strong>.
+  </p>
+  <pre><code>cd products/copilot-timeout-console
+npm install
+npm run dev -- -p 3012</code></pre>
+</main>
+</body>
+</html>

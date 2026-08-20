@@ -1,0 +1,143 @@
+# Copilot / visiting-LLM / OpenRouter job timeout policy (WR #17775)
+#
+# Problem this solves:
+#   "The job has exceeded the maximum execution time of 10m0s"
+#   on long-running coding-agent work (Copilot cloud agent, OpenRouter,
+#   OpenHands, SWE-agent, Jules, free-LLM router, agent-fallback).
+#
+# Rule:
+#   Every *execution* job that runs a visiting LLM (or OpenRouter, or the
+#   Copilot setup/coding path) MUST set `timeout-minutes` to at least
+#   `floor_minutes` (60). Prefer 60; use up to `recommended_ceiling_minutes`
+#   (90) only when a captured failing run proves 60 is still too low.
+#
+# Enforcement:
+#   - scripts/copilot-timeout-audit.js  (CI + local)
+#   - tests/copilot-timeout-audit.test.js
+#   - products/copilot-timeout-console  (human-readable status UI)
+#
+# Do NOT use this file to raise timeouts on unrelated short jobs
+# (lint, label sync, form fillers). Those stay intentionally tight.
+
+version: 1
+
+policy:
+  # Hard floor for every targeted execution job (GitHub Actions minutes).
+  floor_minutes: 60
+  # Soft recommendation when 60m is proven insufficient.
+  recommended_ceiling_minutes: 90
+  # Absolute upper bound (matches schemas/agent-contract.schema.json).
+  absolute_max_minutes: 360
+  # Default applied by Host when device-tree has no kind default.
+  host_default_minutes: 60
+  # Device-tree kinds that prefer OpenRouter / visiting agents must be >= floor.
+  device_tree_floor_minutes: 60
+  # Kinds allowed below the floor (in-process / meta only).
+  device_tree_floor_exemptions:
+    - host-decomposer
+
+# Workflows + jobs that run visiting LLM / OpenRouter / Copilot work.
+# When job_ids is omitted or empty, every job in the workflow is checked.
+targets:
+  - workflow: .github/workflows/agent-fallback.yml
+    job_ids: [health-check, execute]
+    reason: Visiting-agent fallback chain (OpenRouter → OpenHands → Cursor)
+
+  - workflow: .github/workflows/openrouter-agent.yml
+    job_ids: [openrouter-agent]
+    reason: OpenRouter coding agent entrypoint
+
+  - workflow: .github/workflows/openrouter-coder.yml
+    job_ids: [code]
+    reason: OpenRouter coder (spec-approved / wr:code builds)
+
+  - workflow: .github/workflows/openrouter-triage.yml
+    job_ids: [route-new, sweep-discover, sweep-triage]
+    reason: OpenRouter triage + routing sweeps
+
+  - workflow: .github/workflows/openrouter-assignee.yml
+    job_ids: []
+    reason: OpenRouter assignee routing
+
+  - workflow: .github/workflows/openrouter-auto-route.yml
+    job_ids: []
+    reason: OpenRouter auto-route
+
+  - workflow: .github/workflows/openrouter-instantiation-check.yml
+    job_ids: []
+    reason: OpenRouter instantiation probe
+
+  - workflow: .github/workflows/ai-pr-review-openrouter.yml
+    job_ids: []
+    reason: OpenRouter PR review
+
+  - workflow: .github/workflows/openhands-resolver.yml
+    job_ids: [resolve]
+    reason: OpenHands visiting coding agent
+
+  - workflow: .github/workflows/swe-agent.yml
+    job_ids: [resolve]
+    reason: SWE-agent visiting coding agent
+
+  - workflow: .github/workflows/free-llm-router.yml
+    job_ids: [route]
+    reason: Keyless / free LLM router
+
+  - workflow: .github/workflows/budget-aware-agent.yml
+    job_ids: [execute-task]
+    reason: Budget-aware agent execution (OpenRouter path)
+
+  - workflow: .github/workflows/jules-coding-agent.yml
+    job_ids: []
+    reason: Jules coding agent
+
+  - workflow: .github/workflows/jules-invoke.yml
+    job_ids: []
+    reason: Jules invoke / dispatch
+
+  - workflow: .github/workflows/jules-pr-reviewer.yml
+    job_ids: []
+    reason: Jules PR reviewer
+
+  - workflow: .github/workflows/jules-feedback.yml
+    job_ids: []
+    reason: Jules feedback loop
+
+  - workflow: .github/workflows/jules-pr-comment.yml
+    job_ids: []
+    reason: Jules PR comment handler
+
+  - workflow: .github/workflows/copilot-setup-steps.yml
+    job_ids: [copilot-setup-steps]
+    reason: GitHub Copilot cloud-agent setup job
+
+  - workflow: .github/workflows/ralph-loop.yml
+    job_ids: []
+    reason: Ralph autonomous coding loop
+
+  - workflow: .github/workflows/ui-creation-engine.yml
+    job_ids: []
+    reason: UI creation engine (LLM-backed)
+
+  - workflow: .github/workflows/perplexity-research-agent.yml
+    job_ids: []
+    reason: Perplexity research agent via OpenRouter path
+
+  - workflow: .github/workflows/devin-code-review.yml
+    job_ids: []
+    reason: Devin / visiting review agent
+
+  - workflow: .github/workflows/research-engine.yml
+    job_ids: [research]
+    reason: Research engine long LLM lane
+
+# Explicit non-targets (documented so agents do not "helpfully" raise them).
+exclusions:
+  - workflow: .github/workflows/wr-field-filler.yml
+    reason: WR form automation — not an LLM coding session
+  - workflow: .github/workflows/host.yml
+    reason: Host decomposition only (no LLM coding session)
+  - workflow: .github/workflows/agent-monitor.yml
+    reason: Health monitor, not a coding session
+  - workflow: .github/workflows/agent-dispatcher.yml
+    reason: Dispatches other workflows; does not run the LLM itself

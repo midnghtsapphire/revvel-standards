@@ -128,7 +128,8 @@ jobs:
   execute-task:
     needs: assess-budget
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
+
     steps:
       - name: Execute with budget-aware agent
         env:

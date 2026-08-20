@@ -178,6 +178,7 @@ jobs:
                 `_Triggered by label \`swe-fix\` on issue #${issueNumber}._`,
               ].join('\n'),
             });
-    timeout-minutes: 30
+    timeout-minutes: 60
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

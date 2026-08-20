@@ -41,7 +41,8 @@ permissions:
 jobs:
   ui-creation:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
+
     if: |
       github.event_name == 'workflow_dispatch' ||
       (github.event.sender.type != 'Bot' && (

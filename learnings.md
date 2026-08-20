@@ -490,3 +490,29 @@ detector), `tests/chaosmender.test.js` (the regression tests).
 
 **Next Action:** Human (`midnghtsapphire`) reviews/merges the fix PR; do not reopen #16791. Optionally wire `node scripts/check-dependabot-split-deps.js` into `automation-doctor` / CI later.
 **Next Action:** Fleet review focus for this PR should be *checking the two proven fixes* (WR-01, WR-02/03) and the two small dependency fixes (WR-04), not re-deriving them. Three items need an owner/product decision before any agent writes code: WR-05 (`ship-to-market.yml`'s missing `record.js` — build it or comment out the video-deliverable step), WR-06/WR-07 (`label-inventory.js` / `validate_jsonl.py` — wire in or archive-with-attribution, never delete per standing owner preference). WR-08 flags that the WR-drafting pipeline itself — 35 fully-drafted WRs across two prior audits, never filed as GitHub issues — is the largest unwired-flow pattern in the repo by volume; needs an owner pass over `wr/pending/` to mark stale/superseded items before a bulk-filing workflow gets built. WR-09's 16 scanner hits are queued for the next audit to individually root-cause. Two proposed CI vaccines from this session (`find-duplicate-json-keys.js`-style package.json lint; "named test/workflow file must exist" check for `scripts/**` and `skills/**/SKILL.md`) are not yet wired into `scripts/automation-doctor.js` — good candidates for a fast follow-up WR once this PR lands.
+
+### TM-0007 — Visiting LLM job timeouts left at 10–30m kill real coding sessions
+
+**Symptom:** GitHub Actions fails with
+`The job has exceeded the maximum execution time of 10m0s` (or another short
+cap) on OpenRouter / OpenHands / SWE-agent / agent-fallback / Copilot runs.
+
+**Root cause:** Execution jobs that run a visiting LLM inherited short
+`timeout-minutes` (10–30) while multi-turn coding needs ≥ 60 minutes. A
+one-off bump without a consumer reverts the next time someone "tightens"
+timeouts. Nested HTTP client timeouts (60–120s per request) are a different
+layer and were often confused with the job wall clock.
+
+**Fix pattern:**
+1. SSOT policy: `config/copilot-timeouts.yml` (floor 60, ceiling 90).
+2. Fail-closed auditor: `scripts/copilot-timeout-audit.js` (exit 1 on violation).
+3. Raise only targeted execution jobs — not lint/form-filler/host-decompose.
+4. Align Host / device-tree / schema defaults to ≥ 60 for OpenRouter kinds.
+5. Product console + docs so humans can see the floor without reading YAML.
+
+**Prevention rule:** Any new visiting-agent workflow must be listed under
+`targets:` in the policy and ship with `timeout-minutes: 60+`. The auditor
+is the postcondition check (RVS-VERIFY-001).
+
+**Related:** WR #17775, `standards/COPILOT_TIMEOUT_STANDARD.md`,
+`products/copilot-timeout-console`, `tests/copilot-timeout-audit.test.js`.

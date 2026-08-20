@@ -25,9 +25,15 @@ test('openrouter-coder workflow only starts from approved labels or manual dispa
   assert.deepStrictEqual(workflow.on.issues.types, ['labeled']);
   assert.ok(workflow.on.workflow_dispatch, 'manual dispatch must remain available');
   assert.ok(!Object.hasOwn(workflow.on, 'issue_comment'), 'issue_comment trigger must stay disabled');
-  // Coder jobs need headroom for multi-file OpenRouter turns; lock at 45 so a
-  // silent drop back to 30 fails CI with a clear actual!==expected (WR #16889).
-  assert.strictEqual(workflow.jobs.code['timeout-minutes'], 45);
+  // Coder jobs need headroom for multi-file OpenRouter turns. WR #17775 raised
+  // the visiting-LLM / OpenRouter floor to 60m (was 45 after WR #16889) so
+  // sessions stop dying with "maximum execution time of 10m0s" / short caps.
+  // Assert >= 60 so a silent drop back below the floor fails CI.
+  assert.ok(
+    typeof workflow.jobs.code['timeout-minutes'] === 'number' &&
+      workflow.jobs.code['timeout-minutes'] >= 60,
+    `openrouter-coder timeout-minutes must be >= 60 (got ${workflow.jobs.code['timeout-minutes']})`
+  );
   assert.match(workflow.jobs.code.if, /spec-approved/);
   assert.match(workflow.jobs.code.if, /wr:code/);
 });

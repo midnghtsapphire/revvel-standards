@@ -131,7 +131,8 @@ jobs:
 
           echo ""
           echo "📊 Recommended agent: ${RECOMMENDED}"
-    timeout-minutes: 30
+    timeout-minutes: 60
+
   execute:
     name: Execute task with fallback
     needs: health-check
@@ -450,6 +451,7 @@ jobs:
               issue_number: issueNum,
               labels: ['needs-human']
             });
-    timeout-minutes: 30
+    timeout-minutes: 60
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

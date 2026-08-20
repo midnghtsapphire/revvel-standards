@@ -52,6 +52,7 @@ reuse. Others are candidates to either finish or refactor toward the shared modu
 | `products/prompt-generation-app` | OSINT, prompt | — | needs review |
 | `products/screen-recorder-finder` | utility/finder | — | needs review |
 | `products/mergeme-status` | devops/status, Slack PR integration | Wiring checklist, owner setup console | ✅ (WR #16824) |
+| `products/copilot-timeout-console` | devops/status, agent timeout policy | 60m visiting-LLM / OpenRouter / Copilot floor console + auditor | ✅ (WR #17775) |
 | `products/star-optimizer` | utility/SaaS, GitHub stars triage | scoring engine + Markdown export | needs review |
 | `products/ugc-review-generator` | review/content | — | (restored in #13915) |
 | `reesereviews/vine-marketplace` | review/marketplace (nested) | — | needs review |

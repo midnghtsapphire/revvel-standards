@@ -141,10 +141,11 @@
           "default": "openrouter"
         },
         "timeout_minutes": {
+          "description": "Thread wall-clock budget in minutes. Floor is 60 for visiting LLM / OpenRouter / Copilot work (WR #17775 / config/copilot-timeouts.yml).",
           "type": "integer",
           "minimum": 1,
           "maximum": 360,
-          "default": 30
+          "default": 60
         }
       }
     }

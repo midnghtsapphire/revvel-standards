@@ -132,7 +132,9 @@ function classifyBlockName(name) {
 /** Build a single Thread from a Block hint. */
 function threadFor(kind, wrTitle, blockName, deviceTree) {
   const spec = (deviceTree.kinds || []).find((k) => k.name === kind);
-  const timeout = spec && spec.default_timeout_minutes ? spec.default_timeout_minutes : 30;
+  // WR #17775: default 60m so Host never emits a sub-floor visiting-LLM thread
+  // when device-tree omits default_timeout_minutes (see config/copilot-timeouts.yml).
+  const timeout = spec && spec.default_timeout_minutes ? spec.default_timeout_minutes : 60;
   const agent = spec && spec.default_agent ? spec.default_agent : 'openrouter';
   return {
     id: 'thread-1',

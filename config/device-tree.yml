@@ -39,7 +39,8 @@ kinds:
       Best for validating claims, finding FOSS alternatives, gathering
       references. Output: a research brief in the WR thread.
     default_agent: openrouter
-    default_timeout_minutes: 30
+    # WR #17775: visiting LLM / OpenRouter floor is 60m (was 30).
+    default_timeout_minutes: 60
 
   - name: researcher-deep
     role: research
@@ -67,7 +68,8 @@ kinds:
       Scoped to non-application code so it can run against .github/, docs/,
       standards/, schemas/, scripts/, tests/. Same fallback chain as builder.
     default_agent: openrouter
-    default_timeout_minutes: 45
+    # WR #17775: floor 60m for OpenRouter builders (was 45).
+    default_timeout_minutes: 60
 
   - name: builder-workflow
     role: build
@@ -75,7 +77,8 @@ kinds:
       Writes or edits a .github/workflows/*.yml file. Runs workflows:validate
       before commit so the YAML never lands broken.
     default_agent: openrouter
-    default_timeout_minutes: 30
+    # WR #17775: floor 60m for OpenRouter builders (was 30).
+    default_timeout_minutes: 60
 
   # ── Review lane ───────────────────────────────────────────────────────────
   - name: reviewer
@@ -85,7 +88,8 @@ kinds:
       skills/openrouter-swarms/SKILL.md). Findings post as PR review comments.
       Reviewer-of-review is the Watchdog (Block 2).
     default_agent: openrouter
-    default_timeout_minutes: 20
+    # WR #17775: floor 60m for OpenRouter reviewers (was 20).
+    default_timeout_minutes: 60
 
   - name: reviewer-security
     role: review
@@ -93,7 +97,8 @@ kinds:
       Security-focused review pass. Loads skills/security/SKILL.md.
       Runs on any PR touching auth, secrets, or user input paths.
     default_agent: openrouter
-    default_timeout_minutes: 25
+    # WR #17775: floor 60m for OpenRouter reviewers (was 25).
+    default_timeout_minutes: 60
 
   # ── Testing lane ──────────────────────────────────────────────────────────
   - name: tester
@@ -103,7 +108,8 @@ kinds:
       per repo TESTING.md (no mocks unless justified). Roo owns this lane
       when the FOSS route is preferred.
     default_agent: openrouter
-    default_timeout_minutes: 30
+    # WR #17775: floor 60m for OpenRouter testers (was 30).
+    default_timeout_minutes: 60
 
   # ── Deploy lane ───────────────────────────────────────────────────────────
   - name: deployer
@@ -112,7 +118,8 @@ kinds:
       Runs the ship-to-market flow on an approved artifact. Writes the live
       URL back to the README per DEFINITION_OF_DONE rule #1.
     default_agent: openrouter
-    default_timeout_minutes: 45
+    # WR #17775: floor 60m for OpenRouter deployers (was 45).
+    default_timeout_minutes: 60
 
   # ── Docs lane ─────────────────────────────────────────────────────────────
   - name: doc-writer
@@ -121,7 +128,8 @@ kinds:
       Produces docs for a Block's output. Never scaffolded - writes real
       documentation of what the code does, not what it will do.
     default_agent: openrouter
-    default_timeout_minutes: 20
+    # WR #17775: floor 60m for OpenRouter doc writers (was 20).
+    default_timeout_minutes: 60
 
   # ── Meta lane ─────────────────────────────────────────────────────────────
   - name: host-decomposer
