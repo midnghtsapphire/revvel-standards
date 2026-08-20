@@ -34,10 +34,7 @@ def _get_studio_types() -> dict[str, Any]:
                     "heritage",
                     "paper_craft",
                 ],
-                "video_style_prompt": (
-                    "Optional custom visual style text (requires visual_style=custom;"
-                    " not supported for cinematic/short)"
-                ),
+                "video_style_prompt": "Optional custom visual style text (requires visual_style=custom; not supported for cinematic/short)",
                 "language": "BCP-47 code",
                 "focus_prompt": "Optional focus topic",
             },

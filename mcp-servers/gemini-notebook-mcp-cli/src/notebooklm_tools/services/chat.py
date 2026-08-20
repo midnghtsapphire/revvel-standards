@@ -166,10 +166,7 @@ def query(
             if nb["source_count"] == 0:
                 raise ValidationError(
                     "Cannot query an empty notebook.",
-                    user_message=(
-                        "This notebook has no sources to query."
-                        " Add a source first using 'nlm source add' or 'nlm research start'."
-                    ),
+                    user_message="This notebook has no sources to query. Add a source first using 'nlm source add' or 'nlm research start'.",
                 )
         except ValidationError:
             raise
@@ -443,10 +440,7 @@ def query_start(
             if nb["source_count"] == 0:
                 raise ValidationError(
                     "Cannot query an empty notebook.",
-                    user_message=(
-                        "This notebook has no sources to query."
-                        " Add a source first using 'nlm source add' or 'nlm research start'."
-                    ),
+                    user_message="This notebook has no sources to query. Add a source first using 'nlm source add' or 'nlm research start'.",
                 )
         except ValidationError:
             raise

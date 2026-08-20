@@ -31,11 +31,7 @@ _FALSY = frozenset({"false", "0", "no", "off"})
 
 
 def _env_bool(name: str, default: bool = False) -> bool:
-    """Read a boolean from an environment variable.
-
-    Unset/empty → *default*; otherwise ``false|0|no|off``
-    (case-insensitive) → False, anything else → True.
-    """
+    """Read a boolean from an environment variable. Unset/empty → *default*; otherwise ``false|0|no|off`` (case-insensitive) → False, anything else → True."""
     raw = os.environ.get(name, "")
     if not raw:
         return default
@@ -47,11 +43,8 @@ mcp = FastMCP(
     name="gemini-notebook-mcp",
     instructions="""Gemini Notebook MCP - Access Gemini Notebook (notebook.google.com).
 
-**Auth:** If you get authentication errors, run `nlm login` via your Bash/terminal tool.
-This is the automated authentication method that handles everything.
-Only use save_auth_tokens as a fallback if the CLI fails.
-**Account Switching:** To switch Google Accounts for the MCP server,
-run `nlm login switch <profile>` in Bash. The MCP server instantly uses the active default profile.
+**Auth:** If you get authentication errors, run `nlm login` via your Bash/terminal tool. This is the automated authentication method that handles everything. Only use save_auth_tokens as a fallback if the CLI fails.
+**Account Switching:** To switch Google Accounts for the MCP server, run `nlm login switch <profile>` in Bash. The MCP server instantly uses the active default profile.
 **Confirmation:** Tools with confirm param require user approval before setting confirm=True.
 **Studio:** After creating audio/video/infographic/slides, poll studio_status for completion.
 

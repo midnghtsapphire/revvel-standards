@@ -213,8 +213,7 @@ def add_source(
                     raise typer.Exit(1)
                 if not json_output:
                     console.print(
-                        f"[blue]Uploading {file_path.name}"
-                        f"{'...' if not wait else ' and waiting for processing...'}[/blue]"
+                        f"[blue]Uploading {file_path.name}{'...' if not wait else ' and waiting for processing...'}[/blue]"
                     )
                 result = sources_service.add_source(
                     client,

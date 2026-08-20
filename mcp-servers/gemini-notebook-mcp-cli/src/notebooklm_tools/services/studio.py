@@ -753,7 +753,7 @@ def get_studio_status(
         offset = 0
         limit = 1
 
-    page = selected[offset: offset + limit if limit is not None else None]
+    page = selected[offset : offset + limit if limit is not None else None]
     has_more = offset + len(page) < len(selected)
 
     if not include_details:

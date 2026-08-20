@@ -11,7 +11,7 @@
 
 ## Issue Context
 
-The `ci/circleci: lint-and-test` job is persistently failing while the equivalent GitHub Actions test passes. The leading hypothesis is that `cimg/node:22.11` lacks the Python 3 environment required by `scripts/flake8-baseline-gate.js`; confirm this against an actual failing CircleCI job log before selecting or implementing the fix.
+The `ci/circleci: lint-and-test` job fails on every PR because the `cimg/node:22.11` image lacks Python3. This is required by `scripts/flake8-baseline-gate.js`, creating an always-red check that violates `standards/GREEN_MAIN_STANDARD.md` and trains developers to ignore CI failures. The divergence between CI systems (GitHub Actions vs CircleCI) creates confusion and debugging overhead. Immediate action is required to maintain parity with GitHub Actions and ensure the flake8 quality gate runs properly in both environments.
 
 ## Scope
 

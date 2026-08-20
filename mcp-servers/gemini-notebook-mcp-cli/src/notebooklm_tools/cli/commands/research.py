@@ -94,8 +94,7 @@ def start_research(
                         "\n[dim]Use --force to start a new research anyway (will overwrite pending results).[/dim]"
                     )
                     console.print(
-                        "[dim]Or run 'nlm research status' to check progress /"
-                        " 'nlm research import' to save results.[/dim]"
+                        "[dim]Or run 'nlm research status' to check progress / 'nlm research import' to save results.[/dim]"
                     )
                     raise typer.Exit(1)
                 elif (
