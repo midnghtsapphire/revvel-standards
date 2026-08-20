@@ -134,10 +134,10 @@ test('the known-offender ratchet may only shrink, and only by name', () => {
   // nothing failing — the hole fixed in #17782.
   assert.equal(
     match[1],
-    '^(update_uv_lock\\.py|patch_ossar\\.js|fix-semgrep\\.js|fix-zizmor\\.js)$',
+    '^(update_uv_lock\\.py|fix-semgrep\\.js|fix-zizmor\\.js)$',
   );
 
-  const NAMED = ['update_uv_lock.py', 'patch_ossar.js', 'fix-semgrep.js', 'fix-zizmor.js'];
+  const NAMED = ['update_uv_lock.py', 'fix-semgrep.js', 'fix-zizmor.js'];
   for (const file of NAMED) {
     assert.equal(runGuard([file]), CLEAN, `${file} is exempt while it still exists`);
   }
