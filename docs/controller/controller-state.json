@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-08-20T22:46:41.141Z",
+  "updated_at": "2026-08-20T22:58:54.891Z",
   "workflows": {
     "dynamic/copilot-swe-agent/copilot": {
       "count": 2,
