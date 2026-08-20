@@ -137,9 +137,11 @@ jobs:
       - name: Dispatch WR PR creation workflow
         if: needs.route.outputs.issue_number != ''
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ needs.route.outputs.issue_number }}
         with:
           script: |
-            const issueNumber = '${{ needs.route.outputs.issue_number }}'.trim();
+            const issueNumber = (process.env.ISSUE_NUMBER || '').trim();
             const workflowId = 'wr-pr-creation.yml';
             const dispatchTime = Date.now();
             const MATCH_WINDOW_MS = 120000; // Account for API/listing clock skew around dispatch time.

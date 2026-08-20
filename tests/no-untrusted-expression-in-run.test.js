@@ -72,7 +72,6 @@ const KNOWN_REMAINING = new Set([
   'auto-error-handler.yml :: ${{ inputs.error_context }}',
   'auto-error-handler.yml :: ${{ inputs.error_message }}',
   'auto-error-handler.yml :: ${{ inputs.workflow_run_id }}',
-  'bulk-close-failure-spam.yml :: ${{ inputs.max_to_close }}',
   'fork-audit-bot.yml :: ${{ inputs.config_path }}',
   'gumloop-pdf-pipeline.yml :: ${{ inputs.keywords }}',
   'gumloop-pdf-pipeline.yml :: ${{ inputs.niche }}',

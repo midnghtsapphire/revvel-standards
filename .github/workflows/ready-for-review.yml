@@ -274,6 +274,8 @@ jobs:
           ref: ${{ github.event.pull_request.base.ref }}
       - name: Post review-readiness checklist comment on PR
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_LIST: ${{ steps.find-issues.outputs.issue_list }}
         with:
           github-token: ${{ github.token }}
           script: |
@@ -300,7 +302,7 @@ jobs:
 
             const { checks } = scanDiff(files);
 
-            const issueList = '${{ steps.find-issues.outputs.issue_list }}';
+            const issueList = process.env.ISSUE_LIST || '';
             const closesAutoChecked = issueList ? '- [x]' : '- [ ]';
             const linkedSection = issueList
               ? `\n\n**Linked issue(s):** ${issueList.split(',').map(n => `#${n.trim()}`).join(', ')} — labeled \`in-review\` ✅`
