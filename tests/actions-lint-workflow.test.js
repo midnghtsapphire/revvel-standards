@@ -1,14 +1,24 @@
 'use strict';
 
 /**
- * Regression tests for WR-15860 — rethab/actions-lint@v1.0.0 integration.
+ * Regression tests for the workflow-lint gate.
  *
- * Guards:
- *   - the workflow file exists, parses, and wires the required action
- *   - triggers cover pull_request + push to main
- *   - timeout + permissions + failure gate are present
- *   - exclude list only names real workflow basenames and never the
- *     actions-lint workflow itself
+ * Originally WR-15860 (rethab/actions-lint@v1.0.0). Retargeted by WR #17734,
+ * which replaced that linter with actionlint after it failed on EVERY run on
+ * main for days while configured as a required check — on false positives, not
+ * defects (it could not parse `${{ secrets.A || secrets.B }}`, treated
+ * `secrets.*` outside workflow_call as undeclared, and could not resolve
+ * choice-typed inputs). Keeping it green had required excluding 150 of 227
+ * workflow files from linting altogether.
+ *
+ * The guards below are the same guards as before, re-expressed against the new
+ * implementation — plus ratchet guards that did not previously exist:
+ *   - the workflow exists, parses, and wires the linter
+ *   - the linter is pinned AND checksum-verified (supply chain)
+ *   - triggers cover pull_request (unfiltered) + push to main
+ *   - timeouts + permissions + a stable gate job name are present
+ *   - the exclude list names real workflows and never the gate itself
+ *   - the exclude list is a RATCHET: it may only shrink
  */
 
 const { test } = require('node:test');
@@ -22,8 +32,11 @@ const WORKFLOW = path.join(ROOT, '.github', 'workflows', 'actions-lint.yml');
 const EXCLUDE = path.join(ROOT, '.github', 'actions-lint-exclude.txt');
 const WORKFLOWS_DIR = path.join(ROOT, '.github', 'workflows');
 
-const PINNED_SHA = 'c449a3994b36a467abb90c24a1c0d5c30b6db0d4';
-const ACTION_REF = `rethab/actions-lint@${PINNED_SHA}`;
+// Pinned so the ratchet can only shrink. If you FIXED one of these workflows,
+// remove it from the list and lower this number in the same commit. If you are
+// raising it, stop: you are excluding a workflow instead of fixing it, which is
+// what left this gate red and two-thirds blind in the first place.
+const MAX_RATCHET_ENTRIES = 12;
 
 function readWorkflow() {
   assert.ok(fs.existsSync(WORKFLOW), 'actions-lint.yml must exist');
@@ -48,13 +61,12 @@ test('actions-lint workflow parses with name + on triggers', () => {
   // yaml may parse bare `on` as boolean key `true`
   const on = doc.on || doc.true;
   assert.ok(on, 'missing on: trigger');
-  // bare `pull_request:` (no filters) parses as null — that still counts
   assert.ok('pull_request' in on, 'must run on pull_request');
   assert.ok(on.push, 'must run on push');
   const pushBranches = on.push.branches || [];
   assert.ok(
     pushBranches.includes('main'),
-    `push.branches must include main, got ${JSON.stringify(pushBranches)}`
+    `push.branches must include main, got ${JSON.stringify(pushBranches)}`,
   );
   assert.ok(on.workflow_dispatch !== undefined, 'must allow workflow_dispatch');
 });
@@ -63,93 +75,117 @@ test('actions-lint workflow declares contents: read and job timeouts', () => {
   const { doc, raw } = readWorkflow();
   assert.equal(doc.permissions?.contents, 'read');
   assert.match(raw, /timeout-minutes:\s*\d+/);
-  // Every job should declare a timeout (discover / lint / gate).
   const jobs = doc.jobs || {};
   for (const [id, job] of Object.entries(jobs)) {
     assert.ok(
       typeof job['timeout-minutes'] === 'number',
-      `job ${id} missing timeout-minutes`
+      `job ${id} missing timeout-minutes`,
     );
   }
 });
 
-test('actions-lint step uses rethab/actions-lint pinned to v1.0.0 SHA', () => {
-  const { raw, doc } = readWorkflow();
-  assert.ok(
-    raw.includes(ACTION_REF),
-    `expected uses: ${ACTION_REF}`
+test('linter is pinned to an explicit actionlint version', () => {
+  const { doc, raw } = readWorkflow();
+  const version = doc.env?.ACTIONLINT_VERSION;
+  assert.ok(version, 'ACTIONLINT_VERSION must be declared');
+  assert.match(
+    String(version),
+    /^\d+\.\d+\.\d+$/,
+    'actionlint must be pinned to an exact version, never a floating ref',
   );
-  assert.ok(
-    raw.includes('# v1.0.0') || raw.includes('v1.0.0'),
-    'pin comment or ref must mention v1.0.0'
+  assert.match(
+    raw,
+    new RegExp(`actionlint/releases/download/v\\$\\{ACTIONLINT_VERSION\\}`),
+    'the download URL must use the pinned version',
   );
-
-  // Walk steps to ensure the action is actually invoked with `files:`.
-  let found = false;
-  for (const job of Object.values(doc.jobs || {})) {
-    for (const step of job.steps || []) {
-      if (typeof step.uses === 'string' && step.uses.startsWith('rethab/actions-lint@')) {
-        found = true;
-        assert.equal(step.uses, ACTION_REF);
-        assert.ok(step.with && step.with.files, 'files input is required by the action');
-      }
-    }
-  }
-  assert.ok(found, 'no step uses rethab/actions-lint');
 });
 
-test('actions-lint forces Node 24 for the node16 action runtime', () => {
+test('actionlint download is checksum-verified before it is executed', () => {
+  const { doc, raw } = readWorkflow();
+  const sha = doc.env?.ACTIONLINT_SHA256;
+  assert.ok(sha, 'ACTIONLINT_SHA256 must be declared');
+  assert.match(String(sha), /^[0-9a-f]{64}$/, 'must be a full SHA-256 hex digest');
+  // The binary is fetched at runtime rather than pinned by action SHA, so the
+  // checksum IS the supply-chain control (CLAUDE.md gotcha #8). Without this
+  // the gate would execute whatever the release URL happened to serve.
+  assert.match(raw, /sha256sum -c -/, 'download must be verified with sha256sum -c');
+  const verifyIdx = raw.indexOf('sha256sum -c -');
+  const execIdx = raw.indexOf('./actionlint --version');
+  assert.ok(
+    verifyIdx > -1 && execIdx > verifyIdx,
+    'checksum must be verified BEFORE the binary is executed',
+  );
+});
+
+test('actions-lint has a stable gate job name for branch protection', () => {
+  const { doc } = readWorkflow();
+  assert.ok(
+    doc.jobs && doc.jobs['actions-lint'],
+    'stable gate job `actions-lint` required — branch protection pins this name',
+  );
+  assert.equal(doc.jobs['actions-lint'].name, 'actions-lint');
+});
+
+test('gate fails loudly rather than passing on an empty lint set', () => {
+  const { raw } = readWorkflow();
+  // Previously an empty matrix was a soft pass. That turned "everything is
+  // excluded" into a green required check — exactly the failure mode the
+  // ratchet exists to prevent.
+  assert.match(raw, /No workflow files left to lint/);
+  assert.match(raw, /set -euo pipefail/, 'lint step must not swallow failures');
+});
+
+test('array expansion is quoted (CLAUDE.md gotcha #5 / SC2128)', () => {
   const { raw } = readWorkflow();
   assert.match(
     raw,
-    /FORCE_JAVASCRIPT_ACTIONS_TO_NODE24:\s*["']?true["']?/
+    /"\$\{files\[@\]\}"/,
+    'unquoted ${files[@]} silently lints only the first file',
   );
-});
-
-test('actions-lint has a stable gate job that fails on lint errors', () => {
-  const { doc, raw } = readWorkflow();
-  assert.ok(doc.jobs['actions-lint'], 'stable gate job `actions-lint` required');
-  assert.match(raw, /One or more workflow files failed actions-lint/);
-  assert.match(raw, /needs\.lint\.result/);
 });
 
 test('exclude list only names existing workflow basenames and skips self', () => {
   const excluded = readExcludeBasenames();
-  assert.ok(excluded.length > 0, 'exclude list should not be empty (legacy surface)');
   assert.ok(
     !excluded.includes('actions-lint.yml'),
-    'actions-lint.yml must never be excluded from itself'
+    'actions-lint.yml must never be excluded from itself',
   );
 
   const existing = new Set(
-    fs
-      .readdirSync(WORKFLOWS_DIR)
-      .filter((f) => /\.ya?ml$/.test(f))
+    fs.readdirSync(WORKFLOWS_DIR).filter((f) => /\.ya?ml$/.test(f)),
   );
 
   const missing = excluded.filter((name) => !existing.has(name));
   assert.deepEqual(
     missing,
     [],
-    `exclude list references missing workflows: ${missing.join(', ')}`
+    `exclude list references missing workflows: ${missing.join(', ')}`,
   );
 
-  // No duplicates.
   assert.equal(new Set(excluded).size, excluded.length, 'exclude list has duplicates');
 });
 
-test('at least one non-excluded workflow remains to lint', () => {
-  const excluded = new Set(readExcludeBasenames());
-  const remaining = fs
-    .readdirSync(WORKFLOWS_DIR)
-    .filter((f) => /\.ya?ml$/.test(f) && !excluded.has(f));
+test('the exclude list is a ratchet — it may only shrink', () => {
+  const excluded = readExcludeBasenames();
   assert.ok(
-    remaining.includes('actions-lint.yml'),
-    'actions-lint.yml itself must be in the lint set'
+    excluded.length <= MAX_RATCHET_ENTRIES,
+    `exclude list grew to ${excluded.length} (max ${MAX_RATCHET_ENTRIES}). `
+      + 'Fix the workflow rather than excluding it; if you genuinely fixed one, '
+      + 'remove it here and lower MAX_RATCHET_ENTRIES in the same commit.',
   );
+});
+
+test('the vast majority of workflows are actually linted', () => {
+  const excluded = new Set(readExcludeBasenames());
+  const all = fs.readdirSync(WORKFLOWS_DIR).filter((f) => /\.ya?ml$/.test(f));
+  const linted = all.filter((f) => !excluded.has(f));
+
+  assert.ok(linted.includes('actions-lint.yml'), 'the gate must lint itself');
+  // Under the old linter only ~77 of 227 files were checked. Coverage is the
+  // thing that regressed silently before, so assert on it directly.
   assert.ok(
-    remaining.length >= 1,
-    'exclude list must leave at least one workflow to lint'
+    linted.length / all.length >= 0.9,
+    `only ${linted.length}/${all.length} workflows are linted — coverage must stay above 90%`,
   );
 });
 
@@ -162,7 +198,7 @@ test('pull_request trigger has no paths filter (required-check deadlock)', () =>
   // on PRs that don't touch workflows, blocking their merges forever.
   assert.ok(
     pr === null || pr === undefined || !('paths' in pr),
-    'pull_request must not be path-filtered — the gate is a required check'
+    'pull_request must not be path-filtered — the gate is a required check',
   );
 });
 
@@ -172,6 +208,6 @@ test('push trigger path filter covers workflow changes on main', () => {
   const pushPaths = (on.push && on.push.paths) || [];
   assert.ok(
     pushPaths.some((p) => p.includes('.github/workflows')),
-    'push paths must include .github/workflows/**'
+    'push paths must include .github/workflows/**',
   );
 });

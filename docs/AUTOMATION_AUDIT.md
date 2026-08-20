@@ -1019,6 +1019,23 @@ with this explanation attached. Fixing it needs the linter replaced, or the file
 added to `.github/actions-lint-exclude.txt` — an owner decision about tooling,
 not something to force through inside a security batch.
 
+> **Resolved 2026-08-19 (WR #17734).** The linter was replaced. `rethab/actions-lint@v1.0.0`
+> had been failing on *every* run on `main` for days while configured as a required
+> check — on false positives of exactly this kind. It could not parse
+> `${{ secrets.A || secrets.B }}` (reading the whole expression as one secret name),
+> treated `secrets.*` outside `workflow_call` as undeclared, and could not resolve
+> `choice`-typed inputs, which is the failure documented above.
+>
+> It is now **actionlint 1.7.7**, pinned by version and SHA-256. `agent-dispatcher.yml`
+> lints **clean** under it, so the blocker described above no longer applies and its
+> `KNOWN_REMAINING` entry can be revisited — the value can now be moved into `env:`
+> without inventing a red check.
+>
+> Lint coverage went from 77 to 215 of 227 workflow files: keeping the old gate
+> "green" had required excluding 150 files from linting altogether. The 12 files
+> still excluded carry 14 **genuine** findings, tracked in WR #17742 on a ratchet
+> that may only shrink.
+
 **The process lesson is mine.** The error column pointed at the answer on the
 very first failure and I theorised twice before reading it. Three corrections
 were pushed to one file that ends this change untouched. Read the position
