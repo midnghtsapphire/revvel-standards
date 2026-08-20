@@ -84,10 +84,13 @@ jobs:
         id: check
         if: steps.resolve.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          ITEM_KIND: ${{ steps.resolve.outputs.item_kind }}
         with:
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
-            const itemKind = '${{ steps.resolve.outputs.item_kind }}';
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
+            const itemKind = process.env.ITEM_KIND || '';
             let item;
 
             try {
@@ -130,10 +133,12 @@ jobs:
       - name: Apply routing labels
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
             const labelsToAdd = ['openrouter', 'auto-fix', 'copilot', 'role:orchestrator'];
 
             for (const label of labelsToAdd) {
@@ -154,10 +159,12 @@ jobs:
         id: assign
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
 
             try {
               await github.rest.issues.addAssignees({
@@ -177,18 +184,21 @@ jobs:
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
         env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          DISPLAY_KIND: ${{ steps.resolve.outputs.display_kind }}
+          ASSIGN_SUCCEEDED: ${{ steps.assign.outputs.assigned }}
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
-            const displayKind = '${{ steps.resolve.outputs.display_kind }}';
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
+            const displayKind = process.env.DISPLAY_KIND || '';
             const hasApiKey = process.env.HAS_API_KEY === 'true';
             const apiKeyStatus = hasApiKey
               ? '🟢 Configured'
               : '⚠️ Not configured — set OPENROUTER_API_KEY in Actions secrets';
 
-            const assignSucceeded = '${{ steps.assign.outputs.assigned }}' === 'true';
+            const assignSucceeded = process.env.ASSIGN_SUCCEEDED === 'true';
             const assigneeLine = assignSucceeded
               ? '- ✅ Assignee: `@oaudrey` (GitHub-visible oAudrey/OpenRouter orchestrator)'
               : '- ⚠️ Assignee: `@oaudrey` — assignment attempted but failed (labels still applied; routing is finalized)';
@@ -253,10 +263,11 @@ jobs:
         id: discover
         uses: actions/github-script@v9.0.0
         env:
+          DRY_RUN: ${{ steps.dry-run-check.outputs.dry_run }}
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:
           script: |
-            const isDryRun = '${{ steps.dry-run-check.outputs.dry_run }}' === 'true';
+            const isDryRun = process.env.DRY_RUN === 'true';
             const hasApiKey = process.env.HAS_API_KEY === 'true';
 
             const items = await github.paginate(github.rest.issues.listForRepo, {
@@ -323,11 +334,12 @@ jobs:
         if: steps.discover.outputs.count != '0'
         uses: actions/github-script@v9.0.0
         env:
+          DRY_RUN: ${{ steps.dry-run-check.outputs.dry_run }}
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const isDryRun = '${{ steps.dry-run-check.outputs.dry_run }}' === 'true';
+            const isDryRun = process.env.DRY_RUN === 'true';
             const hasApiKey = process.env.HAS_API_KEY === 'true';
             const apiKeyStatus = hasApiKey
               ? '🟢 Configured'
