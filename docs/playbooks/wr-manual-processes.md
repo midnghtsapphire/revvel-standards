@@ -446,7 +446,7 @@ Closes the issue manually, marking the WR as abandoned or resolved without a cod
 ### Caveats
 
 ⚠️ **Automation may re-open it** — Some watchdog workflows re-open closed issues
-if they have certain labels. Remove `wr:in-progress`, `auto-fix`, and `ralph-loop`
+if they have certain labels. Remove `wr:in-progress`, `auto-fix`, `ralph-loop`, and `needs-human`
 labels before closing to prevent this.
 
 ⚠️ **Leave a reason** — Closed WRs without explanation create confusion later.
