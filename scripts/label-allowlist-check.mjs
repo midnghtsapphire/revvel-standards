@@ -146,17 +146,6 @@ function main() {
         continue;
       }
     }
-    // wr-auto-classify.yml and openrouter-auto-route.yml mirror the WR's
-    // Output Type onto the issue as `output-type:<value>`. That is the same
-    // field `deliver:*` is derived from, so the family is open-ended in exactly
-    // the same way — a new Output Type mints a new label — and is resolved the
-    // same way rather than enumerating today's values (#17737).
-    if (raw.startsWith("output-type:")) {
-      if (allowed.has("automation")) {
-        mapped.push(`${raw} → automation (output-type: prefix)`);
-        continue;
-      }
-    }
     // Fleet bots mint status:* ephemera; map to lifecycle/check labels.
     if (raw.startsWith("status:")) {
       const s = raw.slice("status:".length).toLowerCase();

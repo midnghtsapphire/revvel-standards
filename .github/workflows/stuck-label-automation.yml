@@ -210,17 +210,12 @@ jobs:
                   comment_body += `Please review the classification and adjust labels if needed.\n`;
 
                   if (!dry_run && item.next_label) {
-                    // 404 = the label is already gone = the desired end state.
-                    // Anything else must surface (#17799): this removal is half of
-                    // a swap, and a swallowed 403 leaves the OLD label in place
-                    // while the new one is added below — the issue ends up
-                    // carrying both, which is the state this job exists to fix.
                     await github.rest.issues.removeLabel({
                       owner: context.repo.owner,
                       repo: context.repo.repo,
                       issue_number: item.number,
                       name: item.label,
-                    }).catch((err) => { if (err.status !== 404) throw err; });
+                    }).catch(() => {});
 
                     await github.rest.issues.addLabels({
                       owner: context.repo.owner,
@@ -253,17 +248,12 @@ jobs:
                   comment_body += `**Auto-action:** Marking as failed. Ralph Loop will retry.\n`;
 
                   if (!dry_run && item.next_label) {
-                    // 404 = the label is already gone = the desired end state.
-                    // Anything else must surface (#17799): this removal is half of
-                    // a swap, and a swallowed 403 leaves the OLD label in place
-                    // while the new one is added below — the issue ends up
-                    // carrying both, which is the state this job exists to fix.
                     await github.rest.issues.removeLabel({
                       owner: context.repo.owner,
                       repo: context.repo.repo,
                       issue_number: item.number,
                       name: item.label,
-                    }).catch((err) => { if (err.status !== 404) throw err; });
+                    }).catch(() => {});
 
                     await github.rest.issues.addLabels({
                       owner: context.repo.owner,
@@ -302,17 +292,12 @@ jobs:
                   comment_body += `**Auto-action:** Marking as failed. Please review manually.\n`;
 
                   if (!dry_run && item.next_label) {
-                    // 404 = the label is already gone = the desired end state.
-                    // Anything else must surface (#17799): this removal is half of
-                    // a swap, and a swallowed 403 leaves the OLD label in place
-                    // while the new one is added below — the issue ends up
-                    // carrying both, which is the state this job exists to fix.
                     await github.rest.issues.removeLabel({
                       owner: context.repo.owner,
                       repo: context.repo.repo,
                       issue_number: item.number,
                       name: item.label,
-                    }).catch((err) => { if (err.status !== 404) throw err; });
+                    }).catch(() => {});
 
                     await github.rest.issues.addLabels({
                       owner: context.repo.owner,

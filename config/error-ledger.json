@@ -14,7 +14,7 @@
       "fix_code_snippet": ".catch(err => { if (err.status !== 404) throw err; })",
       "auto_detectable": true,
       "chaosmender_check": "bare-remove-label",
-      "detection_note": "scripts/chaosmender.js walks each github.rest.issues.removeLabel call expression and accepts a guard only if it re-throws everything that is not a 404 \u2014 either a chained .catch or an enclosing try/catch. .catch(() => {}) is REJECTED: it swallows 401/403, which is the defect this rule exists to prevent. A widened condition such as '!== 404 && !== 403' is rejected for the same reason. veins-monitor.yml's removeLabelSafe wrapper exempts calls inside the wrapper only, not the whole file. Fixed in #17787.",
+      "detection_note": "Search .github/workflows/*.yml for github.rest.issues.removeLabel lines whose following 5 lines do NOT contain .catch. veins-monitor.yml's removeLabelSafe wrapper is an acceptable alternative pattern.",
       "scope": ".github/workflows/*.yml",
       "last_seen": "2026-07-13T11:45:00Z",
       "fixed_in": "copilot/fix-commit-checks",

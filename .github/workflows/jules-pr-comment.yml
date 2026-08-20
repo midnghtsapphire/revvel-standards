@@ -44,6 +44,6 @@ jobs:
           pr_description: ${{ github.event.pull_request.body }}
         env:
           GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-    timeout-minutes: 60
+    timeout-minutes: 30
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

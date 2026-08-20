@@ -72,6 +72,6 @@ jobs:
               description: 'Skipped: JULES_API_KEY is not configured',
               target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
-    timeout-minutes: 60
+    timeout-minutes: 10
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

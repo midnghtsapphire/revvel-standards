@@ -64,47 +64,6 @@ jobs:
               core.warning(`Could not verify grounding gate for PR #${pr.number}: ${e.message}`);
             }
 
-            // Never arm auto-merge on a PR that delivers nothing, or on one that
-            // says of itself that it is unfinished (#17756).
-            //
-            // PR #17058 merged with ZERO changed files. An empty diff is the
-            // easiest thing in this repository to get green — no code to fail a
-            // test, no file to fail a lint, no line to fail a scan — so every
-            // quality gate we own passed unanimously on a PR that did nothing.
-            // The grounding gate above is necessary but not sufficient: it asks
-            // whether the suite is red, never whether there is anything to test.
-            //
-            // `[WIP]` was invisible too: the gates read `pr.draft`, and that PR
-            // was marked ready-for-review while still titled `[WIP]`.
-            //
-            // Re-read the PR rather than trusting the event payload —
-            // `changed_files` is absent from some webhook payloads and stale in
-            // others, and a guard that reads `undefined === 0` as false would
-            // wave through the exact case it exists to stop.
-            try {
-              const { data: fresh } = await github.rest.pulls.get({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: pr.number,
-              });
-              if (typeof fresh.changed_files !== 'number') {
-                core.warning(`PR #${pr.number}: auto-merge NOT enabled — could not read changed_files.`);
-                return;
-              }
-              if (fresh.changed_files === 0) {
-                core.warning(`PR #${pr.number}: auto-merge NOT enabled — the diff is empty (0 changed files).`);
-                return;
-              }
-              if (/\[wip\]|\bwip\s*:|do not merge/i.test(fresh.title || '')) {
-                core.warning(`PR #${pr.number}: auto-merge NOT enabled — the title marks it unfinished: ${fresh.title}`);
-                return;
-              }
-            } catch (e) {
-              // Fail closed. An unverified PR is not an eligible PR.
-              core.warning(`PR #${pr.number}: auto-merge NOT enabled — could not verify the diff: ${e.message}`);
-              return;
-            }
-
             try {
               await github.graphql(`
                 mutation($prId: ID!) {

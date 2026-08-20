@@ -50,7 +50,7 @@ jobs:
   probe-and-reset:
     name: Probe key then reset failure labels
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 15
     steps:
       - name: Probe OpenRouter API key
         id: probe

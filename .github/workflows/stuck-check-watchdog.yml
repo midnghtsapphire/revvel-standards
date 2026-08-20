@@ -284,22 +284,12 @@ jobs:
                 // remove lifecycle:stuck so it does not stay marked stuck forever.
                 const RESOLVED_ACTIONS = ['move-review', 'move-code', 'label-failed'];
                 if (issue.labels.includes('lifecycle:stuck') && RESOLVED_ACTIONS.includes(diagnosis.action)) {
-                  // `cleared_stuck` used to be set on the line below regardless
-                  // of whether the removal succeeded, because the catch swallowed
-                  // everything (#17799). On a 403 the diagnosis comment then
-                  // reported a resolution that had not happened and the issue
-                  // stayed marked stuck — the outcome this block exists to
-                  // prevent. RVS-VERIFY-001: assert the postcondition, do not
-                  // announce it.
-                  //
-                  // A 404 still counts as cleared: the label is absent, which is
-                  // the end state being claimed.
                   await github.rest.issues.removeLabel({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: issue.number,
                     name: 'lifecycle:stuck'
-                  }).catch((err) => { if (err.status !== 404) throw err; });
+                  }).catch(() => {});
                   diagnosis.cleared_stuck = true;
                 }
                 

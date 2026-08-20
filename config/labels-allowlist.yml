@@ -100,29 +100,6 @@ labels:
   - name: deep-research
   - name: work-request
 
-  # The issue lifecycle triad (#17737). These take the last three slots under
-  # `max_labels_total`, deliberately:
-  #
-  #   - bootstrap-pr-labels.yml CREATES them, with colours and descriptions, so
-  #     they are real labels rather than fleet ephemera.
-  #   - Nothing canonical means "this issue is done" or "this issue went stale".
-  #     Every other entry in the 19 aliased onto something that already existed;
-  #     these three had nowhere to go.
-  #   - issue-lifecycle.yml and wr-pr-creation.yml both read `issue:done`, so it
-  #     is load-bearing, not decorative.
-  #
-  # The caveat that blocked this in #17737 — "issue:done is not currently
-  # trustworthy as a completion signal" — was fixed in #17791: the label is now
-  # only applied to an issue that actually closed, and a stale one on an open
-  # issue is repaired rather than obeyed.
-  #
-  # The budget is now spent (80/80). The next addition must alias, use a prefix
-  # rule, become a Project field, or make the case for raising the cap in
-  # writing. tests/labels-allowlist-budget.test.js holds that line.
-  - name: "issue:done"
-  - name: "issue:in-progress"
-  - name: "issue:stale"
-
 aliases:
   "priority-p0": "priority:p0"
   "priority-p1": "priority:p1"
@@ -167,37 +144,6 @@ aliases:
   # scripts/label-allowlist-check.mjs; these two are flat names, so they alias.
   "jules": "automation"
   "research-engine": "research"
-
-  # #17737 — the remaining fleet labels, aliased rather than promoted so the
-  # budget is not spent on them. `output-type:*` is handled by a prefix rule in
-  # scripts/label-allowlist-check.mjs, the same way `deliver:*` is: both are
-  # derived from the WR's Output Type field, so the family is open-ended.
-  "lifecycle:stuck": "review:stuck"
-  "wr-stuck": "review:stuck"
-  "self-heal": "auto-fix"
-  "self-healing": "auto-fix"
-  "auto:default-fallback": "auto-fix"
-  "security-fleet": "security"
-  "needs-action": "needs-human"
-  "biome": "automation"
-  "wr:new": "triage"
-  "wr:jules": "automation"
-  "wr:research-complete": "research"
-  # Both remain candidates for GitHub Projects fields per this file's own
-  # `prefer_over_labels` policy — they are metrics, not states. Aliased for now
-  # so the checker passes; promoting either to a Project field is a one-line
-  # deletion here.
-  "scorecard": "automation"
-  "dod-gap": "needs-human"
-
-  # Three more that #17737's list of 19 did not contain. That list was a
-  # snapshot; these were live on open issues when the strict checker was run
-  # over the actual label set instead. `swe-fix` and `fix-me` are the agent
-  # triggers in openrouter-auto-route.yml's routing table, so they are
-  # load-bearing, not ephemera.
-  "swe-fix": "auto-fix"
-  "fix-me": "auto-fix"
-  "chore": "enhancement"
 
   "status:checks-failing": "checks-failing"
   "status:checks-passing": "checks-passing"

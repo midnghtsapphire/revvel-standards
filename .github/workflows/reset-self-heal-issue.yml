@@ -1,10 +1,8 @@
 name: 🔄 Reset Self-Heal Issue
 
-# `description:` is not a workflow-level key — GitHub ignores it and
-# actionlint rejects it (#17742). Kept as a comment, which is where this
-# text was always going to be read from anyway.
-# Reset a self-heal issue for reprocessing by removing and re-adding
-# the self-heal labels, then triggering the OpenRouter assignee workflow.
+description: >
+  Reset a self-heal issue for reprocessing by removing and re-adding
+  the self-heal labels, then triggering the OpenRouter assignee workflow.
 
 on:
   workflow_dispatch:

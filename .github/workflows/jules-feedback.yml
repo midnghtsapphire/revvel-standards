@@ -35,6 +35,6 @@ jobs:
         with:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           feedback_users: ${{ env.FEEDBACK_USERS }}
-    timeout-minutes: 60
+    timeout-minutes: 30
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

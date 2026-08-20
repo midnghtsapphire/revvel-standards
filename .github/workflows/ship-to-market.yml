@@ -293,11 +293,9 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
-        env:
-          PDF_COUNT: ${{ steps.build_pdf.outputs.count }}
         with:
           script: >
-            const count = (process.env.PDF_COUNT || '');
+            const count = '${{ steps.build_pdf.outputs.count }}';
 
             const run = '${{ github.run_id }}';
 
@@ -338,11 +336,9 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
-        env:
-          PUBLISH_RESULT: ${{ steps.publish.outputs.result }}
         with:
           script: >
-            const result = (process.env.PUBLISH_RESULT || '');
+            const result = '${{ steps.publish.outputs.result }}';
 
             const ok = !result.includes('SKIPPED');
 
@@ -529,11 +525,9 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
-        env:
-          VIDEO_RECORDED: ${{ steps.record.outputs.recorded }}
         with:
           script: >
-            const recorded = (process.env.VIDEO_RECORDED || '');
+            const recorded = '${{ steps.record.outputs.recorded }}';
 
             const run = '${{ github.run_id }}';
 
@@ -559,19 +553,14 @@ jobs:
       - name: Dispatch auto-deploy-to-stores workflow
         id: dispatch
         uses: actions/github-script@v9.0.0
-        env:
-          RUN_ANDROID: ${{ needs.gate.outputs.run_android }}
-          RUN_MOBILE: ${{ needs.gate.outputs.run_mobile }}
-          RUN_IOS: ${{ needs.gate.outputs.run_ios }}
-          ISSUE_NUM: ${{ needs.gate.outputs.issue_num }}
         with:
           script: |
             // Resolve which platforms are requested
-            const wantsAndroid = (process.env.RUN_ANDROID || '') === 'true' || (process.env.RUN_MOBILE || '') === 'true';
-            const wantsIos     = (process.env.RUN_IOS || '')     === 'true' || (process.env.RUN_MOBILE || '') === 'true';
+            const wantsAndroid = '${{ needs.gate.outputs.run_android }}' === 'true' || '${{ needs.gate.outputs.run_mobile }}' === 'true';
+            const wantsIos     = '${{ needs.gate.outputs.run_ios }}'     === 'true' || '${{ needs.gate.outputs.run_mobile }}' === 'true';
             const platform     = wantsAndroid && wantsIos ? 'both' : wantsAndroid ? 'android' : 'ios';
 
-            const issueNumber = (process.env.ISSUE_NUM || '');
+            const issueNumber = '${{ needs.gate.outputs.issue_num }}';
 
             core.info(`Dispatching auto-deploy-to-stores.yml — platform: ${platform}, issue: ${issueNumber || 'none'}`);
 
@@ -596,13 +585,10 @@ jobs:
       - name: Comment dispatch result
         if: always()
         uses: actions/github-script@v9.0.0
-        env:
-          DISPATCHED: ${{ steps.dispatch.outputs.dispatched }}
-          ISSUE_NUM: ${{ needs.gate.outputs.issue_num }}
         with:
           script: |
-            const dispatched = (process.env.DISPATCHED || '');
-            const issueNumber = (process.env.ISSUE_NUM || '').trim();
+            const dispatched = '${{ steps.dispatch.outputs.dispatched }}';
+            const issueNumber = '${{ needs.gate.outputs.issue_num }}'.trim();
             const actionsUrl = `https://github.com/${{ github.repository }}/actions/workflows/auto-deploy-to-stores.yml`;
             const body = dispatched === 'true'
               ? `📱 **Mobile store deployment dispatched** → [View progress in auto-deploy-to-stores.yml](${actionsUrl})\n\n> Deployment enforces the **deep research gate** — the originating WR issue must have \`deep-research\` + \`research:complete\` labels before stores are updated.`
@@ -665,11 +651,9 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
-        env:
-          PUBLISH_RESULT: ${{ steps.publish.outputs.result }}
         with:
           script: |
-            const result = (process.env.PUBLISH_RESULT || '');
+            const result = '${{ steps.publish.outputs.result }}';
             const ok = result && !result.includes('SKIPPED');
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -737,23 +721,10 @@ jobs:
           VSCODE: ${{ steps.vscode.outputs.result }}
         with:
           script: |
-            // Read from env, NOT from an Actions expression interpolated into the
-            // script (#17785). Both pairs were here; the interpolated pair was
-            // also the injectable one, so deleting the wrong two would have
-            // compiled fine and left the hole.
-            //
-            // The runner substitutes expressions as TEXT before this is parsed,
-            // so a backtick or a dollar-brace in a step output ends the template
-            // literal and the rest is evaluated as code. These values are built
-            // from package.json and from publisher stderr.
-            //
-            // The env: block on this step already passes them as data.
-            //
-            // Note: expression syntax is substituted anywhere in this string,
-            // comments included — so this comment must not contain any, or the
-            // workflow fails to parse at runtime.
             const chrome = process.env.CHROME || '';
             const vscode = process.env.VSCODE || '';
+            const chrome = `${{ steps.chrome.outputs.result }}` || '';
+            const vscode = `${{ steps.vscode.outputs.result }}` || '';
             const lines = [];
             if (chrome) lines.push(chrome.includes('SKIPPED') ? `⚠️ **Chrome** — ${chrome}` : `✅ **Chrome** — ${chrome}`);
             if (vscode) lines.push(vscode.includes('SKIPPED') ? `⚠️ **VS Code** — ${vscode}` : `✅ **VS Code** — ${vscode}`);
@@ -784,11 +755,9 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
-        env:
-          VALIDATE_RESULT: ${{ steps.validate.outputs.result }}
         with:
           script: |
-            const result = (process.env.VALIDATE_RESULT || '');
+            const result = '${{ steps.validate.outputs.result }}';
             const ok = result && !result.includes('SKIPPED');
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -839,11 +808,9 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
-        env:
-          OPENAPI_RESULT: ${{ steps.openapi.outputs.result }}
         with:
           script: |
-            const result = (process.env.OPENAPI_RESULT || '');
+            const result = '${{ steps.openapi.outputs.result }}';
             const ok = result && !result.includes('SKIPPED') && !result.includes('FAILED');
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -890,11 +857,9 @@ jobs:
       - name: Comment result
         if: always()
         uses: actions/github-script@v9.0.0
-        env:
-          MIGRATE_RESULT: ${{ steps.migrate.outputs.result }}
         with:
           script: |
-            const result = (process.env.MIGRATE_RESULT || '');
+            const result = '${{ steps.migrate.outputs.result }}';
             const ok = result && !result.includes('SKIPPED') && !result.includes('FAILED');
             github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo,
@@ -989,11 +954,9 @@ jobs:
       - name: Label needs-human on failure
         if: steps.check.outputs.status == 'failed' && needs.gate.outputs.issue_num != ''
         uses: actions/github-script@v9.0.0
-        env:
-          ISSUE_NUM: ${{ needs.gate.outputs.issue_num }}
         with:
           script: >
-            const issue = parseInt((process.env.ISSUE_NUM || ''));
+            const issue = parseInt('${{ needs.gate.outputs.issue_num }}');
 
             if (!issue) return;
 

@@ -26,45 +26,14 @@ jobs:
         uses: actions/github-script@v9.0.0
         with:
           script: |
-            // `A ? B ? C : D` parses as `A ? (B ? C : D)` — the outer conditional
-            // never received its `:` branch, so the step did not compile and had
-            // never run (#17784).
-            //
-            // The leading `#` is stripped before parsing: `parseInt('#123', 10)`
-            // is NaN, and "#123" is what people type into a dispatch box. #17794
-            // claimed to handle it and did not — the test used "77abc" and the
-            // comment said "#77", so nothing checked the case that was promised.
-            const dispatchInput = String(context.payload.inputs?.issue_number ?? '')
-              .trim()
-              .replace(/^#/, '');
-            const issueNumber =
-              context.eventName === 'workflow_dispatch'
-                ? parseInt(dispatchInput, 10)
-                : context.payload.issue.number;
-
-            if (!Number.isInteger(issueNumber) || issueNumber <= 0) {
-              // A bad workflow_dispatch input would otherwise post the comment
-              // to `/issues/NaN` and fail with an opaque 404.
-              core.setFailed(
-                `Could not resolve an issue number to comment on ` +
-                `(inputs.issue_number = ${JSON.stringify(context.payload.inputs?.issue_number)}).`
-              );
-              return;
-            }
-
-            const runUrl =
-              `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}` +
-              `/actions/runs/${context.runId}`;
-
-            // ONE `body`. There were two keys here, and a duplicate key in an
-            // object literal is legal JavaScript — the second silently wins — so
-            // no parser will ever flag it. Once the syntax error above was fixed
-            // this step would have posted the generic string and dropped the run
-            // link. Keeping the one that links the logs: a comment telling you to
-            // "see workflow logs" without saying where is worse than no comment.
+            const issueNumber = context.eventName === 'workflow_dispatch'
+              ? Number(context.payload.inputs.issue_number)
+              ? parseInt(context.payload.inputs.issue_number, 10)
+              : context.payload.issue.number;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
-              body: `Proposal prosecution complete. See run: ${runUrl}`,
+              body: `Proposal prosecution complete. See run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              body: 'Prosecution findings: automated review complete. See workflow logs.',
             });

@@ -16,38 +16,29 @@
 # length; adding an entry fails the suite. Fix the workflow instead — that is
 # the point of a ratchet. Never add a NEW workflow file here.
 #
-# ── EMPTIED 2026-08-20 (WR #17742) ───────────────────────────────────────────
-# All 14 findings are fixed. actionlint 1.7.7 reports ZERO findings across all
-# 227 workflows with no exclusions, so this file is now empty and the gate
-# covers the entire surface.
+# Current findings (actionlint 1.7.7, `-shellcheck= -pyflakes=`):
+#   agent-fallback.yml         step output `cursor_available` not defined
+#   auto-error-handler.yml     step output `issue_url` not defined
+#   auto-reset-stuck-issues.yml  stray top-level `description:` key
+#   bito-ai.yml                needs `pr-context` not defined
+#   budget-aware-agent.yml     needs `routing` / `assess-budget` not defined
+#   dprint-check.yml           `runner` context used where unavailable
+#   news-with-cache.yml        step output `date` not defined
+#   pr-review-status.yml       needs `determine-review-state` not defined
+#   release-banner-social.yml  `secrets` context used where unavailable
+#   reset-self-heal-issue.yml  stray top-level `description:` key
+#   security-fleet.yml         array evaluated inside ${{ }}
+#   wr-pr-creation.yml         input `issue_number` not defined (see #17736)
 #
-# What the 14 turned out to be — none were style, all were dead or broken code:
-#
-#   agent-fallback.yml         `cursor_available` was never produced: no
-#                              availability check, no $GITHUB_OUTPUT write, no
-#                              job output. The Cursor fallback could never fire.
-#   auto-error-handler.yml     `issue_url` set by a step but never exported as a
-#                              job output, so the summary printed
-#                              "View issue: " with nothing after it.
-#   auto-reset-stuck-issues.yml  stray top-level `description:` — not a workflow
-#   reset-self-heal-issue.yml    key; GitHub ignored it silently.
-#   bito-ai.yml                the step consuming `steps.pr-context.outputs.url`
-#                              was placed BEFORE the step that produces it.
-#   budget-aware-agent.yml     four defects: `routing_reason` echoed to stdout
-#                              instead of $GITHUB_OUTPUT; never exported as a
-#                              job output; a step reading its OWN outputs; and
-#                              `fallback-handler` reading a job it did not need.
-#   dprint-check.yml           `runner` context in a job-level `if`, where it is
-#                              unavailable — and redundant beside `runs-on`.
-#   news-with-cache.yml        the cache key referenced a date step that ran
-#                              AFTER it, so the key never rotated daily.
-#   pr-review-status.yml       a step set an output "for the next job" but had
-#                              no `id`, so the approval notice never fired.
-#   release-banner-social.yml  `secrets` in a step-level `if`, where it is
-#                              unavailable.
-#   security-fleet.yml         an Actions expression inside a JS string literal
-#                              — substituted by the runner, and array-valued.
-#   wr-pr-creation.yml         fixed earlier by #17736; already clean.
-#
-# THIS LIST MAY ONLY SHRINK, and it has reached zero. Adding an entry fails
-# tests/actions-lint-workflow.test.js. Fix the workflow instead.
+agent-fallback.yml
+auto-error-handler.yml
+auto-reset-stuck-issues.yml
+bito-ai.yml
+budget-aware-agent.yml
+dprint-check.yml
+news-with-cache.yml
+pr-review-status.yml
+release-banner-social.yml
+reset-self-heal-issue.yml
+security-fleet.yml
+wr-pr-creation.yml

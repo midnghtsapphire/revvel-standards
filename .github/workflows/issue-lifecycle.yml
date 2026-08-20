@@ -63,40 +63,16 @@ jobs:
                 if (action === 'opened' || action === 'reopened') {
                   // PR opened/reopened → issue is in progress
                   for (const label of ['triage', 'issue:stale', 'issue:done']) {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: issueNumber, name: label })
-                      .catch((err) => { if (err.status !== 404) throw err; });
+                    try { await github.rest.issues.removeLabel({ owner, repo, issue_number: issueNumber, name: label }); } catch(e) {}
                   }
                   await github.rest.issues.addLabels({ owner, repo, issue_number: issueNumber, labels: ['issue:in-progress'] });
 
                 } else if (action === 'closed' && pr.merged) {
-                  // PR merged → issue is done, but only if it actually closed.
-                  //
-                  // This used to label unconditionally, and that made the label
-                  // a lie whenever GitHub did not close the issue — a PR merged
-                  // to a non-default branch, or a `Closes #N` that never
-                  // registered. wr-pr-creation.yml then refused to open any
-                  // further WR PR for it, so the issue was open, undelivered
-                  // and unreachable (#17750).
-                  //
-                  // `issue:done` now means what it says: the issue is closed.
-                  // If the state has not propagated yet, the label is simply
-                  // not applied — a missing label is recoverable, a false one
-                  // was not.
+                  // PR merged → issue is done
                   for (const label of ['triage', 'issue:in-progress', 'issue:stale', 'lifecycle:stuck']) {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: issueNumber, name: label })
-                      .catch((err) => { if (err.status !== 404) throw err; });
-                  }
-                  const { data: after } = await github.rest.issues.get({ owner, repo, issue_number: issueNumber });
-                  if (after.state === 'closed') {
-                    await github.rest.issues.addLabels({ owner, repo, issue_number: issueNumber, labels: ['issue:done'] });
-                  } else {
-                    core.warning(
-                      `PR #${pr.number} merged claiming to close #${issueNumber}, but that issue is still open. ` +
-                      'Not applying issue:done — the label would assert a delivery that did not happen.'
-                    );
+                    try { await github.rest.issues.removeLabel({ owner, repo, issue_number: issueNumber, name: label }); } catch(e) {}
                   }
                   await github.rest.issues.addLabels({ owner, repo, issue_number: issueNumber, labels: ['issue:done'] });
-                  await github.rest.issues.update({ owner, repo, issue_number: issueNumber, state: 'closed', state_reason: 'completed' });
 
                 } else if (action === 'closed' && !pr.merged) {
                   // PR closed without merge → only revert if no other open PRs link to this issue
@@ -108,8 +84,7 @@ jobs:
                     return re.test(b);
                   });
                   if (!otherLinked) {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: issueNumber, name: 'issue:in-progress' })
-                      .catch((err) => { if (err.status !== 404) throw err; });
+                    try { await github.rest.issues.removeLabel({ owner, repo, issue_number: issueNumber, name: 'issue:in-progress' }); } catch(e) {}
                     await github.rest.issues.addLabels({ owner, repo, issue_number: issueNumber, labels: ['triage'] });
                   }
                 }
