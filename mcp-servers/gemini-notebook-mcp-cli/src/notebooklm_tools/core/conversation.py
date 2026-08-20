@@ -149,7 +149,7 @@ class ConversationMixin(BaseClient):
                 > self._max_turns_per_conversation
             ):
                 kept = self._conversation_cache[conversation_id][
-                    -self._max_turns_per_conversation :
+                    -self._max_turns_per_conversation:
                 ]
                 self._conversation_cache[conversation_id] = [
                     ConversationTurn(query=t.query, answer=t.answer, turn_number=i)

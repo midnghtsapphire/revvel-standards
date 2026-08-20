@@ -207,7 +207,7 @@ def _inject_version_to_frontmatter(skill_path: Path) -> None:
         frontmatter = re.sub(r"\nversion:.*", "", frontmatter)
         # Add version before closing ---
         frontmatter = frontmatter.rstrip() + f'\nversion: "{__version__}"\n'
-        content = "---" + frontmatter + "---" + content[end_idx + 3 :]
+        content = "---" + frontmatter + "---" + content[end_idx + 3:]
     else:
         # No frontmatter — prepend one with version
         content = f'---\nversion: "{__version__}"\n---\n\n' + content
@@ -232,7 +232,7 @@ def _inject_frontmatter_extras(skill_path: Path, extras: dict[str, str]) -> None
         # Add the field
         frontmatter = frontmatter.rstrip() + f"\n{key}: {value}\n"
 
-    content = "---" + frontmatter + "---" + content[end_idx + 3 :]
+    content = "---" + frontmatter + "---" + content[end_idx + 3:]
     skill_path.write_text(content, encoding="utf-8")
 
 
@@ -356,7 +356,7 @@ def install_agents_md(install_path: Path) -> None:
             if start_idx != -1 and end_idx != -1:
                 # Replace existing section
                 before = content[:start_idx]
-                after = content[end_idx + len(end_marker) :]
+                after = content[end_idx + len(end_marker):]
                 content = before + section_content + after
             else:
                 # Malformed markers, append anyway
@@ -632,7 +632,7 @@ def uninstall(
                 if start_idx != -1 and end_idx != -1:
                     # Remove section
                     before = content[:start_idx].rstrip()
-                    after = content[end_idx + len(end_marker) :].lstrip()
+                    after = content[end_idx + len(end_marker):].lstrip()
 
                     if before and after:
                         content = before + "\n\n" + after
