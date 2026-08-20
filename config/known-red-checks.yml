@@ -1,0 +1,109 @@
+# Checks that are red on every PR for reasons unrelated to the diff.
+#
+# WR #17738: "Make a red check on a PR mean something again."
+#
+# The problem this solves is not cosmetic. When five checks are red on every
+# PR regardless of content, a sixth red check — a real one — is indistinguishable
+# from the noise. That is the precondition `standards/GREEN_MAIN_STANDARD.md`
+# exists to prevent, and it is the same failure mode as the permanently-red OSSAR
+# check retired under D015: "a permanently-red security check is
+# indistinguishable from one that just started failing for a real reason."
+#
+# ── WHAT THIS FILE IS NOT ────────────────────────────────────────────────────
+# It does NOT mark anything non-required, and it must never be used to. #17738:
+# "Do not simply mark checks non-required to make the list look green — that is
+# weakening a gate, banned by GREEN_MAIN_STANDARD.md rule 5."
+#
+# Nothing reads this file to suppress a check. It is a REGISTRY: every entry
+# names a reason, an owner, and the specific action that clears it. Its value is
+# that a red check NOT listed here is, by construction, unexplained — and
+# tests/known-red-checks.test.js fails if an entry loses its owner or its
+# unblock path, so the list cannot decay into a list of things we gave up on.
+#
+# ── ADDING AN ENTRY ──────────────────────────────────────────────────────────
+# An entry is an admission that a check is uninformative, so it must carry the
+# cost of saying who fixes it and how. `unblocked_by` may not be "n/a".
+version: 1
+updated: 2026-08-20
+owner: midnghtsapphire
+
+checks:
+  - context: "Vercel – standards"
+    message: "Account is blocked."
+    cause: account-state
+    owner: midnghtsapphire
+    unblocked_by: >
+      Resolve the Vercel account block, or disconnect the integration from this
+      repository. #17738 is explicit that leaving three permanent red checks is
+      the one option off the table.
+    tracked_in: 17738
+    expected: false
+
+  - context: "Vercel – revvel-standards"
+    message: "Account is blocked."
+    cause: account-state
+    owner: midnghtsapphire
+    unblocked_by: Same account block as `Vercel – standards`.
+    tracked_in: 17738
+    expected: false
+
+  - context: "Vercel – marketplace-relister"
+    message: "Account is blocked."
+    cause: account-state
+    owner: midnghtsapphire
+    unblocked_by: Same account block as `Vercel – standards`.
+    tracked_in: 17738
+    expected: false
+
+  - context: "Octopus Review"
+    message: "Your organization is out of credits."
+    cause: quota-exhausted
+    owner: midnghtsapphire
+    unblocked_by: >
+      Nothing, and deliberately so. The free tier gives 20 code reviews a month
+      and the owner has stated Octopus is NOT to be uninstalled — the 20 are real
+      value. `out of credits` is the expected end-of-quota state, not a
+      malfunction, and it clears on the monthly reset. The only open question in
+      #17738 is whether to mute the bot once the month's 20 are consumed and
+      unmute on reset; that is an App-settings action, not a repo change.
+    tracked_in: 17738
+    expected: true
+
+  - context: "recurseml/analysis"
+    message: "Error occurred during analysis"
+    cause: third-party-error
+    owner: midnghtsapphire
+    unblocked_by: >
+      Upstream service errors intermittently. The App reports independently of
+      `recurse-ml.yml`, which is the conflation D014 corrected — D007 cut the
+      workflow lane on evidence measured from a keyless workflow while the App
+      was the thing actually running. The workflow lane is separately inert
+      until `RECURSE_ML_API_KEY` is set (#17739).
+    tracked_in: 17732
+    expected: false
+
+  - context: "Devin Review"
+    message: "Full review skipped: trial expired and no credits remaining"
+    cause: quota-exhausted
+    owner: midnghtsapphire
+    unblocked_by: >
+      Add Devin credits or remove the integration. Reports `success` rather than
+      `failure`, so it does not redden a PR — listed because it is a review lane
+      producing no reviews, which is worth knowing when judging review coverage.
+      Not `expected`: a review lane that reviews nothing is not a steady state
+      anyone chose, it just does not happen to be red.
+    tracked_in: 17738
+    expected: false
+
+  - context: "AI PR review"
+    message: "402 Payment Required — Insufficient credits"
+    cause: quota-exhausted
+    owner: midnghtsapphire
+    unblocked_by: >
+      Add OpenRouter credits at https://openrouter.ai/settings/credits. First
+      observed 2026-08-20 on PR #17806. This lane also backs several routing and
+      triage workflows, so its exhaustion is broader than review.
+      Not `expected`: unlike Octopus, this is not a designed monthly allowance
+      that resets — it is a balance that ran out and stays out until topped up.
+    tracked_in: 17738
+    expected: false

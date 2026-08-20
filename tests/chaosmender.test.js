@@ -172,7 +172,13 @@ function writeWorkflow(dir, name, content) {
     assert.equal(findings.length, 0, 'removeLabelSafe wrapper should not be flagged');
   });
 
-  await test('scanBareRemoveLabel: does NOT flag silent-catch pattern', () => {
+  // #17787 — this asserted the OPPOSITE and was green for the whole life of the
+  // defect. `.catch(() => {})` swallows 401 and 403, which is precisely what
+  // LABEL-RACE-001 exists to prevent: on a restricted token the label stays on
+  // the issue and the job reports success. The ledger's own `fix` field says
+  // "swallow ONLY 404". The scanner now enforces that, so this fixture must
+  // flag. Fourth test found this session that was protecting the bug it named.
+  await test('scanBareRemoveLabel: FLAGS the silent-catch pattern', () => {
     const root = writeWorkflow(tmpDir(), 'silent.yml', [
       'name: Test',
       'on: [push]',
@@ -191,7 +197,8 @@ function writeWorkflow(dir, name, content) {
     ].join('\n'));
 
     const findings = scanBareRemoveLabel(root);
-    assert.equal(findings.length, 0, 'silent .catch() should not be flagged');
+    assert.equal(findings.length, 1, 'a catch that swallows 401/403 must be flagged');
+    assert.match(findings[0].detail, /swallow ONLY 404/);
   });
 
   await test('scanBareRemoveLabel: returns empty on workflows dir missing', () => {
