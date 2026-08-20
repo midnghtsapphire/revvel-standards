@@ -43,6 +43,22 @@ jobs:
       - run:
           name: Lint changed Markdown (markdownlint)
           command: bash .circleci/scripts/lint-changed-markdown.sh
+      # `npm test` spawns `python3 -m flake8` through
+      # scripts/flake8-baseline-gate.js, and this job was red on EVERY PR —
+      # including docs-only ones (#17744, #17747) that never touch Python. The
+      # same commits ran `npm test` green on GitHub Actions, which is what made
+      # the failure look like a flake rather than a missing dependency.
+      #
+      # cimg/node DOES ship python3; what it lacks is `ensurepip`, so both
+      # `python3 -m venv` and the gate's own `pip install --user` fallback are
+      # dead on arrival. The script installs python3-venv, then builds a venv
+      # (not `pip install --user`: Ubuntu images from 24.04 mark the system
+      # interpreter externally-managed under PEP 668). Prepending the venv to
+      # PATH via BASH_ENV is what makes the gate's bare `python3` resolve in
+      # later steps. WR #17746.
+      - run:
+          name: Provide Python + flake8 (required by the baseline gate)
+          command: bash .circleci/scripts/install-python-flake8.sh
       # Tests run for real — a failure fails the job (no "|| echo" swallowing).
       - run:
           name: Run tests (node --test + shell)
