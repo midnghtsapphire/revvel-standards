@@ -165,20 +165,23 @@ test('ratcheted root patchers stay inert under REVVEL-DISABLED (Option C / #1779
   // A bare re-enable without human ratification of deletion is the failure mode.
   for (const file of ['update_uv_lock.py', 'fix-semgrep.js', 'fix-zizmor.js']) {
     const text = fs.readFileSync(path.join(ROOT, file), 'utf8');
-    assert.match(text, /REVVEL-DISABLED\s*\|/, `${file} must open a REVVEL-DISABLED block`);
-    assert.match(text, /REVVEL-DISABLED-END/, `${file} must close the REVVEL-DISABLED block`);
-    assert.match(text, /STATUS:\s*REPLACED/, `${file} records STATUS: REPLACED`);
-    assert.match(text, /WR:\s*#17790/, `${file} references #17790`);
-    // No live executable body outside the disabled block.
-    const live = text
-      .split('\n')
-      .filter((line) => {
-        const t = line.trim();
-        if (!t) return false;
-        if (t.startsWith('//') || t.startsWith('#')) return false;
-        return true;
-      });
-    assert.deepEqual(live, [], `${file} must have no live code outside REVVEL-DISABLED comments`);
+    const lines = text.split('\n');
+    const openIdx = lines.findIndex((l) => /REVVEL-DISABLED\s*\|/.test(l) && !/REVVEL-DISABLED-END/.test(l));
+    const endIdx = lines.findIndex((l) => /REVVEL-DISABLED-END/.test(l));
+    assert.ok(openIdx >= 0, `${file} must open a REVVEL-DISABLED block`);
+    assert.ok(endIdx >= 0, `${file} must close the REVVEL-DISABLED block`);
+    assert.ok(openIdx < endIdx, `${file} header must precede REVVEL-DISABLED-END`);
+    assert.match(lines[openIdx], /STATUS:\s*REPLACED/, `${file} records STATUS: REPLACED`);
+    assert.match(lines[openIdx], /WR:\s*#17790/, `${file} references #17790`);
+    // No live executable body: every non-empty line is a comment (the whole
+    // file is the disabled block). Structure above pins open-before-close.
+    const live = lines.filter((line) => {
+      const t = line.trim();
+      if (!t) return false;
+      if (t.startsWith('//') || t.startsWith('#')) return false;
+      return true;
+    });
+    assert.deepEqual(live, [], `${file} must have no live (non-comment) code`);
   }
 
   // Human already deleted patch_ossar.js in #17769 — do not resurrect the path
