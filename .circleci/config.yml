@@ -104,11 +104,17 @@ jobs:
       - run:
           name: RVS-AGENT-001 archival policy check
           command: bash .circleci/scripts/check-archival-policy.sh
-          environment:
-            # allow-destroy label is not available in CircleCI context; default to
-            # strict mode. PRs with the label bypass this in GitHub Actions via
-            # no-destroy-guard.yml — they still run the archival comment validation.
-            ALLOW_DESTROY: "false"
+          # ALLOW_DESTROY is deliberately NOT set here.
+          #
+          # It used to be hardcoded "false", with a comment saying the
+          # allow-destroy label "is not available in CircleCI context". The
+          # label is reachable — CIRCLE_PULL_REQUEST carries the PR URL — and
+          # hardcoding it meant RVS-AGENT-001's sanctioned human ratification
+          # path had a required check that could never turn green (#17829).
+          #
+          # The script resolves it now, and fails CLOSED when it cannot: an
+          # unreadable label is not permission. Setting it here again would
+          # restore the deadlock, so leave it to the script.
 
 workflows:
   version: 2
