@@ -81,9 +81,9 @@ jobs:
               business = (process.env.INPUT_BUSINESS || '');
               industry = (process.env.INPUT_INDUSTRY || '');
               location = (process.env.INPUT_LOCATION || '');
-              services = (process.env.INPUT_SERVICES || '') || '';
+              services = (process.env.INPUT_SERVICES || '');
               platform = (process.env.INPUT_PLATFORM || '') || 'website';
-              issueNumber = (process.env.INPUT_ISSUE_NUMBER || '') || '';
+              issueNumber = (process.env.INPUT_ISSUE_NUMBER || '');
             } else {
               issueNumber = context.issue.number;
               const issueBody = context.payload.issue?.body || '';

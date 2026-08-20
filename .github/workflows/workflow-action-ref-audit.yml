@@ -150,7 +150,7 @@ jobs:
           AUDIT_BROKEN_REFS: ${{ steps.audit.outputs.broken_refs }}
         with:
           script: |
-            const broken = ((process.env.AUDIT_BROKEN_REFS || '') || '').trim();
+            const broken = (process.env.AUDIT_BROKEN_REFS || '').trim();
             if (!broken) return;
             const lines = broken.split('\n').filter(Boolean);
 

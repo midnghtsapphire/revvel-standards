@@ -129,8 +129,8 @@ jobs:
             const fieldworkOk = healthOk(fieldworkStatus);
 
             // DNS resolution results
-            const mainDns = (process.env.DNS_MAIN_RESOLVED || '') || '';
-            const fieldworkDns = (process.env.DNS_FIELDWORK_RESOLVED || '') || '';
+            const mainDns = (process.env.DNS_MAIN_RESOLVED || '');
+            const fieldworkDns = (process.env.DNS_FIELDWORK_RESOLVED || '');
 
             // Gap analysis
             const has404 = (process.env.GAP_ANALYSIS_HAS_404 || '') === 'true';
