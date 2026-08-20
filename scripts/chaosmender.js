@@ -271,6 +271,27 @@ function scanGithubScriptColumn0(repoRoot) {
       // is the defect: it terminates the YAML block scalar prematurely. Flag
       // it BEFORE the "left the block" guard so we record the finding rather
       // than silently resetting state.
+      //
+      // Except when that column-0 line is a legitimate end to the block. A
+      // workflow whose LAST step is a github-script step is followed by the
+      // document's own top-level keys (`env:`, `jobs:`, `on:`) or a top-level
+      // comment, and those end the scalar correctly — the block was supposed to
+      // finish there. Flagging them made this check red on valid workflows
+      // (#17742): 4 of its 4 findings were of that shape, and every one of those
+      // files passes `npm run workflows:validate` and actionlint.
+      //
+      // This scanner is explicitly a heuristic — scripts/check-workflow-yaml.js
+      // is the definitive check — so where the two disagree, it defers.
+      const endsBlockLegitimately =
+        /^#/.test(line) ||                       // a top-level comment
+        /^[A-Za-z][A-Za-z0-9_-]*:/.test(line) || // a top-level mapping key
+        /^---\s*$/.test(line);                   // a document separator
+      if (indent === 0 && endsBlockLegitimately) {
+        inScriptBlock = false;
+        scriptIndent = -1;
+        continue;
+      }
+
       if (indent === 0) {
         findings.push({
           file: path.relative(repoRoot, filepath),

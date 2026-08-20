@@ -9,6 +9,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Get today’s date
+        id: date
+        run: echo "today=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+
       - name: Restore cached news
         id: cache-news
         uses: actions/cache@v6
@@ -16,10 +20,6 @@ jobs:
           path: news-cache.json
           key: news-${{ hashFiles('scripts/fetch_news.py') }}-${{ steps.date.outputs.today }}
           restore-keys: news-${{ hashFiles('scripts/fetch_news.py') }}-
-
-      - name: Get today’s date
-        id: date
-        run: echo "today=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
 
       - name: Fetch news (only if cache miss)
         if: steps.cache-news.outputs.cache-hit != 'true'
