@@ -164,9 +164,13 @@ function runZizmor(target) {
       `zizmor failed to start (${bin}): ${res.error.message}. Install with: pip install zizmor`
     );
   }
+  // status 0 = clean tree; status 1 = findings present (normal for zizmor).
+  // Any other code is a tool failure and must not look like a green ratchet.
   if (res.status !== 0 && res.status !== 1 && res.status !== null) {
-    // status 1 = findings present (normal). Other codes are tool failures.
-    // Some versions always exit 0; treat empty stdout as failure either way.
+    const errTail = (res.stderr || '').trim().split(/\r?\n/).slice(-8).join('\n');
+    throw new Error(
+      `zizmor exited ${res.status} (expected 0 or 1). stderr tail:\n${errTail}`
+    );
   }
   const stdout = res.stdout || '';
   if (!stdout.trim()) {
