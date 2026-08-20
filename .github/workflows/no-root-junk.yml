@@ -65,9 +65,11 @@ jobs:
           # None of these can be deleted by an agent. RVS-AGENT-001 reserves
           # deletion to a human ("Agents may never take it",
           # standards/COMMENT-DONT-DELETE.md §259-260), so they are tracked here
-          # until the owner ratifies removal — #17790.
+          # until the owner ratifies removal — #17790. One ratification has
+          # happened: patch_ossar.js was removed by #17769 and its name came out
+          # of this list. Three remain.
           ALLOWED='^(agent-creator-data|hub-registry)\.js$'
-          RATCHET='^(update_uv_lock\.py|patch_ossar\.js|fix-semgrep\.js|fix-zizmor\.js)$'
+          RATCHET='^(update_uv_lock\.py|fix-semgrep\.js|fix-zizmor\.js)$'
           JUNK_BY_KIND="$(printf '%s\n' "$CHANGED" \
             | grep -E '\.(js|mjs|cjs|ts|py|sh|bash|rb|pl)$' \
             | grep -Ev "$ALLOWED" \
