@@ -73,6 +73,7 @@ jobs:
                     try { await github.rest.issues.removeLabel({ owner, repo, issue_number: issueNumber, name: label }); } catch(e) {}
                   }
                   await github.rest.issues.addLabels({ owner, repo, issue_number: issueNumber, labels: ['issue:done'] });
+                  await github.rest.issues.update({ owner, repo, issue_number: issueNumber, state: 'closed', state_reason: 'completed' });
 
                 } else if (action === 'closed' && !pr.merged) {
                   // PR closed without merge → only revert if no other open PRs link to this issue
