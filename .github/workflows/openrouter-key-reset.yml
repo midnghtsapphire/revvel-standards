@@ -170,7 +170,8 @@ jobs:
                     name: label,
                   });
                 } catch (err) {
-                  core.warning(`Could not remove label "${label}" from #${num}: ${err.message}`);
+                  if (err.status !== 404) throw err;
+                  core.warning(`Label "${label}" already gone from #${num}`);
                 }
               }
 
