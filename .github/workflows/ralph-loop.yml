@@ -275,7 +275,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr_number,
-              body: `✅ **Ralph Loop — merge block removed**\n\nVerified on \\`${ref.slice(0, 7)}\\`: every check run completed without failure, and the combined commit status is not failing. Blocking labels cleared.`,
+              body: `✅ **Ralph Loop — merge block removed**\n\nVerified on \`${ref.slice(0, 7)}\`: every check run completed without failure, and the combined commit status is not failing. Blocking labels cleared.`,
             });
     timeout-minutes: 30
 env:
