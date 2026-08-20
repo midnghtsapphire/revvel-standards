@@ -79,11 +79,18 @@ test('the skip decision is made on issue state, never on the issue:done label', 
     );
   }
 
-  assert.match(
-    src,
-    /if \(issue\.state === 'closed'\)[\s\S]{0,300}?skip\(/,
-    'a closed issue must still be skipped',
-  );
+  // #17795 moved the skip behind a flag so that an `issue:done` label can also
+  // reach it — but only after GraphQL confirms a closing PR exists. That is a
+  // stronger rule than the one this assertion was written against, and the
+  // assertion has to describe the invariant rather than one line's shape:
+  // whatever the routing, `state === 'closed'` must still end in a skip.
+  const direct = /if \(issue\.state === 'closed'\)[\s\S]{0,300}?skip\(/.test(src);
+  const viaFlag = (() => {
+    const set = /if \(issue\.state === 'closed'\) \{\s*(\w+) = true;/.exec(src);
+    if (!set) return false;
+    return new RegExp(`if \\(${set[1]}\\)[\\s\\S]{0,300}?skip\\(`).test(src);
+  })();
+  assert.ok(direct || viaFlag, 'a closed issue must still be skipped');
 });
 
 test('a stale issue:done on an open issue is repaired, not obeyed', () => {
@@ -128,6 +135,14 @@ test("the re-implemented model in wr-pr-creation.test.js matches the workflow", 
   // The model asserted the buggy behaviour and was green throughout. Pin it, so
   // a future change to one side fails instead of quietly disagreeing with the
   // other.
+  //
+  // This originally read "the model must never mention issue:done", because at
+  // the time the workflow never looked at the label at all. #17795 changed the
+  // rule from "ignore the label" to "the label may TRIGGER a check, never
+  // answer it" — an open issue labelled issue:done is skipped only when GraphQL
+  // confirms a closing PR. Banning the string would now fail a model that
+  // correctly mirrors the workflow, so the assertion pins the invariant that
+  // actually matters: nothing returns on the label alone.
   const model = fs.readFileSync(path.join(__dirname, 'wr-pr-creation.test.js'), 'utf8');
   const fn = /function shouldCreatePr\([\s\S]*?\n\}/.exec(model);
   assert.ok(fn, 'shouldCreatePr must be present');
@@ -137,10 +152,24 @@ test("the re-implemented model in wr-pr-creation.test.js matches the workflow", 
     .map((line) => line.replace(/\/\/.*$/, ''))
     .join('\n');
 
-  assert.doesNotMatch(
-    body,
-    /issue:done/,
-    'the model consults issue:done while the workflow does not — one of them is wrong',
-  );
   assert.match(body, /issue\.state === 'closed'/, 'the model must skip closed issues');
+
+  // Every branch the label opens must reach its decision THROUGH a closure
+  // check. Nesting matters, so this is about order, not mere presence: the
+  // check has to come between the label test and the decision it gates.
+  const lines = body.split('\n');
+  lines.forEach((line, i) => {
+    if (!/issue:done/.test(line)) return;
+    const window = lines.slice(i + 1, i + 8);
+    const decision = window.findIndex((l) => /(return false;|\w+ = true;)/.test(l));
+    if (decision === -1) return; // the label opens no decision here
+    const verified = window
+      .slice(0, decision)
+      .some((l) => /closedBy|closed_by|state === 'closed'|closedAt/.test(l));
+    assert.ok(
+      verified,
+      'the model decides on the issue:done label alone — the workflow verifies ' +
+        'closure first, so one of them is wrong:\n' + window.slice(0, decision + 1).join('\n'),
+    );
+  });
 });
