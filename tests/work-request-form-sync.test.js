@@ -274,8 +274,11 @@ test('OpenRouter auto-route accepts title-only route tags and infers Output Type
     wf.includes("contains(format(' {0} ', github.event.issue.title), ' #skill ')"),
     'openrouter-auto-route must accept #skill title route tags'
   );
+  // `tagMap` inside `inferTitleOutputType`, not `titleTagOutputTypeMap` (#17783).
+  // The latter lived only in a dead duplicate stratum of a script that did not
+  // parse and had never run.
   assert(
-    wf.includes('const titleTagOutputTypeMap = ['),
+    wf.includes('const tagMap = {') && wf.includes('const inferTitleOutputType ='),
     'openrouter-auto-route must infer Output Type from title route tags when the issue body is blank'
   );
 });
@@ -309,9 +312,10 @@ test('openrouter auto-route accepts WR labels and title route tags', () => {
       wf.includes("contains(format(' {0} ', github.event.issue.title), ' #tool ')"),
     'openrouter-auto-route must accept title route tags'
   );
+  // `inferTitleOutputType`, not `inferOutputTypeFromTitle` — see #17783.
   assert(
     wf.includes("startsWith(github.event.label.name, 'output-type:')") &&
-      wf.includes('inferOutputTypeFromTitle'),
+      wf.includes('inferTitleOutputType'),
     'openrouter-auto-route must route from output-type labels or title tags when body is blank'
   );
 });
@@ -386,9 +390,12 @@ test('WR workflows infer routing from title tags for title-only intake', () => {
       wrAutoClassify.includes('Title route tag inferred Output Type'),
     'wr-auto-classify should infer Output Type from title route tags when body is blank'
   );
+  // Both strings here named a dead stratum (#17783): the function was
+  // `inferOutputTypeFromTitle` and the log line was 'No Output Type section or
+  // route tags found'. Neither could ever be reached — the script did not parse.
   assert(
-    openrouterAutoRoute.includes('inferOutputTypeFromTitle') &&
-      openrouterAutoRoute.includes('No Output Type section or route tags found'),
+    openrouterAutoRoute.includes('inferTitleOutputType') &&
+      openrouterAutoRoute.includes('No Output Type found in issue body, labels, or title tags'),
     'openrouter-auto-route should infer Output Type from title route tags'
   );
 });
@@ -448,11 +455,18 @@ test('Title route tags act as WR intake and Output Type signals for title-only i
       autoClassify.includes('"desktop-tool"'),
     'wr-auto-classify must infer Output Type from #app/#tool title tags when the body is blank'
   );
+  // `inferTitleOutputType`, not `inferOutputTypeFromTitle` (#17783). The latter
+  // name lived only in the dead duplicate strata: that script had nine
+  // concatenated versions of the routing decision and did not parse, so it had
+  // never run. This assertion was green throughout — a name being present in
+  // the source says nothing about whether the code around it executes.
+  // Behaviour is covered by tests/openrouter-auto-route.test.js, which runs the
+  // script against stub issues.
   assert(
     autoRoute.includes("contains(github.event.issue.labels.*.name, 'work-request')") &&
       autoRoute.includes("contains(format(' {0} ', github.event.issue.title), ' #app ')") &&
       autoRoute.includes("label.startsWith('output-type:')") &&
-      autoRoute.includes('inferOutputTypeFromTitle(title)'),
+      autoRoute.includes('inferTitleOutputType(title)'),
     'openrouter-auto-route must accept title-tag WR intake and route from title/body/output-type label signals'
   );
 });
