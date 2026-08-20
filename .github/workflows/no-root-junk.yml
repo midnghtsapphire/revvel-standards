@@ -67,7 +67,7 @@ jobs:
           # standards/COMMENT-DONT-DELETE.md §259-260), so they are tracked here
           # until the owner ratifies removal — #17790.
           ALLOWED='^(agent-creator-data|hub-registry)\.js$'
-          RATCHET='^(update_uv_lock\.py|patch_ossar\.js|fix-semgrep\.js|fix-zizmor\.js)$'
+          RATCHET='^(fix-semgrep\.js|fix-zizmor\.js)$'
           JUNK_BY_KIND="$(printf '%s\n' "$CHANGED" \
             | grep -E '\.(js|mjs|cjs|ts|py|sh|bash|rb|pl)$' \
             | grep -Ev "$ALLOWED" \
