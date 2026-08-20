@@ -1308,6 +1308,12 @@
       "source": "/products/goap-swarm-console/README.md"
     },
     {
+      "url": "https://revvel-standards.vercel.app/docs/merge-prosecutor/",
+      "project": "merge-prosecutor",
+      "type": "vercel",
+      "source": "/products/merge-prosecutor/README.md"
+    },
+    {
       "url": "https://revvel-standards.vercel.app/docs/coldtrace/",
       "project": "coldtrace",
       "type": "vercel",
@@ -1611,5 +1617,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-08-20T20:06:34.317Z"
+  "lastUpdated": "2026-08-20T21:29:33.436Z"
 }

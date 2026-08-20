@@ -165,25 +165,41 @@ jobs:
             }
 
             // Do not (re)create skeleton PRs for finished WRs. A closed issue
-            // has already been delivered; re-triggers here only spawn duplicate
-            // skeleton PRs (this is what happened on #14451, which kept
-            // generating new skeleton PRs every time a label changed after it
-            // was closed).
-            //
-            // The state is what decides, NOT the `issue:done` label (#17750).
-            // The label used to be trusted on its own, and that made it a trap:
-            // a single spurious `Closes #N` in a merged PR body got the label
-            // applied to an OPEN, undelivered issue, and from then on no WR PR
-            // could ever be opened for it. Nothing could clear the label
-            // either — issue-lifecycle.yml only removes it when a PR that links
-            // the issue is opened, and the label is what prevented that. The
-            // issue was alive, unfinished and unreachable, by construction.
-            //
-            // `issue:done` on an open issue is a contradiction, so it is
-            // repaired here rather than obeyed. issue-lifecycle.yml no longer
-            // applies it to an open issue, so this path only heals residue.
+            // — or one explicitly marked `issue:done` — has already been
+            // delivered; re-triggers here only spawn duplicate skeleton PRs
+            // (this is what happened on #14451, which kept generating new
+            // skeleton PRs every time a label changed after it was closed).
+            let actuallyDone = false;
             if (issue.state === 'closed') {
-              core.info(`Issue #${issueNumber} is closed; not creating a WR PR.`);
+              actuallyDone = true;
+            } else if (labelSet.has('issue:done')) {
+              // Verify postcondition rather than trusting marker
+              const query = `
+                query($owner: String!, $repo: String!, $issueNumber: Int!) {
+                  repository(owner: $owner, name: $repo) {
+                    issue(number: $issueNumber) {
+                      closedByPullRequestsReferences(first: 1) {
+                        totalCount
+                      }
+                    }
+                  }
+                }
+              `;
+              try {
+                const result = await github.graphql(query, {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issueNumber: issueNumber
+                });
+                const count = result.repository?.issue?.closedByPullRequestsReferences?.totalCount || 0;
+                if (count > 0) actuallyDone = true;
+              } catch (err) {
+                core.warning(`Failed to query GraphQL for issue closure: ${err.message}`);
+              }
+            }
+
+            if (actuallyDone) {
+              core.info(`Issue #${issueNumber} is closed/done; not creating a WR PR.`);
               skip('issue_closed_or_done', { notify: false });
               return;
             }
