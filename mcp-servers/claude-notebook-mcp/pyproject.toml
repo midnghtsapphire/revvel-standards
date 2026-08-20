@@ -17,7 +17,8 @@ claude-notebook-mcp = "claude_notebook_mcp.server:main"
 
 [project.urls]
 Homepage = "https://github.com/midnghtsapphire/revvel-standards/tree/main/mcp-servers/claude-notebook-mcp"
-Source = "https://github.com/jacob-bd/gemini-notebook-mcp-cli"
+Source = "https://github.com/midnghtsapphire/revvel-standards/tree/main/mcp-servers/claude-notebook-mcp"
+Inspired-By = "https://github.com/jacob-bd/gemini-notebook-mcp-cli"
 Issues = "https://github.com/midnghtsapphire/revvel-standards/issues/17733"
 
 [build-system]
