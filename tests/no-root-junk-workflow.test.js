@@ -10,9 +10,10 @@
  * `main` under names it never mentioned:
  *
  *   patch_ossar.js      string-replaces inside .github/workflows/ossar.yml
- *   update_uv_lock.py   rewrites one vendored uv.lock
- *   fix-semgrep.js      string-replaces inside image-seo-qa.yml
- *   fix-zizmor.js       same file, same shape
+ *                       (human-deleted in #17769; name left the ratchet in #17790)
+ *   update_uv_lock.py   rewrites one vendored uv.lock (Option C disabled)
+ *   fix-semgrep.js      string-replaces inside image-seo-qa.yml (Option C disabled)
+ *   fix-zizmor.js       same file, same shape (Option C disabled)
  *
  * The check was green for all four. Note `fix_boilerplate` IS on the denylist
  * and `fix-semgrep.js` still passed — the pattern spells that entry with an
@@ -132,12 +133,16 @@ test('the known-offender ratchet may only shrink, and only by name', () => {
 
   // Named, not counted. A count lets one offender be swapped for another with
   // nothing failing — the hole fixed in #17782.
+  //
+  // patch_ossar.js is gone: human-merged #17769 deleted it, so its name left
+  // the ratchet in the same Option-C pass as #17790 (agent must not delete the
+  // remaining three; only drop names whose files are already gone).
   assert.equal(
     match[1],
-    '^(update_uv_lock\\.py|patch_ossar\\.js|fix-semgrep\\.js|fix-zizmor\\.js)$',
+    '^(update_uv_lock\\.py|fix-semgrep\\.js|fix-zizmor\\.js)$',
   );
 
-  const NAMED = ['update_uv_lock.py', 'patch_ossar.js', 'fix-semgrep.js', 'fix-zizmor.js'];
+  const NAMED = ['update_uv_lock.py', 'fix-semgrep.js', 'fix-zizmor.js'];
   for (const file of NAMED) {
     assert.equal(runGuard([file]), CLEAN, `${file} is exempt while it still exists`);
   }
@@ -152,4 +157,35 @@ test('the known-offender ratchet may only shrink, and only by name', () => {
     [],
     'these files are gone — remove their names from RATCHET and from this list',
   );
+});
+
+test('ratcheted root patchers stay inert under REVVEL-DISABLED (Option C / #17790)', () => {
+  // Agents may not delete these (RVS-AGENT-001). Option C keeps the files and
+  // comments the body so re-running them cannot mutate workflows/lockfiles.
+  // A bare re-enable without human ratification of deletion is the failure mode.
+  for (const file of ['update_uv_lock.py', 'fix-semgrep.js', 'fix-zizmor.js']) {
+    const text = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    assert.match(text, /REVVEL-DISABLED\s*\|/, `${file} must open a REVVEL-DISABLED block`);
+    assert.match(text, /REVVEL-DISABLED-END/, `${file} must close the REVVEL-DISABLED block`);
+    assert.match(text, /STATUS:\s*REPLACED/, `${file} records STATUS: REPLACED`);
+    assert.match(text, /WR:\s*#17790/, `${file} references #17790`);
+    // No live executable body outside the disabled block.
+    const live = text
+      .split('\n')
+      .filter((line) => {
+        const t = line.trim();
+        if (!t) return false;
+        if (t.startsWith('//') || t.startsWith('#')) return false;
+        return true;
+      });
+    assert.deepEqual(live, [], `${file} must have no live code outside REVVEL-DISABLED comments`);
+  }
+
+  // Human already deleted patch_ossar.js in #17769 — do not resurrect the path
+  // as a silent re-permit, and do not leave its name in the RATCHET value
+  // (comments may still name it for archaeology).
+  assert.equal(fs.existsSync(path.join(ROOT, 'patch_ossar.js')), false);
+  const ratchetLine = /^ *RATCHET='([^']*)'/m.exec(scriptBody());
+  assert.ok(ratchetLine, 'RATCHET assignment must remain present');
+  assert.doesNotMatch(ratchetLine[1], /patch_ossar/);
 });

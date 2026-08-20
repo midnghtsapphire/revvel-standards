@@ -8,10 +8,10 @@ name: No Root Junk
 #      scratch*, …). This was the original rule.
 #   2. An ALLOWLIST of executables. Every new one-shot patcher arrives under a
 #      new name, so rule 1 can only ever catch the last one. Four of them
-#      reached main under names rule 1 never mentioned — patch_ossar.js,
-#      update_uv_lock.py, fix-semgrep.js, fix-zizmor.js (#17764). Rule 2 denies
-#      any script at the repo root that is not named as allowed, whatever it is
-#      called.
+#      reached main under names rule 1 never mentioned — patch_ossar.js
+#      (human-deleted in #17769), update_uv_lock.py, fix-semgrep.js,
+#      fix-zizmor.js (#17764 / #17790). Rule 2 denies any script at the repo
+#      root that is not named as allowed, whatever it is called.
 #
 # Runs on every PR, regardless of paths — junk can land anywhere.
 on:
@@ -66,8 +66,12 @@ jobs:
           # deletion to a human ("Agents may never take it",
           # standards/COMMENT-DONT-DELETE.md §259-260), so they are tracked here
           # until the owner ratifies removal — #17790.
+          #
+          # patch_ossar.js left the ratchet after human-merged #17769 deleted
+          # the file. The three remaining scripts are Option C on #17790:
+          # inert under REVVEL-DISABLED headers; still present, still named.
           ALLOWED='^(agent-creator-data|hub-registry)\.js$'
-          RATCHET='^(update_uv_lock\.py|patch_ossar\.js|fix-semgrep\.js|fix-zizmor\.js)$'
+          RATCHET='^(update_uv_lock\.py|fix-semgrep\.js|fix-zizmor\.js)$'
           JUNK_BY_KIND="$(printf '%s\n' "$CHANGED" \
             | grep -E '\.(js|mjs|cjs|ts|py|sh|bash|rb|pl)$' \
             | grep -Ev "$ALLOWED" \

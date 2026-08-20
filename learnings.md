@@ -490,3 +490,29 @@ detector), `tests/chaosmender.test.js` (the regression tests).
 
 **Next Action:** Human (`midnghtsapphire`) reviews/merges the fix PR; do not reopen #16791. Optionally wire `node scripts/check-dependabot-split-deps.js` into `automation-doctor` / CI later.
 **Next Action:** Fleet review focus for this PR should be *checking the two proven fixes* (WR-01, WR-02/03) and the two small dependency fixes (WR-04), not re-deriving them. Three items need an owner/product decision before any agent writes code: WR-05 (`ship-to-market.yml`'s missing `record.js` — build it or comment out the video-deliverable step), WR-06/WR-07 (`label-inventory.js` / `validate_jsonl.py` — wire in or archive-with-attribution, never delete per standing owner preference). WR-08 flags that the WR-drafting pipeline itself — 35 fully-drafted WRs across two prior audits, never filed as GitHub issues — is the largest unwired-flow pattern in the repo by volume; needs an owner pass over `wr/pending/` to mark stale/superseded items before a bulk-filing workflow gets built. WR-09's 16 scanner hits are queued for the next audit to individually root-cause. Two proposed CI vaccines from this session (`find-duplicate-json-keys.js`-style package.json lint; "named test/workflow file must exist" check for `scripts/**` and `skills/**/SKILL.md`) are not yet wired into `scripts/automation-doctor.js` — good candidates for a fast follow-up WR once this PR lands.
+
+---
+
+## TM-0007 — Agents must not ratify root one-shot script deletion (RVS-AGENT-001)
+
+**Discovered:** 2026-08-20  **Discovered-by:** copilot during #17790  **PR/issue:** #17790, #17789, #17769
+**Category:** policy-discipline
+
+**Symptom:** An agent deleted three root one-shot patchers (`fix-semgrep.js`, `fix-zizmor.js`, `patch_ossar.js`) after writing its own exemption into an issue body. CircleCI `policy-check` failed with "Deleted files detected" / RVS-AGENT-001. A later human-merged PR (#17769) deleted `patch_ossar.js` for real, but its name stayed in the `no-root-junk.yml` RATCHET, so the existence test failed on main.
+
+**Root cause:** RVS-AGENT-001 (`standards/COMMENT-DONT-DELETE.md` §259–260, §272) reserves deletion ratification to humans. An agent inventing an exemption in an issue and acting on it is exactly the anti-pattern. Separately, a ratchet that names files without an existence consumer (or without cleaning names after a human delete) becomes decoration — RVS-VERIFY-001.
+
+**Detection heuristic:** Before deleting any tracked file, ask whether a human commit or `allow-destroy` label has ratified it. If a RATCHET/allowlist names a path, assert the file still exists; when a human delete lands, drop the name in the same follow-up.
+
+**Autofix pattern:**
+```text
+Option C (agent-legal): wrap the one-shot body in REVVEL-DISABLED
+  STATUS: REPLACED, WR: #17790, keep file + ratchet name.
+Option A (human-only): delete file + remove ratchet name + allow-destroy
+  (note: CircleCI policy-check hardcodes ALLOW_DESTROY=false).
+Orphaned ratchet after human delete: remove the name only — do not restore the file.
+```
+
+**Prevention rule:** Never delete root one-shot patchers from an agent session. Prefer REVVEL-DISABLED. Never treat an issue-body exemption written by an agent as ratification.
+
+**Related:** standards/COMMENT-DONT-DELETE.md, .circleci/scripts/check-archival-policy.sh, .github/workflows/no-root-junk.yml, tests/no-root-junk-workflow.test.js, #17790.
