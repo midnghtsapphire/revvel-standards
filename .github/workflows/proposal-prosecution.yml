@@ -28,12 +28,18 @@ jobs:
           script: |
             // `A ? B ? C : D` parses as `A ? (B ? C : D)` — the outer conditional
             // never received its `:` branch, so the step did not compile and had
-            // never run (#17784). Two versions of the dispatch parse were left
-            // side by side; `parseInt(..., 10)` is the one that handles a
-            // human-typed "#123" or " 123 ".
+            // never run (#17784).
+            //
+            // The leading `#` is stripped before parsing: `parseInt('#123', 10)`
+            // is NaN, and "#123" is what people type into a dispatch box. #17794
+            // claimed to handle it and did not — the test used "77abc" and the
+            // comment said "#77", so nothing checked the case that was promised.
+            const dispatchInput = String(context.payload.inputs?.issue_number ?? '')
+              .trim()
+              .replace(/^#/, '');
             const issueNumber =
               context.eventName === 'workflow_dispatch'
-                ? parseInt(context.payload.inputs.issue_number, 10)
+                ? parseInt(dispatchInput, 10)
                 : context.payload.issue.number;
 
             if (!Number.isInteger(issueNumber) || issueNumber <= 0) {
