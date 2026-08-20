@@ -137,6 +137,13 @@ aliases:
   "recovery:gave-up": "needs-human"
   "bito-ai": "automation"
   "mindmappr": "automation"
+  # wr-pr-creation.yml copies these from the WR issue onto every WR PR, where
+  # pr-governance-checks.yml runs the strict checker over the PR's labels. They
+  # were never allowlisted, so every WR PR failed that gate on arrival. The
+  # open-ended `research:*` lanes are handled by a prefix rule in
+  # scripts/label-allowlist-check.mjs; these two are flat names, so they alias.
+  "jules": "automation"
+  "research-engine": "research"
 
   "status:checks-failing": "checks-failing"
   "status:checks-passing": "checks-passing"
