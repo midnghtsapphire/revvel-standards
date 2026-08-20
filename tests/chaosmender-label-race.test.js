@@ -29,7 +29,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const { scanBareRemoveLabel } = require('../scripts/chaosmender.js');
+const { scanBareRemoveLabel, scanGithubScriptColumn0 } = require('../scripts/chaosmender.js');
 
 /** Write a throwaway repo containing one workflow, and scan it. */
 function scan(script, { filename = 'fixture.yml' } = {}) {
@@ -143,4 +143,49 @@ test('the ledger entry describes the behaviour the scanner now enforces', () => 
     /following 5 lines/,
     'the note must not describe a line window the scanner no longer uses',
   );
+});
+
+/**
+ * GITHUB-SCRIPT-INLINE-001 must not fire on a workflow that is valid (#17742).
+ *
+ * The scanner tracks "am I inside a `script: |` block" and flags any column-0
+ * line while it thinks it is. But a workflow whose LAST step is a github-script
+ * step is followed by the document's own top-level keys — `env:`, `jobs:` — and
+ * those end the block scalar correctly. All 4 of this scanner's findings were
+ * of that shape, on files that pass both `workflows:validate` and actionlint.
+ *
+ * Its own docstring calls it a heuristic and names check-workflow-yaml.js as the
+ * definitive check, so where they disagree it defers.
+ */
+function scanColumn0(script, trailer) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chaosmender-c0-'));
+  const dir = path.join(root, '.github', 'workflows');
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, 'fixture.yml'),
+    ['name: Fixture', 'on: [push]', 'jobs:', '  j:', '    steps:',
+     '      - uses: actions/github-script@v9.0.0', '        with:', '          script: |'].join('\n') +
+      '\n' + script.split('\n').map((l) => `            ${l}`).join('\n') + '\n' + trailer,
+  );
+  try {
+    return scanGithubScriptColumn0(root);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+}
+
+test('a top-level key after the last script block is not a defect', () => {
+  assert.deepEqual(scanColumn0('core.info("hi");', 'env:\n  FOO: "bar"\n'), []);
+});
+
+test('a top-level comment after the last script block is not a defect', () => {
+  assert.deepEqual(scanColumn0('core.info("hi");', '# trailing note\n'), []);
+});
+
+test('a genuine column-0 continuation IS still flagged', () => {
+  // The defect the scanner exists for: a script line that fell out to column 0,
+  // silently truncating the block scalar. Not a key, not a comment.
+  const findings = scanColumn0('const msg = [', 'core.info(msg);\n');
+  assert.equal(findings.length, 1, 'a bare code line at column 0 must still flag');
+  assert.match(findings[0].excerpt, /core\.info/);
 });

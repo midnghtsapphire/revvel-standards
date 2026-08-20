@@ -1,8 +1,10 @@
 name: 🔄 Auto-Reset Stuck Issues
 
-description: >
-  Cron job that detects stuck self-heal issues and auto-resets them.
-  Runs every 30 minutes to find issues stuck in triage:new for >1 hour.
+# `description:` is not a workflow-level key — GitHub ignores it and
+# actionlint rejects it (#17742). Kept as a comment, which is where this
+# text was always going to be read from anyway.
+# Cron job that detects stuck self-heal issues and auto-resets them.
+# Runs every 30 minutes to find issues stuck in triage:new for >1 hour.
 
 on:
   workflow_dispatch:  # Manual trigger
@@ -76,17 +78,17 @@ jobs:
               // Remove self-heal labels
               for (const label of SELF_HEAL_LABELS) {
                 if (currentLabels.includes(label)) {
-                  try {
-                    await github.rest.issues.removeLabel({
-                      owner: OWNER,
-                      repo: REPO,
-                      issue_number: issueNumber,
-                      name: label,
-                    });
-                    console.log(`  Removed: ${label}`);
-                  } catch (e) {
-                    if (e.status !== 404) console.log(`  Error removing ${label}: ${e.message}`);
-                  }
+                  // A 404 means the label is already gone, which is the desired
+                  // end state. Anything else — 401/403 on a restricted token —
+                  // must surface, or the reset is reported as done while the
+                  // labels are still on the issue (LABEL-RACE-001, #17742).
+                  await github.rest.issues.removeLabel({
+                    owner: OWNER,
+                    repo: REPO,
+                    issue_number: issueNumber,
+                    name: label,
+                  }).catch((err) => { if (err.status !== 404) throw err; });
+                  console.log(`  Removed: ${label}`);
                 }
               }
               

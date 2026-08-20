@@ -17,8 +17,11 @@ jobs:
     name: dprint-check-action
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # Matrix-safe: only Linux (issue guidance for dprint/check).
-    if: runner.os == 'Linux'
+    # No `if: runner.os == 'Linux'` here: the `runner` context is not available
+    # in a job-level `if`, so actionlint rejected it (#17742) — and the guard was
+    # redundant regardless, since `runs-on: ubuntu-latest` above already pins the
+    # platform. If this job ever gains a matrix, gate on `matrix.os` instead,
+    # which IS available here.
     steps:
       - name: Checkout
         uses: actions/checkout@v4
