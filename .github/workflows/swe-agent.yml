@@ -54,12 +54,11 @@ jobs:
     steps:
       - name: Post one-time setup-needed notice
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ needs.preflight.outputs.issue_number }}
         with:
           script: |
-            const issueNumber = parseInt(
-              '${{ needs.preflight.outputs.issue_number }}',
-              10
-            );
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
             if (!issueNumber) return;
 
             let comments = []; try { const { data } = await github.rest.issues.listComments({
