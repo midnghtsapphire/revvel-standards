@@ -1,45 +1,52 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-20T15:10:46.636Z",
+  "generated_at": "2026-08-20T19:13:31.103Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "summary": "5/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 5,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32384476700,
+            "id": 32407434443,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32384476700",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32407434443",
             "conclusion": "failure"
           },
           {
-            "id": 32379419198,
+            "id": 32407396188,
             "name": "Ralph Loop — Self-Healing CI",
             "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32379419198",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32407396188",
             "conclusion": "failure"
           },
           {
-            "id": 32379188353,
+            "id": 32407356358,
             "name": "Ralph Loop — Self-Healing CI",
             "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32379188353",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32407356358",
             "conclusion": "failure"
           },
           {
-            "id": 32379085513,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32379085513",
+            "id": 32407298269,
+            "name": "Ralph Loop — Self-Healing CI",
+            "path": ".github/workflows/ralph-loop.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32407298269",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32407283306,
+            "name": "Ralph Loop — Self-Healing CI",
+            "path": ".github/workflows/ralph-loop.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32407283306",
             "conclusion": "failure"
           }
         ],
