@@ -36,6 +36,9 @@ jobs:
     outputs:
       budget_status: ${{ steps.budget.outputs.status }}
       selected_agent: ${{ steps.routing.outputs.agent }}
+      # Written by the routing step but never exported, so every consumer of
+      # `needs.assess-budget.outputs.routing_reason` read an empty string (#17742).
+      routing_reason: ${{ steps.routing.outputs.routing_reason }}
     steps:
       - name: Check budget status
         id: budget
@@ -73,31 +76,53 @@ jobs:
           REQUIRED="${REQUIRED_AGENTS}"
           STATUS="${{ steps.budget.outputs.status }}"
           
-          # Decision tree based on budget
+          # Decision tree based on budget.
+          #
+          # Two defects fixed here (#17742):
+          #   1. The `routing_reason` echoes had no `>> $GITHUB_OUTPUT`, so they
+          #      printed to stdout and the value was never an output at all. The
+          #      execute job read `needs.assess-budget.outputs.routing_reason`
+          #      and always got an empty string.
+          #   2. The summary line read `steps.routing.outputs.agent` from inside
+          #      the `routing` step itself. A step cannot read its own outputs —
+          #      they are not published until it completes — so it printed
+          #      "Selected: " with nothing after it.
+          #
+          # Both are avoided by deciding into shell variables first and writing
+          # each output exactly once.
           case "$STATUS" in
             healthy)
               # Full budget - use requested agent
-              echo "agent=$REQUIRED" >> $GITHUB_OUTPUT
-              echo "routing_reason=Budget healthy - using preferred agent"
+              AGENT="$REQUIRED"
+              REASON="Budget healthy - using preferred agent"
               ;;
             medium)
               # Moderate - use gpt-4o-mini or similar
-              echo "agent=gpt-4o-mini" >> $GITHUB_OUTPUT
-              echo "routing_reason=Budget moderate - using cost-effective option"
+              AGENT="gpt-4o-mini"
+              REASON="Budget moderate - using cost-effective option"
               ;;
             low)
               # Low - use free tier or very cheap
-              echo "agent=github-script" >> $GITHUB_OUTPUT
-              echo "routing_reason=Budget low - using minimal resources"
+              AGENT="github-script"
+              REASON="Budget low - using minimal resources"
               ;;
             critical)
               # Critical - FREE ONLY
-              echo "agent=free-fallback" >> $GITHUB_OUTPUT
-              echo "routing_reason=Budget critical - using free tier only"
+              AGENT="free-fallback"
+              REASON="Budget critical - using free tier only"
+              ;;
+            *)
+              # An unrecognised status previously fell through the case leaving
+              # `agent` unset, so the execute job ran with an empty agent name.
+              AGENT="free-fallback"
+              REASON="Budget status '${STATUS}' not recognised - defaulting to free tier"
               ;;
           esac
-          
-          echo "Selected: ${{ steps.routing.outputs.agent }}"
+
+          echo "agent=${AGENT}" >> $GITHUB_OUTPUT
+          echo "routing_reason=${REASON}" >> $GITHUB_OUTPUT
+
+          echo "Selected: ${AGENT} (${REASON})"
 
   # PHASE 2: Execute with selected agent
   execute-task:
@@ -140,7 +165,11 @@ jobs:
 
   # PHASE 3: If agent fails, route to next available
   fallback-handler:
-    needs: execute-task
+    # `assess-budget` added (#17742): this job reads
+    # `needs.assess-budget.outputs.selected_agent` to name the agent that
+    # failed, but only declared `execute-task`, so the reference resolved to
+    # nothing and the message read "⚠️  failed - trying fallback...".
+    needs: [assess-budget, execute-task]
     if: failure()
     runs-on: ubuntu-latest
     timeout-minutes: 10
