@@ -47,21 +47,18 @@ const WORKFLOWS = path.join(__dirname, '..', '.github', 'workflows');
 const UNSAFE = /\$\{\{[^}]*\b(?:steps|needs|inputs|env|matrix)\./;
 
 /**
- * Workflows that still interpolate, awaiting conversion — #17801.
+ * There is no conversion ratchet here any more, and that is the point.
  *
- * A ratchet: it may only shrink, and only by name. Converting a workflow means
- * deleting its name here in the same commit, and a test below fails if a name
- * is left behind after its fix. Adding a name is not a fix.
+ * #17801 opened with 28 workflows / 54 bodies interpolating step, job, input
+ * and matrix values into JavaScript, held behind a name-pinned list that could
+ * only shrink. It reached zero across #17827, #17839 and this commit. The list
+ * and its two bookkeeping tests are deleted rather than left as `[]`, per that
+ * issue's own acceptance criteria: an empty allowlist is an invitation, and
+ * the first test below now applies to every workflow with nothing to except it.
  *
- * `ship-to-market.yml` is deliberately absent: its ten bodies were converted in
- * the commit that added this file, which is what proves the rule is followable.
+ * Do not reintroduce the list. Converting a value is four lines; the guard
+ * names the file, job and step, and #17827's body shows the shape.
  */
-const AWAITING_CONVERSION = Object.freeze([
-  'auto-deploy-to-stores.yml',
-  'needs-action-router.yml',
-  'openrouter-assignee.yml',
-  'ralph-loop.yml',
-]);
 
 function scriptBodies() {
   const found = [];
@@ -86,7 +83,6 @@ function scriptBodies() {
 
 test('no github-script body interpolates a step, job, or input value', () => {
   const offenders = scriptBodies()
-    .filter(({ file }) => !AWAITING_CONVERSION.includes(file))
     .filter(({ script }) => UNSAFE.test(script))
     .map(({ file, job, name }) => `${file} · ${job} · ${name}`);
 
@@ -98,49 +94,11 @@ test('no github-script body interpolates a step, job, or input value', () => {
   );
 });
 
-test('the conversion ratchet may only shrink, and only by name', () => {
-  // A count would let one unconverted workflow be swapped for another with
-  // nothing failing (RVS-VERIFY-001 §6, and the hole fixed in #17782).
-  assert.ok(AWAITING_CONVERSION.length > 0, 'when empty, delete the ratchet and this test');
-  assert.deepEqual(
-    [...AWAITING_CONVERSION],
-    [...AWAITING_CONVERSION].sort(),
-    'keep the list sorted so a diff shows what changed',
-  );
-  assert.equal(
-    new Set(AWAITING_CONVERSION).size,
-    AWAITING_CONVERSION.length,
-    'no duplicates',
-  );
-  assert.ok(
-    !AWAITING_CONVERSION.includes('ship-to-market.yml'),
-    'ship-to-market.yml is converted; listing it would re-permit the pattern there',
-  );
-});
-
-test('converting a workflow means deleting its name from the ratchet', () => {
-  const bodiesByFile = new Map();
-  for (const body of scriptBodies()) {
-    if (!bodiesByFile.has(body.file)) bodiesByFile.set(body.file, []);
-    bodiesByFile.get(body.file).push(body);
-  }
-  const alreadyClean = AWAITING_CONVERSION.filter(
-    (file) => !(bodiesByFile.get(file) ?? []).some(({ script }) => UNSAFE.test(script)),
-  );
-  assert.deepEqual(
-    alreadyClean,
-    [],
-    'these are converted — remove their names, or the pattern is quietly re-permitted there',
-  );
-});
-
 test('the platform context values that remain are the harmless ones', () => {
   // `github.*` is allowed; this pins WHY, so widening the rule to permit
   // `steps.*` again would have to argue with a named reason.
   const stillInterpolated = new Set();
-  for (const { script } of scriptBodies().filter(
-    ({ file }) => !AWAITING_CONVERSION.includes(file),
-  )) {
+  for (const { script } of scriptBodies()) {
     for (const m of script.matchAll(/\$\{\{\s*([^}\s]+)/g)) stillInterpolated.add(m[1]);
   }
   const notGithub = [...stillInterpolated].filter((e) => !/^github\./.test(e) && !/^secrets\./.test(e));

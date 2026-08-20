@@ -78,10 +78,13 @@ jobs:
       - name: Assign to Copilot (OpenRouter orchestrator)
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.has_assignee != 'true' && steps.resolve.outputs.dry_run != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          ITEM_KIND: ${{ steps.resolve.outputs.item_kind }}
         with:
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
-            const itemKind = '${{ steps.resolve.outputs.item_kind }}';
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
+            const itemKind = process.env.ITEM_KIND || '';
 
             try {
               await github.rest.issues.addAssignees({
@@ -98,10 +101,13 @@ jobs:
       - name: Apply routing labels
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          HAS_OPENROUTER: ${{ steps.resolve.outputs.has_openrouter }}
         with:
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
-            const hasOpenRouter = '${{ steps.resolve.outputs.has_openrouter }}' === 'true';
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
+            const hasOpenRouter = process.env.HAS_OPENROUTER === 'true';
 
             const routingLabels = [
               'openrouter',
@@ -134,9 +140,11 @@ jobs:
       - name: Remove needs-action label
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
         with:
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
 
             try {
               await github.rest.issues.removeLabel({
@@ -153,10 +161,13 @@ jobs:
       - name: Post routing comment
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          DISPLAY_KIND: ${{ steps.resolve.outputs.display_kind }}
         with:
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
-            const displayKind = '${{ steps.resolve.outputs.display_kind }}';
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
+            const displayKind = process.env.DISPLAY_KIND || '';
 
             // Check if we've already posted a routing comment
             const comments = await github.rest.issues.listComments({
@@ -225,10 +236,13 @@ jobs:
       - name: Log dry run results
         if: steps.resolve.outputs.dry_run == 'true' && steps.resolve.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          DISPLAY_KIND: ${{ steps.resolve.outputs.display_kind }}
         with:
           script: |
-            const issueNumber = '${{ steps.resolve.outputs.issue_number }}';
-            const displayKind = '${{ steps.resolve.outputs.display_kind }}';
+            const issueNumber = process.env.ISSUE_NUMBER || '';
+            const displayKind = process.env.DISPLAY_KIND || '';
 
             core.notice('═══════════════════════════════════════════════════════');
             core.notice('DRY RUN — No changes were made');
@@ -242,11 +256,15 @@ jobs:
       - name: Summary
         if: steps.resolve.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          DISPLAY_KIND: ${{ steps.resolve.outputs.display_kind }}
+          DRY_RUN: ${{ steps.resolve.outputs.dry_run }}
         with:
           script: |
-            const issueNumber = '${{ steps.resolve.outputs.issue_number }}';
-            const displayKind = '${{ steps.resolve.outputs.display_kind }}';
-            const dryRun = '${{ steps.resolve.outputs.dry_run }}' === 'true';
+            const issueNumber = process.env.ISSUE_NUMBER || '';
+            const displayKind = process.env.DISPLAY_KIND || '';
+            const dryRun = process.env.DRY_RUN === 'true';
 
             const summary = [
               '# Needs Action Router Results',
