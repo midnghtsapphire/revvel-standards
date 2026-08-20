@@ -1,38 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-20T09:11:18.319Z",
+  "generated_at": "2026-08-20T13:19:15.942Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "3/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32352484423,
+            "id": 32373494989,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32352484423",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32373494989",
             "conclusion": "failure"
           },
           {
-            "id": 32347993321,
-            "name": "Vine → Marketplace Automation",
-            "path": ".github/workflows/vine-to-marketplace.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32347993321",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32347508563,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32347508563",
+            "id": 32370783020,
+            "name": "label-allowlist",
+            "path": ".github/workflows/label-allowlist.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32370783020",
             "conclusion": "failure"
           }
         ],
@@ -58,10 +51,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32372781678"
       }
     },
     "sheaf": {
