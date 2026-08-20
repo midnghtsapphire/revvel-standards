@@ -29,7 +29,10 @@ jobs:
           fi
       - name: AI failure helper
         if: env.OPENROUTER_API_KEY != ''
-        uses: maxlim0/actions-progci-fail@v0.13
+        # v0.13 was never released upstream — the newest tag is v0.12, so this
+        # ref has always 404'd and the step has never run (#17832). Pinned to
+        # the SHA v0.12 points at, per CLAUDE.md gotcha #8.
+        uses: maxlim0/actions-progci-fail@f1396fcd6c6b999fadb3386ba1a2258e8525e885 # v0.12
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
