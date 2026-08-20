@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-20T03:18:17.661Z",
+  "generated_at": "2026-08-20T04:13:55.496Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
@@ -14,6 +14,13 @@
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 32331025303,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32331025303",
+            "conclusion": "failure"
+          },
           {
             "id": 32327663064,
             "name": "Hourly Star Growth & Prioritization Engine",
@@ -54,13 +61,6 @@
             "name": "Ralph Loop — Self-Healing CI",
             "path": ".github/workflows/ralph-loop.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32327082307",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32327061149,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32327061149",
             "conclusion": "failure"
           }
         ],
