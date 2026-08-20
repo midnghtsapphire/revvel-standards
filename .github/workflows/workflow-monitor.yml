@@ -26,6 +26,14 @@ jobs:
         run: npm ci
       - name: Monitor workflow
         uses: actions/github-script@v9.0.0
+        env:
+          # The script spawns scripts/workflow-retry.js with
+          # `GITHUB_TOKEN: process.env.GITHUB_TOKEN`, and nothing bound it.
+          # GITHUB_TOKEN is NOT a default runner variable — it reaches a step
+          # only through an explicit env: — so the retry script has always been
+          # spawned with an undefined token and could not authenticate (#17827
+          # review).
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
