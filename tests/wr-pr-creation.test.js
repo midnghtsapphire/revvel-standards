@@ -113,13 +113,11 @@ function isCompletionLabel(labelName) {
 }
 
 function shouldCreatePr(issue, eventName, action, label) {
-  // Skip if issue is closed or has issue:done
+  // Skip only if the issue is CLOSED. The `issue:done` label is deliberately
+  // not consulted — see the #17750 tests below, and the matching comment in
+  // .github/workflows/wr-pr-creation.yml.
   if (issue.state === 'closed') return false;
-  
-  const labels = issue.labels.map(l => typeof l === 'string' ? l : l.name);
-  const labelSet = new Set(labels);
-  if (labelSet.has('issue:done')) return false;
-  
+
   // Skip bot-created failure/alert issues
   if (eventName === 'issues' && action === 'labeled') {
     const title = issue.title || '';
@@ -294,8 +292,20 @@ function isCompletionTrigger(eventName, action, labelName) {
     assert.equal(shouldCreatePr(closedWrIssue, 'issues', 'labeled', null), false);
   });
 
-  await test('shouldCreatePr returns false for issue:done label', () => {
+  // #17750 — this test previously asserted the OPPOSITE, and was green the whole
+  // time the trap existed. A re-implemented model does not merely drift from the
+  // workflow; it can entrench the defect and present it as covered.
+  await test('shouldCreatePr returns TRUE for an open issue labelled issue:done', () => {
     const issue = { ...wrIssue, labels: [...wrIssue.labels, { name: 'issue:done' }] };
+    assert.equal(
+      shouldCreatePr(issue, 'issues', 'labeled', null),
+      true,
+      'an open issue carrying a stale issue:done must still be able to receive a WR PR'
+    );
+  });
+
+  await test('shouldCreatePr still skips a CLOSED issue labelled issue:done', () => {
+    const issue = { ...closedWrIssue, labels: [...closedWrIssue.labels, { name: 'issue:done' }] };
     assert.equal(shouldCreatePr(issue, 'issues', 'labeled', null), false);
   });
 
