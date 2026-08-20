@@ -32,6 +32,7 @@ exclude =
     .mypy_cache,
     .eggs,
     *.egg-info,
-    .pytest_cache
+    .pytest_cache,
+    mcp-servers/gemini-notebook-mcp-cli
 show-source = True
 statistics = True
