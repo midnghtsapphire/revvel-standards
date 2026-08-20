@@ -661,4 +661,4 @@ re-enable auto-merge. Always have `won't-merge` on PRs you want held.
 
 ---
 
-_Last updated: see git log. Changes require a PR with the `docs:` prefix._
+*Last updated: see git log. Changes require a PR with the `docs:` prefix.*
