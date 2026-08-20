@@ -143,6 +143,16 @@ test('parseArgs rejects flags that are missing values', () => {
   assert.throws(() => parseArgs(['--target']), /--target requires a value/);
 });
 
+
+test('no entry in baseline matches a path excluded by FLAKE8_EXCLUDE', () => {
+  const { isPathExcluded, loadBaseline } = require('../scripts/flake8-baseline-gate.js');
+  const baseline = loadBaseline(BASELINE);
+  for (const [key] of baseline.entries()) {
+    const filePath = key.split('::')[0];
+    assert.ok(!isPathExcluded(filePath), `baseline entry ${key} is excluded by FLAKE8_EXCLUDE`);
+  }
+});
+
 test('compareToBaseline flags only counts above baseline', () => {
   const baseline = new Map([
     ['a.py::F401', 2],
@@ -170,19 +180,19 @@ test('formatBaseline is stable and headered', () => {
   assert.deepEqual(body, ['a.py::F401 2', 'z.py::E501 1']);
 });
 
-test('baseline gate exits 0 and prints a loud notice when python3 is missing', () => {
+test('baseline gate exits non-zero when python3 is missing', () => {
   const res = spawnSync(process.execPath, [GATE], {
     encoding: 'utf8',
     cwd: ROOT,
     env: { ...process.env, PATH: '' }, // hide python3
     timeout: 120000,
   });
-  assert.equal(
+  assert.notEqual(
     res.status,
     0,
-    `expected pass, got ${res.status}\nstdout:${res.stdout}\nstderr:${res.stderr}`
+    `expected failure on missing python3, got ${res.status}\nstdout:${res.stdout}\nstderr:${res.stderr}`
   );
-  assert.match(res.stdout, /⚠️  flake8 baseline gate skipped/);
+  assert.match(res.stderr, /python3 is not available in this environment/);
 });
 
 test('baseline gate exits 0 against the committed baseline (no new debt)', () => {
