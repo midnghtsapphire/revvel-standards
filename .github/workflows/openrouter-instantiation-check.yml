@@ -290,6 +290,6 @@ jobs:
               // on `needs-key` since that's an operator action, not a bug.
               core.setFailed(`OpenRouter probe failed: ${detail.split('\n')[0]}`);
             }
-    timeout-minutes: 30
+    timeout-minutes: 60
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

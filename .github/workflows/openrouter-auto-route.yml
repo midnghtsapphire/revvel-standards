@@ -368,6 +368,6 @@ jobs:
               .addRaw(`Output Type: \`${outputType}\`\n\n`)
               .addRaw(`Labels applied: ${labelsToApply.length ? labelsToApply.map(l => `\`${l}\``).join(', ') : '_(none — all already present)_'}\n`)
               .write();
-    timeout-minutes: 30
+    timeout-minutes: 60
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -17,7 +17,7 @@ jobs:
   openrouter-agent:
     name: Respond via OpenRouter
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     if: |
       github.event.sender.type != 'Bot' && (
