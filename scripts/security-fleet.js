@@ -92,15 +92,17 @@ const INJECTION_ALLOWLIST = [
     citation: 'issue #17805 / PR #17772 cubic rollout blurb',
     test(matchText) {
       const sample = String(matchText || '');
-      // "as an artifact" must sit BETWEEN upload and "provide … token" inside
-      // the match span — that is the CI rollout shape, not "upload the token".
+      // matchText is already the rule's m[0] (upload…token within {0,60}), so
+      // only require the CI-rollout markers inside that same span. "as an
+      // artifact" between the verb and "provide … token" is the benign shape;
+      // bare "upload the token" has no artifact marker and stays flagged.
       const looksLikeArtifactRollout =
-        /\bupload\b[^.;\n]{0,80}\bas an artifact\b[^.;\n]{0,60}\bprovide (?:a )?tokens?\b/i.test(
+        /\bupload\b[\s\S]*\bas an artifact\b[\s\S]*\bprovide (?:a )?tokens?\b/i.test(
           sample,
         );
       if (!looksLikeArtifactRollout) return false;
       const uploadsSecrets =
-        /\bupload\b[^.;\n]{0,60}\b(secrets?|credentials?|api keys?|env(?:ironment)? variables?)\b/i.test(
+        /\bupload\b[\s\S]*\b(secrets?|credentials?|api keys?|env(?:ironment)? variables?)\b/i.test(
           sample,
         );
       return !uploadsSecrets;
