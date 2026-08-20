@@ -42,10 +42,23 @@ jobs:
           #
           # CANDIDATES is everything left after those three exclusions. It is
           # deliberately NOT filtered to legal owner/repo names.
+          # `-n` prints a line number and `-h` suppresses the filename, so the
+          # old pipeline's `sed 's/^[^:]+:[0-9]+:\s*//'` — which expects
+          # `path:line:` — matched nothing, and every candidate arrived still
+          # carrying `87:        uses: `. The legal-name filter then discarded
+          # ALL of them: this audit reported "✅ All 0 action refs resolved" on
+          # every run and had never validated a single ref (#17832).
+          #
+          # Keep the filename (`-E -n`, no `-h`) so the prefix is the shape the
+          # sed expects, strip the two prefixes separately, and drop the
+          # trailing `# v1.2.3` comment that SHA-pinned refs carry.
           mapfile -t CANDIDATES < <(
-            grep -RhnE '^\s*-?\s*uses:\s*[^#[:space:]]+' .github/workflows/ .github/actions/ 2>/dev/null \
-              | sed -E 's/^[^:]+:[0-9]+:\s*//; s/^-?\s*uses:\s*//' \
+            grep -REn '^[[:space:]]*-?[[:space:]]*uses:[[:space:]]*[^#[:space:]]+' \
+              .github/workflows/ .github/actions/ 2>/dev/null \
+              | sed -E 's/^[^:]+:[0-9]+://' \
+              | sed -E 's/^[[:space:]]*-?[[:space:]]*uses:[[:space:]]*//' \
               | tr -d '"' | tr -d "'" \
+              | sed -E 's/[[:space:]]+#.*$//' \
               | grep -vE '^(\./|docker:\/\/|#)' \
               | sort -u
           )

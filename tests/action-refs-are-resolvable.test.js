@@ -40,6 +40,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const { execFileSync } = require('node:child_process');
 
 const ROOT = path.join(__dirname, '..');
 const DIRS = [
@@ -111,6 +112,61 @@ test('every uses: ref is a shape the runner can address', () => {
     bad,
     [],
     `not \`./local\`, \`docker://image\`, or \`owner/repo@ref\`:\n  ${bad.join('\n  ')}`,
+  );
+});
+
+test('the audit\'s own extraction yields the refs that are actually there', () => {
+  // The strongest assertion in this file, because the defect was in the
+  // extraction and NOT in anything a re-implementation would reproduce.
+  //
+  // `grep -Rhn` suppresses the filename but keeps the line number, so the
+  // pipeline's `sed 's/^[^:]+:[0-9]+:...'` — which expects `path:line:` —
+  // matched nothing, and every candidate arrived still carrying
+  // `87:        uses: `. The legal-name filter then discarded all of them. The
+  // audit reported "✅ All 0 action refs resolved" on every run and had never
+  // validated a single ref (#17832).
+  //
+  // So this runs the SHIPPED pipeline, lifted out of the workflow, rather than
+  // a copy of it. A copy would have been green throughout the outage.
+  const wf = fs.readFileSync(
+    path.join(ROOT, '.github', 'workflows', 'workflow-action-ref-audit.yml'), 'utf8',
+  );
+  const block = /mapfile -t CANDIDATES < <\(\n([\s\S]*?)\n\s*\)\n/.exec(wf);
+  assert.ok(block, 'the CANDIDATES extraction must be present and recognisable');
+
+  const pipeline = block[1]
+    .split('\n')
+    .map((l) => l.replace(/^ {12}/, ''))
+    .join('\n');
+
+  const out = execFileSync('bash', ['-c', pipeline], {
+    cwd: ROOT, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024,
+  })
+    .split('\n')
+    .filter(Boolean);
+
+  const directives = usesDirectives()
+    .filter(({ ref }) => !/^\.\//.test(ref) && !/^docker:\/\//.test(ref));
+
+  assert.ok(
+    out.length > 20,
+    `the extraction yielded ${out.length} refs from ${directives.length} \` +
+      \`uses: directives — it is dropping nearly everything, which is the ` +
+      'shape of the #17832 outage',
+  );
+
+  // Anchored at BOTH ends. Unanchored, `foo/bar@sha # v1.2.4` passes — and the
+  // resolver then asks the API for a tag literally named `sha # v1.2.4`, gets a
+  // 404, and reports a healthy SHA-pinned action as a broken ref. A check that
+  // invents findings gets ignored as surely as one that finds nothing.
+  const unparseable = out.filter(
+    (r) => !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_./-]+@[A-Za-z0-9_./-]+$/.test(r),
+  );
+  assert.deepEqual(
+    unparseable,
+    [],
+    'the extraction is emitting lines it has not finished parsing:\n  ' +
+      unparseable.slice(0, 5).join('\n  '),
   );
 });
 
