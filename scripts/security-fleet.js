@@ -61,7 +61,10 @@ const INJECTION_RULES = [
   },
   {
     id: 'exfil-directive',
-    re: /\b(exfiltrate|send|post|leak|upload)\b[^.\n]{0,60}\b(secrets?|tokens?|credentials?|api keys?|env(ironment)? variables?)\b/i,
+    // Clause boundary is `.`, `;`, or newline. Semicolon joins independent
+    // rollout clauses in CI docs ("upload X as an artifact; provide a token")
+    // and must not glue them into a fake exfil span — see #17805.
+    re: /\b(exfiltrate|send|post|leak|upload)\b[^.;\n]{0,60}\b(secrets?|tokens?|credentials?|api keys?|env(ironment)? variables?)\b/i,
   },
   {
     id: 'pipe-to-shell',
@@ -69,18 +72,66 @@ const INJECTION_RULES = [
   },
 ];
 
+// Allowlist entries must cite the false-positive they closed. Never widen a
+// rule to silence noise — drop the matched excerpt here instead (charter).
+// Prefer a `test(text)` function when the benign shape needs more than a
+// single regex (e.g. "looks like CI prose AND is not uploading secrets").
+const INJECTION_ALLOWLIST = [
+  {
+    // cubic.dev summary on PR #17772 (filed as #17805):
+    //   "optionally upload `wr/` as an artifact; provide a token with …"
+    // That is Actions adoption prose (artifact upload + github-token input),
+    // not an instruction to exfiltrate credentials. Still refuse the pass if
+    // the uploaded object is secrets/credentials/api keys.
+    rule: 'exfil-directive',
+    citation: 'issue #17805 / PR #17772 cubic rollout blurb',
+    test(text) {
+      const sample = String(text || '');
+      const looksLikeArtifactRollout =
+        /\bupload\b[\s\S]{0,80}\bas an artifact\b[\s\S]{0,60}\bprovide a tokens?\b/i.test(
+          sample,
+        );
+      if (!looksLikeArtifactRollout) return false;
+      const uploadsSecrets =
+        /\bupload\b[^.;\n]{0,60}\b(secrets?|credentials?|api keys?|env(?:ironment)? variables?)\b/i.test(
+          sample,
+        );
+      return !uploadsSecrets;
+    },
+  },
+];
+
+function isInjectionAllowlisted(ruleId, matchText) {
+  const sample = String(matchText || '');
+  return INJECTION_ALLOWLIST.some((entry) => {
+    if (entry.rule !== ruleId) return false;
+    if (typeof entry.test === 'function') return entry.test(sample);
+    if (entry.re) return entry.re.test(sample);
+    return false;
+  });
+}
+
 function scanPromptInjection(text, { source = 'text' } = {}) {
   const findings = [];
+  const body = String(text || '');
   for (const rule of INJECTION_RULES) {
-    const m = String(text || '').match(rule.re);
-    if (m) {
-      findings.push({
-        member: 'sentinel',
-        rule: rule.id,
-        source,
-        excerpt: excerpt(m[0]),
-      });
+    const m = body.match(rule.re);
+    if (!m) continue;
+    // Allowlist checks the match plus a short window of surrounding text so
+    // multi-clause CI docs still classify even when the rule's own span is
+    // truncated at a semicolon boundary.
+    const windowStart = Math.max(0, m.index - 40);
+    const windowEnd = Math.min(body.length, m.index + m[0].length + 80);
+    const around = body.slice(windowStart, windowEnd);
+    if (isInjectionAllowlisted(rule.id, around) || isInjectionAllowlisted(rule.id, m[0])) {
+      continue;
     }
+    findings.push({
+      member: 'sentinel',
+      rule: rule.id,
+      source,
+      excerpt: excerpt(m[0]),
+    });
   }
   return findings;
 }
@@ -501,9 +552,11 @@ if (require.main === module) main();
 
 module.exports = {
   INJECTION_RULES,
+  INJECTION_ALLOWLIST,
   SECRET_PATTERNS,
   SCOPE_SIGNALS,
   scanPromptInjection,
+  isInjectionAllowlisted,
   auditExpressions,
   scanSecretExfil,
   auditPermissions,

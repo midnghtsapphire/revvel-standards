@@ -490,3 +490,45 @@ detector), `tests/chaosmender.test.js` (the regression tests).
 
 **Next Action:** Human (`midnghtsapphire`) reviews/merges the fix PR; do not reopen #16791. Optionally wire `node scripts/check-dependabot-split-deps.js` into `automation-doctor` / CI later.
 **Next Action:** Fleet review focus for this PR should be *checking the two proven fixes* (WR-01, WR-02/03) and the two small dependency fixes (WR-04), not re-deriving them. Three items need an owner/product decision before any agent writes code: WR-05 (`ship-to-market.yml`'s missing `record.js` — build it or comment out the video-deliverable step), WR-06/WR-07 (`label-inventory.js` / `validate_jsonl.py` — wire in or archive-with-attribution, never delete per standing owner preference). WR-08 flags that the WR-drafting pipeline itself — 35 fully-drafted WRs across two prior audits, never filed as GitHub issues — is the largest unwired-flow pattern in the repo by volume; needs an owner pass over `wr/pending/` to mark stale/superseded items before a bulk-filing workflow gets built. WR-09's 16 scanner hits are queued for the next audit to individually root-cause. Two proposed CI vaccines from this session (`find-duplicate-json-keys.js`-style package.json lint; "named test/workflow file must exist" check for `scripts/**` and `skills/**/SKILL.md`) are not yet wired into `scripts/automation-doctor.js` — good candidates for a fast follow-up WR once this PR lands.
+
+---
+
+### TM-0007 — Sentinel exfil-directive glues independent CI clauses
+
+**Discovered:** 2026-08-20  **Discovered-by:** copilot during security-fleet #17805  **PR/issue:** #17805, source PR #17772
+**Category:** detector-tuning
+
+**Symptom:** `@sentinel` filed a priority-p0 `exfil-directive` finding on
+PR #17772 for the excerpt `upload wr/ as an artifact; provide a token`.
+No credentials were being exfiltrated; the text was a cubic.dev rollout
+blurb about Actions artifact upload + a github-token input.
+
+**Root cause:** The `exfil-directive` regex treated only `.` and newline as
+clause boundaries (`[^.\n]{0,60}`), so a semicolon-joined pair of benign
+CI instructions — "upload PATH as an artifact" + "provide a token with
+scopes" — became one match on `upload`…`token`.
+
+**Detection heuristic:** When a security-fleet finding's excerpt is
+Actions adoption prose (`as an artifact`, `pull-requests:write`,
+`github-token`) rather than an imperative to send credentials off-box,
+check whether the verb and the sensitive noun sit in different clauses.
+
+**Autofix pattern:**
+```text
+// 1) semicolon is a clause boundary (with `.` / newline)
+re: /\b(exfiltrate|send|post|leak|upload)\b[^.;\n]{0,60}\b(secrets?|tokens?|…)\b/i
+
+// 2) charter allowlist with citation — never weaken the pattern to
+//    silence noise. Drop "upload … as an artifact … provide a token"
+//    only when the uploaded object is NOT secrets/credentials.
+```
+
+**Prevention rule:** False positives get an `INJECTION_ALLOWLIST` entry
+with a citation (`scripts/security-fleet.js`); every entry ships with a
+regression test that pins the benign blurb AND a nearby true positive
+that must still fire. See `tests/security-fleet.test.js` cases for #17805.
+
+**Related:** TM-0006 (detector window/boundary tuning), 
+`tests/security-fleet-does-not-scan-itself.test.js` (exfil-directive
+self-match loop), skills/security-fleet/SKILL.md charter.
+
