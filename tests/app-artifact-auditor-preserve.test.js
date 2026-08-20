@@ -8,7 +8,6 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
-const os = require('node:os');
 const path = require('node:path');
 
 const ROOT = path.join(__dirname, '..');
@@ -22,7 +21,7 @@ function py(code) {
 
 test('auditor_owned is false for custom pages without the auditor marker', () => {
   const out = py(`
-import importlib.util, tempfile, os
+import importlib.util, tempfile
 from pathlib import Path
 spec = importlib.util.spec_from_file_location('aud', ${JSON.stringify(AUDITOR)})
 aud = importlib.util.module_from_spec(spec); spec.loader.exec_module(aud)
@@ -54,6 +53,30 @@ aud.ensure_readme_link({'path': 'demo'}, True, 'https://midnghtsapphire.github.i
 body = readme.read_text()
 assert 'Keep this note.' in body
 assert 'github.io/revvel-standards/docs/demo/' in body
+assert 'vercel.app' not in body
+assert body.count('Open the live app') == 1
+print('ok')
+`);
+  assert.equal(out, 'ok');
+});
+
+test('ensure_readme_link handles button with no space before bold close', () => {
+  const out = py(`
+import importlib.util, tempfile
+from pathlib import Path
+spec = importlib.util.spec_from_file_location('aud', ${JSON.stringify(AUDITOR)})
+aud = importlib.util.module_from_spec(spec); spec.loader.exec_module(aud)
+td = Path(tempfile.mkdtemp())
+app = td / 'demo'
+app.mkdir()
+readme = app / 'README.md'
+readme.write_text('# Demo\\n\\n## Live Deployment\\n\\n▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/demo/)**\\n\\nKeep.\\n')
+aud.ROOT = str(td)
+aud.ensure_readme_link({'path': 'demo'}, True, 'https://midnghtsapphire.github.io/revvel-standards/docs/demo/')
+body = readme.read_text()
+assert body.count('Open the live app') == 1, body
+assert 'github.io/revvel-standards/docs/demo/' in body
+assert 'Keep.' in body
 assert 'vercel.app' not in body
 print('ok')
 `);

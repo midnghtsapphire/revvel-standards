@@ -133,14 +133,15 @@ def main():
     if deploy_project:
         proj = next((p for p in projects if p.get("name") == deploy_project), None)
         if proj:
+            base = ""
             try:
                 base = latest_prod_url(requests, headers, team_q, proj.get("id"))
             except Exception as e:
                 print(f"vercel_sync: ERROR fetching base deployment ({e}).", file=sys.stderr)
-                base = ""
-            if base and not url_is_live(base):
-                print(f"  deployment.base_url skip (not live): {base}")
-                base = ""
+            else:
+                if base and not url_is_live(base):
+                    print(f"  deployment.base_url skip (not live): {base}")
+                    base = ""
             if base:
                 pat = re.compile(r'(?m)^(\s*base_url:\s*")[^"\n]*(")')
                 new, n = pat.subn(rf'\g<1>{base}\g<2>', text)

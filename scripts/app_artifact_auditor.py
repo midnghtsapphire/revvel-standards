@@ -281,16 +281,9 @@ def ensure_readme_link(meta, valid_url, live_url):
             sec = match.group(0)
             # Swap the first "Open the live app" markdown target in-place so
             # any notes under the section (static paths, deploy hints) survive.
+            # Trailing chars after ')' (space, bold markers, etc.) are preserved.
             replaced, n = re.subn(
-                r"(\[[^\]]*Open the live app[^\]]*\]\()https?://[^\s)]+(\) )",
-                rf"\g<1>{live_url}\2",
-                sec,
-                count=1,
-            )
-            if n:
-                return replaced
-            replaced, n = re.subn(
-                r"(\[[^\]]*Open the live app[^\]]*\]\()https?://[^\s)]+(\))",
+                r"(\[[^\]]*Open the live app[^\]]*\]\()https?://[^\s)]+(\)[^\n]*)",
                 rf"\g<1>{live_url}\2",
                 sec,
                 count=1,
