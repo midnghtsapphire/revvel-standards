@@ -1,66 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-19T23:05:52.216Z",
+  "generated_at": "2026-08-20T00:11:00.461Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "7/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 7,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32311738680,
-            "name": "Daily WR & PR Summary",
-            "path": ".github/workflows/daily-wr-summary.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32311738680",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32311688958,
+            "id": 32316020443,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32311688958",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32316020443",
             "conclusion": "failure"
           },
           {
-            "id": 32310502231,
+            "id": 32316009022,
             "name": "Ralph Loop — Self-Healing CI",
             "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32310502231",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32310469041,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32310469041",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32310460088,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32310460088",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32310425651,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32310425651",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32310393787,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32310393787",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32316009022",
             "conclusion": "failure"
           }
         ],
