@@ -1,31 +1,38 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-20T13:19:15.942Z",
+  "generated_at": "2026-08-20T14:13:14.144Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32373494989,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32373494989",
+            "id": 32378800569,
+            "name": ".github/workflows/release-banner-social.yml",
+            "path": ".github/workflows/release-banner-social.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32378800569",
             "conclusion": "failure"
           },
           {
-            "id": 32370783020,
-            "name": "label-allowlist",
-            "path": ".github/workflows/label-allowlist.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32370783020",
+            "id": 32378799020,
+            "name": ".github/workflows/dprint-check.yml",
+            "path": ".github/workflows/dprint-check.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32378799020",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32378703782,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32378703782",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +58,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32372781678"
+        "last_run": null
       }
     },
     "sheaf": {
