@@ -68,6 +68,40 @@ The `event-lane` job now skips issues carrying the `security-fleet` label.
 that PRs still reach the lane, and keeps proving the filed body would otherwise
 re-trigger the detector.
 
+## Update — 2026-08-19: `.flake8ignore` is not a thing, and the exclude list lives in four places
+
+Landing the vendored `notebooklm-mcp-cli` MCP server (#17740) put 33 findings
+over the flake8 baseline and turned `main` red — `npm test` failed on a clean
+checkout.
+
+Its author intended to exclude the vendored tree and added a `.flake8ignore`
+file. **flake8 has no `.flake8ignore` concept.** Nothing in this repo reads that
+filename, so the exclusion silently did nothing while looking like it had been
+handled.
+
+Fixing it surfaced the larger hazard. The exclusion list is duplicated in four
+places, and adding a path to only one is not enough:
+
+| Where | What it controls |
+| --- | --- |
+| `.flake8` → `exclude =` | what a developer running `flake8` locally sees |
+| `scripts/flake8-baseline-gate.js` → `FLAKE8_EXCLUDE` | **the real gate** — passes `--exclude=` explicitly, which *overrides* `.flake8` entirely |
+| `.github/workflows/python-flake8.yml` → `exclude:` input | the advisory step |
+| `.flake8ignore` | read by nothing |
+
+The path was added to `.flake8` first and the gate stayed red, because of row 2.
+
+Excluding the vendored tree is legitimate rather than a dodge: `notebooklm-mcp-cli`
+ships its own `LICENSE`, `CHANGELOG`, `CONTRIBUTING`, `uv.lock` and its own linter
+config (`[tool.ruff] line-length = 100`), so it is linted by its own toolchain.
+That is the "vendor noise" `.flake8`'s own comment permits, not the "product code"
+it forbids dropping. The 4 findings in `update_uv_lock.py` — this repo's own
+root-level helper — were **fixed**, not excluded.
+
+`tests/python-flake8-workflow.test.js` now asserts all four lists agree, and
+`.flake8ignore` states in its own header that flake8 does not read it, so the
+filename cannot mislead a third time.
+
 ## Automation Inventory
 
 ### Active Workflows (58 total)
@@ -148,7 +182,7 @@ re-trigger the detector.
 2. ✅ `panda-ops.yml` — PandaOps integration
 3. ✅ `proposal-prosecution.yml` — Proposal handling
 4. ✅ `research-module.yml` — Research automation
-5. ✅ `recurse-ml.yml` — RecurseML integration
+5. ✅ `recurse-ml.yml` — RecurseML integration. Auto-triggers cut 2026-07-08 (D007), **restored 2026-08-19 (D014)** — D007 measured this workflow lane while the RecurseML *GitHub App* was the mechanism actually running and reporting. ⚠️ The lane is enabled but currently **inert**: `RECURSE_ML_API_KEY` is not set, so the scan step no-ops (`exit 0`) instead of scanning. Set the secret to make it live (#17739).
 6. ✅ `run-human-testing-api.yml` — Human testing API
 7. ✅ `ship-status-audit.yml` — Ship status tracking
 8. ✅ `project-board-sync.yml` — Project board automation
@@ -1035,6 +1069,39 @@ not something to force through inside a security batch.
 > "green" had required excluding 150 files from linting altogether. The 12 files
 > still excluded carry 14 **genuine** findings, tracked in WR #17742 on a ratchet
 > that may only shrink.
+>
+> **Closed 2026-08-20 (WR #17742).** All 14 are fixed and
+> `.github/actions-lint-exclude.txt` is **empty**: actionlint 1.7.7 reports zero
+> findings across all **227** workflows with no exclusions. Coverage is 227/227.
+>
+> None of the 14 was a style nit. Every one was dead or broken code that had been
+> shipping:
+>
+> - `agent-fallback.yml` — `cursor_available` was never produced at all (no
+>   check, no output write, no job output) while `CURSOR_AVAILABLE` was *read*
+>   unassigned. The Cursor fallback step has never run.
+> - `budget-aware-agent.yml` — four defects in one job: `routing_reason` echoed
+>   to stdout instead of `$GITHUB_OUTPUT`, never exported, a step reading its own
+>   outputs, and a job reading a dependency it did not declare.
+> - `news-with-cache.yml` — the cache key referenced a date step defined *after*
+>   it, so the key never rotated daily, which was its whole purpose.
+> - `pr-review-status.yml` — a step set an output "for the next job" with no
+>   `id`, so the approval notice could never fire.
+>
+> The full list, with what each turned out to be, is in the header of
+> `.github/actions-lint-exclude.txt`.
+>
+> Two second-order findings are worth carrying forward, both instances of
+> RVS-VERIFY-001:
+>
+> 1. `tests/dprint-check.test.js` asserted the job **should** carry
+>    `if: runner.os == 'Linux'` — the exact construct actionlint rejects, in a
+>    position where that context does not exist. Green for the life of the defect.
+> 2. The first full-repo verification run reported "0 findings" while a file was
+>    still broken. `.github/workflows/*.yaml` matched nothing, bash passed the
+>    literal pattern through, actionlint errored on it, and a `grep '^\.github'`
+>    filtered the error out — a check that reported clean because it never ran,
+>    in the step meant to verify the fix.
 
 **The process lesson is mine.** The error column pointed at the answer on the
 very first failure and I theorised twice before reading it. Three corrections

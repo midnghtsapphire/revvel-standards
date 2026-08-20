@@ -32,6 +32,14 @@ exclude =
     .mypy_cache,
     .eggs,
     *.egg-info,
-    .pytest_cache
+    .pytest_cache,
+    # Vendored upstream project, not this repo's product code. `notebooklm-mcp-cli`
+    # ships its own LICENSE, CHANGELOG, CONTRIBUTING, uv.lock and — critically —
+    # its own linter config (`[tool.ruff] line-length = 100` in its pyproject),
+    # so it is already linted by its own toolchain. Landing it (#17740) added 33
+    # findings over the flake8 baseline and turned `main` red; its author added
+    # `.flake8ignore` intending exactly this exclusion, but flake8 never reads
+    # that filename, so the intent silently did nothing (introduced by #17740).
+    mcp-servers/gemini-notebook-mcp-cli
 show-source = True
 statistics = True
