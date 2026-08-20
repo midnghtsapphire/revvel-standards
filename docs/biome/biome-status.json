@@ -1,66 +1,59 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-20T01:30:10.289Z",
+  "generated_at": "2026-08-20T02:25:16.420Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "7/100 recent runs failed; 0 stuck item(s)",
+      "summary": "6/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 7,
+        "failed_runs": 6,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32321226062,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32321226062",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32321205704,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32321205704",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32321204694,
-            "name": "Python flake8 Lint",
-            "path": ".github/workflows/python-flake8.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32321204694",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32321202561,
-            "name": ".github/workflows/dprint-check.yml",
-            "path": ".github/workflows/dprint-check.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32321202561",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32321201896,
-            "name": ".github/workflows/release-banner-social.yml",
-            "path": ".github/workflows/release-banner-social.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32321201896",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32321162985,
+            "id": 32324499471,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32321162985",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32324499471",
             "conclusion": "failure"
           },
           {
-            "id": 32320773579,
-            "name": "Intelligent Code Quality Scanner",
-            "path": ".github/workflows/ship-quality.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32320773579",
+            "id": 32324259679,
+            "name": "Ralph Loop — Self-Healing CI",
+            "path": ".github/workflows/ralph-loop.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32324259679",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32324247523,
+            "name": "Ralph Loop — Self-Healing CI",
+            "path": ".github/workflows/ralph-loop.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32324247523",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32324240635,
+            "name": "Python flake8 Lint",
+            "path": ".github/workflows/python-flake8.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32324240635",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32324238911,
+            "name": ".github/workflows/release-banner-social.yml",
+            "path": ".github/workflows/release-banner-social.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32324238911",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32324238274,
+            "name": ".github/workflows/dprint-check.yml",
+            "path": ".github/workflows/dprint-check.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32324238274",
             "conclusion": "failure"
           }
         ],
