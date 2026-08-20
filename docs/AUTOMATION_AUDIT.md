@@ -68,6 +68,40 @@ The `event-lane` job now skips issues carrying the `security-fleet` label.
 that PRs still reach the lane, and keeps proving the filed body would otherwise
 re-trigger the detector.
 
+## Update — 2026-08-19: `.flake8ignore` is not a thing, and the exclude list lives in four places
+
+Landing the vendored `notebooklm-mcp-cli` MCP server (#17740) put 33 findings
+over the flake8 baseline and turned `main` red — `npm test` failed on a clean
+checkout.
+
+Its author intended to exclude the vendored tree and added a `.flake8ignore`
+file. **flake8 has no `.flake8ignore` concept.** Nothing in this repo reads that
+filename, so the exclusion silently did nothing while looking like it had been
+handled.
+
+Fixing it surfaced the larger hazard. The exclusion list is duplicated in four
+places, and adding a path to only one is not enough:
+
+| Where | What it controls |
+| --- | --- |
+| `.flake8` → `exclude =` | what a developer running `flake8` locally sees |
+| `scripts/flake8-baseline-gate.js` → `FLAKE8_EXCLUDE` | **the real gate** — passes `--exclude=` explicitly, which *overrides* `.flake8` entirely |
+| `.github/workflows/python-flake8.yml` → `exclude:` input | the advisory step |
+| `.flake8ignore` | read by nothing |
+
+The path was added to `.flake8` first and the gate stayed red, because of row 2.
+
+Excluding the vendored tree is legitimate rather than a dodge: `notebooklm-mcp-cli`
+ships its own `LICENSE`, `CHANGELOG`, `CONTRIBUTING`, `uv.lock` and its own linter
+config (`[tool.ruff] line-length = 100`), so it is linted by its own toolchain.
+That is the "vendor noise" `.flake8`'s own comment permits, not the "product code"
+it forbids dropping. The 4 findings in `update_uv_lock.py` — this repo's own
+root-level helper — were **fixed**, not excluded.
+
+`tests/python-flake8-workflow.test.js` now asserts all four lists agree, and
+`.flake8ignore` states in its own header that flake8 does not read it, so the
+filename cannot mislead a third time.
+
 ## Automation Inventory
 
 ### Active Workflows (58 total)
