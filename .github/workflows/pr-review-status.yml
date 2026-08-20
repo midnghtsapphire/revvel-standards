@@ -234,17 +234,16 @@ jobs:
               core.warning(`setLabels failed (${e.message}) — falling back to remove/add`);
               for (const label of currentLabels) {
                 if (reviewLabels.includes(label.name) && label.name !== targetLabel) {
-                  try {
-                    await github.rest.issues.removeLabel({
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
-                      issue_number: prNumber,
-                      name: label.name,
-                    });
-                    core.info(`Removed label: ${label.name}`);
-                  } catch (err) {
-                    core.warning(`Could not remove label ${label.name}: ${err.message}`);
-                  }
+                  // 404 = already absent = success. Anything else must surface,
+                  // or a stale review label survives while the run reports it
+                  // removed (LABEL-RACE-001, #17742).
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: prNumber,
+                    name: label.name,
+                  }).catch((err) => { if (err.status !== 404) throw err; });
+                  core.info(`Removed label: ${label.name}`);
                 }
               }
               await github.rest.issues.addLabels({

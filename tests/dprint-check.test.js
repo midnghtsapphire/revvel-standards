@@ -48,7 +48,7 @@ test('dprint-check.yml style job pins dprint/check and does not gate on runner.o
   //
   // Fifth test found this session asserting the very defect it was named after.
   // See RVS-VERIFY-001 §4.
-  const raw = fs.readFileSync(WF_PATH, "utf8");
+  const raw = fs.readFileSync(WF_PATH, 'utf8');
   assert.match(raw, /uses:\s*dprint\/check@/, 'the dprint action must still be pinned');
   assert.match(raw, /runs-on:\s*ubuntu-latest/, 'the platform is pinned by runs-on');
   assert.doesNotMatch(
