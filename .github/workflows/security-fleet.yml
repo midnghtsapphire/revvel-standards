@@ -222,8 +222,13 @@ jobs:
               }
             }
 
+            // The exprwatch description is written WITHOUT Actions expression
+            // syntax on purpose (#17742): the runner substitutes those anywhere
+            // in this script — string literals and comments included — and the
+            // expression that used to be here was array-valued, which actionlint
+            // rejects and which would not have rendered as intended anyway.
             const members = [
-              { key: 'exprwatch', file: '/tmp/exprwatch.json', handle: '@exprwatch', desc: 'untrusted `${{ github.event.* }}` interpolated into run: shells' },
+              { key: 'exprwatch', file: '/tmp/exprwatch.json', handle: '@exprwatch', desc: 'untrusted github.event values interpolated into run: shells' },
               { key: 'permit', file: '/tmp/permit.json', handle: '@permit', desc: 'permissions: vs what jobs actually do' },
               { key: 'redteam', file: '/tmp/redteam.json', handle: '@redteam', desc: 'adversarial payloads vs our own detectors + dependency lane' },
             ];

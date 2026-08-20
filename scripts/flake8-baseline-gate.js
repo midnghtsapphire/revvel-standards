@@ -107,6 +107,21 @@ function loadBaseline(filePath) {
   return map;
 }
 
+/**
+ * Make `python3 -m flake8` runnable, or fail.
+ *
+ * This gate has exactly one job: decide whether Python debt grew. A run that
+ * could not execute flake8 has not answered that question, so it must not
+ * report success — `exit 0` means "the postcondition holds", never "the tool
+ * finished" (CLAUDE.md gotcha #6). A skipped ratchet that prints green is
+ * indistinguishable from an enforced one, which is how debt lands unnoticed.
+ *
+ * Both failure modes below are actionable, and the message says which:
+ *   - no interpreter        → the lane needs Python installed
+ *   - interpreter, no pip   → the lane needs the venv/pip packages
+ * cimg/node is the second case: it ships python3 without ensurepip, which is
+ * why `.circleci/scripts/install-python-flake8.sh` exists (WR #17746).
+ */
 function ensureFlake8() {
   const check = spawnSync('python3', ['-m', 'flake8', '--version'], {
     encoding: 'utf8',
@@ -114,7 +129,13 @@ function ensureFlake8() {
   if (check.status === 0) return;
 
   if (check.error && check.error.code === 'ENOENT') {
-    throw new Error('python3 is not available in this environment');
+    throw new Error(
+      'python3 is not available, so the flake8 baseline gate cannot run.\n'
+        + 'This gate fails closed by design: a ratchet that cannot measure must '
+        + 'not report that nothing grew.\n'
+        + 'Install Python for this lane (CircleCI does this in '
+        + '.circleci/scripts/install-python-flake8.sh).'
+    );
   }
 
   const install = spawnSync(
@@ -124,7 +145,12 @@ function ensureFlake8() {
   );
   if (install.status !== 0) {
     throw new Error(
-      `flake8 is not available and pip install failed:\n${install.stderr || install.stdout}`
+      'flake8 is not available and pip install failed, so the baseline gate '
+        + 'cannot run.\n'
+        + 'python3 exists here but cannot install packages — on Debian/Ubuntu '
+        + 'images that usually means ensurepip is missing (install python3-venv) '
+        + 'or PEP 668 blocks --user installs (use a venv).\n'
+        + `pip output:\n${install.stderr || install.stdout}`
     );
   }
 }

@@ -75,8 +75,26 @@ jobs:
 
       # Optional: only fires when the secret name listed in
       # config/connections.image-automation.yml is present. Never put the value in git.
+      #
+      # `secrets` is not available in a step-level `if` (#17742). Rather than
+      # hoisting the webhook to a job-level `env` — which would put the secret in
+      # scope for every step in the job — the presence check is computed here and
+      # the value stays scoped to the single step that uses it.
+      - name: Check for Discord webhook
+        id: discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+          # Emits only a boolean. The value itself is never echoed.
+          if [ -n "${DISCORD_WEBHOOK_URL}" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Notify Discord (optional)
-        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
+        if: steps.discord.outputs.configured == 'true'
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
