@@ -69,11 +69,44 @@ const INJECTION_RULES = [
   },
 ];
 
+// False-positive allowlist (charter: citation required, pattern not weakened).
+// Each entry names the rule it suppresses and a `test(matchedText)` predicate.
+// Keep these narrow — a match that still looks like "upload secrets …" must fail.
+const INJECTION_ALLOWLIST = [
+  {
+    // Citation: issue #17804 / PR #17772.
+    // Cubic's rollout summary for products/merge-prosecutor said
+    // "optionally upload wr/ as an artifact; provide a token with
+    // pull-requests:write". That is ordinary Actions adoption language
+    // (publish a path as a workflow artifact + pass an action input token),
+    // not an instruction to exfiltrate secrets. Real exfil still matches when
+    // the upload *subject* is secrets/tokens/credentials (before "as an artifact").
+    rule: 'exfil-directive',
+    citation: 'issue #17804 / PR #17772 merge-prosecutor rollout docs',
+    test(matched) {
+      const text = String(matched);
+      if (!/\bas an artifact\b/i.test(text)) return false;
+      const beforeArtifact = text.split(/\bas an artifact\b/i)[0];
+      // Upload subject must not itself be a secret/token/credential noun.
+      return !/\b(secrets?|tokens?|credentials?|api keys?|env(?:ironment)? variables?)\b/i.test(
+        beforeArtifact
+      );
+    },
+  },
+];
+
+function isInjectionAllowlisted(ruleId, matchedText) {
+  for (const entry of INJECTION_ALLOWLIST) {
+    if (entry.rule === ruleId && entry.test(matchedText)) return true;
+  }
+  return false;
+}
+
 function scanPromptInjection(text, { source = 'text' } = {}) {
   const findings = [];
   for (const rule of INJECTION_RULES) {
     const m = String(text || '').match(rule.re);
-    if (m) {
+    if (m && !isInjectionAllowlisted(rule.id, m[0])) {
       findings.push({
         member: 'sentinel',
         rule: rule.id,
@@ -501,9 +534,11 @@ if (require.main === module) main();
 
 module.exports = {
   INJECTION_RULES,
+  INJECTION_ALLOWLIST,
   SECRET_PATTERNS,
   SCOPE_SIGNALS,
   scanPromptInjection,
+  isInjectionAllowlisted,
   auditExpressions,
   scanSecretExfil,
   auditPermissions,
