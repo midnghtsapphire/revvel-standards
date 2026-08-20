@@ -59,31 +59,13 @@ const UNSAFE = /\$\{\{[^}]*\b(?:steps|needs|inputs|env|matrix)\./;
 const AWAITING_CONVERSION = Object.freeze([
   'auto-deploy-to-stores.yml',
   'auto-error-handler.yml',
-  'auto-reset-stuck-issues.yml',
-  'bito-ai.yml',
-  'bulk-close-failure-spam.yml',
-  'conflict-helper.yml',
-  'content-automation.yml',
   'eeat-trust-cron.yml',
-  'fork-audit-bot.yml',
-  'issue-state-machine.yml',
-  'jules-invoke.yml',
-  'lane-canary.yml',
   'needs-action-router.yml',
-  'oaudrey-retro.yml',
-  'openhands-resolver.yml',
   'openrouter-assignee.yml',
-  'openrouter-coder.yml',
   'ralph-loop.yml',
-  'ready-for-review.yml',
-  'repo-self-healer.yml',
-  'research-engine.yml',
   'stuck-check-watchdog.yml',
-  'stuck-label-automation.yml',
-  'swe-agent.yml',
   'ui-creation-engine.yml',
   'weekly-research.yml',
-  'workflow-action-ref-audit.yml',
   'wr-pr-creation.yml',
 ]);
 
@@ -200,4 +182,90 @@ test('ship-to-market reads its delivery results from env', () => {
     }
   }
   assert.ok(withEnv.length >= 11, `expected the converted steps; found ${withEnv.length}`);
+});
+
+/**
+ * Every name a script reads from `process.env` must actually be set.
+ *
+ * The conversion is a claim: "this value now travels as data." Nothing was
+ * checking the claim outside `ship-to-market.yml`, so deleting one `env:` key
+ * left the script reading `undefined` — no interpolation, no error, no output,
+ * green everywhere. RVS-VERIFY-001: a guard that only checks the *absence* of
+ * the old pattern passes a conversion that silently does nothing.
+ *
+ * Effective env is workflow-level + job-level + step-level, in that order, plus
+ * the names the runner provides itself.
+ */
+const RUNNER_PROVIDED = /^(GITHUB_|RUNNER_|ACTIONS_|CI$|HOME$|PATH$)/;
+
+/**
+ * A name can be defined for later steps without any `env:` block:
+ *
+ *   - a `run:` step writing it to `$GITHUB_ENV`, either `NAME=value` or the
+ *     heredoc form `NAME<<EOF` used for multi-line values, or
+ *   - a `github-script` step calling `core.exportVariable('NAME', ...)`.
+ *
+ * Both are real definitions and both were false positives on the first draft of
+ * this guard — `anti-scaffolding-enforcer.yml` uses one of each. A check that
+ * fails correct code is one people learn to ignore (#17787), so it has to know
+ * about every mechanism, not just `env:`.
+ */
+function namesDefinedByEarlierSteps(job) {
+  const names = new Set();
+  for (const step of job?.steps ?? []) {
+    if (typeof step?.run === 'string') {
+      for (const line of step.run.split('\n')) {
+        if (!/GITHUB_ENV/.test(line)) continue;
+        const m = /(?:^|["'\s])([A-Za-z_][A-Za-z0-9_]*)\s*(?:=|<<)/.exec(line);
+        if (m) names.add(m[1]);
+      }
+    }
+    const script = step?.with?.script;
+    if (typeof script === 'string') {
+      for (const m of script.matchAll(
+        /core\.exportVariable\(\s*['"`]([A-Za-z_][A-Za-z0-9_]*)['"`]/g,
+      )) {
+        names.add(m[1]);
+      }
+    }
+  }
+  return names;
+}
+
+
+test('every process.env name a script reads is defined somewhere', () => {
+  const missing = [];
+
+  for (const file of fs.readdirSync(WORKFLOWS).filter((f) => /\.ya?ml$/.test(f))) {
+    let doc;
+    try {
+      doc = yaml.parse(fs.readFileSync(path.join(WORKFLOWS, file), 'utf8'));
+    } catch {
+      continue;
+    }
+    const workflowEnv = Object.keys(doc?.env ?? {});
+
+    for (const [jobName, job] of Object.entries(doc?.jobs ?? {})) {
+      const jobEnv = Object.keys(job?.env ?? {});
+      const definedEarlier = namesDefinedByEarlierSteps(job);
+      for (const step of job?.steps ?? []) {
+        if (typeof step?.with?.script !== 'string') continue;
+        const defined = new Set([
+          ...workflowEnv, ...jobEnv, ...definedEarlier, ...Object.keys(step?.env ?? {}),
+        ]);
+        for (const ref of step.with.script.match(/process\.env\.([A-Za-z_][A-Za-z0-9_]*)/g) ?? []) {
+          const key = ref.replace('process.env.', '');
+          if (RUNNER_PROVIDED.test(key) || defined.has(key)) continue;
+          missing.push(`${file} · ${jobName} · ${step.name ?? '(unnamed)'} · ${key}`);
+        }
+      }
+    }
+  }
+
+  assert.deepEqual(
+    missing,
+    [],
+    'these scripts read a name nothing defines, so the value is undefined and ' +
+      `the step silently does nothing:\n  ${missing.join('\n  ')}`,
+  );
 });

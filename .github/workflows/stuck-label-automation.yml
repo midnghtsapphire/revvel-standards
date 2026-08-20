@@ -185,10 +185,15 @@ jobs:
       - name: Process stuck items
         uses: actions/github-script@v9.0.0
         env:
+          # `matrix.items` is already a JSON string — `needs.*.outputs.*` is
+          # always a string, which is why the script JSON.parses it. Wrapping
+          # it in toJSON() would quote it a second time and parse back to a
+          # string, not an array. env passes it through untouched.
+          ITEMS: ${{ matrix.items }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
           script: |
-            const itemsRaw = '${{ matrix.items }}';
+            const itemsRaw = process.env.ITEMS || '';
             const items = JSON.parse(itemsRaw ? itemsRaw : '[]');
             const dry_run = process.env.DRY_RUN === 'true';
 

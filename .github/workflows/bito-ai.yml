@@ -249,10 +249,13 @@ jobs:
       - name: Update labels
         if: env.BITO_SKIP == 'false' && steps.pr-context.outputs.number != ''
         uses: actions/github-script@v9.0.0
+        env:
+          PR_NUMBER: ${{ steps.pr-context.outputs.number }}
+          REVIEW_OUTCOME: ${{ steps.bito-review.outcome }}
         with:
           script: |
-            const prNumber = parseInt('${{ steps.pr-context.outputs.number }}', 10);
-            const outcome = '${{ steps.bito-review.outcome }}';
+            const prNumber = parseInt(process.env.PR_NUMBER || '', 10);
+            const outcome = process.env.REVIEW_OUTCOME || '';
             
             const labels = ['bito-ai', 'bito-ai:review'];
             if (outcome === 'success') {
