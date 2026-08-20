@@ -58,11 +58,16 @@ jobs:
           # agent-creator.html and by publish-site.yml / website-publish.yml.
           # Both carry a "do not edit" header and are rebuilt by scripts/.
           #
-          # RATCHET is a known offender not yet removed. It may only shrink,
-          # and only by name — deleting the file means deleting its line here in
-          # the same commit. Adding a name is not a fix.
+          # RATCHET is the known offenders already at the root. It may only
+          # shrink, and only by name — removing a file means removing its line
+          # here in the same commit. Adding a name is not a fix.
+          #
+          # None of these can be deleted by an agent. RVS-AGENT-001 reserves
+          # deletion to a human ("Agents may never take it",
+          # standards/COMMENT-DONT-DELETE.md §259-260), so they are tracked here
+          # until the owner ratifies removal — #17790.
           ALLOWED='^(agent-creator-data|hub-registry)\.js$'
-          RATCHET='^update_uv_lock\.py$'   # #17788 — 4 flake8-baseline entries to drop with it
+          RATCHET='^(update_uv_lock\.py|patch_ossar\.js|fix-semgrep\.js|fix-zizmor\.js)$'
           JUNK_BY_KIND="$(printf '%s\n' "$CHANGED" \
             | grep -E '\.(js|mjs|cjs|ts|py|sh|bash|rb|pl)$' \
             | grep -Ev "$ALLOWED" \

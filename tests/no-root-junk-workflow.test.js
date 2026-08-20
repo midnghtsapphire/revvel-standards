@@ -79,12 +79,23 @@ const FLAGGED = 1;
 const CLEAN = 0;
 
 test('a one-shot patcher under a name nobody denylisted is caught', () => {
-  // The whole point. None of these appear in the name denylist.
-  assert.equal(runGuard(['patch_ossar.js']), FLAGGED);
-  assert.equal(runGuard(['fix-semgrep.js']), FLAGGED);
-  assert.equal(runGuard(['fix-zizmor.js']), FLAGGED);
+  // The whole point: rule 1 can only ever catch the last name that leaked.
+  // None of these appear in it, and none are in the ratchet.
   assert.equal(runGuard(['cleanup_registry.js']), FLAGGED, 'a name invented tomorrow');
   assert.equal(runGuard(['migrate.sh']), FLAGGED, 'not only JavaScript');
+  assert.equal(runGuard(['bump_deps.py']), FLAGGED, 'the shape of update_uv_lock.py');
+  assert.equal(runGuard(['patch_thing.js']), FLAGGED, 'the shape of patch_ossar.js');
+  assert.equal(runGuard(['fix-semgrep-v2.js']), FLAGGED, 'the shape of fix-semgrep.js');
+});
+
+test('the denylist alone would have missed every offender at the root today', () => {
+  // Why rule 2 exists. Each of these was green under rule 1 for the whole time
+  // it sat at the root. `fix_boilerplate` IS on that denylist and
+  // fix-semgrep.js still passed — the entry is spelled with an underscore.
+  const DENYLIST = /^(plan|finish_clean|fix_boilerplate|update_wr|tmp[_-].*|scratch.*|temp[_-].*|throwaway.*|notes)\.(js|mjs|ts|md|sh|py|txt)$/;
+  for (const file of ['patch_ossar.js', 'fix-semgrep.js', 'fix-zizmor.js', 'update_uv_lock.py']) {
+    assert.doesNotMatch(file, DENYLIST, `${file} was invisible to the name denylist`);
+  }
 });
 
 test('generated browser data at the root is allowed', () => {
@@ -119,14 +130,26 @@ test('the known-offender ratchet may only shrink, and only by name', () => {
   const match = /^ *RATCHET='([^']*)'/m.exec(body);
   assert.ok(match, 'the ratchet must be present and single-quoted');
 
-  // Named, not counted. Deleting the file means deleting its line here in the
-  // same commit; a name left behind quietly re-permits that file.
-  assert.equal(match[1], '^update_uv_lock\\.py$');
-  assert.equal(runGuard(['update_uv_lock.py']), CLEAN, 'exempt while it still exists');
+  // Named, not counted. A count lets one offender be swapped for another with
+  // nothing failing — the hole fixed in #17782.
+  assert.equal(
+    match[1],
+    '^(update_uv_lock\\.py|patch_ossar\\.js|fix-semgrep\\.js|fix-zizmor\\.js)$',
+  );
 
-  const stillPresent = fs.existsSync(path.join(ROOT, 'update_uv_lock.py'));
-  assert.ok(
-    stillPresent,
-    'update_uv_lock.py is gone — delete its line from RATCHET and this assertion',
+  const NAMED = ['update_uv_lock.py', 'patch_ossar.js', 'fix-semgrep.js', 'fix-zizmor.js'];
+  for (const file of NAMED) {
+    assert.equal(runGuard([file]), CLEAN, `${file} is exempt while it still exists`);
+  }
+
+  // None of these may be deleted by an agent — RVS-AGENT-001 reserves that to a
+  // human (#17790). When the owner ratifies a removal, the file goes and its
+  // name comes out of RATCHET in the same commit; a name left behind quietly
+  // re-permits that path.
+  const orphaned = NAMED.filter((f) => !fs.existsSync(path.join(ROOT, f)));
+  assert.deepEqual(
+    orphaned,
+    [],
+    'these files are gone — remove their names from RATCHET and from this list',
   );
 });
