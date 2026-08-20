@@ -161,7 +161,7 @@ jobs:
       - name: Resolve PR context
         id: pr-context
         if: env.BITO_SKIP == 'false'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             let prNumber, prUrl, prTitle;
@@ -200,7 +200,7 @@ jobs:
       # -------------------------------------------------------------------------
       - name: BITO Code Review (issue comment)
         if: env.BITO_SKIP == 'false' && github.event_name == 'issue_comment'
-        uses: gitbito/codereviewagent@main
+        uses: gitbito/codereviewagent@040bbc8d9a65e1db416743f5957abbb9b80dbb5d # main
         continue-on-error: true
         with:
           pr: ${{ steps.pr-context.outputs.url }}
@@ -236,7 +236,7 @@ jobs:
       - name: Run BITO Code Review
         id: bito-review
         if: env.BITO_SKIP == 'false'
-        uses: gitbito/codereviewagent@main
+        uses: gitbito/codereviewagent@040bbc8d9a65e1db416743f5957abbb9b80dbb5d # main
         continue-on-error: true
         with:
           pr: ${{ steps.pr-context.outputs.url }}
@@ -248,7 +248,7 @@ jobs:
       # -------------------------------------------------------------------------
       - name: Update labels
         if: env.BITO_SKIP == 'false' && steps.pr-context.outputs.number != ''
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const prNumber = parseInt('${{ steps.pr-context.outputs.number }}', 10);
@@ -288,7 +288,7 @@ jobs:
           echo "📖 See: standards/BITO_AI_INTEGRATION_STANDARD.md"
       - name: Notify if secrets missing
         if: env.BITO_SKIP == 'true' && github.event_name == 'pull_request'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         continue-on-error: true
         env:
           MISSING: ${{ env.MISSING_SECRETS }}

@@ -58,7 +58,7 @@ const UNSAFE = /\$\{\{[^}]*\b(?:steps|needs|inputs|env|matrix)\./;
  */
 const AWAITING_CONVERSION = Object.freeze([
   'auto-deploy-to-stores.yml',
-  'auto-error-handler.yml',
+  // auto-error-handler.yml converted in #17807 (env: + process.env).
   'auto-reset-stuck-issues.yml',
   'bito-ai.yml',
   'bulk-close-failure-spam.yml',

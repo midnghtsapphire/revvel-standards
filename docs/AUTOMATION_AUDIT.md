@@ -1144,3 +1144,16 @@ establish that this one was new. That is a standing argument for replacing the
 linter rather than living around it — this is now the third distinct
 false-positive class it has produced, after `secrets.X || secrets.Y` and
 behaviour that depends on whether an unrelated `env:` block exists.
+
+
+## Update — 2026-08-20: zizmor line-shift vs the real gate (WR #17807)
+
+`zizmor.yml` uploads SARIF to code scanning. GitHub's "new alerts in this PR"
+comparison is **line-based**, so a pre-existing finding whose line number moved
+because of an unrelated edit is re-reported as new. PR #17806 fixed one finding
+and the check still went red for ~30 pure line shifts.
+
+The real fail-closed gate is now `scripts/zizmor-baseline-gate.js` against
+`config/zizmor-baseline.txt` (file::rule counts). Pure line shifts cannot fail
+it. Full write-up: [`docs/ZIZMOR.md`](./ZIZMOR.md).
+

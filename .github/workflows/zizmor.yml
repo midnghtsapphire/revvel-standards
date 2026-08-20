@@ -1,14 +1,38 @@
 # Zizmor — GitHub Actions security audit (workflow injection, unpinned actions, over-broad perms).
-# Unique coverage not in CodeQL. Reports to code scanning (advisory, like Trivy/CodeQL): only NEW issues
-# in changed workflows surface. Flip continue-on-error off to make it a hard gate later.
+# Unique coverage not in CodeQL. Reports to code scanning (advisory, like Trivy/CodeQL).
+#
+# LINE-SHIFT GOTCHA (WR #17807):
+# GitHub code scanning's "new alerts in this PR" comparison is LINE-based. If a PR
+# inserts or deletes lines above a pre-existing finding, that finding's line number
+# moves and the check re-reports it as NEW — even when the finding set is unchanged
+# or smaller. #17806 fixed one template-injection and the check still went red for
+# ~30 "new" alerts that were pure +5 line shifts.
+#
+# Do NOT treat a red zizmor code-scanning check as proof of a regression. Compare
+# finding SETS (file + rule), not line numbers:
+#
+#   zizmor --offline --persona=regular --min-severity low --format sarif $FILES
+#   # then diff file::rule pairs at the merge base vs the branch
+#
+# The real fail-closed gate is the baseline ratchet below (config/zizmor-baseline.txt).
+# It keys on file::rule counts, so pure line shifts cannot fail it. New rule classes
+# on a workflow not already on the ratchet, or higher counts on an existing pair, fail.
 name: Zizmor (Actions security)
 
 on:
   pull_request:
-    paths: [".github/workflows/**"]
+    paths:
+      - ".github/workflows/**"
+      - "config/zizmor-baseline.txt"
+      - "scripts/zizmor-baseline-gate.js"
+      - "tests/zizmor-baseline-gate.test.js"
   push:
     branches: [main]
-    paths: [".github/workflows/**"]
+    paths:
+      - ".github/workflows/**"
+      - "config/zizmor-baseline.txt"
+      - "scripts/zizmor-baseline-gate.js"
+      - "tests/zizmor-baseline-gate.test.js"
   workflow_dispatch:
 
 permissions:
@@ -21,20 +45,36 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v5
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
+
       - name: Install zizmor
         run: pip install zizmor
+
+      # Advisory SARIF upload. continue-on-error: the upload (and code-scanning's
+      # line-based "new alert" check) is informational. The baseline ratchet step
+      # is the real gate — exit code means "debt did not grow", not "tool finished".
       - name: Run zizmor (SARIF)
         continue-on-error: true
-        run: zizmor --format sarif .github/workflows/ > zizmor.sarif
+        run: zizmor --offline --persona=regular --min-severity low --format sarif .github/workflows/ > zizmor.sarif
+
       - name: Upload to code scanning
         uses: github/codeql-action/upload-sarif@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.0.0
         continue-on-error: true
         with:
           sarif_file: zizmor.sarif
           category: zizmor
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+
+      # Real CI gate: fail when a file::rule count exceeds config/zizmor-baseline.txt
+      # or a new file::rule pair appears. Line shifts cannot fail this check.
+      - name: zizmor baseline ratchet gate
+        run: node scripts/zizmor-baseline-gate.js

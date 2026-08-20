@@ -61,12 +61,14 @@ jobs:
       issue_url: ${{ steps.create_issue.outputs.issue_url }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
       - name: Analyze error
         id: analyze
+        env:
+          ERROR_TYPE: ${{ inputs.error_type }}
         run: |
-          ERROR_TYPE="${{ inputs.error_type }}"
-
           # Determine labels
           LABELS="auto-error,needs-fix,$ERROR_TYPE"
 
@@ -88,10 +90,13 @@ jobs:
           echo "recovery_needed=$RECOVERY_NEEDED" >> $GITHUB_OUTPUT
       - name: Gather additional context
         id: context
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_RUN_ID: ${{ inputs.workflow_run_id }}
         run: |
           # Get workflow logs if run ID provided
-          if [[ -n "${{ inputs.workflow_run_id }}" ]]; then
-            gh run view ${{ inputs.workflow_run_id }} --log > workflow_logs.txt || true
+          if [[ -n "$WORKFLOW_RUN_ID" ]]; then
+            gh run view "$WORKFLOW_RUN_ID" --log > workflow_logs.txt || true
             LOGS=$(head -n 100 workflow_logs.txt)
           else
             LOGS="No workflow logs available"
@@ -113,23 +118,32 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ github.token }}
       - name: Create error issue
         id: create_issue
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          INPUT_ERROR_TYPE: ${{ inputs.error_type }}
+          INPUT_ERROR_MESSAGE: ${{ inputs.error_message }}
+          INPUT_ERROR_CONTEXT: ${{ inputs.error_context }}
+          INPUT_ATTEMPTED_FIXES: ${{ inputs.attempted_fixes }}
+          INPUT_WORKFLOW_RUN_ID: ${{ inputs.workflow_run_id }}
+          ANALYZE_LABELS: ${{ steps.analyze.outputs.labels }}
+          ANALYZE_ASSIGNEE: ${{ steps.analyze.outputs.assignee }}
+          CONTEXT_LOGS: ${{ steps.context.outputs.logs }}
+          CONTEXT_COMMITS: ${{ steps.context.outputs.commits }}
+          CONTEXT_BRANCH: ${{ steps.context.outputs.branch }}
         with:
           script: |
-            const errorType = '${{ inputs.error_type }}';
-            const errorMessage = '${{ inputs.error_message }}';
-            const errorContext = '${{ inputs.error_context }}';
-            const attemptedFixes = '${{ inputs.attempted_fixes }}' || '[]';
-            const workflowRunId = '${{ inputs.workflow_run_id }}';
-            const labels = '${{ steps.analyze.outputs.labels }}'.split(',');
-            const assignee = '${{ steps.analyze.outputs.assignee }}';
-            const logs = `${{ steps.context.outputs.logs }}`;
-            const commits = `${{ steps.context.outputs.commits }}`;
-            const branch = '${{ steps.context.outputs.branch }}';
+            const errorType = process.env.INPUT_ERROR_TYPE || '';
+            const errorMessage = process.env.INPUT_ERROR_MESSAGE || '';
+            const errorContext = process.env.INPUT_ERROR_CONTEXT || '';
+            const attemptedFixes = process.env.INPUT_ATTEMPTED_FIXES || '[]';
+            const workflowRunId = process.env.INPUT_WORKFLOW_RUN_ID || '';
+            const labels = (process.env.ANALYZE_LABELS || '').split(',').filter(Boolean);
+            const assignee = process.env.ANALYZE_ASSIGNEE || '';
+            const logs = process.env.CONTEXT_LOGS || '';
+            const commits = process.env.CONTEXT_COMMITS || '';
+            const branch = process.env.CONTEXT_BRANCH || '';
 
             // Parse attempted fixes
             let fixes = [];
@@ -216,11 +230,14 @@ jobs:
             return issue.data.number;
       - name: Comment on related PR if exists
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          CREATED_ISSUE_NUMBER: ${{ steps.create_issue.outputs.issue_number }}
+          CREATED_ISSUE_URL: ${{ steps.create_issue.outputs.issue_url }}
         with:
           script: |
-            const issueNumber = '${{ steps.create_issue.outputs.issue_number }}';
-            const issueUrl = '${{ steps.create_issue.outputs.issue_url }}';
+            const issueNumber = process.env.CREATED_ISSUE_NUMBER || '';
+            const issueUrl = process.env.CREATED_ISSUE_URL || '';
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -235,7 +252,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
       - name: Attempt recovery for OpenRouter errors
         if: inputs.error_type == 'openrouter'
         run: |
@@ -269,34 +288,38 @@ jobs:
           done
       - name: Attempt recovery for CI failures
         if: inputs.error_type == 'ci_failure'
+        env:
+          ERROR_MESSAGE: ${{ inputs.error_message }}
         run: |
           echo "Analyzing CI failure patterns..."
 
           # Check for common CI issues
-          if grep -q "ENOSPC" <<< "${{ inputs.error_message }}"; then
+          if grep -q "ENOSPC" <<< "$ERROR_MESSAGE"; then
             echo "Disk space issue detected - cleaning up"
             # Clean npm cache, remove temp files, etc.
             npm cache clean --force || true
             docker system prune -af || true
           fi
 
-          if grep -q "timeout" <<< "${{ inputs.error_message }}"; then
+          if grep -q "timeout" <<< "$ERROR_MESSAGE"; then
             echo "Timeout issue - suggesting increased timeout values"
           fi
 
           echo "CI recovery attempts logged" >> recovery_log.txt
       - name: Upload recovery log
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: recovery-log
           path: recovery_log.txt
           retention-days: 30
       - name: Comment recovery results
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ needs.capture-and-create-issue.outputs.issue_number }}
         with:
           script: |
-            const issueNumber = ${{ needs.capture-and-create-issue.outputs.issue_number }};
+            const issueNumber = Number(process.env.ISSUE_NUMBER);
             const fs = require('fs');
 
             let recoveryLog = 'No recovery log available';
@@ -326,14 +349,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Summary
+        env:
+          ERROR_TYPE: ${{ inputs.error_type }}
+          ISSUE_NUMBER: ${{ needs.capture-and-create-issue.outputs.issue_number }}
+          RECOVERY_NEEDED: ${{ needs.capture-and-create-issue.outputs.recovery_needed }}
+          ISSUE_URL: ${{ needs.capture-and-create-issue.outputs.issue_url }}
         run: |
           echo "## Auto-Error Handler Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Error Type:** ${{ inputs.error_type }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Issue Created:** #${{ needs.capture-and-create-issue.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Recovery Attempted:** ${{ needs.capture-and-create-issue.outputs.recovery_needed }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Error Type:** $ERROR_TYPE" >> $GITHUB_STEP_SUMMARY
+          echo "- **Issue Created:** #$ISSUE_NUMBER" >> $GITHUB_STEP_SUMMARY
+          echo "- **Recovery Attempted:** $RECOVERY_NEEDED" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "View issue: ${{ needs.capture-and-create-issue.outputs.issue_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "View issue: $ISSUE_URL" >> $GITHUB_STEP_SUMMARY
     timeout-minutes: 30
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

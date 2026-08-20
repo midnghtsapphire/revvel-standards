@@ -2,12 +2,16 @@ name: News with Cache
 on:
   schedule:
     - cron: '0 */6 * * *' # every 6h
+permissions:
+  contents: read
 jobs:
   fetch:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: Get today’s date
         id: date
@@ -15,7 +19,7 @@ jobs:
 
       - name: Restore cached news
         id: cache-news
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: news-cache.json
           key: news-${{ hashFiles('scripts/fetch_news.py') }}-${{ steps.date.outputs.today }}
@@ -31,7 +35,7 @@ jobs:
         run: python scripts/process_news.py news-cache.json
 
       - name: Cache news
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: news-cache.json
           key: news-v2-${{ steps.date.outputs.today }} # change v2 → v3 to force refresh
