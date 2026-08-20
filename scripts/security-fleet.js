@@ -76,19 +76,26 @@ const INJECTION_RULES = [
 // rule to silence noise — drop the matched excerpt here instead (charter).
 // Prefer a `test(text)` function when the benign shape needs more than a
 // single regex (e.g. "looks like CI prose AND is not uploading secrets").
+//
+// IMPORTANT: allowlist tests run against the rule's match text only (m[0]),
+// never a widened surrounding window. A nearby benign sentence must not
+// suppress a real exfil clause in the same paragraph.
 const INJECTION_ALLOWLIST = [
   {
     // cubic.dev summary on PR #17772 (filed as #17805):
     //   "optionally upload `wr/` as an artifact; provide a token with …"
-    // That is Actions adoption prose (artifact upload + github-token input),
-    // not an instruction to exfiltrate credentials. Still refuse the pass if
-    // the uploaded object is secrets/credentials/api keys.
+    // Semicolon-joined form is already handled by the clause-boundary fix
+    // on the rule itself. This entry covers the same idea joined with
+    // "and"/"to"/comma inside one clause, which still matches upload…token.
+    // Refuse the pass if the uploaded object is secrets/credentials/api keys.
     rule: 'exfil-directive',
     citation: 'issue #17805 / PR #17772 cubic rollout blurb',
-    test(text) {
-      const sample = String(text || '');
+    test(matchText) {
+      const sample = String(matchText || '');
+      // "as an artifact" must sit BETWEEN upload and "provide … token" inside
+      // the match span — that is the CI rollout shape, not "upload the token".
       const looksLikeArtifactRollout =
-        /\bupload\b[\s\S]{0,80}\bas an artifact\b[\s\S]{0,60}\bprovide a tokens?\b/i.test(
+        /\bupload\b[^.;\n]{0,80}\bas an artifact\b[^.;\n]{0,60}\bprovide (?:a )?tokens?\b/i.test(
           sample,
         );
       if (!looksLikeArtifactRollout) return false;
@@ -117,13 +124,9 @@ function scanPromptInjection(text, { source = 'text' } = {}) {
   for (const rule of INJECTION_RULES) {
     const m = body.match(rule.re);
     if (!m) continue;
-    // Allowlist checks the match plus a short window of surrounding text so
-    // multi-clause CI docs still classify even when the rule's own span is
-    // truncated at a semicolon boundary.
-    const windowStart = Math.max(0, m.index - 40);
-    const windowEnd = Math.min(body.length, m.index + m[0].length + 80);
-    const around = body.slice(windowStart, windowEnd);
-    if (isInjectionAllowlisted(rule.id, around) || isInjectionAllowlisted(rule.id, m[0])) {
+    // Allowlist inspects the match text only — not surrounding prose — so a
+    // benign CI note in the next sentence cannot suppress a real exfil clause.
+    if (isInjectionAllowlisted(rule.id, m[0])) {
       continue;
     }
     findings.push({
