@@ -54,10 +54,12 @@ jobs:
     steps:
       - name: Post one-time setup-needed notice
         uses: actions/github-script@v9.0.0
+        env:
+          NEED_PREFLIGHT_ISSUE_NUMBER: ${{ needs.preflight.outputs.issue_number }}
         with:
           script: |
             const issueNumber = parseInt(
-              '${{ needs.preflight.outputs.issue_number }}',
+              (process.env.NEED_PREFLIGHT_ISSUE_NUMBER || ''),
               10
             );
             if (!issueNumber) return;
@@ -159,6 +161,7 @@ jobs:
         uses: actions/github-script@v9.0.0
         env:
           OUTCOME: ${{ steps.resolve.outcome }}
+          ISSUE_NUMBER: ${{ env.ISSUE_NUMBER }}
         with:
           script: |
             const outcome = process.env.OUTCOME || 'unknown';
@@ -172,7 +175,7 @@ jobs:
                 `${emoji} **OpenHands Resolver** — outcome: \`${outcome}\``,
                 '',
                 outcome === 'success'
-                  ? 'A PR has been opened against `openhands/issue-${{ env.ISSUE_NUMBER }}`. See the linked Pull Request below.'
+                  ? `A PR has been opened against \`openhands/issue-${issueNumber}\`. See the linked Pull Request below.`
                   : 'The resolver did not produce a clean PR. Check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for diagnostics.',
                 '',
                 `_Triggered by label \`fix-me\` on issue #${issueNumber}._`,

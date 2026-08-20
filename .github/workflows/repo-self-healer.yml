@@ -65,12 +65,16 @@ jobs:
     steps:
       - name: Create daily cleanup report
         uses: actions/github-script@v9.0.0
+        env:
+          NEED_SELF_HEAL_CLOSED: ${{ needs.self-heal.outputs.closed }}
+          NEED_SELF_HEAL_DUPLICATES: ${{ needs.self-heal.outputs.duplicates }}
+          NEED_SELF_HEAL_LABELED: ${{ needs.self-heal.outputs.labeled }}
         with:
           script: |
-            const closed = '${{ needs.self-heal.outputs.closed }}';
-            const duplicates = '${{ needs.self-heal.outputs.duplicates }}';
-            const labeled = '${{ needs.self-heal.outputs.labeled }}';
-            
+            const closed = (process.env.NEED_SELF_HEAL_CLOSED || '');
+            const duplicates = (process.env.NEED_SELF_HEAL_DUPLICATES || '');
+            const labeled = (process.env.NEED_SELF_HEAL_LABELED || '');
+
             const body = [
               `## 🔧 Daily Self-Heal Report`,
               ``,
@@ -90,11 +94,11 @@ jobs:
               state: 'open',
               since: new Date(Date.now() - 86400000).toISOString()
             });
-            
+
             const todayReport = issues.find(i => 
               i.title.includes('Daily Self-Heal Report')
             );
-            
+
             if (!todayReport) {
               await github.rest.issues.create({
                 title: `[AUTO] Daily Self-Heal Report - ${new Date().toLocaleDateString()}`,

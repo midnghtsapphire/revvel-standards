@@ -103,10 +103,12 @@ jobs:
       - name: Apply WR labels
         if: steps.check.outputs.is_wr == 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          CHECK_ISSUE_NUMBER: ${{ steps.check.outputs.issue_number }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = ${{ steps.check.outputs.issue_number }};
+            const issueNumber = parseInt(process.env.CHECK_ISSUE_NUMBER || '0', 10);
             const labelsToAdd = [
               'work-request',
               'weekly-research',
@@ -146,9 +148,11 @@ jobs:
       - name: Post WR welcome comment
         if: steps.check.outputs.is_wr == 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          CHECK_ISSUE_NUMBER: ${{ steps.check.outputs.issue_number }}
         with:
           script: |
-            const issueNumber = ${{ steps.check.outputs.issue_number }};
+            const issueNumber = parseInt(process.env.CHECK_ISSUE_NUMBER || '0', 10);
 
             const welcomeComment = `👋 **Weekly Research (WR) task detected**
 
@@ -261,9 +265,11 @@ jobs:
     steps:
       - name: Add completion tracker comment
         uses: actions/github-script@v9.0.0
+        env:
+          NEED_DETECT_WR_ISSUE_NUMBER: ${{ needs.detect-wr.outputs.issue_number }}
         with:
           script: |
-            const issueNumber = ${{ needs.detect-wr.outputs.issue_number }};
+            const issueNumber = parseInt(process.env.NEED_DETECT_WR_ISSUE_NUMBER || '0', 10);
 
             const trackerComment = `📊 **Research Progress Tracker**
 

@@ -249,18 +249,21 @@ jobs:
       - name: Update labels
         if: env.BITO_SKIP == 'false' && steps.pr-context.outputs.number != ''
         uses: actions/github-script@v9.0.0
+        env:
+          PR_CONTEXT_NUMBER: ${{ steps.pr-context.outputs.number }}
+          BITO_REVIEW_OUTCOME: ${{ steps.bito-review.outcome }}
         with:
           script: |
-            const prNumber = parseInt('${{ steps.pr-context.outputs.number }}', 10);
-            const outcome = '${{ steps.bito-review.outcome }}';
-            
+            const prNumber = parseInt((process.env.PR_CONTEXT_NUMBER || ''), 10);
+            const outcome = (process.env.BITO_REVIEW_OUTCOME || '');
+
             const labels = ['bito-ai', 'bito-ai:review'];
             if (outcome === 'success') {
               labels.push('awaiting-approval');
             } else {
               labels.push('bito-ai:changes-needed');
             }
-            
+
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,

@@ -64,46 +64,53 @@ jobs:
       - name: Parse issue or use workflow inputs
         id: parse
         uses: actions/github-script@v9.0.0
+        env:
+          INPUT_BUSINESS: ${{ inputs.business }}
+          INPUT_INDUSTRY: ${{ inputs.industry }}
+          INPUT_LOCATION: ${{ inputs.location }}
+          INPUT_SERVICES: ${{ inputs.services }}
+          INPUT_PLATFORM: ${{ inputs.platform }}
+          INPUT_ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
           script: |
             const fs = require('fs');
-            
+
             let business, industry, location, services, platform, issueNumber;
-            
+
             if (context.eventName === 'workflow_dispatch') {
-              business = '${{ inputs.business }}';
-              industry = '${{ inputs.industry }}';
-              location = '${{ inputs.location }}';
-              services = '${{ inputs.services }}' || '';
-              platform = '${{ inputs.platform }}' || 'website';
-              issueNumber = '${{ inputs.issue_number }}' || '';
+              business = (process.env.INPUT_BUSINESS || '');
+              industry = (process.env.INPUT_INDUSTRY || '');
+              location = (process.env.INPUT_LOCATION || '');
+              services = (process.env.INPUT_SERVICES || '') || '';
+              platform = (process.env.INPUT_PLATFORM || '') || 'website';
+              issueNumber = (process.env.INPUT_ISSUE_NUMBER || '') || '';
             } else {
               issueNumber = context.issue.number;
               const issueBody = context.payload.issue?.body || '';
-              
+
               // Parse fields from issue body (expecting structured format)
               const businessMatch = issueBody.match(/Business:\s*(.+)/);
               const industryMatch = issueBody.match(/Industry:\s*(.+)/);
               const locationMatch = issueBody.match(/Location:\s*(.+)/);
               const servicesMatch = issueBody.match(/Services:\s*(.+)/);
               const platformMatch = issueBody.match(/Platform:\s*(.+)/);
-              
+
               business = businessMatch ? businessMatch[1].trim() : '';
               industry = industryMatch ? industryMatch[1].trim() : '';
               location = locationMatch ? locationMatch[1].trim() : '';
               services = servicesMatch ? servicesMatch[1].trim() : '';
               platform = platformMatch ? platformMatch[1].trim() : 'website';
             }
-            
+
             // Sanitize inputs (alphanumeric, spaces, dashes, commas, dots only)
             const sanitize = (str) => str.replace(/[^a-zA-Z0-9 ,.-]/g, '');
-            
+
             business = sanitize(business);
             industry = sanitize(industry);
             location = sanitize(location);
             services = sanitize(services);
             platform = sanitize(platform);
-            
+
             // Set outputs
             core.setOutput('business', business);
             core.setOutput('industry', industry);
@@ -111,7 +118,7 @@ jobs:
             core.setOutput('services', services);
             core.setOutput('platform', platform);
             core.setOutput('issue_number', issueNumber);
-            
+
             console.log('Parsed inputs:');
             console.log(`  Business: ${business}`);
             console.log(`  Industry: ${industry}`);
@@ -144,57 +151,59 @@ jobs:
       - name: Create summary comment
         if: steps.parse.outputs.issue_number != ''
         uses: actions/github-script@v9.0.0
+        env:
+          PARSE_ISSUE_NUMBER: ${{ steps.parse.outputs.issue_number }}
         with:
           script: |
             const fs = require('fs');
-            const issueNumber = ${{ steps.parse.outputs.issue_number }};
-            
+            const issueNumber = parseInt(process.env.PARSE_ISSUE_NUMBER || '0', 10);
+
             // Read the README from output
             const readmePath = './ui-creation-output/README.md';
             let summary = '';
-            
+
             if (fs.existsSync(readmePath)) {
               summary = fs.readFileSync(readmePath, 'utf8');
             } else {
               summary = '⚠️ UI Creation Engine completed but README not found.';
             }
-            
+
             // Read competitive analysis summary
             const analysisPath = './ui-creation-output/research/competitive-analysis.md';
             let analysisPreview = '';
-            
+
             if (fs.existsSync(analysisPath)) {
               const analysis = fs.readFileSync(analysisPath, 'utf8');
               const lines = analysis.split('\n').slice(0, 30);
               analysisPreview = lines.join('\n');
               analysisPreview += '\n\n[See full analysis in artifacts]';
             }
-            
+
             const comment = `## 🎨 UI Creation Engine Complete
-            
+
             The UI Creation Engine has finished analyzing the competitive landscape and generating recommendations.
-            
+
             ### Output Summary
-            
+
             ${summary}
-            
+
             ### Competitive Analysis Preview
-            
+
             ${analysisPreview}
-            
+
             ---
-            
+
             **📁 Download Full Output**: See the "ui-creation-output" artifact in the [Actions run](${context.payload.repository.html_url}/actions/runs/${context.runId})
-            
+
             **Next Steps**:
             1. Download and review the artifacts
             2. Review competitive analysis in \`research/competitive-analysis.md\`
             3. Implement UI recommendations from \`design/ui-recommendations.md\`
             4. Apply SEO metadata from \`seo/metadata.md\`
             5. Optimize images using \`images/optimization-plan.md\`
-            
+
             🎨 **Pixel signing off**`;
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -205,11 +214,13 @@ jobs:
       - name: Label issue as complete
         if: steps.parse.outputs.issue_number != '' && github.event_name == 'issues'
         uses: actions/github-script@v9.0.0
+        env:
+          PARSE_ISSUE_NUMBER: ${{ steps.parse.outputs.issue_number }}
         with:
           script: |
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: ${{ steps.parse.outputs.issue_number }},
+              issue_number: parseInt(process.env.PARSE_ISSUE_NUMBER || '0', 10),
               labels: ['ui-creation-complete']
             });

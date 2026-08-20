@@ -32,12 +32,16 @@ jobs:
       - name: Fetch stuck issues
         id: fetch
         uses: actions/github-script@v9.0.0
+        env:
+          STUCK_THRESHOLD_HOURS: ${{ env.STUCK_THRESHOLD_HOURS }}
+          PENDING_THRESHOLD_HOURS: ${{ env.PENDING_THRESHOLD_HOURS }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run == 'true' }}
         with:
           script: |
-            const thresholdHours = parseInt('${{ env.STUCK_THRESHOLD_HOURS }}');
-            const pendingHours = parseInt('${{ env.PENDING_THRESHOLD_HOURS }}');
-            const dryRun = ${{ github.event.inputs.dry_run == 'true' }};
-            
+            const thresholdHours = parseInt((process.env.STUCK_THRESHOLD_HOURS || ''));
+            const pendingHours = parseInt((process.env.PENDING_THRESHOLD_HOURS || ''));
+            const dryRun = ((process.env.INPUT_DRY_RUN || '') === 'true');
+
             // Guard each list call: an installation rate-limit 403 here must
             // degrade gracefully (skip that label bucket) instead of
             // hard-failing the whole hourly job.
@@ -78,7 +82,7 @@ jobs:
               labels: 'lifecycle:stuck',
               per_page: 50
             });
-            
+
             // Combine and dedupe
             const allIssues = [...checkingIssues, ...inProgressIssues, ...lifecycleStuckIssues];
             const seen = new Set();
@@ -87,14 +91,14 @@ jobs:
               seen.add(issue.number);
               return !dup;
             });
-            
+
             // Check each issue for stuck status
             const stuckIssues = [];
             for (const issue of uniqueIssues) {
               const createdAt = new Date(issue.created_at);
               const now = new Date();
               const hoursOld = (now - createdAt) / (1000 * 60 * 60);
-              
+
               stuckIssues.push({
                 number: issue.number,
                 title: issue.title,
@@ -103,7 +107,7 @@ jobs:
                 labels: issue.labels.map(l => l.name)
               });
             }
-            
+
             core.setOutput('stuck_issues', JSON.stringify(stuckIssues));
             core.setOutput('count', String(stuckIssues.length));
             console.log('Found', stuckIssues.length, 'issues to check');
@@ -112,15 +116,20 @@ jobs:
         if: steps.fetch.outputs.count != '0'
         id: analyze
         uses: actions/github-script@v9.0.0
+        env:
+          FETCH_STUCK_ISSUES: ${{ steps.fetch.outputs.stuck_issues }}
+          STUCK_THRESHOLD_HOURS: ${{ env.STUCK_THRESHOLD_HOURS }}
+          PENDING_THRESHOLD_HOURS: ${{ env.PENDING_THRESHOLD_HOURS }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run == 'true' }}
         with:
           script: |
-            const issues = JSON.parse('${{ steps.fetch.outputs.stuck_issues }}');
-            const thresholdHours = parseInt('${{ env.STUCK_THRESHOLD_HOURS }}');
-            const pendingHours = parseInt('${{ env.PENDING_THRESHOLD_HOURS }}');
-            const dryRun = ${{ github.event.inputs.dry_run == 'true' }};
-            
+            const issues = JSON.parse((process.env.FETCH_STUCK_ISSUES || ''));
+            const thresholdHours = parseInt((process.env.STUCK_THRESHOLD_HOURS || ''));
+            const pendingHours = parseInt((process.env.PENDING_THRESHOLD_HOURS || ''));
+            const dryRun = ((process.env.INPUT_DRY_RUN || '') === 'true');
+
             const diagnoses = [];
-            
+
             for (const issue of issues) {
               const diagnosis = {
                 number: issue.number,
@@ -129,7 +138,7 @@ jobs:
                 action: 'none',
                 comment: ''
               };
-              
+
               // Check if PR exists linked to issue. A rate-limit 403 here
               // must degrade gracefully instead of hard-failing the whole
               // job — skip this issue's diagnosis and move on to the next.
@@ -164,7 +173,7 @@ jobs:
               const linkedPR = searchResults.items.find(pr =>
                 pr.body && (pr.body.includes('#' + issue.number) || pr.body.includes('closes #' + issue.number))
               );
-              
+
               if (!linkedPR) {
                 // No PR exists, move back to code
                 diagnosis.status = 'no-pr';
@@ -188,11 +197,11 @@ jobs:
                 }
 
                 const latestRun = checks.check_runs.length > 0 ? checks.check_runs[0] : null;
-                
+
                 if (latestRun) {
                   const conclusion = latestRun.conclusion;
                   const status = latestRun.status;
-                  
+
                   if (status === 'completed') {
                     if (conclusion === 'failure' || conclusion === 'timed_out') {
                       // Check failed
@@ -235,9 +244,9 @@ jobs:
                   diagnosis.comment = 'No status checks found on linked PR. Manual review needed.';
                 }
               }
-              
+
               diagnoses.push(diagnosis);
-              
+
               // Apply fixes if not dry run
               if (!dryRun && diagnosis.action !== 'none') {
                 if (diagnosis.action === 'label-failed') {
@@ -302,7 +311,7 @@ jobs:
                   }).catch((err) => { if (err.status !== 404) throw err; });
                   diagnosis.cleared_stuck = true;
                 }
-                
+
                 // Always comment with diagnosis
                 await github.rest.issues.createComment({
                   owner: context.repo.owner,
@@ -316,7 +325,7 @@ jobs:
                 });
               }
             }
-            
+
             core.setOutput('diagnoses', JSON.stringify(diagnoses));
             console.log('Analyzed', diagnoses.length, 'issues');
 

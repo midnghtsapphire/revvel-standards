@@ -56,11 +56,14 @@ jobs:
       - name: Open lane-degraded issue on failure
         if: steps.pplx.outcome == 'failure' || steps.orfree.outcome == 'failure'
         uses: actions/github-script@v9.0.0
+        env:
+          PPLX_CODE: ${{ steps.pplx.outputs.code }}
+          ORFREE_CODE: ${{ steps.orfree.outputs.code }}
         with:
           script: |
             await github.rest.issues.create({
               owner: context.repo.owner, repo: context.repo.repo,
               title: `lane-degraded: tier-2 canary failed ${new Date().toISOString().slice(0,10)}`,
               labels: ['lane-degraded'],
-              body: 'Tier-2 keyless lane canary failed (WR-4481). pplx=${{ steps.pplx.outputs.code }} orfree=${{ steps.orfree.outputs.code }}. Failover ladder may be dead — verify before relying on it.'
+              body: `Tier-2 keyless lane canary failed (WR-4481). pplx=${process.env.PPLX_CODE || ''} orfree=${process.env.ORFREE_CODE || ''}. Failover ladder may be dead — verify before relying on it.`
             });

@@ -107,27 +107,35 @@ jobs:
       - name: Generate retrospective report
         id: retro-report
         uses: actions/github-script@v9.0.0
+        env:
+          HEALTH_MAIN_STATUS: ${{ steps.health-main.outputs.status }}
+          HEALTH_FIELDWORK_STATUS: ${{ steps.health-fieldwork.outputs.status }}
+          DNS_MAIN_RESOLVED: ${{ steps.dns-main.outputs.resolved }}
+          DNS_FIELDWORK_RESOLVED: ${{ steps.dns-fieldwork.outputs.resolved }}
+          GAP_ANALYSIS_HAS_404: ${{ steps.gap-analysis.outputs.has_404 }}
+          GAP_ANALYSIS_HAS_APP_SPEC: ${{ steps.gap-analysis.outputs.has_app_spec }}
+          GAP_ANALYSIS_PANEL_COUNT: ${{ steps.gap-analysis.outputs.panel_count }}
         with:
           script: |
             const date = new Date().toISOString().split('T')[0];
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
 
             // Health check results
-            const mainStatus = '${{ steps.health-main.outputs.status }}' || 'skipped';
-            const fieldworkStatus = '${{ steps.health-fieldwork.outputs.status }}' || 'skipped';
+            const mainStatus = (process.env.HEALTH_MAIN_STATUS || '') || 'skipped';
+            const fieldworkStatus = (process.env.HEALTH_FIELDWORK_STATUS || '') || 'skipped';
 
             const healthOk = (s) => s === '200' || s === '301' || s === '302' || s === 'skipped';
             const mainOk = healthOk(mainStatus);
             const fieldworkOk = healthOk(fieldworkStatus);
 
             // DNS resolution results
-            const mainDns = '${{ steps.dns-main.outputs.resolved }}' || '';
-            const fieldworkDns = '${{ steps.dns-fieldwork.outputs.resolved }}' || '';
+            const mainDns = (process.env.DNS_MAIN_RESOLVED || '') || '';
+            const fieldworkDns = (process.env.DNS_FIELDWORK_RESOLVED || '') || '';
 
             // Gap analysis
-            const has404 = '${{ steps.gap-analysis.outputs.has_404 }}' === 'true';
-            const hasAppSpec = '${{ steps.gap-analysis.outputs.has_app_spec }}' === 'true';
-            const panelCount = parseInt('${{ steps.gap-analysis.outputs.panel_count }}') || 0;
+            const has404 = (process.env.GAP_ANALYSIS_HAS_404 || '') === 'true';
+            const hasAppSpec = (process.env.GAP_ANALYSIS_HAS_APP_SPEC || '') === 'true';
+            const panelCount = parseInt((process.env.GAP_ANALYSIS_PANEL_COUNT || '')) || 0;
 
             // Determine what's good vs needs work
             const good = [];

@@ -55,26 +55,28 @@ jobs:
       - name: Reset stuck issues
         if: steps.find-stuck.outputs.count != '0'
         uses: actions/github-script@v9.0.0
+        env:
+          FIND_STUCK_ISSUES: ${{ steps.find-stuck.outputs.issues }}
         with:
           script: |
             const OWNER = context.repo.owner;
             const REPO = context.repo.repo;
             const SELF_HEAL_LABELS = ['auto-fix', 'ralph-loop', 'scorecard'];
-            
-            const issueNumbers = JSON.parse('${{ steps.find-stuck.outputs.issues }}');
-            
+
+            const issueNumbers = JSON.parse((process.env.FIND_STUCK_ISSUES || ''));
+
             for (const issueNumber of issueNumbers) {
               console.log(`Processing issue #${issueNumber}...`);
-              
+
               // Get current labels
               const { data: issue } = await github.rest.issues.get({
                 owner: OWNER,
                 repo: REPO,
                 issue_number: issueNumber,
               });
-              
+
               const currentLabels = issue.labels.map(l => l.name);
-              
+
               // Remove self-heal labels
               for (const label of SELF_HEAL_LABELS) {
                 if (currentLabels.includes(label)) {
@@ -91,10 +93,10 @@ jobs:
                   console.log(`  Removed: ${label}`);
                 }
               }
-              
+
               // Re-add labels after a brief pause
               await new Promise(r => setTimeout(r, 500));
-              
+
               await github.rest.issues.addLabels({
                 owner: OWNER,
                 repo: REPO,
@@ -102,7 +104,7 @@ jobs:
                 labels: SELF_HEAL_LABELS,
               });
               console.log(`  Re-added: ${SELF_HEAL_LABELS.join(', ')}`);
-              
+
               // Post reset comment
               const resetComment = [
                 '## 🔄 Auto-Reset by Stale Issue Sweep',
@@ -116,7 +118,7 @@ jobs:
                 '',
                 '_Auto-reset by `auto-reset-stuck-issues.yml` workflow — ' + new Date().toISOString() + '_',
               ].join('\n');
-              
+
               await github.rest.issues.createComment({
                 owner: OWNER,
                 repo: REPO,
@@ -124,11 +126,11 @@ jobs:
                 body: resetComment,
               });
               console.log(`  Posted reset comment`);
-              
+
               // Small delay between issues
               await new Promise(r => setTimeout(r, 1000));
             }
-            
+
             console.log(`\n✅ Reset ${issueNumbers.length} stuck issues`);
 
       - name: Summary

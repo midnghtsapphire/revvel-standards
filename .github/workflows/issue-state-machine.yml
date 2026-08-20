@@ -80,9 +80,11 @@ jobs:
       - name: Remove conflicting labels
         if: steps.check_labels.outputs.conflict_count != '0'
         uses: actions/github-script@v9.0.0
+        env:
+          CHECK_LABELS_CONFLICTS: ${{ steps.check_labels.outputs.conflicts }}
         with:
           script: |
-            const conflicts = JSON.parse('${{ steps.check_labels.outputs.conflicts }}');
+            const conflicts = JSON.parse((process.env.CHECK_LABELS_CONFLICTS || ''));
             const issueNumber = context.payload.issue.number;
             for (const label of conflicts) {
               let removed = true;

@@ -246,10 +246,12 @@ jobs:
       - name: Post / update sticky comment
         if: steps.analyze.outputs.has_conflicts == 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ANALYZE_REPORT_FILE: ${{ steps.analyze.outputs.report_file }}
         with:
           script: |
             const fs = require('fs');
-            const report = fs.readFileSync('${{ steps.analyze.outputs.report_file }}', 'utf8');
+            const report = fs.readFileSync((process.env.ANALYZE_REPORT_FILE || ''), 'utf8');
             const marker = '<!-- conflict-helper:sticky -->';
             const body = `${marker}\n${report}`;
 

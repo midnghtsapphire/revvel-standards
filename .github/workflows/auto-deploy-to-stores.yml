@@ -176,9 +176,11 @@ jobs:
       - name: Verify deep research completion
         id: check
         uses: actions/github-script@v9.0.0
+        env:
+          NEED_GATE_ISSUE_NUMBER: ${{ needs.gate.outputs.issue_number }}
         with:
           script: |
-            const issueNumber = '${{ needs.gate.outputs.issue_number }}';
+            const issueNumber = (process.env.NEED_GATE_ISSUE_NUMBER || '');
 
             // No linked issue — hard fail: a WR issue is mandatory for store deploys
             if (!issueNumber) {
@@ -404,10 +406,13 @@ jobs:
       - name: Comment on PR
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          DEPLOY_RESULT: ${{ steps.deploy.outputs.result }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
         with:
           script: |
-            const result = '${{ steps.deploy.outputs.result }}';
-            const url    = '${{ steps.deploy.outputs.url }}';
+            const result = (process.env.DEPLOY_RESULT || '');
+            const url    = (process.env.DEPLOY_URL || '');
             const run    = '${{ github.run_id }}';
             const ok     = result && !result.includes('SKIPPED');
             const prNum  = context.payload.pull_request?.number;
@@ -533,10 +538,13 @@ jobs:
       - name: Comment on PR
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          DEPLOY_RESULT: ${{ steps.deploy.outputs.result }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
         with:
           script: |
-            const result = '${{ steps.deploy.outputs.result }}';
-            const url    = '${{ steps.deploy.outputs.url }}';
+            const result = (process.env.DEPLOY_RESULT || '');
+            const url    = (process.env.DEPLOY_URL || '');
             const run    = '${{ github.run_id }}';
             const ok     = result && !result.includes('SKIPPED');
             const prNum  = context.payload.pull_request?.number;
@@ -565,20 +573,28 @@ jobs:
     steps:
       - name: Post deployment summary to WR issue
         uses: actions/github-script@v9.0.0
+        env:
+          NEED_GATE_ISSUE_NUMBER: ${{ needs.gate.outputs.issue_number }}
+          NEED_DEPLOY_ANDROID_RESULT: ${{ needs.deploy-android.outputs.result }}
+          NEED_DEPLOY_IOS_RESULT: ${{ needs.deploy-ios.outputs.result }}
+          NEED_DEPLOY_ANDROID_URL: ${{ needs.deploy-android.outputs.url }}
+          NEED_DEPLOY_IOS_URL: ${{ needs.deploy-ios.outputs.url }}
+          NEED_DEPLOY_ANDROID_RESULT_2: ${{ needs.deploy-android.result }}
+          NEED_DEPLOY_IOS_RESULT_2: ${{ needs.deploy-ios.result }}
         with:
           script: |
-            const issueNumber = '${{ needs.gate.outputs.issue_number }}';
+            const issueNumber = (process.env.NEED_GATE_ISSUE_NUMBER || '');
             if (!issueNumber) return;
 
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${{ github.run_id }}`;
 
-            const androidResult = `${{ needs.deploy-android.outputs.result }}`;
-            const iosResult     = `${{ needs.deploy-ios.outputs.result }}`;
-            const androidUrl    = `${{ needs.deploy-android.outputs.url }}`;
-            const iosUrl        = `${{ needs.deploy-ios.outputs.url }}`;
+            const androidResult = (process.env.NEED_DEPLOY_ANDROID_RESULT || '');
+            const iosResult     = (process.env.NEED_DEPLOY_IOS_RESULT || '');
+            const androidUrl    = (process.env.NEED_DEPLOY_ANDROID_URL || '');
+            const iosUrl        = (process.env.NEED_DEPLOY_IOS_URL || '');
 
-            const androidRan = '${{ needs.deploy-android.result }}' !== 'skipped';
-            const iosRan     = '${{ needs.deploy-ios.result }}'     !== 'skipped';
+            const androidRan = (process.env.NEED_DEPLOY_ANDROID_RESULT_2 || '') !== 'skipped';
+            const iosRan     = (process.env.NEED_DEPLOY_IOS_RESULT_2 || '')     !== 'skipped';
 
             const androidOk = androidRan && androidResult && !androidResult.includes('SKIPPED') && !androidResult.includes('FAILED');
             const iosOk     = iosRan     && iosResult     && !iosResult.includes('SKIPPED')     && !iosResult.includes('FAILED');

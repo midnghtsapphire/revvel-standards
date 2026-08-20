@@ -862,10 +862,12 @@ jobs:
       - name: Create Pull Request
         id: create_pr
         uses: actions/github-script@v9.0.0
+        env:
+          CREATE_BRANCH_BRANCH_NAME: ${{ steps.create_branch.outputs.BRANCH_NAME }}
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
-            const branchName = '${{ steps.create_branch.outputs.BRANCH_NAME }}';
+            const branchName = (process.env.CREATE_BRANCH_BRANCH_NAME || '');
             const issueTitle = (process.env.ISSUE_TITLE || '').replace(/^\[WR\]\s*/i, '');
 
             const prTitle = `[WR] ${issueTitle}`;
@@ -922,10 +924,13 @@ jobs:
             return { number: pr.number, url: pr.html_url };
       - name: Apply labels to PR
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ env.ISSUE_NUMBER }}
+          CREATE_PR_PR_NUMBER: ${{ steps.create_pr.outputs.pr_number }}
         with:
           script: |
-            const issueNumber = parseInt('${{ env.ISSUE_NUMBER }}', 10);
-            const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
+            const issueNumber = parseInt((process.env.ISSUE_NUMBER || ''), 10);
+            const prNumber = parseInt((process.env.CREATE_PR_PR_NUMBER || ''), 10);
             const normalizeLabel = (label) => typeof label === 'string' ? label : label.name;
             const { data: issue } = await github.rest.issues.get({
               owner: context.repo.owner,
@@ -1046,18 +1051,22 @@ jobs:
           starting_branch: ${{ steps.create_branch.outputs.BRANCH_NAME }}
       - name: Comment on issue
         uses: actions/github-script@v9.0.0
+        env:
+          CREATE_PR_PR_NUMBER: ${{ steps.create_pr.outputs.pr_number }}
+          CREATE_PR_PR_URL: ${{ steps.create_pr.outputs.pr_url }}
+          CREATE_BRANCH_BRANCH_NAME: ${{ steps.create_branch.outputs.BRANCH_NAME }}
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
-            const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
-            const prUrl = '${{ steps.create_pr.outputs.pr_url }}';
+            const prNumber = parseInt((process.env.CREATE_PR_PR_NUMBER || ''), 10);
+            const prUrl = (process.env.CREATE_PR_PR_URL || '');
 
             const comment = `🎉 **WR PR Created!**
 
             I've created a pull request with the initial WR document based on the research findings.
 
             **PR:** #${prNumber}  
-            **Branch:** \`${{ steps.create_branch.outputs.BRANCH_NAME }}\`  
+            **Branch:** \`${process.env.CREATE_BRANCH_BRANCH_NAME || ''}\`  
             **Status:** 🟡 Awaiting Jules refinement
 
             ### What's next?

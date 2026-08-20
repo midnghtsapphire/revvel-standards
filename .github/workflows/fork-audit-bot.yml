@@ -52,10 +52,12 @@ jobs:
     steps:
       - name: Find and heal unassigned fork-audit issues
         uses: actions/github-script@v9.0.0
+        env:
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const isDryRun = '${{ inputs.dry_run }}' === 'true';
+            const isDryRun = (process.env.INPUT_DRY_RUN || '') === 'true';
 
             // Fetch all open issues carrying the fork-audit label.
             const issues = await github.paginate(github.rest.issues.listForRepo, {

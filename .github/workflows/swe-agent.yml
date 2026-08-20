@@ -54,10 +54,12 @@ jobs:
     steps:
       - name: Post one-time setup-needed notice
         uses: actions/github-script@v9.0.0
+        env:
+          NEED_PREFLIGHT_ISSUE_NUMBER: ${{ needs.preflight.outputs.issue_number }}
         with:
           script: |
             const issueNumber = parseInt(
-              '${{ needs.preflight.outputs.issue_number }}',
+              (process.env.NEED_PREFLIGHT_ISSUE_NUMBER || ''),
               10
             );
             if (!issueNumber) return;

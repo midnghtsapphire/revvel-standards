@@ -2,7 +2,7 @@
 
 /**
  * No `actions/github-script` body may interpolate a step or job output into the
- * JavaScript it runs (WR #17796).
+ * JavaScript it runs (WR #17796 / #17801).
  *
  * The runner substitutes `${{ ... }}` as TEXT before the script is parsed. So
  * this:
@@ -22,10 +22,8 @@
  * `package.json` is content from the branch being built, and publisher stderr
  * is not under our control either.
  *
- * `ship-to-market.yml` carried ten such bodies. The fix, already demonstrated
- * in that file's `deliver-extension` job before this sweep, is to pass the
- * value through `env:` and read it with `process.env` — then it is data, and
- * nothing parses it.
+ * The fix is to pass the value through `env:` and read it with `process.env` —
+ * then it is data, and nothing parses it.
  *
  * ## What is allowed
  *
@@ -33,6 +31,10 @@
  * stay. They are platform-controlled and cannot carry a quote or a backtick.
  * `secrets.*` are out of scope here — a secret belongs in `env:` for different
  * reasons (CLAUDE.md gotcha #4) and is checked elsewhere.
+ *
+ * The conversion ratchet from #17801 has been drained: every previously listed
+ * workflow now uses `env:` / `process.env`. Do not re-introduce a name-pinned
+ * allowlist — new offenders fail the tests below immediately.
  */
 
 const { test } = require('node:test');
@@ -45,47 +47,6 @@ const WORKFLOWS = path.join(__dirname, '..', '.github', 'workflows');
 
 /** Expressions that may not be interpolated into a script body. */
 const UNSAFE = /\$\{\{[^}]*\b(?:steps|needs|inputs|env|matrix)\./;
-
-/**
- * Workflows that still interpolate, awaiting conversion — #17801.
- *
- * A ratchet: it may only shrink, and only by name. Converting a workflow means
- * deleting its name here in the same commit, and a test below fails if a name
- * is left behind after its fix. Adding a name is not a fix.
- *
- * `ship-to-market.yml` is deliberately absent: its ten bodies were converted in
- * the commit that added this file, which is what proves the rule is followable.
- */
-const AWAITING_CONVERSION = Object.freeze([
-  'auto-deploy-to-stores.yml',
-  'auto-error-handler.yml',
-  'auto-reset-stuck-issues.yml',
-  'bito-ai.yml',
-  'bulk-close-failure-spam.yml',
-  'conflict-helper.yml',
-  'content-automation.yml',
-  'eeat-trust-cron.yml',
-  'fork-audit-bot.yml',
-  'issue-state-machine.yml',
-  'jules-invoke.yml',
-  'lane-canary.yml',
-  'needs-action-router.yml',
-  'oaudrey-retro.yml',
-  'openhands-resolver.yml',
-  'openrouter-assignee.yml',
-  'openrouter-coder.yml',
-  'ralph-loop.yml',
-  'ready-for-review.yml',
-  'repo-self-healer.yml',
-  'research-engine.yml',
-  'stuck-check-watchdog.yml',
-  'stuck-label-automation.yml',
-  'swe-agent.yml',
-  'ui-creation-engine.yml',
-  'weekly-research.yml',
-  'workflow-action-ref-audit.yml',
-  'wr-pr-creation.yml',
-]);
 
 function scriptBodies() {
   const found = [];
@@ -101,7 +62,7 @@ function scriptBodies() {
         const uses = typeof step?.uses === 'string' ? step.uses : '';
         if (!/^actions\/github-script[@/]/.test(uses)) continue;
         if (typeof step?.with?.script !== 'string') continue;
-        found.push({ file, job: jobName, name: step.name ?? '(unnamed)', script: step.with.script });
+        found.push({ file, job: jobName, name: step.name ?? '(unnamed)', script: step.with.script, step });
       }
     }
   }
@@ -110,7 +71,6 @@ function scriptBodies() {
 
 test('no github-script body interpolates a step, job, or input value', () => {
   const offenders = scriptBodies()
-    .filter(({ file }) => !AWAITING_CONVERSION.includes(file))
     .filter(({ script }) => UNSAFE.test(script))
     .map(({ file, job, name }) => `${file} · ${job} · ${name}`);
 
@@ -122,49 +82,11 @@ test('no github-script body interpolates a step, job, or input value', () => {
   );
 });
 
-test('the conversion ratchet may only shrink, and only by name', () => {
-  // A count would let one unconverted workflow be swapped for another with
-  // nothing failing (RVS-VERIFY-001 §6, and the hole fixed in #17782).
-  assert.ok(AWAITING_CONVERSION.length > 0, 'when empty, delete the ratchet and this test');
-  assert.deepEqual(
-    [...AWAITING_CONVERSION],
-    [...AWAITING_CONVERSION].sort(),
-    'keep the list sorted so a diff shows what changed',
-  );
-  assert.equal(
-    new Set(AWAITING_CONVERSION).size,
-    AWAITING_CONVERSION.length,
-    'no duplicates',
-  );
-  assert.ok(
-    !AWAITING_CONVERSION.includes('ship-to-market.yml'),
-    'ship-to-market.yml is converted; listing it would re-permit the pattern there',
-  );
-});
-
-test('converting a workflow means deleting its name from the ratchet', () => {
-  const bodiesByFile = new Map();
-  for (const body of scriptBodies()) {
-    if (!bodiesByFile.has(body.file)) bodiesByFile.set(body.file, []);
-    bodiesByFile.get(body.file).push(body);
-  }
-  const alreadyClean = AWAITING_CONVERSION.filter(
-    (file) => !(bodiesByFile.get(file) ?? []).some(({ script }) => UNSAFE.test(script)),
-  );
-  assert.deepEqual(
-    alreadyClean,
-    [],
-    'these are converted — remove their names, or the pattern is quietly re-permitted there',
-  );
-});
-
 test('the platform context values that remain are the harmless ones', () => {
   // `github.*` is allowed; this pins WHY, so widening the rule to permit
   // `steps.*` again would have to argue with a named reason.
   const stillInterpolated = new Set();
-  for (const { script } of scriptBodies().filter(
-    ({ file }) => !AWAITING_CONVERSION.includes(file),
-  )) {
+  for (const { script } of scriptBodies()) {
     for (const m of script.matchAll(/\$\{\{\s*([^}\s]+)/g)) stillInterpolated.add(m[1]);
   }
   const notGithub = [...stillInterpolated].filter((e) => !/^github\./.test(e) && !/^secrets\./.test(e));
@@ -176,8 +98,8 @@ test('the platform context values that remain are the harmless ones', () => {
 });
 
 test('ship-to-market reads its delivery results from env', () => {
-  // The ten bodies this sweep converted. Asserting the positive shape as well
-  // as the absence, so "deleted the line" cannot pass for "converted it".
+  // Positive shape guard from #17796 (RVS-VERIFY-001): "deleted the line"
+  // cannot pass for "converted it". Pins the original demonstration conversion.
   const doc = yaml.parse(fs.readFileSync(path.join(WORKFLOWS, 'ship-to-market.yml'), 'utf8'));
   const withEnv = [];
   for (const [jobName, job] of Object.entries(doc.jobs ?? {})) {
@@ -191,6 +113,7 @@ test('ship-to-market reads its delivery results from env', () => {
       );
       for (const varName of step.with.script.match(/process\.env\.([A-Z_]+)/g) ?? []) {
         const key = varName.replace('process.env.', '');
+        if (key.startsWith('GITHUB_')) continue;
         assert.ok(
           key in step.env,
           `${jobName} · ${step.name}: reads ${key} which its env: block does not define`,
@@ -200,4 +123,43 @@ test('ship-to-market reads its delivery results from env', () => {
     }
   }
   assert.ok(withEnv.length >= 11, `expected the converted steps; found ${withEnv.length}`);
+});
+
+test('#17801 conversions read process.env and declare matching step env keys', () => {
+  // Spot-check a few of the heaviest files from the drained ratchet so the
+  // conversion cannot be gamed by deleting the unsafe line without wiring env.
+  const samples = [
+    'auto-error-handler.yml',
+    'needs-action-router.yml',
+    'openrouter-assignee.yml',
+    'ralph-loop.yml',
+    'weekly-research.yml',
+  ];
+  let checked = 0;
+  for (const file of samples) {
+    const doc = yaml.parse(fs.readFileSync(path.join(WORKFLOWS, file), 'utf8'));
+    for (const [jobName, job] of Object.entries(doc.jobs ?? {})) {
+      for (const step of job?.steps ?? []) {
+        const uses = typeof step?.uses === 'string' ? step.uses : '';
+        if (!/^actions\/github-script[@/]/.test(uses)) continue;
+        if (typeof step?.with?.script !== 'string') continue;
+        const refs = [...(step.with.script.match(/process\.env\.([A-Z][A-Z0-9_]*)/g) ?? [])]
+          .map((r) => r.replace('process.env.', ''))
+          .filter((k) => !k.startsWith('GITHUB_'));
+        if (refs.length === 0) continue;
+        assert.ok(
+          step.env && Object.keys(step.env).length > 0,
+          `${file} · ${jobName} · ${step.name}: reads process.env but has no env: block`,
+        );
+        for (const key of refs) {
+          assert.ok(
+            key in step.env,
+            `${file} · ${jobName} · ${step.name}: reads ${key} which its env: block does not define`,
+          );
+          checked += 1;
+        }
+      }
+    }
+  }
+  assert.ok(checked >= 20, `expected sample conversions; found ${checked} env refs`);
 });
