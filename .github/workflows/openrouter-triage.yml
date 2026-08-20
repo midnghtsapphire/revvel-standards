@@ -110,7 +110,7 @@ jobs:
           EVENT_KIND: ${{ github.event_name == 'issues' && 'issue' || 'pull_request' }}
           PROMPT: ${{ inputs.prompt }}
         run: node scripts/openrouter-triage.js
-    timeout-minutes: 30
+    timeout-minutes: 60
   sweep-discover:
     name: Discover items needing routing or triage-recovery
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -182,7 +182,7 @@ jobs:
 
             core.setOutput('count', String(triageTargets.length));
             core.setOutput('matrix', JSON.stringify({ include: triageTargets }));
-    timeout-minutes: 45
+    timeout-minutes: 60
   sweep-triage:
     name: Sweep cost-governed triage
     # Runs whenever there are queued items — even with no OpenRouter key, the
@@ -223,6 +223,6 @@ jobs:
           EVENT_KIND: ${{ matrix.event_kind }}
           PROMPT: ${{ inputs.prompt }}
         run: node scripts/openrouter-triage.js
-    timeout-minutes: 15
+    timeout-minutes: 60
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
