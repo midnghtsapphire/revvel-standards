@@ -67,6 +67,7 @@ jobs:
     outputs:
       OpenHands_available: ${{ steps.check.outputs.OpenHands_available }}
       openrouter_available: ${{ steps.check.outputs.openrouter_available }}
+      cursor_available: ${{ steps.check.outputs.cursor_available }}
       recommended_agent: ${{ steps.check.outputs.recommended_agent }}
     steps:
       - name: Check out repository
@@ -78,10 +79,16 @@ jobs:
         env:
           OPENHANDS_API_KEY: ${{ secrets.OPENHANDS_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
         run: |
           # Check which agents are configured
           OpenHands_AVAILABLE="false"
           OPENROUTER_AVAILABLE="false"
+          # CURSOR_AVAILABLE was read below but never assigned (#17742), so the
+          # elif could not be reached and `cursor_available` was never produced
+          # as a job output — leaving the "Fallback to Cursor" step gated on an
+          # empty string it could never satisfy.
+          CURSOR_AVAILABLE="false"
 
           if [ -n "${OPENHANDS_API_KEY}" ]; then
             OpenHands_AVAILABLE="true"
@@ -95,6 +102,13 @@ jobs:
             echo "✅ OpenRouter API key configured"
           else
             echo "⚠️  OpenRouter API key not configured"
+          fi
+
+          if [ -n "${CURSOR_API_KEY}" ]; then
+            CURSOR_AVAILABLE="true"
+            echo "✅ Cursor API key configured"
+          else
+            echo "⚠️  Cursor API key not configured"
           fi
 
           # Determine recommended agent based on availability and preference
@@ -112,6 +126,7 @@ jobs:
 
           echo "OpenHands_available=${OpenHands_AVAILABLE}" >> $GITHUB_OUTPUT
           echo "openrouter_available=${OPENROUTER_AVAILABLE}" >> $GITHUB_OUTPUT
+          echo "cursor_available=${CURSOR_AVAILABLE}" >> $GITHUB_OUTPUT
           echo "recommended_agent=${RECOMMENDED}" >> $GITHUB_OUTPUT
 
           echo ""

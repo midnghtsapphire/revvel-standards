@@ -126,11 +126,14 @@ jobs:
             }
             async function removeLabel(label) {
               if (currentLabels.includes(label)) {
-                try {
-                  await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
-                  currentLabels = currentLabels.filter(l => l !== label);
-                  console.log(`🗑️ Removed: ${label}`);
-                } catch (e) {}
+                // The label already being absent is the desired end state, so a 404
+                // is success (LABEL-RACE-001, CLAUDE.md gotcha #1). Anything else —
+                // 401/403 on a restricted token, a 5xx — means the label may still
+                // be there, and must not be recorded as removed (gotcha #6).
+                await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
+                  .catch((err) => { if (err.status !== 404) throw err; });
+                currentLabels = currentLabels.filter(l => l !== label);
+                console.log(`🗑️ Removed: ${label}`);
               }
             }
 
@@ -267,10 +270,13 @@ jobs:
             }
             async function removeLabel(label) {
               if (currentLabels.includes(label)) {
-                try {
-                  await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
-                  currentLabels = currentLabels.filter(l => l !== label);
-                } catch(e) {}
+                // The label already being absent is the desired end state, so a 404
+                // is success (LABEL-RACE-001, CLAUDE.md gotcha #1). Anything else —
+                // 401/403 on a restricted token, a 5xx — means the label may still
+                // be there, and must not be recorded as removed (gotcha #6).
+                await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
+                  .catch((err) => { if (err.status !== 404) throw err; });
+                currentLabels = currentLabels.filter(l => l !== label);
               }
             }
 
@@ -310,6 +316,47 @@ jobs:
             }
 
             async function enableAutoMerge(prNum, nodeId) {
+              // Never arm auto-merge on a PR that delivers nothing, or on one
+              // that says of itself that it is unfinished (#17756).
+              //
+              // PR #17058 merged with ZERO changed files. An empty diff is the
+              // easiest thing in this repository to get green — no code to fail
+              // a test, no file to fail a lint, no line to fail a scan — so
+              // every quality gate we own passed unanimously on a PR that did
+              // nothing. "Checks passing" was being read as evidence of
+              // delivery when it is compatible with total non-delivery.
+              //
+              // `[WIP]` was invisible too: the gates read `pr.draft`, and that
+              // PR was marked ready-for-review while still titled `[WIP]`.
+              //
+              // Re-read the PR rather than trusting the event payload —
+              // `changed_files` is absent from some webhook payloads and stale
+              // in others, and a guard that reads `undefined === 0` as false
+              // would wave through the exact case it exists to stop.
+              try {
+                const { data: fresh } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNum,
+                });
+                if (typeof fresh.changed_files !== 'number') {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — could not read changed_files.`);
+                  return;
+                }
+                if (fresh.changed_files === 0) {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the diff is empty (0 changed files).`);
+                  return;
+                }
+                if (/\[wip\]|\bwip\s*:|do not merge/i.test(fresh.title || '')) {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the title marks it unfinished: ${fresh.title}`);
+                  return;
+                }
+              } catch (e) {
+                // Fail closed. An unverified PR is not an eligible PR.
+                core.warning(`PR #${prNum}: auto-merge NOT enabled — could not verify the diff: ${e.message}`);
+                return;
+              }
+
               try {
                 await github.graphql(`
                   mutation($pullRequestId: ID!) {
@@ -449,6 +496,47 @@ jobs:
             }
 
             async function enableAutoMerge(prNum, nodeId) {
+              // Never arm auto-merge on a PR that delivers nothing, or on one
+              // that says of itself that it is unfinished (#17756).
+              //
+              // PR #17058 merged with ZERO changed files. An empty diff is the
+              // easiest thing in this repository to get green — no code to fail
+              // a test, no file to fail a lint, no line to fail a scan — so
+              // every quality gate we own passed unanimously on a PR that did
+              // nothing. "Checks passing" was being read as evidence of
+              // delivery when it is compatible with total non-delivery.
+              //
+              // `[WIP]` was invisible too: the gates read `pr.draft`, and that
+              // PR was marked ready-for-review while still titled `[WIP]`.
+              //
+              // Re-read the PR rather than trusting the event payload —
+              // `changed_files` is absent from some webhook payloads and stale
+              // in others, and a guard that reads `undefined === 0` as false
+              // would wave through the exact case it exists to stop.
+              try {
+                const { data: fresh } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNum,
+                });
+                if (typeof fresh.changed_files !== 'number') {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — could not read changed_files.`);
+                  return;
+                }
+                if (fresh.changed_files === 0) {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the diff is empty (0 changed files).`);
+                  return;
+                }
+                if (/\[wip\]|\bwip\s*:|do not merge/i.test(fresh.title || '')) {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the title marks it unfinished: ${fresh.title}`);
+                  return;
+                }
+              } catch (e) {
+                // Fail closed. An unverified PR is not an eligible PR.
+                core.warning(`PR #${prNum}: auto-merge NOT enabled — could not verify the diff: ${e.message}`);
+                return;
+              }
+
               try {
                 await github.graphql(`
                   mutation($pullRequestId: ID!) {
@@ -482,10 +570,13 @@ jobs:
               }
               async function removeLabel(label) {
                 if (currentLabels.includes(label)) {
-                  try {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
-                    currentLabels = currentLabels.filter(l => l !== label);
-                  } catch(e) {}
+                  // The label already being absent is the desired end state, so a 404
+                  // is success (LABEL-RACE-001, CLAUDE.md gotcha #1). Anything else —
+                  // 401/403 on a restricted token, a 5xx — means the label may still
+                  // be there, and must not be recorded as removed (gotcha #6).
+                  await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
+                    .catch((err) => { if (err.status !== 404) throw err; });
+                  currentLabels = currentLabels.filter(l => l !== label);
                 }
               }
 
@@ -593,6 +684,47 @@ jobs:
             }
 
             async function enableAutoMerge(prNum, nodeId) {
+              // Never arm auto-merge on a PR that delivers nothing, or on one
+              // that says of itself that it is unfinished (#17756).
+              //
+              // PR #17058 merged with ZERO changed files. An empty diff is the
+              // easiest thing in this repository to get green — no code to fail
+              // a test, no file to fail a lint, no line to fail a scan — so
+              // every quality gate we own passed unanimously on a PR that did
+              // nothing. "Checks passing" was being read as evidence of
+              // delivery when it is compatible with total non-delivery.
+              //
+              // `[WIP]` was invisible too: the gates read `pr.draft`, and that
+              // PR was marked ready-for-review while still titled `[WIP]`.
+              //
+              // Re-read the PR rather than trusting the event payload —
+              // `changed_files` is absent from some webhook payloads and stale
+              // in others, and a guard that reads `undefined === 0` as false
+              // would wave through the exact case it exists to stop.
+              try {
+                const { data: fresh } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNum,
+                });
+                if (typeof fresh.changed_files !== 'number') {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — could not read changed_files.`);
+                  return;
+                }
+                if (fresh.changed_files === 0) {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the diff is empty (0 changed files).`);
+                  return;
+                }
+                if (/\[wip\]|\bwip\s*:|do not merge/i.test(fresh.title || '')) {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the title marks it unfinished: ${fresh.title}`);
+                  return;
+                }
+              } catch (e) {
+                // Fail closed. An unverified PR is not an eligible PR.
+                core.warning(`PR #${prNum}: auto-merge NOT enabled — could not verify the diff: ${e.message}`);
+                return;
+              }
+
               try {
                 await github.graphql(`
                   mutation($pullRequestId: ID!) {
@@ -639,10 +771,13 @@ jobs:
               }
               async function removeLabel(label) {
                 if (currentLabels.includes(label)) {
-                  try {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
-                    currentLabels = currentLabels.filter(l => l !== label);
-                  } catch(e) {}
+                  // The label already being absent is the desired end state, so a 404
+                  // is success (LABEL-RACE-001, CLAUDE.md gotcha #1). Anything else —
+                  // 401/403 on a restricted token, a 5xx — means the label may still
+                  // be there, and must not be recorded as removed (gotcha #6).
+                  await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
+                    .catch((err) => { if (err.status !== 404) throw err; });
+                  currentLabels = currentLabels.filter(l => l !== label);
                 }
               }
 
@@ -748,6 +883,47 @@ jobs:
             }
 
             async function enableAutoMerge(prNum, nodeId) {
+              // Never arm auto-merge on a PR that delivers nothing, or on one
+              // that says of itself that it is unfinished (#17756).
+              //
+              // PR #17058 merged with ZERO changed files. An empty diff is the
+              // easiest thing in this repository to get green — no code to fail
+              // a test, no file to fail a lint, no line to fail a scan — so
+              // every quality gate we own passed unanimously on a PR that did
+              // nothing. "Checks passing" was being read as evidence of
+              // delivery when it is compatible with total non-delivery.
+              //
+              // `[WIP]` was invisible too: the gates read `pr.draft`, and that
+              // PR was marked ready-for-review while still titled `[WIP]`.
+              //
+              // Re-read the PR rather than trusting the event payload —
+              // `changed_files` is absent from some webhook payloads and stale
+              // in others, and a guard that reads `undefined === 0` as false
+              // would wave through the exact case it exists to stop.
+              try {
+                const { data: fresh } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNum,
+                });
+                if (typeof fresh.changed_files !== 'number') {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — could not read changed_files.`);
+                  return;
+                }
+                if (fresh.changed_files === 0) {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the diff is empty (0 changed files).`);
+                  return;
+                }
+                if (/\[wip\]|\bwip\s*:|do not merge/i.test(fresh.title || '')) {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the title marks it unfinished: ${fresh.title}`);
+                  return;
+                }
+              } catch (e) {
+                // Fail closed. An unverified PR is not an eligible PR.
+                core.warning(`PR #${prNum}: auto-merge NOT enabled — could not verify the diff: ${e.message}`);
+                return;
+              }
+
               try {
                 await github.graphql(`
                   mutation($pullRequestId: ID!) {
@@ -782,10 +958,13 @@ jobs:
                 }
                 async function removeLabel(label) {
                   if (currentLabels.includes(label)) {
-                    try {
-                      await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
-                      currentLabels = currentLabels.filter(l => l !== label);
-                    } catch(e) {}
+                    // The label already being absent is the desired end state, so a 404
+                    // is success (LABEL-RACE-001, CLAUDE.md gotcha #1). Anything else —
+                    // 401/403 on a restricted token, a 5xx — means the label may still
+                    // be there, and must not be recorded as removed (gotcha #6).
+                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
+                      .catch((err) => { if (err.status !== 404) throw err; });
+                    currentLabels = currentLabels.filter(l => l !== label);
                   }
                 }
 
@@ -929,11 +1108,14 @@ jobs:
             }
             async function removeLabel(label) {
               if (currentLabels.includes(label)) {
-                try {
-                  await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
-                  currentLabels = currentLabels.filter(l => l !== label);
-                  console.log(`🗑️ Removed: ${label}`);
-                } catch(e) {}
+                // The label already being absent is the desired end state, so a 404
+                // is success (LABEL-RACE-001, CLAUDE.md gotcha #1). Anything else —
+                // 401/403 on a restricted token, a 5xx — means the label may still
+                // be there, and must not be recorded as removed (gotcha #6).
+                await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
+                  .catch((err) => { if (err.status !== 404) throw err; });
+                currentLabels = currentLabels.filter(l => l !== label);
+                console.log(`🗑️ Removed: ${label}`);
               }
             }
 
@@ -973,6 +1155,47 @@ jobs:
             }
 
             async function enableAutoMerge(prNum, nodeId) {
+              // Never arm auto-merge on a PR that delivers nothing, or on one
+              // that says of itself that it is unfinished (#17756).
+              //
+              // PR #17058 merged with ZERO changed files. An empty diff is the
+              // easiest thing in this repository to get green — no code to fail
+              // a test, no file to fail a lint, no line to fail a scan — so
+              // every quality gate we own passed unanimously on a PR that did
+              // nothing. "Checks passing" was being read as evidence of
+              // delivery when it is compatible with total non-delivery.
+              //
+              // `[WIP]` was invisible too: the gates read `pr.draft`, and that
+              // PR was marked ready-for-review while still titled `[WIP]`.
+              //
+              // Re-read the PR rather than trusting the event payload —
+              // `changed_files` is absent from some webhook payloads and stale
+              // in others, and a guard that reads `undefined === 0` as false
+              // would wave through the exact case it exists to stop.
+              try {
+                const { data: fresh } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNum,
+                });
+                if (typeof fresh.changed_files !== 'number') {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — could not read changed_files.`);
+                  return;
+                }
+                if (fresh.changed_files === 0) {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the diff is empty (0 changed files).`);
+                  return;
+                }
+                if (/\[wip\]|\bwip\s*:|do not merge/i.test(fresh.title || '')) {
+                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the title marks it unfinished: ${fresh.title}`);
+                  return;
+                }
+              } catch (e) {
+                // Fail closed. An unverified PR is not an eligible PR.
+                core.warning(`PR #${prNum}: auto-merge NOT enabled — could not verify the diff: ${e.message}`);
+                return;
+              }
+
               try {
                 await github.graphql(`
                   mutation($pullRequestId: ID!) {
