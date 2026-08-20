@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Validate issue exists
         id: validate
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
@@ -48,7 +48,7 @@ jobs:
       - name: Get current labels
         if: steps.validate.outputs.exists == 'true'
         id: get-labels
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
@@ -65,7 +65,7 @@ jobs:
 
       - name: Remove self-heal labels
         if: steps.validate.outputs.exists == 'true'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
@@ -85,7 +85,7 @@ jobs:
 
       - name: Add self-heal labels back
         if: steps.validate.outputs.exists == 'true'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
         with:
@@ -126,7 +126,7 @@ jobs:
 
       - name: Post reset comment
         if: always() && steps.validate.outputs.exists == 'true'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
           TRIGGER_SUCCESS: ${{ steps.trigger.outputs.success }}
