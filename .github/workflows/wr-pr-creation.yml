@@ -2,7 +2,12 @@ name: WR PR Creation
 # quiet-mode 2026-07-25 (owner request): automatic triggers disabled;
 # run manually via workflow_dispatch if needed.
 on:
-  workflow_dispatch: null
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to create a PR for"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -1064,17 +1069,13 @@ jobs:
               );
 
             for (const name of labelsToRemove) {
-              try {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issueNumber,
-                  name,
-                });
-                core.info(`Removed recovered WR label: ${name}`);
-              } catch (error) {
-                core.notice(`Could not remove label "${name}": ${error.message}`);
-              }
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                name,
+              }).catch(err => { if (err.status !== 404) throw err; });
+              core.info(`Removed recovered WR label: ${name}`);
             }
       - name: Handle workflow failure
         if: failure()

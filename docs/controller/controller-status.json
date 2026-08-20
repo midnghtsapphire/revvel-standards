@@ -1,27 +1,32 @@
 {
   "schema": "fleet-controller/v1",
+<<<<<<< HEAD
   "generated_at": "2026-08-19T22:57:32.143Z",
+=======
+  "generated_at": "2026-08-20T00:22:23.198Z",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
   "preempt_enabled": true,
   "occupancy": {
-    "running": 28,
+    "running": 33,
     "cap": 20,
     "over_capacity": true
   },
   "counts": {
-    "total": 41,
-    "running": 28,
-    "queued": 13,
+    "total": 69,
+    "running": 33,
+    "queued": 36,
     "done": 0,
-    "healthy": 20,
+    "healthy": 25,
     "stalled": 0,
     "runaway": 8,
     "protected": 1,
-    "occupancy": 28,
+    "occupancy": 33,
     "occupancyCap": 20,
     "overCapacity": true
   },
   "orchestrators": [
     {
+<<<<<<< HEAD
       "id": 32311154559,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
@@ -30,10 +35,117 @@
       "health": "healthy",
       "age_ms": 9143,
       "since_update_ms": 5143,
+=======
+      "id": 32317041325,
+      "name": "Push on main",
+      "path": "dynamic/github-code-scanning/codeql",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317041325",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 6198,
+      "since_update_ms": 2198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317041700,
+      "name": "Social Media Automation",
+      "path": ".github/workflows/social-media-automation.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317041700",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 6198,
+      "since_update_ms": 2198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317041704,
+      "name": "Create Issue Branch",
+      "path": ".github/workflows/create-issue-branch.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317041704",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 6198,
+      "since_update_ms": 1198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317041713,
+      "name": "Issue Lifecycle Automation",
+      "path": ".github/workflows/issue-lifecycle.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317041713",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 6198,
+      "since_update_ms": 2198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317041711,
+      "name": "Close Linked Issue on PR Merge",
+      "path": ".github/workflows/close-linked-issue.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317041711",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 6198,
+      "since_update_ms": 2198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317041694,
+      "name": "🎛️ PR State Orchestrator",
+      "path": ".github/workflows/pr-state-orchestrator.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317041694",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 6198,
+      "since_update_ms": 1198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317039482,
+      "name": "OpenRouter Triage",
+      "path": ".github/workflows/openrouter-triage.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317039482",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 8198,
+      "since_update_ms": 4198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317038247,
+      "name": "security-fleet",
+      "path": ".github/workflows/security-fleet.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317038247",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 9198,
+      "since_update_ms": 6198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317037799,
+      "name": "Fleet Controller",
+      "path": ".github/workflows/fleet-controller.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317037799",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 9198,
+      "since_update_ms": 6198,
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "reason": "running within budget",
       "protected": true
     },
     {
+<<<<<<< HEAD
       "id": 32310370893,
       "name": "CodeQL",
       "path": ".github/workflows/codeql.yml",
@@ -42,6 +154,196 @@
       "health": "healthy",
       "age_ms": 647143,
       "since_update_ms": 72143,
+=======
+      "id": 32317038226,
+      "name": "Agent Audit Logger",
+      "path": ".github/workflows/agent-audit-logger.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317038226",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 9198,
+      "since_update_ms": 4198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317032441,
+      "name": "label-allowlist",
+      "path": ".github/workflows/label-allowlist.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317032441",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 14198,
+      "since_update_ms": 8198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317032409,
+      "name": "📱 Auto Deploy to Stores",
+      "path": ".github/workflows/auto-deploy-to-stores.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317032409",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 14198,
+      "since_update_ms": 4198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317032434,
+      "name": "Budget-Aware Agent Router",
+      "path": ".github/workflows/budget-aware-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317032434",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 14198,
+      "since_update_ms": 3198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317031368,
+      "name": "Budget-Aware Agent Router",
+      "path": ".github/workflows/budget-aware-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317031368",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 15198,
+      "since_update_ms": 3198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317020040,
+      "name": "WR Field Filler — no blanks ever ship",
+      "path": ".github/workflows/wr-field-filler.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317020040",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 24198,
+      "since_update_ms": 20198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317019979,
+      "name": "Weekly Research (WR) Automation",
+      "path": ".github/workflows/weekly-research.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317019979",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 24198,
+      "since_update_ms": 4198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32317006277,
+      "name": "security-fleet",
+      "path": ".github/workflows/security-fleet.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317006277",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 36198,
+      "since_update_ms": 18198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32316994798,
+      "name": "Intelligent Code Quality Scanner",
+      "path": ".github/workflows/ship-quality.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32316994798",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 46198,
+      "since_update_ms": 43198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32316994981,
+      "name": "Semgrep SAST",
+      "path": ".github/workflows/semgrep.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32316994981",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 46198,
+      "since_update_ms": 42198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32316994885,
+      "name": "Jules PR Reviewer",
+      "path": ".github/workflows/jules-pr-reviewer.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32316994885",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 46198,
+      "since_update_ms": 41198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32316994810,
+      "name": "Trivy",
+      "path": ".github/workflows/trivy.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32316994810",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 46198,
+      "since_update_ms": 42198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32316994892,
+      "name": "OSSAR",
+      "path": ".github/workflows/ossar.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32316994892",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 46198,
+      "since_update_ms": 42198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32316991609,
+      "name": "PR #17740",
+      "path": "dynamic/github-code-scanning/codeql",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32316991609",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 49198,
+      "since_update_ms": 45198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32316503033,
+      "name": "CodeQL",
+      "path": ".github/workflows/codeql.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32316503033",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 501198,
+      "since_update_ms": 81198,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32316500277,
+      "name": "Update Naukri Resume",
+      "path": ".github/workflows/naukri-resume.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32316500277",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 504198,
+      "since_update_ms": 494198,
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "reason": "running within budget",
       "protected": false
     },
@@ -52,9 +354,15 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31608261441",
       "status": "in_progress",
       "health": "runaway",
+<<<<<<< HEAD
       "age_ms": 634500143,
       "since_update_ms": 634499143,
       "reason": "running 10575m ≥ 60m budget",
+=======
+      "age_ms": 639591198,
+      "since_update_ms": 639590198,
+      "reason": "running 10660m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "protected": false
     },
     {
@@ -64,9 +372,15 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607544739",
       "status": "in_progress",
       "health": "runaway",
+<<<<<<< HEAD
       "age_ms": 634971143,
       "since_update_ms": 634512143,
       "reason": "running 10583m ≥ 60m budget",
+=======
+      "age_ms": 640062198,
+      "since_update_ms": 639603198,
+      "reason": "running 10668m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "protected": false
     },
     {
@@ -76,9 +390,15 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607480387",
       "status": "in_progress",
       "health": "runaway",
+<<<<<<< HEAD
       "age_ms": 635013143,
       "since_update_ms": 634508143,
       "reason": "running 10584m ≥ 60m budget",
+=======
+      "age_ms": 640104198,
+      "since_update_ms": 639599198,
+      "reason": "running 10668m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "protected": false
     },
     {
@@ -88,9 +408,15 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607475332",
       "status": "in_progress",
       "health": "runaway",
+<<<<<<< HEAD
       "age_ms": 635016143,
       "since_update_ms": 634514143,
       "reason": "running 10584m ≥ 60m budget",
+=======
+      "age_ms": 640107198,
+      "since_update_ms": 639605198,
+      "reason": "running 10668m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "protected": false
     },
     {
@@ -100,9 +426,15 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607177890",
       "status": "in_progress",
       "health": "runaway",
+<<<<<<< HEAD
       "age_ms": 635207143,
       "since_update_ms": 634510143,
       "reason": "running 10587m ≥ 60m budget",
+=======
+      "age_ms": 640298198,
+      "since_update_ms": 639601198,
+      "reason": "running 10672m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "protected": false
     },
     {
@@ -112,9 +444,15 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29262820826",
       "status": "in_progress",
       "health": "runaway",
+<<<<<<< HEAD
       "age_ms": 3223364143,
       "since_update_ms": 3223095143,
       "reason": "running 53723m ≥ 60m budget",
+=======
+      "age_ms": 3228455198,
+      "since_update_ms": 3228186198,
+      "reason": "running 53808m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "protected": false
     },
     {
@@ -124,9 +462,15 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29257786646",
       "status": "in_progress",
       "health": "runaway",
+<<<<<<< HEAD
       "age_ms": 3227602143,
       "since_update_ms": 3227514143,
       "reason": "running 53793m ≥ 60m budget",
+=======
+      "age_ms": 3232693198,
+      "since_update_ms": 3232605198,
+      "reason": "running 53878m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "protected": false
     },
     {
@@ -136,9 +480,351 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29252937753",
       "status": "in_progress",
       "health": "runaway",
+<<<<<<< HEAD
       "age_ms": 3231841143,
       "since_update_ms": 3230587143,
       "reason": "running 53864m ≥ 60m budget",
+=======
+      "age_ms": 3236932198,
+      "since_update_ms": 3235678198,
+      "reason": "running 53949m ≥ 60m budget",
+      "protected": false
+    },
+    {
+      "id": 32317045032,
+      "name": "readme-landing",
+      "path": ".github/workflows/readme-landing.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317045032",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317045093,
+      "name": "Graph Update: pip in /mcp-servers/gemini-notebook-mcp-cli/src/notebooklm_tools/cli/commands #1533251334",
+      "path": "dynamic/dependabot/update-graph",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317045093",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317045022,
+      "name": "CodeQL",
+      "path": ".github/workflows/codeql.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317045022",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044898,
+      "name": "Amplitude — Repo Event Telemetry",
+      "path": ".github/workflows/amplitude-events.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044898",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044896,
+      "name": "Zizmor (Actions security)",
+      "path": ".github/workflows/zizmor.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044896",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044911,
+      "name": "Update Project Dashboard",
+      "path": ".github/workflows/update-project-dashboard.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044911",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044918,
+      "name": "Deploy static content to Pages",
+      "path": ".github/workflows/static.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044918",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044980,
+      "name": "Markdown Image Alt-text Checker",
+      "path": ".github/workflows/markdown-image-alt-text-checker.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044980",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044932,
+      "name": "Synopsys Security Testing",
+      "path": ".github/workflows/synopsys-action.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044932",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044970,
+      "name": "Website green-o-meter",
+      "path": ".github/workflows/green-website.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044970",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044982,
+      "name": "Flow Chart Sync",
+      "path": ".github/workflows/flow-chart-sync.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044982",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044995,
+      "name": "Workflow Action-Ref Auditor",
+      "path": ".github/workflows/workflow-action-ref-audit.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044995",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044966,
+      "name": "Graph Update: uv in /mcp-servers/gemini-notebook-mcp-cli #1533251335",
+      "path": "dynamic/dependabot/update-graph",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044966",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317045027,
+      "name": "CI Error Prevention Tests",
+      "path": ".github/workflows/ci-error-prevention.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317045027",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317045035,
+      "name": "Trivy",
+      "path": ".github/workflows/trivy.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317045035",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044994,
+      "name": "Actions Lint",
+      "path": ".github/workflows/actions-lint.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044994",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044989,
+      "name": "Lint Markdown (markdownlint-cli)",
+      "path": ".github/workflows/lint-md.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044989",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317044999,
+      "name": "Auto-Update PR Branch from Main",
+      "path": ".github/workflows/auto-branch-update.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317044999",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317045000,
+      "name": "Python flake8 Lint",
+      "path": ".github/workflows/python-flake8.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317045000",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317045020,
+      "name": "Greenfield UI Agent Audit & Health Logger",
+      "path": ".github/workflows/ui-audit-logger.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317045020",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317043056,
+      "name": "Agent Fingerprint Gate",
+      "path": ".github/workflows/agent-fingerprint-gate.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317043056",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317043052,
+      "name": "Docs Freshness Check",
+      "path": ".github/workflows/docs-freshness-check.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317043052",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317041732,
+      "name": "Neon Preview Branch",
+      "path": ".github/workflows/neon-branch.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317041732",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317041724,
+      "name": "📱 Auto Deploy to Stores",
+      "path": ".github/workflows/auto-deploy-to-stores.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317041724",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317041710,
+      "name": "Project Board Sync",
+      "path": ".github/workflows/project-board-sync.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317041710",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32317041682,
+      "name": "PR Lifecycle",
+      "path": ".github/workflows/pr-lifecycle.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32317041682",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32316994767,
+      "name": "CodeQL",
+      "path": ".github/workflows/codeql.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32316994767",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+      "protected": false
+    },
+    {
+      "id": 32316994674,
+      "name": "Actions Lint",
+      "path": ".github/workflows/actions-lint.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32316994674",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "protected": false
     },
     {
@@ -244,7 +930,11 @@
       "name": "Devin Code Review",
       "path": ".github/workflows/devin-code-review.yml",
       "health": "runaway",
+<<<<<<< HEAD
       "reason": "running 10575m ≥ 60m budget",
+=======
+      "reason": "running 10660m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -260,7 +950,11 @@
       "name": "PR Lifecycle",
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
+<<<<<<< HEAD
       "reason": "running 10583m ≥ 60m budget",
+=======
+      "reason": "running 10668m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -276,7 +970,11 @@
       "name": "AI PR Review (OpenRouter)",
       "path": ".github/workflows/ai-pr-review-openrouter.yml",
       "health": "runaway",
+<<<<<<< HEAD
       "reason": "running 10584m ≥ 60m budget",
+=======
+      "reason": "running 10668m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -292,7 +990,11 @@
       "name": "Agent Fingerprint Gate",
       "path": ".github/workflows/agent-fingerprint-gate.yml",
       "health": "runaway",
+<<<<<<< HEAD
       "reason": "running 10584m ≥ 60m budget",
+=======
+      "reason": "running 10668m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -308,7 +1010,11 @@
       "name": "GOAP Assignment Router",
       "path": ".github/workflows/goap-assignment-router.yml",
       "health": "runaway",
+<<<<<<< HEAD
       "reason": "running 10587m ≥ 60m budget",
+=======
+      "reason": "running 10672m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -324,7 +1030,11 @@
       "name": "PR Lifecycle",
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
+<<<<<<< HEAD
       "reason": "running 53723m ≥ 60m budget",
+=======
+      "reason": "running 53808m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -340,7 +1050,11 @@
       "name": "No-Destroy Guard",
       "path": ".github/workflows/no-destroy-guard.yml",
       "health": "runaway",
+<<<<<<< HEAD
       "reason": "running 53793m ≥ 60m budget",
+=======
+      "reason": "running 53878m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -356,7 +1070,11 @@
       "name": "Project Board Sync",
       "path": ".github/workflows/project-board-sync.yml",
       "health": "runaway",
+<<<<<<< HEAD
       "reason": "running 53864m ≥ 60m budget",
+=======
+      "reason": "running 53949m ≥ 60m budget",
+>>>>>>> a052b59 (chore(controller): persist semantic fleet state)
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
