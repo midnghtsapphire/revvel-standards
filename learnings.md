@@ -465,6 +465,63 @@ both the tight and the well-formatted cases.
 detector), `tests/chaosmender.test.js` (the regression tests).
 
 ---
+
+## TM-0007 — Documented recovery dispatch that cannot target the stuck issue
+
+**Discovered:** 2026-08-19 / fixed 2026-08-20  **Discovered-by:** Claude Code (live reset of five stuck WRs)  **PR/issue:** #17736
+**Category:** false-success / workflow-dispatch-contract
+
+**Symptom:** `reset-self-heal-issue.yml` reported success and posted
+"Triggered OpenRouter assignee workflow / The Ralph Loop will now
+re-evaluate" on five stuck WRs. None moved. `updated_at` stayed pinned
+to the reset timestamps; `research:blocked` stayed applied.
+
+**Root cause (three stacked defects):**
+1. Downstream `openrouter-assignee.yml` `workflow_dispatch` had no
+   `issue_number` input, so the reset could not tell it which issue to
+   act on.
+2. Even after an `issue_number` was added, the assignee job treated the
+   `openrouter` label as a hard idempotency skip — exactly the label
+   stuck WRs already carry — so targeted dispatch was still a no-op.
+3. Assignee is first-line-of-sight routing only; the triage *comment*
+   comes from `openrouter-triage.yml`, which also ignored targeted
+   `issue_number` and ran a full-repo sweep instead. The reset comment
+   asserted an outcome ("Ralph Loop will re-evaluate") that no step
+   performed (CLAUDE.md gotcha #6 / RVS-VERIFY-001).
+
+**Detection heuristic:** A recovery/reset comment that claims a
+downstream workflow "will" do work is a decoration unless (a) the
+dispatch passes the target id the child workflow declares, (b) the
+child actually has a job that runs for that id, and (c) the comment is
+gated on the dispatch exit code and only claims *dispatch*, not
+completion.
+
+**Autofix pattern:**
+```text
+parent: gh workflow run child.yml --field issue_number=$N
+        + track success=true/false per child; comment + needs-human on fail
+child:  workflow_dispatch.inputs.issue_number
+        + targeted job when issue_number set (bypass idempotency keys
+          that strand recovery: openrouter label, etc.)
+        + sweep only when issue_number empty
+tests:  assert inputs declared; assert parent forwards fields;
+        assert success copy cannot claim Ralph/triage completion
+```
+
+**Prevention rule:** Playbook CLI snippets and reset comments are
+contracts. If docs pass `--field X`, the workflow must declare `X`.
+If a comment says a child ran, the step that posted it must have
+observed that child's dispatch succeeding. Prefer "dispatched X for
+#N" over "X will fix this."
+
+**Related:** `tests/workflows-inputs.test.js`,
+`.github/workflows/reset-self-heal-issue.yml`,
+`.github/workflows/openrouter-assignee.yml`,
+`.github/workflows/openrouter-triage.yml`,
+`docs/playbooks/wr-manual-processes.md` §1–§2, CLAUDE.md gotcha #6,
+`standards/VERIFY_THE_POSTCONDITION.md`.
+
+---
 **Next Action:** Fleet review focus for this PR should be *checking the two proven fixes* (WR-01, WR-02/03) and the two small dependency fixes (WR-04), not re-deriving them. Three items need an owner/product decision before any agent writes code: WR-05 (`ship-to-market.yml`'s missing `record.js` — build it or comment out the video-deliverable step), WR-06/WR-07 (`label-inventory.js` / `validate_jsonl.py` — wire in or archive-with-attribution, never delete per standing owner preference). WR-08 flags that the WR-drafting pipeline itself — 35 fully-drafted WRs across two prior audits, never filed as GitHub issues — is the largest unwired-flow pattern in the repo by volume; needs an owner pass over `wr/pending/` to mark stale/superseded items before a bulk-filing workflow gets built. WR-09's 16 scanner hits are queued for the next audit to individually root-cause. Two proposed CI vaccines from this session (`find-duplicate-json-keys.js`-style package.json lint; "named test/workflow file must exist" check for `scripts/**` and `skills/**/SKILL.md`) are not yet wired into `scripts/automation-doctor.js` — good candidates for a fast follow-up WR once this PR lands.
 
 **Date/Time:** 2026-08-08
