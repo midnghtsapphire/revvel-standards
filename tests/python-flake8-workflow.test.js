@@ -212,3 +212,78 @@ test('baseline gate exits non-zero when a fixture introduces new debt', () => {
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+/**
+ * Regression: the flake8 exclusion list is duplicated in FOUR places, and they
+ * silently disagreed.
+ *
+ * Landing the vendored `notebooklm-mcp-cli` MCP server (#17740) added 33
+ * findings over the baseline and turned `main` red. Its author added a
+ * `.flake8ignore` file intending to exclude it — but flake8 has no such
+ * concept, nothing reads that filename, and the exclusion did nothing.
+ *
+ * Worse, adding the path to `.flake8` alone is also insufficient: the gate
+ * passes `--exclude=` explicitly, which OVERRIDES `.flake8` entirely, and the
+ * workflow passes its own `exclude:` input to the action. All four must agree
+ * or an exclusion appears to work while doing nothing. That is what these
+ * assertions pin.
+ */
+
+const PY_WORKFLOW_YML = path.join(ROOT, '.github', 'workflows', 'python-flake8.yml');
+const FLAKE8IGNORE_PATH = path.join(ROOT, '.flake8ignore');
+
+function excludesFromFlake8Cfg() {
+  const raw = fs.readFileSync(FLAKE8_CFG, 'utf8');
+  const block = raw.split(/^exclude\s*=\s*$/m)[1] || '';
+  const stop = block.search(/^\s*[a-z-]+\s*=/m);
+  return (stop === -1 ? block : block.slice(0, stop))
+    .split('\n')
+    .map((l) => l.replace(/#.*$/, '').trim().replace(/,$/, ''))
+    .filter(Boolean);
+}
+
+test('gate --exclude and the workflow exclude: input are identical', () => {
+  const { FLAKE8_EXCLUDE } = require('../scripts/flake8-baseline-gate.js');
+  const wf = fs.readFileSync(PY_WORKFLOW_YML, 'utf8');
+  const m = wf.match(/exclude:\s*"([^"]+)"/);
+  assert.ok(m, 'python-flake8.yml must pass an exclude: input');
+  assert.equal(
+    m[1],
+    FLAKE8_EXCLUDE,
+    'the workflow exclude: input and the gate FLAKE8_EXCLUDE have drifted — '
+      + 'the advisory step and the real gate would then lint different file sets',
+  );
+});
+
+test('every path in .flake8ignore is genuinely excluded by the gate', () => {
+  const { FLAKE8_EXCLUDE } = require('../scripts/flake8-baseline-gate.js');
+  const gateSet = new Set(FLAKE8_EXCLUDE.split(',').map((s) => s.trim()));
+
+  const listed = fs
+    .readFileSync(FLAKE8IGNORE_PATH, 'utf8')
+    .split(/\r?\n/)
+    .map((l) => l.replace(/#.*$/, '').trim())
+    .filter(Boolean);
+
+  for (const p of listed) {
+    assert.ok(
+      gateSet.has(p),
+      `.flake8ignore lists "${p}" but the gate does not exclude it. `
+        + 'flake8 never reads .flake8ignore — that file is documentation only. '
+        + 'Add the path to FLAKE8_EXCLUDE in scripts/flake8-baseline-gate.js, '
+        + 'the exclude: input in python-flake8.yml, and .flake8.',
+    );
+  }
+});
+
+test('.flake8 exclude also covers what the gate excludes (no silent divergence)', () => {
+  const { FLAKE8_EXCLUDE } = require('../scripts/flake8-baseline-gate.js');
+  const cfg = new Set(excludesFromFlake8Cfg());
+  for (const p of FLAKE8_EXCLUDE.split(',').map((s) => s.trim())) {
+    assert.ok(
+      cfg.has(p),
+      `the gate excludes "${p}" but .flake8 does not. A developer running `
+        + '`flake8` locally would then see findings CI does not, or vice versa.',
+    );
+  }
+});
