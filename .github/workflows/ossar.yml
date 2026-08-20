@@ -9,14 +9,42 @@
 # https://github.com/github/ossar-action
 name: OSSAR
 
+# RETIRED 2026-08-20 (DECISIONS.md D015, WR #17748). Automatic triggers are
+# off; the workflow is kept, runnable on demand, per RVS-AGENT-001.
+#
+# OSSAR reported failure on EVERY pull request. The scan itself found nothing —
+# its own summary line was `Active results: 0` — and the job failed only because
+# one of its two tools never launched:
+#
+#   [Error] ToolLauncherNotFoundException: ...bandit_runner.exe
+#   [Error] Win32Exception: ... The filename or extension is too long.
+#   [Error] BreakException: Guardian detected one or more breaking results.
+#
+# The launcher path is 130 characters, half of Windows' 260-char MAX_PATH, so
+# path length is NOT the cause and enabling long paths would change nothing.
+# Win32 error 206 also fires when the COMMAND LINE exceeds its ~32KB limit,
+# which is what a per-file argument list over a repo this size produces.
+#
+# Moving the job to ubuntu-latest is not available either: github/ossar-action
+# is Windows-only, as the comment on `runs-on` below has said since this file
+# was generated from GitHub's template.
+#
+# Retiring it costs no coverage. OSSAR ran ESLint and bandit; both lanes are
+# already covered on Linux by checks that are green:
+#   - codeql.yml   — matrix includes `python` (bandit's lane, added WR #15693)
+#                    and `javascript-typescript` (ESLint's lane)
+#   - semgrep.yml  — p/security-audit, p/secrets, p/owasp-top-ten, p/cwe-top-25
+#
+# What this fixes is not a scan gap but a signal one: a permanently-red security
+# check is indistinguishable from one that just started failing for a real
+# reason, so every always-red check raises the cost of noticing the one that
+# matters. Guarded by tests/ossar-retired.test.js, which fails if the replacement
+# coverage disappears.
+#
+# To re-enable: restore the push/pull_request/schedule triggers below AND record
+# the reversal in DECISIONS.md. Do not re-enable without fixing the launcher.
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ "main" ]
-  schedule:
-    - cron: '23 6 * * 5'
+  workflow_dispatch:
 
 permissions:
   contents: read
