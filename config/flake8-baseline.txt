@@ -83,7 +83,8 @@ mcp-servers/gemini-notebook-mcp-cli/src/notebooklm_tools/services/auth.py::F822 
 mcp-servers/gemini-notebook-mcp-cli/src/notebooklm_tools/services/chat.py::E501 2
 mcp-servers/gemini-notebook-mcp-cli/src/notebooklm_tools/services/studio.py::E203 1
 mcp-servers/gemini-notebook-mcp-cli/src/notebooklm_tools/utils/cdp.py::E501 1
-mcp-servers/gemini-notebook-mcp-cli/src/notebooklm_tools/utils/cdp.py::F841 1
+mcp-servers/gemini-notebook-mcp-cli/src/notebooklm_tools/utils/cdp.py::F823 2
+mcp-servers/gemini-notebook-mcp-cli/src/notebooklm_tools/utils/cdp.py::F841 2
 mcp-servers/gemini-notebook-mcp-cli/src/notebooklm_tools/utils/cdp.py::W293 3
 mcp-servers/gemini-notebook-mcp-cli/src/notebooklm_tools/utils/wsl.py::E501 1
 mcp-servers/gemini-notebook-mcp-cli/tests/core/test_base.py::E501 2

@@ -51,7 +51,7 @@ def _next_cdp_command_id() -> int:
 
 def _reset_cached_ws_unlocked() -> None:
     """Close and clear the cached CDP websocket. Caller must hold _cdp_ws_lock."""
-    global _cached_ws, _cached_ws_url
+    global _cached_ws_url
     if _cached_ws is not None:
         with contextlib.suppress(Exception):
             _cached_ws.close()
@@ -1183,7 +1183,7 @@ def execute_cdp_command(
     Returns:
         The result of the CDP command
     """
-    global _cached_ws, _cached_ws_url
+    global _cached_ws_url
 
     if retry:
         # Retry once in case of stale cached connection. Close stale sockets so
