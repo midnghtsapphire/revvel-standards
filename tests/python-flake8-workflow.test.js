@@ -170,6 +170,21 @@ test('formatBaseline is stable and headered', () => {
   assert.deepEqual(body, ['a.py::F401 2', 'z.py::E501 1']);
 });
 
+test('baseline gate exits 0 and prints a loud notice when python3 is missing', () => {
+  const res = spawnSync(process.execPath, [GATE], {
+    encoding: 'utf8',
+    cwd: ROOT,
+    env: { ...process.env, PATH: '' }, // hide python3
+    timeout: 120000,
+  });
+  assert.equal(
+    res.status,
+    0,
+    `expected pass, got ${res.status}\nstdout:${res.stdout}\nstderr:${res.stderr}`
+  );
+  assert.match(res.stdout, /⚠️  flake8 baseline gate skipped/);
+});
+
 test('baseline gate exits 0 against the committed baseline (no new debt)', () => {
   const res = spawnSync(process.execPath, [GATE], {
     encoding: 'utf8',
