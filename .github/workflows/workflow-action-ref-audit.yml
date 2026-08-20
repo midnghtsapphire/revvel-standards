@@ -146,9 +146,11 @@ jobs:
           (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
            (github.event_name == 'push' && github.ref == 'refs/heads/main'))
         uses: actions/github-script@v9.0.0
+        env:
+          BROKEN_REFS: ${{ steps.audit.outputs.broken_refs }}
         with:
           script: |
-            const broken = (`${{ steps.audit.outputs.broken_refs }}` || '').trim();
+            const broken = (process.env.BROKEN_REFS || '').trim();
             if (!broken) return;
             const lines = broken.split('\n').filter(Boolean);
 

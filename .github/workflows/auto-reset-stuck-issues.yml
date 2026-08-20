@@ -55,13 +55,17 @@ jobs:
       - name: Reset stuck issues
         if: steps.find-stuck.outputs.count != '0'
         uses: actions/github-script@v9.0.0
+        env:
+          # Passed as data. Interpolated into the script it would be pasted in
+          # as text before the JS is parsed (#17801).
+          STUCK_ISSUES: ${{ steps.find-stuck.outputs.issues }}
         with:
           script: |
             const OWNER = context.repo.owner;
             const REPO = context.repo.repo;
             const SELF_HEAL_LABELS = ['auto-fix', 'ralph-loop', 'scorecard'];
             
-            const issueNumbers = JSON.parse('${{ steps.find-stuck.outputs.issues }}');
+            const issueNumbers = JSON.parse(process.env.STUCK_ISSUES || '[]');
             
             for (const issueNumber of issueNumbers) {
               console.log(`Processing issue #${issueNumber}...`);
