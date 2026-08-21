@@ -46,8 +46,26 @@ def slugify(text: str) -> str:
     return s or "pdf-product"
 
 
+def _assert_cloud_allowed(call_site: str) -> None:
+    """Spend gate (#17850). Refuse a paid call unless someone deliberately said yes.
+
+    Mirrors `cloud_allowed()` in scripts/local_llm.py and the JS gate in
+    scripts/llm-spend-gate.js — one variable name, one decision, every language.
+    Must be exactly "1": `true` / `yes` fail closed rather than open.
+    """
+    if os.environ.get("REVVEL_LLM_ALLOW_CLOUD", "").strip() != "1":
+        raise RuntimeError(
+            f'Refusing to call a paid LLM API from "{call_site}": '
+            "REVVEL_LLM_ALLOW_CLOUD is not set to \"1\". This is a spend gate, "
+            "not a bug. Set it in the calling workflow's env, with a comment "
+            "saying why the work cannot run on Layer 0 "
+            "(see docs/LOCAL_LLM_SETUP.md)."
+        )
+
+
 def call_openrouter(messages, max_tokens=1500, temperature=0.6):
     """Single OpenRouter chat call. Returns the content string, or None on failure."""
+    _assert_cloud_allowed("gumloop_pdf_pipeline")
     api_key = os.environ.get("OPENROUTER_API_KEY")
     if not api_key:
         return None
