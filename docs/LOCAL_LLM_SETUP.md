@@ -41,6 +41,23 @@ Leave **Serve on Local Network** OFF unless you specifically need another
 machine to reach it. On by default is a model server exposed to whatever
 network the laptop is on, including coffee-shop Wi-Fi.
 
+### You need a chat model, not only an embedding model
+
+LM Studio lists every loaded model, embeddings included, and an embedding model
+**cannot** answer a chat completion. If the only thing loaded is something like
+`text-embedding-nomic-embed-text-v1.5`, `doctor` will say so directly:
+
+```text
+[DOWN] lane-0-lmstudio
+       1 model(s) loaded, but ALL are embedding models — an embedding model
+       cannot answer a chat completion. Load a chat/instruct model too.
+```
+
+Load one whose name ends in `-instruct` or `-chat` — a 7B–8B instruct model is
+a reasonable starting point on a laptop. You can keep the embedding model
+loaded at the same time; the cascade skips it automatically and picks the chat
+model.
+
 ## 2. Stop Windows putting the laptop to sleep
 
 Sleep is what makes Layer 0 unreliable — a sleeping laptop is an unreachable
@@ -90,6 +107,21 @@ with the lid shut needs airflow.
 ```bash
 python3 scripts/local_llm.py doctor
 ```
+
+Run it **from a clone of this repository** — `npm run llm:doctor` reads
+`package.json`, so running it from `C:\WINDOWS\system32` (or any other
+directory) fails with `ENOENT: no such file or directory, open
+'...\package.json'`. `cd` into the repo first.
+
+If you have not cloned the repo, you do not need it to check LM Studio at all.
+From PowerShell:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:1234/v1/models | ConvertTo-Json -Depth 4
+```
+
+A list of models means the server is up. A connection error means it is not
+started — LM Studio's Developer tab, toggle **Status: Running**.
 
 You want to see:
 
