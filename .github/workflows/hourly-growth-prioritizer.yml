@@ -65,6 +65,6 @@ jobs:
       - name: Commit Updated Index & Optimizations
         uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5.0.1
         with:
-          commit_message: "auto: hourly star priority & discoverability update [skip ci]"
+          commit_message: "auto: star priority & discoverability update [skip ci]"
           file_pattern: "PRIORITIZED_STARS.md stars_state.json"
           commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
