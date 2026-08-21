@@ -8,12 +8,26 @@ upgrade decision can be made.
 
 > Numbers are estimates as of 2026-07-08 — verify at each provider's pricing
 > page before committing. Update this file when a tier changes.
+>
+> **Free-tier-first has a Layer 0.** The cheapest lane is not a free SaaS tier,
+> it is the operator's own machine. `wr/agents/HIERARCHY.md` puts local LLMs at
+> Layer 0 with a target share of 60–70% of work, and `scripts/local_llm.py`
+> implements that ordering for the whole repo: LM Studio → Ollama → OpenRouter,
+> with the paid lane **refused** unless `REVVEL_LLM_ALLOW_CLOUD=1`. Any workflow
+> that opts in should say why, in the workflow file. Setup and the Windows
+> specifics are in `docs/LOCAL_LLM_SETUP.md`.
+>
+> Layer 0 only reaches work that runs on the operator's machine: GitHub-hosted
+> runners are VMs in Azure and cannot reach a laptop, so **every LLM call made
+> from CI is a billed call**, regardless of what this table says about tiers.
 
 | Tool | Current tier | Current cost | Next-tier name | Next-tier cost | Fleet decision | Source |
 | --- | --- | --- | --- | --- | --- | --- |
 | Keploy | Free | $0 | Pro / Team | est. $20–$40 / seat / mo | keep | keploy.io/pricing |
 | Vercel | Hobby | $0 | Pro | $20 / user / mo | keep | vercel.com/pricing |
-| OpenRouter | usage-priced (no tier) | varies | — | n/a | keep (backbone) | openrouter.ai/pricing |
+| LM Studio (Layer 0) | Local — runs on the operator's machine | **$0** | — | n/a | **keep — try first** (`scripts/local_llm.py`; `wr/agents/HIERARCHY.md` targets 60–70% of work here) | lmstudio.ai |
+| Ollama (Layer 0b) | Local — runs on the operator's machine | **$0** | — | n/a | keep (optional second local lane) | ollama.com |
+| OpenRouter (Layer 1) | usage-priced (no tier) | varies — **account at 402, balance exhausted** | — | n/a | **keep, but gated** — `scripts/local_llm.py` refuses this lane unless `REVVEL_LLM_ALLOW_CLOUD=1`; ~270 scheduled calls/day removed by the cron freeze (#17849) | openrouter.ai/pricing |
 | Jules | per Google plan | varies | per Google plan | varies | keep | jules.google.com |
 | DigitalOcean | usage-priced | varies | — | n/a | keep | digitalocean.com/pricing |
 | Doppler | Free (Developer) | $0 | Team | $18 / user / mo | keep | doppler.com/pricing |
