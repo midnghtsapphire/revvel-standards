@@ -99,7 +99,7 @@
 | **Sentry** | Fair Source (FOSS self-host) | 🆓 Free Tier | Free (5k errors/mo) / $26+/mo | P0 | 🔴 Research | Industry standard error tracking; self-hostable via Docker; **Revvel needs this now** |
 | **Highlight.io** | Apache 2.0 ✅ FOSS | 🆓 Free Tier | Free (500 sessions/mo) / $50+/mo | P1 | 🔵 Recommended | FOSS Sentry alternative with session replay; excellent for UI debugging |
 | **GlitchTip** | MIT ✅ FOSS | ✅ Free | $0 (self-hosted) / $9+/mo | P1 | 🔵 Recommended | FOSS Sentry-compatible drop-in replacement; self-host on DigitalOcean |
-| **Rollbar** | Proprietary | 🆓 Free Tier | Free (5k items/mo) / $12+/mo | P2 | 🟡 Evaluate | Error monitoring with deploy tracking |
+| **Rollbar** | Proprietary | ❌ **account is on a paid trial** | **$1,208 / yr** on `advanced_4000K` — trial ends 2026-08-24. Free tier is 5k items/mo; we are not on it | P2 | 🔴 **CUT before 2026-08-24** | Error monitoring with deploy tracking. Nothing in this repo references it. See `docs/TOOL_COST_INDEX.md` |
 | **Bugsnag** | Proprietary | 🆓 Free Tier | Free (7.5k events/mo) / $59+/mo | P2 | 🟡 Evaluate | Production error monitoring |
 | **LogRocket** | Proprietary | 🆓 Free Tier | Free (1k sessions/mo) / $99+/mo | P2 | 🟡 Evaluate | Session replay + error monitoring; strong UI bug catching |
 | **Axiom** | Proprietary | 🆓 Free Tier | Free (500 GB/mo ingest free) / $25+/mo | P1 | 🔵 Recommended | Log management + query; generous free tier; GitHub Actions native integration |

@@ -752,3 +752,44 @@ Actions are free, so the reported charge is not from here), the Actions spending
 limit, and the Vercel account block (#17831). Five third-party review actions
 remain pinned to floating tags rather than SHAs, against gotcha #8 — filed, not
 fixed, because choosing a revision to freeze is an owner call.
+
+## 2026-08-21 — The cost index listed 24 tools and priced none of the paid ones
+
+**Symptom.** The owner opened GitHub billing looking for the source of a $566
+Copilot overage and found a larger charge nobody was tracking: Rollbar on
+`advanced_4000K`, **$1,208/yr**, free trial converting in three days. Also
+billing monthly: Deploybot-app Pro ($45) and Create Issue Branch ($10).
+
+**What the repo said.** `docs/TOOL_COST_INDEX.md` calls itself the "single
+source of truth for current + next-tier costs of every SaaS the pipeline uses"
+and is read by `docs/API_LIMIT_AUTO_UPGRADE.md` at a quota wall. It listed 24
+tools. Every paid one was absent. Rollbar did appear in
+`docs/Universal-BOM_List/TOOLING_AND_TESTING_BOM.md` — as "🆓 Free Tier — Free
+(5k items/mo) / $12+/mo", the price of a plan the account is not on. That is
+worse than an omission: it reads as a checked fact and it is off by 100x.
+
+**Why it went unnoticed for so long.** Twenty-four rows of `$0` look like a cost
+review has happened. Nobody had ever added a row for a service that charges,
+because the free tiers were the interesting ones to research and the paid ones
+arrived through the Marketplace install flow, which touches no file in the repo.
+The index measured what was easy to see.
+
+**The near-miss inside the fix.** The first draft of the Deploybot row read
+"CUT — zero references in `.github/`, `scripts/`, or any config", derived from a
+grep. The owner corrected it immediately: they use it. Deploybot is configured
+in its own dashboard, so a repo-wide grep finds nothing whether it is load-
+bearing or dead. **Absence of a repo reference is not evidence a marketplace app
+is unused** — the same reasoning that produced D007's wrong RecurseML cut, where
+the measured lane was not the running one. The row now says so in as many words,
+so the wrong conclusion is not re-derived from a fresh grep.
+
+**Fix.** `tests/billed-subscriptions-are-indexed.test.js` name-pins each paid
+line item read off the billing page and requires a row stating a non-zero
+amount, plus the trial conversion date for anything mid-trial. A count would
+have passed while naming the wrong four. Mutation-tested against the exact
+defects: deleting the Rollbar row fails, repricing it to `$0` fails, stripping
+every conversion date from the row fails.
+
+**Rule.** A cost document that no test consumes is decoration
+(RVS-VERIFY-001). If a service can charge the account, the check that proves it
+is priced must fail when it is not.
