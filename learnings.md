@@ -656,3 +656,53 @@ breakdown (this repo is public with standard runners, so its Actions are free an
 the reported charge is not from here), the Actions spending limit, and the Vercel
 account block (#17831). **Do not top up OpenRouter credits until the fifteen are
 gated** — that is precisely the burn the 402 is currently hiding.
+
+**Date/Time:** 2026-08-21
+
+**Task Attempted:** Verify my own claim. After merging #17859 I told the owner
+"nothing can spend without you saying so." A merge-tail notification showed
+`ai-pr-reviewer` still calling OpenRouter, so I checked instead of assuming the
+comment was stale.
+
+**Outcome:** The claim was wrong. **Seven** workflows hand a paid LLM credential
+to a *third-party action* that makes the call inside its own code —
+`maxlim0/AI-PR-Reviewer`, `maxlim0/actions-progci-fail`,
+`fridzema/ai-weekly-changelog-action`, `sipyourdrink-ltd/bernstein`,
+`koki-develop/claude-renovate-review`, `omnedia/panda-ops`, and
+`tarmojussila/xai-code-review`. All now gated; the guard extended to see them.
+1312/1312, 227 workflows valid, chaosmender exit 0.
+
+**Root Cause of Failure (If any):** `tests/llm-spend-gate-coverage.test.js`
+scanned for `openrouter.ai/api`. **No provider URL appears in any of those seven
+files.** The URL lives inside the action's own source, which this repo does not
+contain — so the scan reported full coverage over a set it could not observe,
+and I repeated that number to the owner as if it were a measurement.
+
+**Self-Healing Fix / Learned Lesson:** The new detector asserts on the thing that
+actually predicts spend — **a paid credential crossing into code we do not
+control** — rather than on a symptom of it. First draft over-fired on four
+workflows; checking each showed one true positive (`xai-code-review`, job-level
+`XAI_API_KEY` consumed by the action) and three false ones: `agent-fallback` and
+`openrouter-coder` shell out to scripts already gated in #17858, and
+`ship-to-market`'s third-party actions are Docker and gh-pages, which do not
+consume the key. Rather than loosen the check, it now recognises invocation of a
+gated script as coverage and carries a small `NON_LLM_ACTIONS` allowlist where
+each entry is there because it was checked.
+
+**The lesson, and it generalises well past this repo: a guard that greps for a
+symptom misses every path that reaches the same outcome another way.** The URL
+was a proxy for "this bills." It was a good proxy for thirteen call sites and a
+useless one for seven, and nothing distinguished the two cases from inside the
+check. When a guard's predicate is a proxy, name what it cannot see — the earlier
+version implied completeness it never had.
+
+**Second lesson: a claim to the user is a postcondition too (RVS-VERIFY-001).**
+"Nothing can spend" was a marker with no producer. What made it checkable was one
+contradicting observation — a bot still calling out — and taking it seriously
+instead of explaining it away as a pre-merge artifact.
+
+**Next Action:** Five of the seven third-party actions are pinned to floating
+tags (`@v0.3`, `@v1`, `@v1.3.1`, `@v2.7.0`, `@0.1.3`) rather than a commit SHA,
+against CLAUDE.md gotcha #8. Not fixed here — separate change, and pinning an
+action whose upstream may have moved needs the owner's call on which revision to
+freeze.

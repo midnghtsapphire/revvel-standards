@@ -215,3 +215,87 @@ test('a free probe that starts billing loses its exemption', () => {
   }
   assert.deepStrictEqual(nowBilling, []);
 });
+
+/**
+ * The class the URL scan cannot see.
+ *
+ * `tests/llm-spend-gate-coverage.test.js` originally looked for
+ * `openrouter.ai/api` and reported full coverage. It was wrong: six workflows
+ * hand an LLM API key to a **third-party action** that makes the call inside
+ * its own code. No provider URL appears anywhere in those files, so the scan
+ * saw nothing while the spend was entirely real —
+ * `maxlim0/AI-PR-Reviewer`, `fridzema/ai-weekly-changelog-action`,
+ * `sipyourdrink-ltd/bernstein`, `koki-develop/claude-renovate-review`,
+ * `omnedia/panda-ops`, `maxlim0/actions-progci-fail`.
+ *
+ * The lesson generalises past this repo: a guard that greps for a *symptom*
+ * (the URL) misses every path that reaches the same outcome another way. This
+ * test asserts on the thing that actually predicts spend — **a paid credential
+ * crossing into code we do not control.**
+ */
+
+/** Secrets whose presence means a call can be billed. */
+const PAID_CREDENTIAL =
+  /(OPENROUTER_API_KEY|ANTHROPIC_API_KEY|OPENAI_API_KEY|XAI_API_KEY|PERPLEXITY_API_KEY)/;
+
+/** `uses:` refs that are ours or GitHub's, and so are covered elsewhere. */
+const FIRST_PARTY =
+  /^(\.\/|actions\/|github\/|docker:\/\/)/;
+
+/**
+ * Third-party actions that demonstrably do not consume an LLM credential —
+ * they open PRs, push images, publish pages. Each is here because it was
+ * checked, not because flagging it was inconvenient.
+ */
+const NON_LLM_ACTIONS = [
+  'peter-evans/create-pull-request', // opens a PR with the diff; no model call
+  'docker/login-action', // registry auth
+  'docker/build-push-action', // image build
+  'peaceiris/actions-gh-pages', // static publish
+];
+
+/**
+ * A workflow is also covered when its LLM call goes through one of the scripts
+ * gated in #17858 — the credential is in scope, but the spend decision happens
+ * inside the script, not in the YAML.
+ */
+const INVOKES_GATED_SCRIPT =
+  /(scripts\/openrouter-triage\.js|\.github\/scripts\/openrouter_coder\.py|scripts\/pr-auto-review\.js|scripts\/wr-fill-fields\.js|scripts\/openrouter-personas\.js)/;
+
+test('a workflow handing a paid LLM credential to a third-party action is gated', () => {
+  const dir = path.join(REPO_ROOT, '.github', 'workflows');
+  const offenders = [];
+
+  for (const name of fs.readdirSync(dir).filter((f) => /\.ya?ml$/.test(f))) {
+    const source = fs.readFileSync(path.join(dir, name), 'utf8');
+    const live = source
+      .split('\n')
+      .filter((l) => !/^\s*#/.test(l))
+      .join('\n');
+
+    if (!PAID_CREDENTIAL.test(live)) continue;
+    if (CONSULTS_GATE.test(live)) continue;
+    // The spend decision may live inside a script this workflow shells out to.
+    if (INVOKES_GATED_SCRIPT.test(live)) continue;
+
+    const thirdParty = [...live.matchAll(/uses:\s*([^\s#]+)/g)]
+      .map((m) => m[1].replace(/^['"]|['"]$/g, ''))
+      .filter((ref) => !FIRST_PARTY.test(ref))
+      .filter((ref) => !NON_LLM_ACTIONS.some((a) => ref.startsWith(`${a}@`)));
+
+    if (thirdParty.length === 0) continue;
+
+    offenders.push(`${name} → ${[...new Set(thirdParty)].slice(0, 3).join(', ')}`);
+  }
+
+  assert.deepStrictEqual(
+    offenders,
+    [],
+    'These workflows hand a paid LLM credential to a third-party action and are ' +
+      'not gated. The action bills inside its own code, so no provider URL ' +
+      'appears here and the URL scan cannot see it:\n  ' +
+      offenders.join('\n  ') +
+      "\n\nAdd `if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'` to the step (AND it onto " +
+      'any existing condition rather than replacing it).',
+  );
+});
