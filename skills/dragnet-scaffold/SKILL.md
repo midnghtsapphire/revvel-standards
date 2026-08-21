@@ -5,7 +5,10 @@
 **Date:** 2026-07-05
 **Status:** Active
 **Category:** Product Operations / Autonomous Triage
-**LLM:** Claude Sonnet (primary via `repo_surgery` profile), OpenRouter fallback
+**LLM:** Layer 0 LM Studio (local, free) → keyless Perplexity (free) → OpenRouter
+(`repo_surgery` profile, billed — refused unless `REVVEL_LLM_ALLOW_CLOUD=1`).
+Cascade lives in `routedChat` (`scripts/openrouter-routing.js`); see
+`docs/LOCAL_LLM_SETUP.md`.
 **Type:** On-demand (comment-triggered)
 **Persona:** 🕵️ DRAGNET (SCAFFOLD MODE)
 
