@@ -85,7 +85,16 @@ test('workflow guards the issue_comment lane to octopus-review[bot] quota banner
 test('workflow covers all three lanes: quota comment, sweep schedule, manual dispatch', () => {
   const workflow = yaml.parse(fs.readFileSync(workflowPath, 'utf8'));
   const triggers = workflow.on || workflow[true]; // yaml parses bare `on:` as boolean true
-  assert.ok(triggers.issue_comment, 'issue_comment trigger present');
+  // D016 (2026-08-21): issue_comment cut with the rest of the Octopus lanes.
+  // Inverted rather than deleted so a silent re-enable fails here too. Note
+  // this does NOT stop octopus-review[bot] commenting — that is the GitHub
+  // App, which reports independently of this workflow (#17872).
+  assert.strictEqual(triggers.issue_comment, undefined, 'issue_comment must stay cut (D016)');
+  assert.match(
+    fs.readFileSync(workflowPath, 'utf8'),
+    /^\s*#\s*issue_comment:/m,
+    'the cut trigger must remain in the file, commented, so it can be restored',
+  );
   // COST FREEZE 2026-08-21: the schedule is commented out in the workflow,
   // preserved in place (RVS-AGENT-001) rather than deleted. ~496 scheduled
   // runs/day across 46 workflows drove the Actions bill on a repo with no
