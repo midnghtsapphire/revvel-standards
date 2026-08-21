@@ -25,6 +25,7 @@ Environment:
   LMSTUDIO_MODEL             default: whatever LM Studio has loaded
   OLLAMA_ENDPOINT            default http://127.0.0.1:11434
   OLLAMA_MODEL               default gemma3
+  LMSTUDIO_API_KEY           bearer token, if LM Studio requires one (0.4.0+)
   OPENROUTER_API_KEY         required for the cloud lane
   OPENROUTER_MODEL           default moonshotai/kimi-k2
   REVVEL_LLM_ALLOW_CLOUD     "1" to permit the paid lane. Unset = local only.
@@ -33,6 +34,8 @@ Environment:
 CLI:
   python3 scripts/local_llm.py doctor        # what is reachable from here
   python3 scripts/local_llm.py ask "prompt"  # one completion, prints the lane
+  python3 scripts/local_llm.py load <model>  # load a model without the UI
+  python3 scripts/local_llm.py doctor --load <model>
 """
 from __future__ import annotations
 
@@ -52,6 +55,9 @@ LANE_OPENROUTER = "lane-1-openrouter"
 LOCAL_LANES = (LANE_LMSTUDIO, LANE_OLLAMA)
 
 DEFAULT_LMSTUDIO_ENDPOINT = "http://127.0.0.1:1234/v1"
+# LM Studio 0.4.0 added token auth. Unset locally, which is the normal case;
+# required once the server is reachable from anywhere but this machine.
+LMSTUDIO_KEY_ENV = "LMSTUDIO_API_KEY"
 DEFAULT_OLLAMA_ENDPOINT = "http://127.0.0.1:11434"
 DEFAULT_OLLAMA_MODEL = "gemma3"
 DEFAULT_OPENROUTER_MODEL = "moonshotai/kimi-k2"
@@ -111,6 +117,28 @@ def _endpoint(var: str, default: str) -> str:
     return (os.environ.get(var) or default).rstrip("/")
 
 
+def lmstudio_headers() -> dict:
+    """Auth header for LM Studio, empty when no token is configured.
+
+    LM Studio 0.4.0 can require a bearer token. Without this the client would
+    get a bare 401 from a secured server and report it as "unreachable", which
+    sends you looking at the wrong thing entirely.
+    """
+    key = (os.environ.get(LMSTUDIO_KEY_ENV) or "").strip()
+    return {"Authorization": f"Bearer {key}"} if key else {}
+
+
+def lmstudio_native_base() -> str:
+    """Base URL for LM Studio's native v1 API (`/api/v1`).
+
+    `LMSTUDIO_ENDPOINT` points at the OpenAI-compatible surface (`/v1`), which
+    is what inference uses. Model management lives on a different path, so it is
+    derived here rather than configured twice and allowed to drift apart.
+    """
+    endpoint = _endpoint("LMSTUDIO_ENDPOINT", DEFAULT_LMSTUDIO_ENDPOINT)
+    return endpoint[: -len("/v1")] + "/api/v1" if endpoint.endswith("/v1") else endpoint + "/api/v1"
+
+
 LOOPBACK_HOSTS = ("127.0.0.1", "localhost", "::1", "0.0.0.0")
 
 # One opener with proxies disabled, reused for local lanes.
@@ -146,8 +174,8 @@ def _post_json(url: str, payload: dict, headers: dict, timeout: int) -> dict:
     return _open(req, timeout, is_loopback(url))
 
 
-def _get_json(url: str, timeout: int) -> dict:
-    req = urllib.request.Request(url, method="GET")
+def _get_json(url: str, timeout: int, headers: dict = None) -> dict:
+    req = urllib.request.Request(url, method="GET", headers=headers or {})
     return _open(req, timeout, is_loopback(url))
 
 
@@ -180,15 +208,40 @@ def is_embedding_model(model_id: str) -> bool:
     return any(h in (model_id or "").lower() for h in EMBEDDING_HINTS)
 
 
-def lmstudio_models(timeout: int = 10, chat_only: bool = False) -> list:
+def lmstudio_models(timeout: int = 10, chat_only: bool = False,
+                    strict: bool = False) -> list:
     """Model ids LM Studio currently has loaded. Empty list if unreachable.
 
     `chat_only` drops embedding models, which cannot answer a chat completion.
+
+    `strict` re-raises instead of swallowing. Callers that are about to make a
+    request need this: a 401 from a secured server is NOT "unreachable", and
+    reporting it that way sends the operator off to check whether LM Studio is
+    running when it plainly is. `probe()` stays non-strict — there, failing to
+    answer really is the answer.
     """
     endpoint = _endpoint("LMSTUDIO_ENDPOINT", DEFAULT_LMSTUDIO_ENDPOINT)
     try:
-        out = _get_json(f"{endpoint}/models", timeout)
-    except Exception:  # noqa: BLE001 - probing; unreachable is an answer
+        out = _get_json(f"{endpoint}/models", timeout, lmstudio_headers())
+    except urllib.error.HTTPError as exc:
+        if strict and exc.code == 401:
+            raise LaneUnavailable(
+                f"{endpoint} returned 401 Unauthorized. LM Studio is running but "
+                f"requires a token — set {LMSTUDIO_KEY_ENV}.") from exc
+        if strict:
+            raise LaneUnavailable(f"{endpoint} failed: HTTP {exc.code}") from exc
+        return []
+    except urllib.error.URLError as exc:
+        # Strict still means "explain it", not "crash". Raising LaneUnavailable
+        # keeps failover to Ollama working — a raw URLError escapes the caller's
+        # handler and takes the whole cascade down with it.
+        if strict:
+            raise LaneUnavailable(
+                f"{endpoint} unreachable: {exc.reason}") from exc
+        return []
+    except Exception as exc:  # noqa: BLE001 - probing; unreachable is an answer
+        if strict:
+            raise LaneUnavailable(f"{endpoint} failed: {exc}") from exc
         return []
     ids = [m.get("id") for m in (out.get("data") or []) if m.get("id")]
     return [i for i in ids if not is_embedding_model(i)] if chat_only else ids
@@ -201,7 +254,7 @@ def call_lmstudio(prompt: str, model: str = "") -> Completion:
         raise LaneUnavailable("LMSTUDIO_ENDPOINT is empty")
     model = model or os.environ.get("LMSTUDIO_MODEL", "")
     if not model:
-        loaded = lmstudio_models()
+        loaded = lmstudio_models(strict=True)
         if not loaded:
             raise LaneUnavailable(
                 f"no model loaded and {endpoint}/models did not answer — "
@@ -217,12 +270,48 @@ def call_lmstudio(prompt: str, model: str = "") -> Completion:
         model = chat[0]
     try:
         text, resolved, tokens = _openai_chat(
-            endpoint, model, prompt, {}, _timeout())
+            endpoint, model, prompt, lmstudio_headers(), _timeout())
+    except urllib.error.HTTPError as exc:
+        if exc.code == 401:
+            raise LaneUnavailable(
+                f"{endpoint} returned 401 Unauthorized. LM Studio is running but "
+                f"requires a token — set {LMSTUDIO_KEY_ENV}.") from exc
+        raise LaneUnavailable(f"{endpoint} failed: HTTP {exc.code}") from exc
     except urllib.error.URLError as exc:
         raise LaneUnavailable(f"{endpoint} unreachable: {exc.reason}") from exc
     except Exception as exc:  # noqa: BLE001
         raise LaneUnavailable(f"{endpoint} failed: {exc}") from exc
     return Completion(text, LANE_LMSTUDIO, resolved, tokens)
+
+
+def load_model(model: str, timeout: int = 300) -> dict:
+    """Ask LM Studio to load a model, via its native `/api/v1/models/load`.
+
+    Exists because the most common Layer 0 failure is not "the server is down"
+    but "the wrong model is loaded" — an embedding model, or nothing. Loading is
+    a management call on the native API, not the OpenAI-compatible one.
+    """
+    if not model:
+        raise ValueError("a model id is required")
+    url = f"{lmstudio_native_base()}/models/load"
+    try:
+        return _post_json(url, {"model": model}, lmstudio_headers(), timeout)
+    except urllib.error.HTTPError as exc:
+        detail = ""
+        try:
+            detail = exc.read().decode()[:300]
+        except Exception:  # noqa: BLE001 - best effort on the error body
+            pass
+        if exc.code == 401:
+            raise LaneUnavailable(
+                f"{url} returned 401 — set {LMSTUDIO_KEY_ENV}.") from exc
+        if exc.code == 404:
+            raise LaneUnavailable(
+                f"{url} returned 404. The native /api/v1 surface needs LM Studio "
+                "0.4.0 or newer; on older builds load the model from the UI.") from exc
+        raise LaneUnavailable(f"load failed: HTTP {exc.code} {detail}") from exc
+    except urllib.error.URLError as exc:
+        raise LaneUnavailable(f"{url} unreachable: {exc.reason}") from exc
 
 
 def call_ollama(prompt: str, model: str = "") -> Completion:
@@ -313,6 +402,8 @@ def probe() -> list:
                   "chat/instruct model too.")
     else:
         detail = f"{len(chat)} chat model(s) loaded"
+    if os.environ.get(LMSTUDIO_KEY_ENV):
+        detail += f"  [{LMSTUDIO_KEY_ENV} is set — sending a bearer token]"
     out.append(LaneStatus(LANE_LMSTUDIO, lm_endpoint, bool(chat), detail, models))
 
     ol_endpoint = _endpoint("OLLAMA_ENDPOINT", DEFAULT_OLLAMA_ENDPOINT)
@@ -336,7 +427,27 @@ def probe() -> list:
     return out
 
 
-def _cmd_doctor(_args) -> int:
+def _cmd_load(args) -> int:
+    try:
+        load_model(args.model)
+    except (LaneUnavailable, ValueError) as exc:
+        print(f"load failed: {exc}", file=sys.stderr)
+        return 1
+    loaded = lmstudio_models()
+    print(f"loaded: {args.model}")
+    if loaded:
+        print("now available: " + ", ".join(loaded))
+    return 0
+
+
+def _cmd_doctor(args) -> int:
+    if getattr(args, "load", ""):
+        try:
+            load_model(args.load)
+            print(f"requested load of {args.load}\n")
+        except (LaneUnavailable, ValueError) as exc:
+            print(f"could not load {args.load}: {exc}\n", file=sys.stderr)
+
     statuses = probe()
     print("Layer 0 first — lane status\n")
     for st in statuses:
@@ -359,6 +470,8 @@ def _cmd_doctor(_args) -> int:
         return 1
     print("No local lane is up, and the paid lane is blocked, so nothing will run.")
     print("Start LM Studio and click 'Start Server' on its Developer tab.")
+    print("If it is running but a model is missing, load one without the UI:")
+    print("  python3 scripts/local_llm.py load <model-id>")
     print("See docs/LOCAL_LLM_SETUP.md for the Windows steps.")
     return 1
 
@@ -386,7 +499,14 @@ def main(argv=None) -> int:
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     doctor = sub.add_parser("doctor", help="report which lanes are reachable")
+    doctor.add_argument(
+        "--load", default="",
+        help="load this model id in LM Studio first (native /api/v1)")
     doctor.set_defaults(func=_cmd_doctor)
+
+    load = sub.add_parser("load", help="load a model in LM Studio without the UI")
+    load.add_argument("model", help="model id, e.g. gemma-3-4b-it")
+    load.set_defaults(func=_cmd_load)
 
     ask = sub.add_parser("ask", help="run one prompt through the cascade")
     ask.add_argument("prompt", help="the prompt, or - to read stdin")
