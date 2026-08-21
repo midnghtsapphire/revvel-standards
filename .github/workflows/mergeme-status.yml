@@ -20,9 +20,13 @@ on:
         required: false
         type: boolean
         default: true
-  schedule:
-    # Weekly Monday 14:17 UTC — drift watch, not a hot path
-    - cron: '17 14 * * 1'
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   # Weekly Monday 14:17 UTC — drift watch, not a hot path
+  #   - cron: '17 14 * * 1'
   push:
     paths:
       - 'config/connections.yml'

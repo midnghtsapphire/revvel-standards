@@ -4,8 +4,12 @@ name: Fleet Controller
 # available in the job summary/artifacts; the repository is updated only when
 # durable controller state or semantic monitor content actually changes.
 on:
-  schedule:
-    - cron: '7,22,37,52 * * * *'
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
     inputs:
       preempt:
