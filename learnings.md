@@ -706,3 +706,49 @@ tags (`@v0.3`, `@v1`, `@v1.3.1`, `@v2.7.0`, `@0.1.3`) rather than a commit SHA,
 against CLAUDE.md gotcha #8. Not fixed here — separate change, and pinning an
 action whose upstream may have moved needs the owner's call on which revision to
 freeze.
+
+**Date/Time:** 2026-08-21
+
+**Task Attempted:** Wire LM Studio 0.4.0's native `/api/v1` surface — token auth
+and model loading — into `scripts/local_llm.py`, and document Layer 0 properly
+for visiting agents.
+
+**Outcome:** `LMSTUDIO_API_KEY` support, a `load` subcommand, `doctor --load`,
+and a Layer 0 section in `AGENTS.md` where a visiting agent actually looks.
+1320/1320 tests, 227 workflows valid, chaosmender exit 0.
+
+**Root Cause of Failure (If any):** No outage — this closed two latent traps.
+The client sent no auth header at all, so a secured LM Studio would have
+answered 401 and the client would have reported it as *unreachable*. And the
+most common Layer 0 failure in practice is not "the server is down" but "the
+wrong model is loaded", which previously required the UI to fix.
+
+**Self-Healing Fix / Learned Lesson:** Two things worth carrying forward, both
+found by a test rather than by reading the code:
+
+1. **A test that asserts on the *message* caught a hole the behaviour tests
+   could not.** The 401 case failed on the first run — not because the handler
+   was wrong, but because `lmstudio_models()` swallowed every exception and
+   returned `[]`, so the 401 never reached the handler at all. The probe could
+   not distinguish "unreachable" from "unauthorized", which is exactly the
+   confusion the work existed to prevent. Asserting *"the error must name
+   `LMSTUDIO_API_KEY`"* found that; asserting "it fails" would not have.
+
+2. **Then the fix broke failover, and that was also caught.** Adding
+   `strict=True` re-raised the raw `URLError`, which escaped the caller's
+   `except LaneUnavailable` and took the whole cascade down instead of moving
+   to Ollama. Strict has to mean *explain it*, not *crash*. Three previously
+   passing tests went red and named the regression immediately.
+
+**Also recorded for visiting agents (AGENTS.md, new Layer 0 section):** the two
+API surfaces (`/v1` for inference, `/api/v1` for management, derived from each
+other so they cannot drift); embedding models are not chat models; `urllib`
+routes `127.0.0.1` through `http_proxy`; a GitHub-hosted runner cannot reach a
+laptop, so every CI LLM call is a billed call.
+
+**Next Action:** None outstanding for Layer 0. Owner-only and still open: the
+GitHub billing breakdown (this repo is public with standard runners — its
+Actions are free, so the reported charge is not from here), the Actions spending
+limit, and the Vercel account block (#17831). Five third-party review actions
+remain pinned to floating tags rather than SHAs, against gotcha #8 — filed, not
+fixed, because choosing a revision to freeze is an owner call.
