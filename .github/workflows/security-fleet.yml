@@ -295,7 +295,7 @@ jobs:
                 if (existing) {
                   await github.rest.issues.update({
                     owner, repo, issue_number: existing.number, state: 'closed',
-                    body: `${existing.body}\n\n_Auto-closed: 0 findings on the latest weekly sweep._`,
+                    body: `${existing.body}\n\n_Auto-closed: 0 findings on the latest sweep._`,
                   });
                   core.info(`Closed resolved ${m.handle} issue #${existing.number}.`);
                 }
@@ -303,7 +303,7 @@ jobs:
               }
 
               const body = [
-                `Automated weekly sweep from \`security-fleet\` ${m.handle} (${m.desc}).`,
+                `Automated sweep from \`security-fleet\` ${m.handle} (${m.desc}). Scheduled runs are frozen (#17849); this ran on demand.`,
                 '',
                 `Detector: \`scripts/security-fleet.js ${m.key}\`. First 50 findings shown below.`,
                 '',
