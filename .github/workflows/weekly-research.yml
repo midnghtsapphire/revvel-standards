@@ -105,6 +105,9 @@ jobs:
         uses: actions/github-script@v9.0.0
         env:
           ISSUE_NUMBER: ${{ steps.check.outputs.issue_number }}
+          # Spend gate (#17864): assigning @Copilot starts a paid coding-agent
+          # session. Unset = label only, no assignment, no spend.
+          REVVEL_ALLOW_COPILOT_ASSIGN: ${{ vars.REVVEL_ALLOW_COPILOT_ASSIGN }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -133,7 +136,16 @@ jobs:
               }
             }
 
-            // Assign @Copilot as the expert at tokenless and obsessive token savings, an expert hypermaniac full-stack developer, python forte, expert github coder assistant use mas, sub agents and swarms move fast(mindmappr persona)
+            /* SPEND GATE (#17864). Assigning @Copilot starts a Copilot coding-agent
+            session, and those consume PAID premium requests. This fired on every
+            opened / reopened / labeled WR issue, which is how 657 Copilot-authored
+            pull requests accumulated in this repository. Labels above are free and
+            still applied; only the assignment is gated. Set the repository variable
+            REVVEL_ALLOW_COPILOT_ASSIGN to "1" to turn it back on. Same principle as
+            REVVEL_LLM_ALLOW_CLOUD: no paid work without an explicit opt-in. */
+            if (process.env.REVVEL_ALLOW_COPILOT_ASSIGN !== '1') {
+              core.info('Skipping @Copilot assignment: REVVEL_ALLOW_COPILOT_ASSIGN is not "1" (spend gate). Labels were still applied.');
+            } else
             try {
               await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
