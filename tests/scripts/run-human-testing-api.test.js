@@ -5,6 +5,12 @@ const https = require("https");
 
 const testOutputPath = path.join(__dirname, "test-output.md");
 process.env.OPENROUTER_API_KEY = "test-key";
+// This suite exercises the cloud call path deliberately — it mocks
+// https.request to simulate provider failures, so no request leaves the
+// process and no money moves. The spend gate (#17850) refuses paid calls
+// by default, so the gate must be opened explicitly here or the assertions
+// below would be testing the refusal instead of the failure handling.
+process.env.REVVEL_LLM_ALLOW_CLOUD = "1";
 process.env.TARGET_URL = "https://example.com";
 process.env.OUTPUT_FILE = testOutputPath;
 process.env.APP_NAME = "Test App";

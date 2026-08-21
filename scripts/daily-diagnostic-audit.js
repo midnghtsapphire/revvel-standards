@@ -21,6 +21,7 @@
 'use strict';
 
 const fs = require('fs');
+const { assertCloudAllowed } = require("./llm-spend-gate");
 const path = require('path');
 const { execSync } = require('child_process');
 
@@ -384,6 +385,8 @@ function readFileBounded(p) {
 }
 
 async function callOpenRouter(system, user, model) {
+  // Spend gate (#17850): refuse unless someone deliberately allowed it.
+  assertCloudAllowed("daily-diagnostic-audit");
   const res = await fetch(OPENROUTER_URL, {
     method: 'POST',
     headers: {

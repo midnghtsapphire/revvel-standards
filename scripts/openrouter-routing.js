@@ -15,6 +15,7 @@
  */
 
 const https = require("https");
+const { assertCloudAllowed } = require("./llm-spend-gate");
 const fs = require('fs');
 const path = require('path');
 
@@ -103,6 +104,8 @@ if (lookupData && lookupData.profiles && lookupData.models) {
  * @returns {Promise<Object>} Response with content, modelUsed, and requestedModels
  */
 async function callOpenRouter({ models, messages, temperature = 0.7, max_tokens = 4000, apiKey, timeout = 60000, httpReferer, appTitle }) {
+  // Spend gate (#17850): refuse unless someone deliberately allowed it.
+  assertCloudAllowed("openrouter-routing.callOpenRouter");
   const key = (apiKey || process.env.OPENROUTER_API_KEY || "").trim();
 
   if (!key) {
