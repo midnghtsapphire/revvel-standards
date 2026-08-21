@@ -167,6 +167,40 @@ went unnoticed (#17849).
 The gate must be the exact string `1`. `true`, `yes`, and `TRUE` do not open it,
 so a half-remembered value fails closed.
 
+## 3a. Loading a model without the UI
+
+LM Studio 0.4.0 added a native API at `/api/v1` for model management. That
+means the most common Layer 0 failure — *the wrong model is loaded* — no longer
+needs clicking:
+
+```bash
+python3 scripts/local_llm.py load gemma-3-4b-it
+python3 scripts/local_llm.py doctor --load gemma-3-4b-it   # load, then report
+```
+
+A `404` from this means your LM Studio predates 0.4.0; load from the UI
+instead. Inference still uses the OpenAI-compatible `/v1` — only management
+lives on `/api/v1`, and `LMSTUDIO_ENDPOINT` stays pointed at `/v1`.
+
+## 3b. If LM Studio requires a token
+
+LM Studio 0.4.0 can require a bearer token, which matters the moment the server
+is reachable from anywhere but this machine:
+
+```bash
+export LMSTUDIO_API_KEY=your-token      # PowerShell: $env:LMSTUDIO_API_KEY="your-token"
+```
+
+Without it, a secured server answers `401`. The client says so explicitly and
+names this variable — a bare "unreachable" would send you off checking whether
+LM Studio is running when it plainly is.
+
+**This changes the remote-access picture.** Ollama has no authentication at
+all, so exposing it needs a reverse proxy in front. LM Studio can secure itself.
+Either way, prefer a private network (Tailscale) over a public IP — a model
+server on the open internet gets found, and port scans for these specifically
+are routine.
+
 ## 4a. The same gate, in JavaScript
 
 `scripts/local_llm.py` is the Python half. `scripts/llm-spend-gate.js` is the
@@ -232,7 +266,8 @@ the environment allows it. A caller can narrow the gate; it can never widen it.
 | Variable | Default | Notes |
 | --- | --- | --- |
 | `LMSTUDIO_ENDPOINT` | `http://127.0.0.1:1234/v1` | LM Studio's Developer tab shows the port |
-| `LMSTUDIO_MODEL` | whichever model is loaded | Usually leave unset |
+| `LMSTUDIO_MODEL` | whichever chat model is loaded | Usually leave unset; embedding models are skipped |
+| `LMSTUDIO_API_KEY` | unset | Bearer token, if LM Studio requires one (0.4.0+) |
 | `OLLAMA_ENDPOINT` | `http://127.0.0.1:11434` | Optional second local lane |
 | `OLLAMA_MODEL` | `gemma3` | |
 | `OPENROUTER_API_KEY` | — | Only used when the gate is open |

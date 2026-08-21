@@ -706,3 +706,90 @@ tags (`@v0.3`, `@v1`, `@v1.3.1`, `@v2.7.0`, `@0.1.3`) rather than a commit SHA,
 against CLAUDE.md gotcha #8. Not fixed here — separate change, and pinning an
 action whose upstream may have moved needs the owner's call on which revision to
 freeze.
+
+**Date/Time:** 2026-08-21
+
+**Task Attempted:** Wire LM Studio 0.4.0's native `/api/v1` surface — token auth
+and model loading — into `scripts/local_llm.py`, and document Layer 0 properly
+for visiting agents.
+
+**Outcome:** `LMSTUDIO_API_KEY` support, a `load` subcommand, `doctor --load`,
+and a Layer 0 section in `AGENTS.md` where a visiting agent actually looks.
+1320/1320 tests, 227 workflows valid, chaosmender exit 0.
+
+**Root Cause of Failure (If any):** No outage — this closed two latent traps.
+The client sent no auth header at all, so a secured LM Studio would have
+answered 401 and the client would have reported it as *unreachable*. And the
+most common Layer 0 failure in practice is not "the server is down" but "the
+wrong model is loaded", which previously required the UI to fix.
+
+**Self-Healing Fix / Learned Lesson:** Two things worth carrying forward, both
+found by a test rather than by reading the code:
+
+1. **A test that asserts on the *message* caught a hole the behaviour tests
+   could not.** The 401 case failed on the first run — not because the handler
+   was wrong, but because `lmstudio_models()` swallowed every exception and
+   returned `[]`, so the 401 never reached the handler at all. The probe could
+   not distinguish "unreachable" from "unauthorized", which is exactly the
+   confusion the work existed to prevent. Asserting *"the error must name
+   `LMSTUDIO_API_KEY`"* found that; asserting "it fails" would not have.
+
+2. **Then the fix broke failover, and that was also caught.** Adding
+   `strict=True` re-raised the raw `URLError`, which escaped the caller's
+   `except LaneUnavailable` and took the whole cascade down instead of moving
+   to Ollama. Strict has to mean *explain it*, not *crash*. Three previously
+   passing tests went red and named the regression immediately.
+
+**Also recorded for visiting agents (AGENTS.md, new Layer 0 section):** the two
+API surfaces (`/v1` for inference, `/api/v1` for management, derived from each
+other so they cannot drift); embedding models are not chat models; `urllib`
+routes `127.0.0.1` through `http_proxy`; a GitHub-hosted runner cannot reach a
+laptop, so every CI LLM call is a billed call.
+
+**Next Action:** None outstanding for Layer 0. Owner-only and still open: the
+GitHub billing breakdown (this repo is public with standard runners — its
+Actions are free, so the reported charge is not from here), the Actions spending
+limit, and the Vercel account block (#17831). Five third-party review actions
+remain pinned to floating tags rather than SHAs, against gotcha #8 — filed, not
+fixed, because choosing a revision to freeze is an owner call.
+
+## 2026-08-21 — The cost index listed 24 tools and priced none of the paid ones
+
+**Symptom.** The owner opened GitHub billing looking for the source of a $566
+Copilot overage and found a larger charge nobody was tracking: Rollbar on
+`advanced_4000K`, **$1,208/yr**, free trial converting in three days. Also
+billing monthly: Deploybot-app Pro ($45) and Create Issue Branch ($10).
+
+**What the repo said.** `docs/TOOL_COST_INDEX.md` calls itself the "single
+source of truth for current + next-tier costs of every SaaS the pipeline uses"
+and is read by `docs/API_LIMIT_AUTO_UPGRADE.md` at a quota wall. It listed 24
+tools. Every paid one was absent. Rollbar did appear in
+`docs/Universal-BOM_List/TOOLING_AND_TESTING_BOM.md` — as "🆓 Free Tier — Free
+(5k items/mo) / $12+/mo", the price of a plan the account is not on. That is
+worse than an omission: it reads as a checked fact and it is off by 100x.
+
+**Why it went unnoticed for so long.** Twenty-four rows of `$0` look like a cost
+review has happened. Nobody had ever added a row for a service that charges,
+because the free tiers were the interesting ones to research and the paid ones
+arrived through the Marketplace install flow, which touches no file in the repo.
+The index measured what was easy to see.
+
+**The near-miss inside the fix.** The first draft of the Deploybot row read
+"CUT — zero references in `.github/`, `scripts/`, or any config", derived from a
+grep. The owner corrected it immediately: they use it. Deploybot is configured
+in its own dashboard, so a repo-wide grep finds nothing whether it is load-
+bearing or dead. **Absence of a repo reference is not evidence a marketplace app
+is unused** — the same reasoning that produced D007's wrong RecurseML cut, where
+the measured lane was not the running one. The row now says so in as many words,
+so the wrong conclusion is not re-derived from a fresh grep.
+
+**Fix.** `tests/billed-subscriptions-are-indexed.test.js` name-pins each paid
+line item read off the billing page and requires a row stating a non-zero
+amount, plus the trial conversion date for anything mid-trial. A count would
+have passed while naming the wrong four. Mutation-tested against the exact
+defects: deleting the Rollbar row fails, repricing it to `$0` fails, stripping
+every conversion date from the row fails.
+
+**Rule.** A cost document that no test consumes is decoration
+(RVS-VERIFY-001). If a service can charge the account, the check that proves it
+is priced must fail when it is not.
