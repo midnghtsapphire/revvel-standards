@@ -1279,7 +1279,7 @@ additionally install the keyless Perplexity bridge.
 
 ### Defect 1 — the cascade had no configuration surface
 
-#17868 gave `routedChat` a free-lane cascade. Every persona workflow passed
+PR #17868 gave `routedChat` a free-lane cascade. Every persona workflow passed
 exactly one variable, `OPENROUTER_API_KEY`. On a GitHub runner that leaves
 Layer 0 resolving to the runner's own `127.0.0.1` — never the operator's
 laptop — and the paid lane refused by the spend gate. `/dragnet` on a pull
