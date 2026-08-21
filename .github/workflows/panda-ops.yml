@@ -19,6 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: PandaOps AI PR Review
+        # Spend gate (#17850): this third-party action calls a paid LLM provider
+        # with the key handed to it below, so the spend is real even though no
+        # openrouter.ai URL appears in this file. Runs only when the repository
+        # variable REVVEL_LLM_ALLOW_CLOUD is "1". See docs/LOCAL_LLM_SETUP.md.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         uses: omnedia/panda-ops@v1
         with:
           github_token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
