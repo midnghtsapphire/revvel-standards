@@ -52,6 +52,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           USE_OPENROUTER: ${{ github.event.inputs.use_openrouter || 'true' }}
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: >
@@ -90,8 +91,13 @@ jobs:
 
             const dryRun = process.env.DRY_RUN === 'true';
 
+            // Spend gate (#17850): the LLM branch bills OpenRouter, so it needs an
+            // explicit opt-in. The rest of this step — routing and labelling — is
+            // free and still runs, which is why the gate is here rather than an
+            // `if:` on the whole step.
+            const cloudAllowed = process.env.REVVEL_LLM_ALLOW_CLOUD === '1';
             const useOpenRouter = process.env.USE_OPENROUTER === 'true' &&
-            !!process.env.OPENROUTER_API_KEY;
+            !!process.env.OPENROUTER_API_KEY && cloudAllowed;
 
 
             const normalizePriority = (value) => {

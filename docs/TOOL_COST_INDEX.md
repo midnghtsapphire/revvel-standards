@@ -13,7 +13,11 @@ upgrade decision can be made.
 > it is the operator's own machine. `wr/agents/HIERARCHY.md` puts local LLMs at
 > Layer 0 with a target share of 60–70% of work, and `scripts/local_llm.py`
 > implements that ordering for the whole repo: LM Studio → Ollama → OpenRouter,
-> with the paid lane **refused** unless `REVVEL_LLM_ALLOW_CLOUD=1`. Any workflow
+> with the paid lane **refused** unless `REVVEL_LLM_ALLOW_CLOUD=1`. That gate
+> now covers scripts *and* workflows — set the repository variable of the same
+> name under Settings → Variables to allow paid calls; unset is the default and
+> skips them. Five health-probe workflows are deliberately exempt because
+> `GET /api/v1/models` does not bill; see `docs/LOCAL_LLM_SETUP.md`. Any workflow
 > that opts in should say why, in the workflow file. Setup and the Windows
 > specifics are in `docs/LOCAL_LLM_SETUP.md`.
 >
