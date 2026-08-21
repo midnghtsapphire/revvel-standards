@@ -837,3 +837,41 @@ therefore no evidence either way.
 socket. A routing table, a decision function, and a ledger entry are three
 producers and zero consumers. Test the request, not the decision — a test that
 asserts on the label passes just as well when nothing is sent.
+
+## 2026-08-21 — `/dragnet` could not answer on a PR by any route
+
+**Symptom.** Operator: "i cant do anything until /dragnet can work prs."
+
+**Cause 1 — the cascade was unreachable from CI.** #17868 gave `routedChat`
+free lanes. Every workflow that runs a persona passed exactly one variable,
+`OPENROUTER_API_KEY`. On a GitHub runner that means: `LMSTUDIO_ENDPOINT` unset →
+Layer 0 resolves to `http://127.0.0.1:1234/v1`, which is the *runner's* loopback
+and never the operator's laptop; `REVVEL_LLM_ALLOW_CLOUD` unset → the paid lane
+throws. Nine workflows, no lane configuration, no possible success.
+
+The same producer-without-consumer shape as the bug #17868 existed to fix. A
+cascade nothing can configure is a cascade nothing can use.
+
+**Cause 2 — I built the wrong "keyless" lane.** `scripts/perplexity-lane.js` as
+merged POSTed to api.perplexity.ai with no `Authorization` header. The official
+API requires a key, so that path could only ever 401. It executed — strictly
+better than the label it replaced — but it could never answer.
+
+The real keyless lane was already in the repo and I missed it:
+`callPerplexityNoKey` in `scripts/perplexity-research-issue.js` shells out to
+the `helallao/perplexity-ai` Python package, no key of any kind. That is what
+`config/routing-failover.yml` has always meant by "keyless Perplexity". I
+searched for `api.perplexity.ai` and for HTTP clients, and the real lane used
+neither — it was a Python heredoc behind `execFileSync`.
+
+**Two things the guard caught that I did not.** I plumbed the workflows by
+grep and got 2. A test that walks the require graph of every `node scripts/*.js`
+a workflow runs found **9**, including `dragnet-ci-autofix.yml` — DRAGNET's other
+lane — and `update-agent-creator-data.yml`, which I had inspected by hand and
+wrongly dismissed as docs-only.
+
+**Rule.** When you search for a capability and conclude it is absent, you have
+established that *your search terms* are absent. Search for the effect
+(a subprocess, a package name, an install hint), not only for the mechanism you
+expect. And discover consumers mechanically — a hand-built list of call sites
+was wrong by more than 4x here, in the direction that leaves the bug in place.

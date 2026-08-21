@@ -40,7 +40,17 @@ jobs:
 
       - run: npm ci
 
-      - run: node scripts/build-agent-creator-data.js
+      - name: Build agent creator data
+        # Lane config (#17868): this script reaches routedChat through the
+        # persona registry, so it needs somewhere for the cascade to go.
+        env:
+          LMSTUDIO_ENDPOINT: ${{ secrets.LMSTUDIO_ENDPOINT }}
+          LMSTUDIO_API_KEY: ${{ secrets.LMSTUDIO_API_KEY }}
+          LMSTUDIO_MODEL: ${{ vars.LMSTUDIO_MODEL }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: node scripts/build-agent-creator-data.js
 
       - name: Commit refreshed data if changed
         run: |

@@ -126,7 +126,10 @@ test('an embedding-only LM Studio is skipped, not mistaken for a chat lane', asy
       LMSTUDIO_ENDPOINT: `${lm.url}/v1`,
       LMSTUDIO_MODEL: undefined,
       PERPLEXITY_ENDPOINT: `${pplx.url}/chat/completions`,
-      PERPLEXITY_API_KEY: undefined,
+      // A key is set so the HTTP fallback is reachable: this test is about the
+      // embedding model being skipped, not about which Perplexity path runs.
+      // The keyless-vs-HTTP distinction is covered by its own tests below.
+      PERPLEXITY_API_KEY: 'test-key',
       [GATE_ENV]: undefined,
     }, async () => {
       const result = await routedChat({ profile: 'repo_surgery', messages: MESSAGES, silent: true });
@@ -142,27 +145,28 @@ test('an embedding-only LM Studio is skipped, not mistaken for a chat lane', asy
   }
 });
 
-test('the keyless Perplexity lane sends a real request, with no Authorization header', async () => {
-  // The whole defect: this request never left the process. Assert the bytes.
+test('with a key set, the lane falls back to the HTTP API and authenticates', async () => {
+  // Superseded #17868's assertion that a *keyless* HTTP request is sent. That
+  // was the wrong model: api.perplexity.ai requires a key, so a keyless request
+  // there can only 401. The HTTP path is the keyed fallback, and when it runs
+  // it must actually authenticate.
   const pplx = await stubServer({ models: ['sonar'], reply: 'perplexity answer' });
   try {
     await withEnv({
       LMSTUDIO_ENDPOINT: DEAD,
       PERPLEXITY_ENDPOINT: `${pplx.url}/chat/completions`,
-      PERPLEXITY_API_KEY: undefined,
+      PERPLEXITY_API_KEY: 'test-key',
       [GATE_ENV]: undefined,
     }, async () => {
       const result = await routedChat({ profile: 'repo_surgery', messages: MESSAGES, silent: true });
       assert.strictEqual(result.content, 'perplexity answer');
       assert.strictEqual(result.lane, 'lane-2-perplexity-keyless');
-      assert.strictEqual(result.keyless, true, 'Lane reported itself keyed when no key was set.');
+      assert.strictEqual(result.keyless, false, 'Lane reported itself keyless while using a key.');
     });
     assert.strictEqual(pplx.hits.length, 1, 'Perplexity was not called exactly once.');
     assert.strictEqual(pplx.hits[0].method, 'POST');
-    assert.strictEqual(
-      pplx.hits[0].auth, null,
-      'The keyless lane sent an Authorization header, so it was not keyless.',
-    );
+    assert.strictEqual(pplx.hits[0].auth, 'Bearer test-key',
+      'The keyed fallback must send the key it was given.');
     assert.match(pplx.hits[0].body, /"messages"/, 'Perplexity got no messages.');
   } finally {
     await pplx.close();
@@ -210,3 +214,104 @@ test('a free lane that is broken rather than absent does not get laundered into 
     );
   });
 });
+
+/**
+ * Added in #17870, after the lane merged in #17868 turned out to be the wrong
+ * implementation of "keyless".
+ *
+ * That version POSTed to api.perplexity.ai with no Authorization header and
+ * called it keyless. The official API requires a key, so that path could only
+ * ever 401 — it was a lane that executed, which is better than the label it
+ * replaced, but it could never actually answer.
+ *
+ * The repo already had the real thing and I missed it: `callPerplexityNoKey`
+ * in scripts/perplexity-research-issue.js shells out to the
+ * `helallao/perplexity-ai` Python package, which needs no key of any kind.
+ * `config/routing-failover.yml`'s "keyless Perplexity" has always meant that.
+ *
+ * These tests pin the correction so the wrong lane cannot come back.
+ */
+
+const { execFileSync } = require('node:child_process');
+
+test('the keyless bridge has exactly one copy, shared by both callers', () => {
+  // Two inline copies would drift, and the drift would stay invisible until
+  // one of them stopped matching the installed Python package.
+  const fs2 = require('node:fs');
+  const path2 = require('node:path');
+  const scripts = path2.join(__dirname, '..', 'scripts');
+  const owners = fs2
+    .readdirSync(scripts)
+    .filter((f) => f.endsWith('.js'))
+    .filter((f) => /const NO_KEY_BRIDGE\s*=\s*`/.test(fs2.readFileSync(path2.join(scripts, f), 'utf8')));
+
+  assert.deepStrictEqual(
+    owners,
+    ['perplexity-no-key-bridge.js'],
+    'The Python bridge source must be defined in exactly one module. Found it ' +
+      `defined in: ${owners.join(', ')}`,
+  );
+});
+
+test('the shared bridge stays in step with the research script that used to own it', () => {
+  const bridge = require('../scripts/perplexity-no-key-bridge');
+  assert.strictEqual(bridge.BRIDGE_MODEL, 'sonar',
+    'CONFIG.model was "sonar" when the bridge was extracted; a silent change ' +
+    'here would send the research agent to a different model than before.');
+  assert.strictEqual(bridge.BRIDGE_FALLBACK, 'auto');
+  assert.match(bridge.NO_KEY_INSTALL_HINT, /helallao\/perplexity-ai/,
+    'The install hint must name the package that actually provides the keyless lane.');
+  assert.match(bridge.NO_KEY_BRIDGE, /from perplexity import/,
+    'The bridge must still import the Python package; an empty or truncated ' +
+    'extraction would fail only at runtime, on a real request.');
+});
+
+test('the keyless lane prefers the bridge and never sends a keyless HTTP request', async () => {
+  // With no key set, the HTTP path can only 401 — so it must not be attempted.
+  // A stub server standing in for api.perplexity.ai must receive nothing.
+  const pplx = await stubServer({ models: ['sonar'], reply: 'should never be used' });
+  try {
+    await withEnv({
+      LMSTUDIO_ENDPOINT: DEAD,
+      PERPLEXITY_ENDPOINT: `${pplx.url}/chat/completions`,
+      PERPLEXITY_API_KEY: undefined,
+      [GATE_ENV]: undefined,
+    }, async () => {
+      // python3 exists here but the perplexity package does not, so the bridge
+      // fails and — with no key — the lane must stop rather than fall to HTTP.
+      await assert.rejects(
+        () => routedChat({ profile: 'repo_surgery', messages: MESSAGES, silent: true }),
+        (err) => {
+          assert.strictEqual(err.name, 'CloudSpendBlockedError',
+            `Expected to reach the gated paid lane, got ${err.name}: ${err.message}`);
+          return true;
+        },
+      );
+    });
+    assert.strictEqual(
+      pplx.hits.length, 0,
+      'A keyless HTTP request was sent to the Perplexity API. Without a key that ' +
+        'can only 401 — the keyless path is the Python bridge, not this endpoint.',
+    );
+  } finally {
+    await pplx.close();
+  }
+});
+
+test('a missing bridge reports the install hint, not a bare failure', async () => {
+  // "Not installed" and "refused" are different facts and only one is actionable.
+  const lane = require('../scripts/perplexity-lane');
+  await withEnv({ PERPLEXITY_API_KEY: undefined }, async () => {
+    await assert.rejects(
+      () => lane.chat({ messages: MESSAGES }),
+      (err) => {
+        assert.strictEqual(err.name, 'PerplexityLaneUnavailable');
+        assert.match(err.message, /helallao\/perplexity-ai/,
+          `The failure must say how to install the bridge. Got: ${err.message}`);
+        return true;
+      },
+    );
+  });
+});
+
+void execFileSync;
