@@ -351,19 +351,56 @@ The issue says "@why is this not autoprocessing please fix and do this WR" — l
 
 ### Scheduled Workflows
 
-| Workflow | Schedule | Purpose | Status |
-|----------|----------|---------|--------|
-| `openrouter-instantiation-check.yml` | Daily 06:17 UTC | OpenRouter health | ✅ Active |
-| `triage-cron.yml` | Hourly | Sweep untriaged items | ✅ Active |
-| `migration-cron.yml` | Custom | Database migrations | ✅ Active |
-| `stale-branch-cleanup.yml` | Daily 03:00 | Clean stale branches | ✅ Active |
-| `stale-docs-check.yml` | Weekly | Check doc freshness | ✅ Active |
-| `workflow-health-dashboard.yml` | Daily | Monitor workflows | ✅ Active |
-| `ai-weekly-changelog.yml` | Weekly | Generate changelog | ✅ Active |
-| `biome-inspector.yml` | Every 6h | Credit-free completion auditor — HTTP-checks each app's live link, files a worklist of unfinished projects | ✅ Active |
-| `api-monitor.yml` | Every 30 min | Probes `api.github.com` and `openrouter.ai/api/v1`; fails the run on any non-2xx/3xx or timeout | ✅ Active (2026-08-17) |
+**Status as of 2026-08-21: every scheduled workflow is FROZEN.** The table
+below is kept as the record of what the schedules were, not what runs now.
 
-**Assessment:** ✅ All critical cron jobs are configured and active.
+The 46 scheduled workflows frozen on 2026-08-21 totalled **~496 runs/day (~14,900/month)** on a
+repository with no product traffic, and ten of them called OpenRouter on every
+fire — roughly 270 billed LLM calls a day with nobody touching the repo. Every
+`schedule:` block is now commented out in place, with its cron expression
+preserved (RVS-AGENT-001), and every affected workflow keeps
+`workflow_dispatch` so it can still be run on demand. See #17849 and #17851.
+
+| Workflow | Former schedule | Purpose | Status |
+|----------|-----------------|---------|--------|
+| `triage-cron.yml` | Hourly | Sweep untriaged items | ❄️ Frozen — dispatch only |
+| `migration-cron.yml` | Custom | Database migrations | ❄️ Frozen — dispatch only |
+| `stale-branch-cleanup.yml` | Daily 03:00 | Clean stale branches | ❄️ Frozen — dispatch only |
+| `stale-docs-check.yml` | Weekly | Check doc freshness | ❄️ Frozen — dispatch only |
+| `workflow-health-dashboard.yml` | Daily | Monitor workflows | ❄️ Frozen — dispatch only |
+| `ai-weekly-changelog.yml` | Weekly | Generate changelog | ❄️ Frozen — dispatch only |
+| `biome-inspector.yml` | Every 6h | Credit-free completion auditor — HTTP-checks each app's live link, files a worklist of unfinished projects | ❄️ Frozen — dispatch only |
+| `api-monitor.yml` | Every 30 min | Probes `api.github.com` and `openrouter.ai/api/v1`; fails the run on any non-2xx/3xx or timeout | ❄️ Frozen — dispatch only |
+| `agent-monitor.yml` | Every 15 min (96/day) | Agent health | ❄️ Frozen — dispatch only |
+| `wr-field-filler.yml` | Every 15 min (96/day) | Fill blank WR fields | ❄️ Frozen — still fires on `issues` / `workflow_run` |
+| `fleet-controller.yml` | 4× per hour (96/day) | Grid-level scheduler | ❄️ Frozen — dispatch only |
+| …35 more | see each file's commented block | | ❄️ Frozen — dispatch only |
+
+Three further workflows — `agent-audit-logger.yml`, `apisec-scan.yml` and
+`neuralegion.yml` — already carried commented-out schedules before this freeze
+and are not counted in the 46. Grepping for a commented `schedule:` therefore
+returns 49 files, not 46; only the 46 carry the `COST FREEZE` banner.
+
+`openrouter-instantiation-check.yml` is **not** in this list: it never had a
+schedule. It did, however, tell readers `_Next check: ~24h (cron 17 6 * * *)_`
+in the issue comment it posts — a cadence that belonged to `watchtower.yml`,
+which the freeze stopped. That sentence was corrected rather than left to
+promise a check that will never fire (RVS-VERIFY-001: a claim with no producer).
+
+**Assessment:** ❄️ No workflow runs itself. Scheduled runs are 0/day, down
+from ~496/day. Re-enabling one is a deliberate act: uncomment its block and add
+the filename to `ALLOWED_SCHEDULED` in
+`tests/no-scheduled-workflows.test.js`, which otherwise fails the build. That
+guard also asserts the aggregate run rate stays at 0/day and that no frozen
+workflow was left without a `workflow_dispatch` trigger — the sum is what
+nobody was holding before, and a per-workflow review is what let 46 individually
+reasonable schedules add up to a four-figure run count.
+
+**Note on what this did and did not save.** This repository is public and every
+workflow uses standard runners, so Actions minutes here are free and unmetered;
+the freeze does not reduce a GitHub bill. What it stops is the OpenRouter spend
+on the ten scheduled workflows that call it. Any GitHub charge has a different
+source and needs its own diagnosis.
 
 ### The gate on `main` must be able to fail
 
@@ -414,6 +451,29 @@ pins both the aggregation and the ordering, since a check that runs after
 Any future workflow that *acts* on CI state (promoting drafts, clearing
 labels, enabling auto-merge) must read both surfaces. Reading one suite's
 conclusion, or check runs alone, is how a red PR reads as green.
+
+### Layer 0: why `wr-rewrite.yml` is `runs-on: self-hosted`
+
+`wr/agents/HIERARCHY.md` puts local LLMs at Layer 0 with a target share of
+60-70% of work. `.github/workflows/wr-rewrite.yml` is the only workflow wired
+to it, via `LMSTUDIO_ENDPOINT: http://127.0.0.1:1234/v1`.
+
+It has four recorded runs. All four failed, all in July 2026, the last three in
+~23 seconds — the shape of a job no runner picked up. **Layer 0 has never
+completed a run in CI, and cannot.** GitHub-hosted runners are VMs in Azure;
+`127.0.0.1` is their own loopback, not the operator's laptop. That is why the
+job is `self-hosted`, and the tempting "fix" of switching it to `ubuntu-latest`
+would make it green *and* route every call to the billed lane, permanently.
+`tests/local-llm-cascade.test.js` asserts that any workflow setting a loopback
+`LMSTUDIO_ENDPOINT` stays on a self-hosted runner, so that swap fails the build.
+
+The cascade itself now lives in `scripts/local_llm.py` rather than inside
+`scripts/wr_rewrite.py`, so anything in the repo can reach Layer 0. Its cloud
+lane is opt-in: `call_openrouter` refuses unless `REVVEL_LLM_ALLOW_CLOUD` is
+exactly `"1"`, so a sleeping laptop raises a loud error naming the gate instead
+of silently billing. `wr-rewrite.yml` and `ops/wr-rewrite.workflow.yml` set that
+variable explicitly, in the workflow file, because judging needs distinct model
+families that only the cloud lane provides. Setup: `docs/LOCAL_LLM_SETUP.md`.
 
 ### Dormant: filed where GitHub Actions does not look
 
