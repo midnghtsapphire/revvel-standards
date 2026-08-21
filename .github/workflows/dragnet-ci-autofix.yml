@@ -113,6 +113,14 @@ jobs:
           CHECK_SUITE_URL: ${{ github.event.check_suite.url }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # Lane config (#17868): without these routedChat has nowhere to go —
+          # Layer 0 resolves to the runner's own loopback and the paid lane is
+          # refused by the spend gate. See docs/LOCAL_LLM_SETUP.md.
+          LMSTUDIO_ENDPOINT: ${{ secrets.LMSTUDIO_ENDPOINT }}
+          LMSTUDIO_API_KEY: ${{ secrets.LMSTUDIO_API_KEY }}
+          LMSTUDIO_MODEL: ${{ vars.LMSTUDIO_MODEL }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
         run: node scripts/dragnet-ci-autofix.js
 
   # ─────────────────────────────────────────────────────────────────────────

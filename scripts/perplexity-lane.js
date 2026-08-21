@@ -16,13 +16,21 @@
  *
  * This module is the consumer. It sends a real request.
  *
- * Honest limitation, stated because the alternative is another decorative
- * marker: whether Perplexity actually serves a request with no Authorization
- * header is Perplexity's call, not ours. If they reject it, this lane now
- * throws `PerplexityLaneUnavailable` carrying the real status code, and the
- * caller falls through. That is still strictly better than before, when the
- * failover produced no request and therefore no evidence either way.
- * `PERPLEXITY_API_KEY` is sent when set.
+ * CORRECTION (#17870). The first version of this module posted to
+ * api.perplexity.ai with no Authorization header and called that "keyless".
+ * It is not: the official API requires a key, so that lane could only ever
+ * 401. The repo already had a genuinely keyless bridge and I missed it —
+ * `callPerplexityNoKey` in scripts/perplexity-research-issue.js, which shells
+ * out to the `helallao/perplexity-ai` Python package. That is what "keyless
+ * Perplexity" has always meant here.
+ *
+ * So the order inside this lane is:
+ *   1. the Python no-key bridge — genuinely free, no key of any kind
+ *   2. the official HTTP API — only when PERPLEXITY_API_KEY is set
+ *
+ * If the bridge is not installed the lane reports the install hint rather
+ * than a bare failure, because "not installed" and "refused" are different
+ * facts and only one of them is worth acting on.
  *
  *   PERPLEXITY_ENDPOINT  default https://api.perplexity.ai/chat/completions
  *   PERPLEXITY_MODEL     default sonar
@@ -78,9 +86,76 @@ function isKeyless() {
  *   lane is free by definition, and a caller that reaches it has already been
  *   refused the paid one.
  */
+/**
+ * Flatten chat messages into the single prompt the Python bridge accepts.
+ * The bridge has no role model, so roles are labelled inline rather than
+ * dropped — losing the system instruction would silently change behaviour.
+ */
+function flattenMessages(messages) {
+  return messages
+    .map((m) => (m.role && m.role !== 'user' ? `[${m.role}] ${m.content}` : m.content))
+    .join('\n\n');
+}
+
+/**
+ * Layer 2a — the genuinely keyless bridge.
+ *
+ * Runs out-of-process via async execFile, not execFileSync: this lane is
+ * awaited from routedChat, and a synchronous child would block Node's event
+ * loop for the whole request.
+ */
+async function chatViaNoKeyBridge(messages) {
+  let bridge;
+  try {
+    ({ NO_KEY_BRIDGE, NO_KEY_INSTALL_HINT, BRIDGE_MODEL, BRIDGE_FALLBACK } = require('./perplexity-no-key-bridge'));
+    bridge = true;
+  } catch (err) {
+    throw new PerplexityLaneUnavailable(`No-key bridge module unavailable: ${err.message}`);
+  }
+  void bridge;
+
+  const { execFile } = require('node:child_process');
+  return new Promise((resolve, reject) => {
+    const child = execFile(
+      'python3',
+      ['-c', NO_KEY_BRIDGE, flattenMessages(messages), BRIDGE_MODEL, BRIDGE_FALLBACK, NO_KEY_INSTALL_HINT],
+      { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024, timeout: timeoutMs() },
+      (err, stdout, stderr) => {
+        if (err) {
+          reject(new PerplexityLaneUnavailable(
+            `No-key Perplexity bridge failed: ${(stderr || err.message).slice(0, 300)}. ` +
+            `Install it with: ${NO_KEY_INSTALL_HINT}`));
+          return;
+        }
+        const text = String(stdout || '').trim();
+        if (!text) {
+          reject(new PerplexityLaneUnavailable('No-key Perplexity bridge returned nothing.'));
+          return;
+        }
+        resolve({ content: text, text, modelUsed: BRIDGE_MODEL, lane: LANE, keyless: true });
+      },
+    );
+    child.on('error', (err) =>
+      reject(new PerplexityLaneUnavailable(`Could not start the no-key bridge: ${err.message}`)));
+  });
+}
+
+let NO_KEY_BRIDGE;
+let NO_KEY_INSTALL_HINT;
+let BRIDGE_MODEL;
+let BRIDGE_FALLBACK;
+
 async function chat({ messages, model, temperature = 0.7, max_tokens = 4000 }) {
   if (!Array.isArray(messages) || messages.length === 0) {
     throw new Error('messages array is required and must contain at least one message');
+  }
+
+  // Genuinely keyless first. Only fall through to the keyed HTTP API, and only
+  // when a key actually exists — without one it can only 401.
+  try {
+    return await chatViaNoKeyBridge(messages);
+  } catch (bridgeError) {
+    if (isKeyless()) throw bridgeError;
   }
 
   const target = new URL(endpoint());
