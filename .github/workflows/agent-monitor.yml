@@ -7,8 +7,12 @@ name: Agent Monitor
 
 on:
   # Run every 15 minutes
-  schedule:
-    - cron: '*/15 * * * *'
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   - cron: '*/15 * * * *'
   # Can also be triggered manually
   workflow_dispatch:
 

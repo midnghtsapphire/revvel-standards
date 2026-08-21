@@ -44,8 +44,22 @@ function assertGreenWorkflow(relativePath, { requiresFixedDefaultUrl }) {
   if (doc.name !== 'Website green-o-meter') {
     throw new Error(`${relativePath} must use the standard workflow name`);
   }
-  if (!on.push || !on.schedule || !on.workflow_dispatch) {
-    throw new Error(`${relativePath} must support push, weekly schedule, and workflow_dispatch`);
+  // COST FREEZE 2026-08-21: the weekly schedule is commented out in place
+  // (RVS-AGENT-001), not deleted. See tests/no-scheduled-workflows.test.js.
+  if (!on.push || !on.workflow_dispatch) {
+    throw new Error(`${relativePath} must support push and workflow_dispatch`);
+  }
+  // Only the live workflow bills us. templates/ is copied into other repos and
+  // keeps its schedule so a downstream copy still runs weekly.
+  const isLive = relativePath.startsWith('.github/workflows/');
+  if (isLive && on.schedule) {
+    throw new Error(`${relativePath} schedule must stay frozen (cost freeze)`);
+  }
+  if (isLive && !/^\s*#\s*schedule:/m.test(content)) {
+    throw new Error(`${relativePath} must keep its frozen schedule commented in place`);
+  }
+  if (!isLive && !on.schedule) {
+    throw new Error(`${relativePath} is a template and must keep a weekly schedule`);
   }
   if (doc.permissions?.contents !== 'write') {
     throw new Error(`${relativePath} must grant contents: write for generated report commits`);
