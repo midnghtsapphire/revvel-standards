@@ -411,7 +411,6 @@ def _get_chromium_path(preferred: str | None = None) -> str | None:
     Set via ``nlm config set auth.browser <name>`` or ``NLM_BROWSER`` env var.
     Valid names: auto, chrome, arc, brave, edge, chromium, vivaldi, opera.
     """
-    global _detected_browser_name
     if preferred is None:
         preferred = _get_preferred_browser()
         if preferred not in {"auto", *_BROWSER_CONFIG_MAP}:
