@@ -21,6 +21,13 @@ upgrade decision can be made.
 > that opts in should say why, in the workflow file. Setup and the Windows
 > specifics are in `docs/LOCAL_LLM_SETUP.md`.
 >
+> **The GitHub Marketplace subscriptions are the ones that actually bill.** Every
+> row below that reads `$0` is a free tier; the account's real spend sits in
+> Settings → Billing → Subscriptions and in Copilot metered usage, and until
+> 2026-08-21 none of it appeared in this file at all. `tests/billed-subscriptions-are-indexed.test.js`
+> now name-pins each paid subscription observed there so a charge cannot exist
+> without a row here stating its amount.
+>
 > Layer 0 only reaches work that runs on the operator's machine: GitHub-hosted
 > runners are VMs in Azure and cannot reach a laptop, so **every LLM call made
 > from CI is a billed call**, regardless of what this table says about tiers.
@@ -52,6 +59,10 @@ upgrade decision can be made.
 | Test.ai | n/a (skipped — overlaps Keploy) | — | — | — | skip | — |
 | Jenkins | n/a (skipped — overlaps GH Actions) | $0 (OSS) | n/a | $0 | skip | jenkins.io |
 | CircleCI | Free (6,000 build min/mo) | $0 | Performance (usage-based credits) | est. $15+ / mo (verify) | keep | circleci.com/pricing (verify) |
+| **Rollbar** | `advanced_4000K` — **free trial ends 2026-08-24** | **$1,208 / yr** (prorated over 365 days; first charge 2026-08-24) | — | n/a | **CUT — owner action required before 2026-08-24.** Nothing in this repository references Rollbar: no workflow, no script, no config. The scheduled *downgrade* to `advanced_4000K` on 2026-08-25 does not avoid the charge — it is the same tier — so only cancelling does. `docs/Universal-BOM_List/TOOLING_AND_TESTING_BOM.md` carried it as "Free (5k items/mo) / $12+/mo", which is the price of a plan the account is not on | github.com/settings/billing/subscriptions |
+| **Deploybot-app** | Pro Plan | **$45 / mo** | — | n/a | **keep — owner confirms it is in use (2026-08-21).** Configured in the Deploybot dashboard rather than in-repo, so grepping `.github/` and `scripts/` finds nothing: absence of a repo reference is not evidence a marketplace app is unused, and this row exists so nobody re-derives that wrong conclusion | github.com/settings/billing/subscriptions |
+| **Create Issue Branch** | Developer | **$10 / mo** | — | n/a | keep — genuinely wired in (`.github/issue-branch.yml`, `create-issue-branch.yml`, `ready-for-review.yml`, `close-linked-issue.yml`) | github.com/marketplace/create-issue-branch |
+| **GitHub Copilot** | Max — 20,000 included AI credits, **exhausted**; resets 2026-08-31 | **$566.17 additional usage** (Aug 1–21 2026), of which **$421.28 — 74% — is the Code Review model** | — | n/a | **automated code review OFF** (owner, 2026-08-21); automated `@Copilot` assignment gated behind `REVVEL_ALLOW_COPILOT_ASSIGN` (#17864, #17865). Daily billed usage fell $97.59 (Aug 20) → $5.71 (Aug 21) after the freeze | github.com/settings/billing/usage |
 
 ## Update procedure
 
