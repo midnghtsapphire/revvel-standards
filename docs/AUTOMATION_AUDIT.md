@@ -1340,14 +1340,22 @@ which report independently of every workflow here. That is the whole of D014's
 finding, and the reason D007 was wrong. Removing those checks needs the Apps
 uninstalled (#17872, owner-only).
 
-**An open observation, recorded rather than resolved.** `recurseml/analysis`
+**Resolved 2026-08-21, and worth keeping for the method.** `recurseml/analysis`
 appeared within seconds on #17866, #17868 and #17870, and did **not** appear on
-PR #17874, the one that cut the workflow. One data point cannot separate "the App
-is independent and simply did not fire" from "the workflow was in fact what
-triggered it", and the App has been erroring on every run, so an outage is
-entirely plausible. D014's record supports the former. The next few PRs on a
-`main` that carries D016 will settle it; until then #17872 should not be treated
-as established.
+PR #17874 — the one that cut the workflow. That single data point was recorded
+here as an open question rather than a finding, because it could not separate
+"the App is independent and simply did not fire" from "the workflow was in fact
+what triggered it".
+
+The next PR settled it. #17875 is based on `8c634fd6` — the merge of D016, with
+`recurse-ml.yml`'s `pull_request` and `push` commented out — and the App posted
+`recurseml/analysis` anyway. The silence on #17874 was an outage. Both Apps are
+confirmed independent of their workflows: `octopus-review[bot]` likewise
+commented on #17874 *after* its triggers were cut.
+
+The method note: one absence is not evidence of a mechanism. Waiting one PR
+cost nothing and prevented telling the owner to skip an uninstall that was in
+fact required.
 
 **Guard.** `tests/disabled-trigger-banners-are-true.test.js` parses the `on:`
 block and fails if a workflow named here regains a trigger its banner says is
