@@ -490,3 +490,51 @@ detector), `tests/chaosmender.test.js` (the regression tests).
 
 **Next Action:** Human (`midnghtsapphire`) reviews/merges the fix PR; do not reopen #16791. Optionally wire `node scripts/check-dependabot-split-deps.js` into `automation-doctor` / CI later.
 **Next Action:** Fleet review focus for this PR should be *checking the two proven fixes* (WR-01, WR-02/03) and the two small dependency fixes (WR-04), not re-deriving them. Three items need an owner/product decision before any agent writes code: WR-05 (`ship-to-market.yml`'s missing `record.js` — build it or comment out the video-deliverable step), WR-06/WR-07 (`label-inventory.js` / `validate_jsonl.py` — wire in or archive-with-attribution, never delete per standing owner preference). WR-08 flags that the WR-drafting pipeline itself — 35 fully-drafted WRs across two prior audits, never filed as GitHub issues — is the largest unwired-flow pattern in the repo by volume; needs an owner pass over `wr/pending/` to mark stale/superseded items before a bulk-filing workflow gets built. WR-09's 16 scanner hits are queued for the next audit to individually root-cause. Two proposed CI vaccines from this session (`find-duplicate-json-keys.js`-style package.json lint; "named test/workflow file must exist" check for `scripts/**` and `skills/**/SKILL.md`) are not yet wired into `scripts/automation-doctor.js` — good candidates for a fast follow-up WR once this PR lands.
+
+**Date/Time:** 2026-08-21
+
+**Task Attempted:** Stop the GitHub Actions spend. Owner reported a $600 GitHub
+bill and unexplained OpenRouter burn on a repository with no product traffic,
+and asked to kill the cron jobs.
+
+**Outcome:** All 46 scheduled workflows de-scheduled — 496 runs/day (~14,900/month)
+to 0. Schedules are commented out in place, not deleted (RVS-AGENT-001); every
+affected workflow keeps `workflow_dispatch`, so nothing lost the ability to run,
+only the ability to run itself. 1291/1291 tests pass, 227 workflows valid.
+
+**Root Cause of Failure (If any):** No single workflow looked expensive. The cost
+was the sum, and nothing in the repo ever computed that sum. Four schedules alone
+were 336 runs/day (`agent-monitor` and `wr-field-filler` at `*/15`, `fleet-controller`
+at `7,22,37,52`, `api-monitor` at `*/30`), and each was individually defensible in
+its own PR. Worse, four existing tests asserted that a schedule *must exist* —
+`daily-diagnostic-audit`, `octopus-review-fallback`, `wr-field-filler-workflow`,
+`green-website-standard` — so the ratchet only ever turned one way: adding a cron
+was routine, removing one broke the build. The repo had a guard for the wrong
+direction.
+
+**Self-Healing Fix / Learned Lesson:** (1) `tests/no-scheduled-workflows.test.js`
+parses every live workflow, expands each cron expression to a runs/day figure,
+and fails on any active schedule not in a name-pinned `ALLOWED_SCHEDULED` list
+(currently empty) or over a `MAX_SCHEDULED_RUNS_PER_DAY` ceiling of 0. A third
+test asserts every de-scheduled workflow still exposes `workflow_dispatch`, so
+the freeze cannot strand a workflow with no way to run at all. Mutation-tested:
+re-adding one `*/15` cron fails two of the three tests with the run rate named in
+the message; stripping a `workflow_dispatch` fails the third. (2) The four tests
+that pinned "schedule must exist" were inverted to pin the freeze instead, each
+with the reason inline — a decision that changed needs its guard changed, not
+deleted. (3) `templates/cicd/` is explicitly exempt: those files are copied into
+other repos and are not billed here. **Lesson: a recurring cost needs a control
+that sums it.** Per-workflow review can approve 46 individually reasonable
+schedules into a four-figure bill, because no reviewer is holding the total. The
+guard has to assert the aggregate, in the unit that gets billed.
+
+**Next Action:** Scheduled runs are the fixed cost and are now zero, but the
+variable cost is untouched: 72 workflows fire on `pull_request`, 40 on `push`,
+42 on `issues`, 10 on `issue_comment`. A single PR still fans out to ~70 runs,
+and bot comment storms multiply it. That needs the same treatment — an aggregate
+budget with a guard — and is the next lever, not a follow-up note. Separately,
+`scripts/wr_rewrite.py` already implements the LM Studio -> Ollama -> OpenRouter
+cascade from `wr/agents/HIERARCHY.md`, but only `wr-rewrite.yml` uses it, and
+that workflow is `runs-on: self-hosted` pointing at `127.0.0.1:1234`; its four
+runs all failed. GitHub-hosted runners cannot reach a laptop, so Layer 0 only
+pays off for work run locally, not in CI.
