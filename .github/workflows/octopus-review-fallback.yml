@@ -26,16 +26,24 @@
 
 name: Octopus Review Fallback
 
+# DISABLED TRIGGER 2026-08-21 (D016): issue_comment
+# Owner cut this lane during the cost freeze. Triggers are commented, not
+# deleted (RVS-AGENT-001) — re-enable by uncommenting the block below.
+#
+# IMPORTANT, and the exact mistake D007 made: commenting this file does NOT
+# stop the octopus-review[bot] App commenting on PRs. That is a GitHub App and it
+# reports independently of any workflow here. Removing its check requires
+# uninstalling or reconfiguring the App in repository settings — see #17872.
 on:
-  issue_comment:
-    types: [created]
-  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
-  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
-  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
-  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
-  # schedule:
-  #   # Every 6 hours — catches PRs Octopus silently never reviewed.
-  #   - cron: "17 */6 * * *"
+#  issue_comment:
+#    types: [created]
+#   COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+#   across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+#   below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+#   Every workflow below keeps workflow_dispatch, so it still runs on demand.
+#   schedule:
+#     # Every 6 hours — catches PRs Octopus silently never reviewed.
+#     - cron: "17 */6 * * *"
   workflow_dispatch:
     inputs:
       pr_number:

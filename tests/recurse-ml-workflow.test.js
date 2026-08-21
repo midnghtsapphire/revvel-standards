@@ -37,26 +37,33 @@ test('recurse-ml.yml parses as valid YAML', () => {
   assert.ok(doc.jobs['recurse-ml-review'], 'primary scan job is missing');
 });
 
-test('RecurseML auto-triggers are enabled (D014 restored what D007 disabled)', () => {
+test('RecurseML auto-triggers stay cut (D016 reverses D014)', () => {
+  // Inverted 2026-08-21. This assertion used to require the triggers to exist,
+  // and its failure message said: "if this is deliberate, add a new
+  // DECISIONS.md entry reversing D014 rather than editing this file quietly."
+  // D016 is that entry. The assertion is inverted rather than deleted so a
+  // silent re-enable fails here too.
+  //
+  // D014's reasoning is NOT overturned: the RecurseML GitHub App posts
+  // `recurseml/analysis` independently of this workflow and never needed
+  // RECURSE_ML_API_KEY. That is precisely why cutting these triggers does not
+  // remove the red check — only uninstalling the App does (#17872). The
+  // workflow lane was cut for waste: without the secret it no-ops.
   const { on } = loadWorkflow();
   assert.ok(on, 'workflow has no trigger block');
-  assert.ok(
-    on.pull_request,
-    'pull_request trigger is disabled — if this is deliberate, add a new '
-      + 'DECISIONS.md entry reversing D014 rather than editing this file quietly',
+  assert.strictEqual(
+    on.pull_request, undefined,
+    'pull_request is live again — if that is deliberate, add a DECISIONS.md entry '
+      + 'reversing D016 rather than editing this file quietly',
   );
-  assert.deepEqual(
-    [...(on.pull_request.types || [])].sort(),
-    ['opened', 'reopened', 'synchronize'],
-    'pull_request types drifted from the set D007 originally disabled',
+  assert.strictEqual(on.push, undefined, 'push is live again — see D016');
+  const source = fs.readFileSync(WORKFLOW_PATH, "utf8");
+  assert.match(
+    source, /^\s*#\s*pull_request:/m,
+    'the cut triggers must remain in the file, commented, so they can be restored '
+      + '(RVS-AGENT-001: comment, do not delete)',
   );
-  assert.ok(on.push, 'push trigger is disabled');
-  assert.ok(
-    (on.push.branches || []).includes('main'),
-    'push trigger no longer covers main',
-  );
-  // Kept alongside the auto-triggers so on-demand scans still work.
-  assert.ok(on.workflow_dispatch !== undefined, 'workflow_dispatch was dropped');
+  assert.ok(on.workflow_dispatch, 'workflow_dispatch must survive, or the comment is a delete');
 });
 
 test('a missing RECURSE_ML_API_KEY no-ops instead of failing the run', () => {
