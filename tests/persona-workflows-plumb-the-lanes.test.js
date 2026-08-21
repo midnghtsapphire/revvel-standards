@@ -142,3 +142,58 @@ test('LMSTUDIO_ENDPOINT is sourced from a secret, not hardcoded', () => {
       "addresses the operator's own machine:\n  " + offenders.join('\n  '),
   );
 });
+
+/**
+ * The two entry points that serve `/dragnet` on a pull request must be able to
+ * run the free lane, not merely be configured for it.
+ *
+ * Layer 0 (LM Studio) is unreachable from a GitHub runner unless the operator
+ * has published a tunnel — a runner cannot route to a laptop. So on CI the only
+ * free lane left is Layer 2, and Layer 2 is the helallao/perplexity-ai Python
+ * package. If it is not installed on the runner, both free lanes are gone and
+ * the persona falls to the billed lane, which the spend gate refuses. That is
+ * the exact state that made `/dragnet` unable to answer at all.
+ *
+ * Name-pinned deliberately: these two are the trigger surface a person types
+ * `/dragnet` into. Requiring the install of all nine cascade workflows would be
+ * wrong — several are batch jobs where paying is a legitimate choice.
+ */
+const DRAGNET_ENTRY_POINTS = ['persona-comment-trigger.yml', 'dragnet-ci-autofix.yml'];
+
+test('the /dragnet entry points install the keyless bridge', () => {
+  const offenders = [];
+  for (const name of DRAGNET_ENTRY_POINTS) {
+    const file = path.join(WORKFLOWS, name);
+    assert.ok(fs.existsSync(file), `${name} is gone — update DRAGNET_ENTRY_POINTS deliberately.`);
+    const source = fs.readFileSync(file, 'utf8');
+    if (!source.includes('helallao/perplexity-ai')) {
+      offenders.push(
+        `.github/workflows/${name} runs a persona but never installs the keyless ` +
+          'Perplexity bridge, so its only CI-reachable free lane cannot start.',
+      );
+    }
+  }
+  assert.deepStrictEqual(
+    offenders,
+    [],
+    'On a runner, LM Studio is unreachable and the paid lane is gated — the ' +
+      'keyless bridge is the only free lane left, and it has to be installed ' +
+      'to run:\n  ' + offenders.join('\n  '),
+  );
+});
+
+test('a failed bridge install degrades to the next lane instead of killing the job', () => {
+  // Without continue-on-error a transient pip/network failure takes down the
+  // whole persona run, turning a lane outage into a job outage.
+  const offenders = [];
+  for (const name of DRAGNET_ENTRY_POINTS) {
+    const source = fs.readFileSync(path.join(WORKFLOWS, name), 'utf8');
+    const idx = source.indexOf('Install no-key Perplexity bridge');
+    if (idx === -1) continue;
+    const step = source.slice(idx, idx + 700);
+    if (!step.includes('continue-on-error: true')) {
+      offenders.push(`.github/workflows/${name}: bridge install is not continue-on-error`);
+    }
+  }
+  assert.deepStrictEqual(offenders, [], offenders.join('\n  '));
+});
