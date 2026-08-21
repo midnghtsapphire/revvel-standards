@@ -1320,3 +1320,35 @@ established is that the *search terms* are absent. Search for the effect — a
 subprocess, a package name, an install hint — not only for the mechanism you
 expect. And enumerate consumers mechanically: the hand-built list here was
 wrong by more than 4x, in the direction that leaves the bug in place.
+
+## 2026-08-21 — D016: five workflows lose their auto-triggers
+
+`recurse-ml.yml` (`pull_request`, `push`), `octopus-route.yml` (`issues`),
+`octopus-review-fallback.yml` (`issue_comment`), `jules-pr-reviewer.yml`
+(`pull_request`) and `semgrep.yml` (`pull_request`). All keep
+`workflow_dispatch`; every trigger is commented in place, not deleted.
+
+The first three are D016, an owner cost decision. The last two are #17871: both
+carried a banner saying the trigger was already off while it was live — Jules
+had been running on every PR since 2026-05-28, polling a broken third-party
+action for ~13 minutes before posting red.
+
+**The distinction this entry exists to preserve.** Cutting the RecurseML and
+Octopus workflow triggers does **not** remove their checks from a pull request.
+`recurseml/analysis` and the 🐙 out-of-credits comment come from **GitHub Apps**,
+which report independently of every workflow here. That is the whole of D014's
+finding, and the reason D007 was wrong. Removing those checks needs the Apps
+uninstalled (#17872, owner-only).
+
+**An open observation, recorded rather than resolved.** `recurseml/analysis`
+appeared within seconds on #17866, #17868 and #17870, and did **not** appear on
+PR #17874, the one that cut the workflow. One data point cannot separate "the App
+is independent and simply did not fire" from "the workflow was in fact what
+triggered it", and the App has been erroring on every run, so an outage is
+entirely plausible. D014's record supports the former. The next few PRs on a
+`main` that carries D016 will settle it; until then #17872 should not be treated
+as established.
+
+**Guard.** `tests/disabled-trigger-banners-are-true.test.js` parses the `on:`
+block and fails if a workflow named here regains a trigger its banner says is
+off, or loses `workflow_dispatch` (which would turn a comment into a delete).

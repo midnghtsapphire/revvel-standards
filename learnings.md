@@ -875,3 +875,52 @@ established that *your search terms* are absent. Search for the effect
 (a subprocess, a package name, an install hint), not only for the mechanism you
 expect. And discover consumers mechanically — a hand-built list of call sites
 was wrong by more than 4x here, in the direction that leaves the bug in place.
+
+## 2026-08-21 — Turning off a workflow does not turn off a GitHub App
+
+**Request.** "i want to comment out octopus, recurselm?"
+
+**The trap.** Commenting those workflows removes neither red check. `recurseml/analysis`
+is posted by the RecurseML **App**; the 🐙 out-of-credits comment by the
+**octopus-review[bot] App**. Both report independently of every workflow in the
+repo. Only uninstalling the Apps removes them (#17872).
+
+**This repo has already paid for this lesson once.** D007 cut RecurseML on
+"key absent → no results posted", which measured `recurse-ml.yml` — a lane that
+by construction could post nothing without the secret — while the App posted its
+check throughout. D014 reversed D007 for exactly that reason, two days ago. The
+same confusion was available again, in the same session, on the same tool.
+
+**What was actually done.** D016 comments the triggers on `recurse-ml.yml`,
+`octopus-route.yml` and `octopus-review-fallback.yml` — real value, because both
+lanes burn runner time producing nothing (RecurseML no-ops without its secret,
+Octopus is out of credits). D016 records in as many words that D014's *evidence*
+stands and only the cost posture changed, so a later reader does not mistake this
+for "D014 was wrong".
+
+**Three existing guards fired, and each was right.**
+
+1. `decision-workflow-integrity.test.js` — "D014 enabled automatic triggers on
+   recurse-ml.yml, but it now has none... the decision needs reversing on the
+   record first." It refused the change until D016 existed.
+2. `tool-cost-index-matches-decisions.test.js` — caught the cost-index row still
+   citing D014 the moment D016 was added. That guard was written this morning.
+3. `recurse-ml-workflow.test.js` — its own failure message named the required
+   process: add a DECISIONS.md entry "rather than editing this file quietly".
+
+Every one of them was a *producer with a consumer*. They cost three extra edits
+and prevented an undocumented reversal of a two-day-old decision.
+
+**Two self-inflicted bugs while doing it**, both from bulk edits:
+- Inserting a table row directly above `---` turned it into a setext heading
+  (MD003). A markdown table row is only a table row if a `---` is not directly
+  beneath it.
+- The comment-out pass double-commented an already-commented `# schedule:`
+  block, producing `#  # schedule:` and breaking the guard that requires a
+  restorable `# schedule:`. **When commenting out a block, check what is already
+  a comment** — idempotence is not free.
+
+**Rule.** Before disabling something, find the thing that actually emits the
+behaviour. A workflow, a GitHub App, and a marketplace subscription are three
+different mechanisms; switching off the one you can see in the repo proves
+nothing about the other two.
