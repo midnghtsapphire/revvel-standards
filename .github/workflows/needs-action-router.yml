@@ -81,10 +81,23 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
           ITEM_KIND: ${{ steps.resolve.outputs.item_kind }}
+          # Spend gate (#17864): assigning @Copilot starts a paid coding-agent
+          # session. Unset = skip the assignment; routing labels still apply.
+          REVVEL_ALLOW_COPILOT_ASSIGN: ${{ vars.REVVEL_ALLOW_COPILOT_ASSIGN }}
         with:
           script: |
             const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
             const itemKind = process.env.ITEM_KIND || '';
+
+            /* SPEND GATE (#17864). Assigning @Copilot starts a Copilot coding-agent
+            session, and those consume PAID premium requests. 657 such sessions ran
+            in this repository before anyone saw a bill. Routing labels are free and
+            applied elsewhere in this workflow regardless. Set the repository
+            variable REVVEL_ALLOW_COPILOT_ASSIGN to "1" to turn assignment back on. */
+            if (process.env.REVVEL_ALLOW_COPILOT_ASSIGN !== '1') {
+              core.info(`Skipping @Copilot assignment for ${itemKind} #${issueNumber}: REVVEL_ALLOW_COPILOT_ASSIGN is not "1" (spend gate).`);
+              return;
+            }
 
             try {
               await github.rest.issues.addAssignees({
