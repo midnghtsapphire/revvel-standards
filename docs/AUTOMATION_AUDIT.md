@@ -452,6 +452,44 @@ Any future workflow that *acts* on CI state (promoting drafts, clearing
 labels, enabling auto-merge) must read both surfaces. Reading one suite's
 conclusion, or check runs alone, is how a red PR reads as green.
 
+### The spend gate: one repository variable, not fifteen edits
+
+Since #17850 nothing in this repo bills an LLM provider without an explicit
+opt-in. `REVVEL_LLM_ALLOW_CLOUD` must be exactly `"1"` — `true`, `yes` and
+`TRUE` all fail closed, so a half-remembered value cannot spend money. Set it
+under **Settings → Secrets and variables → Actions → Variables**.
+
+Coverage is in three layers:
+
+- **Scripts** — `scripts/llm-spend-gate.js` (JavaScript) and the
+  `_assert_cloud_allowed` helpers plus `cloud_allowed()` in
+  `scripts/local_llm.py` (Python). Every script that POSTs to a provider calls
+  one of them; `openrouter-personas.js` is covered transitively through
+  `openrouter-routing.js`.
+- **Workflows that can bill** — ten of them, gated three different ways
+  depending on what the step does. A step whose whole purpose is the model
+  call gets a step-level `if:`; `openhands-resolver` gets a job-level one
+  because its LLM config is job-wide; and `priority-router`,
+  `pdf-work-request-router` and `wr-auto-classify` are gated *inside* the
+  script, because those steps also route, comment and label and that work is
+  free and must keep running.
+- **Workflows that cannot bill** — `agent-monitor`, `api-monitor`,
+  `openrouter-key-reset`, `openrouter-instantiation-check` and `lane-canary`
+  hit `GET /api/v1/models` or probe reachability. Only `/chat/completions`
+  bills. These are deliberately **not** gated: they are how an outage gets
+  noticed, and disabling them when spend is the problem would be exactly
+  backwards.
+
+`tests/llm-spend-gate-coverage.test.js` discovers call sites by scanning for
+the POST rather than trusting a list, so a new ungated one fails the build —
+and it revokes a probe's exemption the moment that probe starts posting a
+completion.
+
+**A caution on reading the 402.** Before this gate, spend was zero only because
+the OpenRouter account was out of credits. That is an outage that looks like a
+control: ask what would fail if it were removed and the answer is the balance.
+Do not treat an empty account as protection.
+
 ### Layer 0: why `wr-rewrite.yml` is `runs-on: self-hosted`
 
 `wr/agents/HIERARCHY.md` puts local LLMs at Layer 0 with a target share of

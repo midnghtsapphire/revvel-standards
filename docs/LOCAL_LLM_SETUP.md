@@ -157,9 +157,27 @@ Every script in the repo that POSTs to a paid provider calls it, and
 `tests/llm-spend-gate-coverage.test.js` discovers call sites rather than
 trusting a list, so a new one fails the build until it is gated.
 
-Fifteen workflows still `curl` OpenRouter inline from a `run:` block and are
-**not** gated yet. They are named individually in that test's
-`UNGATED_WORKFLOW_CURLS`, and the list may only shrink.
+Workflows are gated too, through a **repository variable** rather than fifteen
+separate edits:
+
+**Settings → Secrets and variables → Actions → Variables → `REVVEL_LLM_ALLOW_CLOUD`**
+
+Set it to `1` to allow paid calls; leave it unset (the default) and every
+billing step skips. Ten workflows check it:
+
+| Workflow | How it is gated |
+| --- | --- |
+| `openrouter-agent`, `xai-review-oleg-fork`, `swe-agent`, `free-llm-router`, `brain-dump-intake`, `ship-quality` | step-level `if:` — the whole step exists to call the model |
+| `openhands-resolver` | job-level `if:` — the LLM config is job-wide |
+| `priority-router`, `pdf-work-request-router`, `wr-auto-classify` | guarded **inside** the script — these steps also route, comment and label, and that work is free and must keep running |
+
+Five more workflows reach `openrouter.ai` but **cannot** spend, so they are
+deliberately *not* gated: `agent-monitor`, `api-monitor`, `openrouter-key-reset`,
+`openrouter-instantiation-check` and `lane-canary` all hit `GET /api/v1/models`
+or probe reachability. Only `/chat/completions` bills. Gating them would break
+exactly the monitoring you want when spend is the problem — and
+`tests/llm-spend-gate-coverage.test.js` fails if one of them ever starts posting
+a completion.
 
 ## 5. Using it from your own scripts
 

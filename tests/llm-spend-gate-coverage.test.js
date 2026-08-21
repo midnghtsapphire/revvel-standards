@@ -41,31 +41,32 @@ const CONSULTS_GATE =
   /(llm-spend-gate|REVVEL_LLM_ALLOW_CLOUD|assertCloudAllowed|cloud_allowed|_assert_cloud_allowed|require\(["']\.\/openrouter-routing["']\))/;
 
 /**
- * Call sites that are NOT yet gated, named individually so the gap is visible
- * rather than implied. This list may only shrink — adding to it should be a
- * deliberate, reviewed act, not a way to get a red build green.
+ * Workflows that reach openrouter.ai but CANNOT spend, with the endpoint that
+ * makes that true. Only `/chat/completions` bills; `/models` and a bare
+ * `/api/v1` reachability probe are free.
  *
- * Everything here is an inline `curl` inside a workflow's `run:` block rather
- * than a script, so gating them means editing fifteen separate shell blocks.
- * That is its own change (#17850 follow-up), not a drive-by in this one.
+ * This distinction matters in both directions. Gating these would break exactly
+ * the monitoring you want when spend is the problem — `agent-monitor`,
+ * `api-monitor` and `openrouter-instantiation-check` are how an outage gets
+ * noticed, and `lane-canary` is explicitly a keyless probe. An earlier version
+ * of this list lumped them in with the billing call sites, which overstated the
+ * gap by five.
  */
-const UNGATED_WORKFLOW_CURLS = [
-  'agent-monitor.yml',
-  'api-monitor.yml',
-  'brain-dump-intake.yml',
-  'free-llm-router.yml',
-  'lane-canary.yml',
-  'openhands-resolver.yml',
-  'openrouter-agent.yml',
-  'openrouter-instantiation-check.yml',
-  'openrouter-key-reset.yml',
-  'pdf-work-request-router.yml',
-  'priority-router.yml',
-  'ship-quality.yml',
-  'swe-agent.yml',
-  'wr-auto-classify.yml',
-  'xai-review-oleg-fork.yml',
-];
+const FREE_PROBE_WORKFLOWS = {
+  'agent-monitor.yml': 'GET /api/v1/models — agent health probe',
+  'api-monitor.yml': 'reachability of /api/v1, alongside api.github.com',
+  'openrouter-key-reset.yml': 'GET /api/v1/models — validates a key',
+  'openrouter-instantiation-check.yml': 'GET /api/v1/models — health probe',
+  'lane-canary.yml': 'GET /api/v1/models — explicitly a keyless probe',
+};
+
+/**
+ * Workflows that can bill and are NOT yet gated. Empty: all ten are gated.
+ *
+ * Kept as a name-pinned list rather than a count so that swapping one entry for
+ * another cannot pass unnoticed (RVS-VERIFY-001). It may only shrink.
+ */
+const UNGATED_WORKFLOW_CURLS = [];
 
 function scanFiles() {
   const found = [];
@@ -112,13 +113,18 @@ test('the ungated workflow list only shrinks', () => {
   const actual = fs
     .readdirSync(dir)
     .filter((f) => /\.ya?ml$/.test(f))
+    .filter((f) => !Object.hasOwn(FREE_PROBE_WORKFLOWS, f))
     .filter((f) => {
       const live = fs
         .readFileSync(path.join(dir, f), 'utf8')
         .split('\n')
         .filter((l) => !/^\s*#/.test(l))
         .join('\n');
-      return /openrouter\.ai\/api/.test(live) && !CONSULTS_GATE.test(live);
+      // Only a completions call bills. A /models probe does not.
+      const bills =
+        /openrouter\.ai\/api\/v1\/chat\/completions/.test(live) ||
+        /(LLM_BASE_URL|LLM__HTTP_CLIENT__API_URL):\s*["']?https:\/\/openrouter\.ai/.test(live);
+      return bills && !CONSULTS_GATE.test(live);
     })
     .sort();
 
@@ -182,4 +188,30 @@ test('the refusal names the gate and the call site', () => {
     if (original === undefined) delete process.env.REVVEL_LLM_ALLOW_CLOUD;
     else process.env.REVVEL_LLM_ALLOW_CLOUD = original;
   }
+});
+
+test('a free probe that starts billing loses its exemption', () => {
+  // The exemption is "this endpoint cannot spend", not "this file is trusted".
+  // If one of these ever posts a completion, it must be gated like the rest.
+  const dir = path.join(REPO_ROOT, '.github', 'workflows');
+  const nowBilling = [];
+  for (const [name, why] of Object.entries(FREE_PROBE_WORKFLOWS)) {
+    const file = path.join(dir, name);
+    if (!fs.existsSync(file)) {
+      nowBilling.push(`${name}: exempted but the file no longer exists`);
+      continue;
+    }
+    const live = fs
+      .readFileSync(file, 'utf8')
+      .split('\n')
+      .filter((l) => !/^\s*#/.test(l))
+      .join('\n');
+    if (
+      /openrouter\.ai\/api\/v1\/chat\/completions/.test(live) &&
+      !CONSULTS_GATE.test(live)
+    ) {
+      nowBilling.push(`${name}: exempted as "${why}" but now posts a completion`);
+    }
+  }
+  assert.deepStrictEqual(nowBilling, []);
 });
