@@ -924,3 +924,48 @@ and prevented an undocumented reversal of a two-day-old decision.
 behaviour. A workflow, a GitHub App, and a marketplace subscription are three
 different mechanisms; switching off the one you can see in the repo proves
 nothing about the other two.
+
+---
+
+## TM-0007 — A drift test that pins a literal blocks the change it guards
+
+**Discovered:** 2026-08-21  **Discovered-by:** visiting agent (claude-code) during the Opus 5 roll-forward  **PR/issue:** model-routing-opus-5
+**Category:** guard-tuning
+
+**Symptom:** Rolling the Opus twins forward (4.8/4.7 → 5/4.8) required editing
+`tests/controller-core.test.js`, the very test written to stop the model chain
+from drifting. A guard you must edit to perform a sanctioned change cannot tell
+you whether the change was sanctioned.
+
+**Root cause:** The test mixed two assertions with different lifetimes. One
+reads the denylist out of `.github/agent-models.yml` at runtime, so it keeps
+working forever and correctly failed nothing here. The other hardcodes
+`['anthropic/claude-opus-4.8', 'anthropic/claude-opus-4.7']`. The first pins an
+*invariant* (never route to a denylisted model); the second pins a *value* (this
+exact version pair). Only the first survives a routine version bump.
+
+**Detection heuristic:** If a version bump's diff touches a test whose stated
+job is to prevent drift, check whether that assertion is pinning an invariant or
+a snapshot. A test that must be edited in lockstep with the thing it watches is
+a changelog with a failure mode, not a guard.
+
+**Prevention rule:** Assert the *shape* of the policy, not today's instance of
+it. Here the durable invariant is: chain[0] and chain[1] are both Opus, chain[0]
+is not older than chain[1], the reviewer profile is not the coder profile, and
+nothing in the chain matches the SSOT denylist. All four hold across any future
+twin roll-forward without a test edit. The literal pair was left in place this
+round only because tightening it is a behaviour change to a guard, which is the
+owner's call, not a visiting agent's — filed as a note on the PR instead.
+
+**Second, unrelated bite:** `wr/memory/decisions.jsonl` line 40 (the D019 Bito
+entry) was missing the schema-required `locked_by`, so the `validate-jsonl`
+pre-commit hook exited 1 for *every* commit touching that file — including
+commits that only append a valid line. A shared append-only file with a
+whole-file validator means one bad line taxes every later writer, and the
+person who pays is never the person who wrote it. Repaired here rather than
+bypassed with `--no-verify`.
+
+**Related:** `.github/agent-models.yml` (SSOT), `scripts/controller/core.js`
+`DEFAULT_MODEL_CHAIN`, `tests/controller-core.test.js`, MODEL_CONFIG.md,
+TM-0002 (both are wiring-drift: a comment or a test describing a state the
+code no longer has).

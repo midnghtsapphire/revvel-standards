@@ -4,8 +4,11 @@
 #
 # HOUSE RULES (2026-07-08, owner decision after fleet A/B tests):
 # - Everything routes through OpenRouter where possible (one place, one bill).
-# - The Opus twins (Claude Opus 4.8 primary / 4.7 fallback) beat
+# - The Opus twins (Claude Opus 5 primary / 4.8 fallback) beat
 #   openrouter/auto "fusion" in our own tests — pin them, don't use auto.
+#   (2026-08-21: twins rolled forward 4.8/4.7 -> 5/4.8. Opus 5 is a drop-in
+#   at Opus 4.8's exact price, $5/$25 per MTok, same 1M context. The pattern
+#   is unchanged — current Opus primary, one version back as the fallback.)
 # - DO NOT route to Claude Sonnet models: in our testing Sonnet repeatedly
 #   refused/violated repo operating rules. Do not reintroduce as a fallback.
 # - Claude Fable 5 owns the reasoning lane; Gemini owns the vision lane.
@@ -14,15 +17,26 @@
 # - Model IDs follow OpenRouter's vendor/model convention; verify new IDs at
 #   https://openrouter.ai/models before adding. Fallback chains absorb a bad
 #   primary — never ship a profile with no fallback.
+# - OPUS 5 GOTCHAS (why a lane may misbehave after the 2026-08-21 roll-forward):
+#   1. Thinking is ON by default. On Opus 4.8/4.7, omitting the thinking param
+#      meant no thinking; on Opus 5 it runs adaptive. max_tokens caps thinking
+#      PLUS response text, so a profile whose max_tokens was sized tightly
+#      around a no-thinking answer can now truncate mid-response. If a lane
+#      starts returning cut-off output, raise max_tokens first.
+#   2. Disabling thinking is capped at effort "high". Sending
+#      thinking={"type":"disabled"} with effort xhigh/max returns HTTP 400,
+#      and it is validated per request — a later call that raises effort fails
+#      even though earlier ones in the same conversation passed.
+#   Neither applies to the Gemini, Perplexity, DeepSeek or GPT lanes below.
 
 profiles:
   # === ORCHESTRATOR ===
   # General work rides the Opus twins. (Not strategy:auto — see house rules.)
   orchestrator:
-    description: "Opus twins for general orchestration — Opus 4.8 with Opus 4.7 fallback"
+    description: "Opus twins for general orchestration — Opus 5 with Opus 4.8 fallback"
     provider: openrouter
-    primary: "anthropic/claude-opus-4.8"
-    fallback: "anthropic/claude-opus-4.7"
+    primary: "anthropic/claude-opus-5"
+    fallback: "anthropic/claude-opus-4.8"
     max_tokens: 15000
     temperature: 0.4
 
@@ -30,10 +44,10 @@ profiles:
 
   # Code patch profile - explicit task-routed coding profile
   code_patch:
-    description: "Best coder — Opus 4.8, twin 4.7 fallback"
+    description: "Best coder — Opus 5, twin 4.8 fallback"
     provider: openrouter
-    primary: "anthropic/claude-opus-4.8"
-    fallback: "anthropic/claude-opus-4.7"
+    primary: "anthropic/claude-opus-5"
+    fallback: "anthropic/claude-opus-4.8"
     max_tokens: 20000
     temperature: 0.4
     use_for: ["code", "file-edit", "refactor", "implement"]
@@ -42,26 +56,31 @@ profiles:
   best_coder:
     description: "Alias of code_patch for legacy workflow compatibility"
     provider: openrouter
-    primary: "anthropic/claude-opus-4.8"
-    fallback: "anthropic/claude-opus-4.7"
+    primary: "anthropic/claude-opus-5"
+    fallback: "anthropic/claude-opus-4.8"
     max_tokens: 20000
     temperature: 0.4
     use_for: ["code", "file-edit", "refactor", "implement"]
 
-  # Deep reasoning - DeepSeek owns this lane
-  # Owner decision 2026-07-10: twins for execution, Fable 5 for reasoning.
-  # Fallback stays on the Opus twin so the lane keeps working if the Fable ID
-  # needs a one-time verification at https://openrouter.ai/models (that site
-  # is unreachable from the sandbox this change shipped from). Fable 5 is
-  # Mythos-class (above Opus), $10/$50 per MTok vs Opus 4.8's $5/$25 —
-  # reserve the lane for genuinely hard reasoning; routine work stays on the
-  # twins. On the Anthropic API direct (no OpenRouter), the IDs are
-  # claude-fable-5 / claude-opus-4-8.
+  # Deep reasoning - Fable 5 owns this lane
+  # Owner decision 2026-07-10 (NOT re-litigated here): twins for execution,
+  # Fable 5 for reasoning. Only the fallback rolls forward with the twins.
+  # Fallback stays on the current Opus twin so the lane keeps working if the
+  # Fable ID ever goes bad. Fable 5 is Mythos-class (above Opus), $10/$50 per
+  # MTok vs Opus 5's $5/$25 — reserve the lane for genuinely hard reasoning;
+  # routine work stays on the twins. On the Anthropic API direct (no
+  # OpenRouter), the IDs are claude-fable-5 / claude-opus-5.
+  # 2026-08-21: anthropic/claude-fable-5 and anthropic/claude-opus-5 were both
+  # confirmed present in GET https://openrouter.ai/api/v1/models, so the
+  # "unreachable, verify later" caveat from the 2026-07-10 change is now
+  # discharged. Fable 5 also requires 30-day data retention — it is NOT
+  # available to zero-data-retention orgs, which fail with a 400 on every
+  # request regardless of payload. Check org retention before debugging a body.
   reasoning:
-    description: "Hard reasoning, planning, hard debugging, math — Claude Fable 5, Opus 4.8 fallback"
+    description: "Hard reasoning, planning, hard debugging, math — Claude Fable 5, Opus 5 fallback"
     provider: openrouter
     primary: "anthropic/claude-fable-5"
-    fallback: "anthropic/claude-opus-4.8"
+    fallback: "anthropic/claude-opus-5"
     max_tokens: 16000
     temperature: 0.3
     use_for: ["reason", "plan", "hard-debug", "math", "analysis", "architecture"]
@@ -104,11 +123,14 @@ profiles:
     max_tokens: 10000
     temperature: 0.4
 
-  # Review profile - the OTHER twin reviews, so coder and reviewer differ
+  # Review profile - the OTHER twin reviews, so coder and reviewer differ.
+  # Coder moved to Opus 5 on 2026-08-21, so the reviewer moves to Opus 4.8 to
+  # keep that separation. If you ever set both to the same ID you lose the
+  # independent second opinion this profile exists for.
   review:
-    description: "PR/code review — Opus 4.7 (deliberately not the coding twin), DeepSeek R1 fallback"
+    description: "PR/code review — Opus 4.8 (deliberately not the coding twin), DeepSeek R1 fallback"
     provider: openrouter
-    primary: "anthropic/claude-opus-4.7"
+    primary: "anthropic/claude-opus-4.8"
     fallback: "deepseek/deepseek-r1"
     max_tokens: 8000
     temperature: 0.2
@@ -118,7 +140,7 @@ profiles:
   best_reviewer:
     description: "Alias of review profile for legacy workflow compatibility"
     provider: openrouter
-    primary: "anthropic/claude-opus-4.7"
+    primary: "anthropic/claude-opus-4.8"
     fallback: "deepseek/deepseek-r1"
     max_tokens: 8000
     temperature: 0.2

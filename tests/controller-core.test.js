@@ -145,8 +145,11 @@ test('DEFAULT_MODEL_CHAIN honours the SSOT model policy (twins + Fable 5, no den
       assert.ok(!re.test(model), `${model} is denylisted by ${re}`);
     }
   }
-  // The owner's standing policy: Opus 4.8/4.7 twins first, Fable 5 reasoning.
-  assert.deepEqual(DEFAULT_MODEL_CHAIN.slice(0, 2), ['anthropic/claude-opus-4.8', 'anthropic/claude-opus-4.7']);
+  // The owner's standing policy: Opus 5/4.8 twins first, Fable 5 reasoning.
+  // Twins rolled forward from 4.8/4.7 on 2026-08-21 (see agent-models.yml
+  // house rules). The pattern is what is pinned here, not the version pair:
+  // current Opus primary, one version back as the fallback.
+  assert.deepEqual(DEFAULT_MODEL_CHAIN.slice(0, 2), ['anthropic/claude-opus-5', 'anthropic/claude-opus-4.8']);
   assert.equal(DEFAULT_MODEL_CHAIN[2], 'anthropic/claude-fable-5');
 });
 
