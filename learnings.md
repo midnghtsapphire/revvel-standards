@@ -596,3 +596,63 @@ fleet (#17850) — ~13 bots, several routed through `scripts/openrouter-personas
 currently failing free only because the account sits at 402. Topping up credits
 re-arms that burn. The gate implemented here is the mechanism that fix should
 reuse: refuse the paid call unless a budget signal is explicitly set.
+
+**Date/Time:** 2026-08-21
+
+**Task Attempted:** Close the three open cost/correctness issues in one sitting —
+#17854 (workflows advertising cadences they never had), #17855 (cost index drift),
+#17850 (the per-PR reviewer fan-out that re-arms the moment credits are topped up).
+
+**Outcome:** Three PRs, one fix each. #17856 and #17857 merged. The spend gate is
+the third. 1310/1310 tests, 227 workflows valid, chaosmender exit 0.
+
+**Root Cause of Failure (If any):** All three are the same shape — a claim with
+no consumer — but the *mechanisms* differed, and getting each one right required
+checking rather than pattern-matching:
+
+1. **Never true.** `openrouter-assignee.yml` advertised an "hourly cron sweep" and
+   has never had a `schedule:`. `fork-audit-bot.yml` told users a failed
+   assignment would be retried by that same sweep.
+2. **Falsified by an edit elsewhere.** The cron freeze made `security-fleet`'s
+   "weekly sweep" and `watchtower`'s cadence false without touching those files.
+3. **Falsified by a reversal that never propagated.** D007 cut RecurseML; D014
+   reversed D007 on 2026-08-19; `TOOL_COST_INDEX.md` still cited D007. The
+   decision log was *right the whole time* — the failure was one-way propagation.
+4. **Masked, not absent.** The reviewer fan-out costs nothing today only because
+   OpenRouter returns 402. The 402 is an outage that looks like a control.
+
+**Self-Healing Fix / Learned Lesson:** (1) `scripts/llm-spend-gate.js` mirrors
+`local_llm.py`'s gate on the JS side, same `REVVEL_LLM_ALLOW_CLOUD` variable, and
+is wired into all eleven JS and both Python scripts that POST to a provider.
+(2) `tests/llm-spend-gate-coverage.test.js` **discovers** call sites by scanning
+for the POST rather than trusting a list, so a new ungated script fails the build.
+The fifteen workflows that still `curl` inline are named individually in a
+shrink-only ratchet — naming the gap beats implying coverage I do not have.
+(3) `tests/no-false-cadence-claims.test.js` and
+`tests/tool-cost-index-matches-decisions.test.js` cover mechanisms 1–3.
+
+**Two lessons worth keeping:**
+
+- **Check the claim before writing the guard.** I filed #17855 saying the index
+  drifted because "nothing reconciles the table against the workflows." Reading
+  `DECISIONS.md` showed that was wrong: D014 records the reversal in plain terms
+  and `recurse-ml.yml`'s header explains it in detail. The real failure was
+  narrower — a reversal recorded in one place and never propagated — and it
+  produced a *better* guard (parse `REVERSE D0NN`, fail on a stale citation) than
+  the vague one my issue implied. Same for Bito, which I had listed as drift in
+  the issue and which turned out to be correctly cut. **An issue is a hypothesis;
+  verify it before the fix hardens the wrong thing into a test.**
+- **Guard the guard.** Rewording `REVERSE D007` to `UNDO D007` in DECISIONS.md
+  would leave the reversal check parsing nothing and passing forever — a check
+  that always passes is indistinguishable from one that works. Asserting the
+  parser still finds the specific reversal it was written for is what keeps it
+  honest. The same applies to the cadence scanner (a JS `//` comment must not
+  trip it) and the coverage ratchet (an entry that no longer needs the exception
+  must be flagged for removal).
+
+**Next Action:** The fifteen inline workflow curls are the remaining gap and are
+named in `UNGATED_WORKFLOW_CURLS`. Owner-only and still open: the GitHub billing
+breakdown (this repo is public with standard runners, so its Actions are free and
+the reported charge is not from here), the Actions spending limit, and the Vercel
+account block (#17831). **Do not top up OpenRouter credits until the fifteen are
+gated** — that is precisely the burn the 402 is currently hiding.

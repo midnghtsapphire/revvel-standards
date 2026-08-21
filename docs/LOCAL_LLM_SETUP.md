@@ -135,6 +135,32 @@ went unnoticed (#17849).
 The gate must be the exact string `1`. `true`, `yes`, and `TRUE` do not open it,
 so a half-remembered value fails closed.
 
+## 4a. The same gate, in JavaScript
+
+`scripts/local_llm.py` is the Python half. `scripts/llm-spend-gate.js` is the
+JavaScript half, and it reads the same variable — one name, one decision, both
+languages:
+
+```js
+const { assertCloudAllowed } = require('./llm-spend-gate');
+assertCloudAllowed('my-script');   // throws CloudSpendBlockedError
+```
+
+or, to skip rather than fail:
+
+```js
+const { cloudAllowed } = require('./llm-spend-gate');
+if (!cloudAllowed()) return skipGracefully();
+```
+
+Every script in the repo that POSTs to a paid provider calls it, and
+`tests/llm-spend-gate-coverage.test.js` discovers call sites rather than
+trusting a list, so a new one fails the build until it is gated.
+
+Fifteen workflows still `curl` OpenRouter inline from a `run:` block and are
+**not** gated yet. They are named individually in that test's
+`UNGATED_WORKFLOW_CURLS`, and the list may only shrink.
+
 ## 5. Using it from your own scripts
 
 ```python
