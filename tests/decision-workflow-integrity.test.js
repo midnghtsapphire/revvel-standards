@@ -45,11 +45,31 @@ const GOVERNED = [
     why: 'Bito was cut from the review fleet — key absent, silent no-op on every PR',
   },
   {
-    id: 'D014',
+    // Was D014/autoTriggers:true until 2026-08-21. D016 reverses the trigger
+    // restoration on cost grounds — NOT on D014's evidence, which stands: the
+    // RecurseML GitHub App reports independently of this workflow, which is
+    // exactly why cutting these triggers does not remove the red check (#17872).
+    // Without RECURSE_ML_API_KEY the workflow lane no-ops, so it was spending
+    // runner time to produce nothing.
+    id: 'D016',
     workflow: 'recurse-ml.yml',
-    autoTriggers: true,
-    why: 'RecurseML was restored; D007 had measured the workflow lane while the '
-      + 'GitHub App was the mechanism actually running',
+    autoTriggers: false,
+    why: 'RecurseML workflow lane cut for waste — it no-ops without the secret, '
+      + 'while the GitHub App (the mechanism that actually reports) is untouched',
+  },
+  {
+    id: 'D016',
+    workflow: 'octopus-route.yml',
+    autoTriggers: false,
+    why: 'Octopus route cut — the hosted account is out of credits, so the lane '
+      + 'burned runner time for nothing',
+  },
+  {
+    id: 'D016',
+    workflow: 'octopus-review-fallback.yml',
+    autoTriggers: false,
+    why: 'Octopus fallback cut — same out-of-credits reason; the bot comment on '
+      + 'PRs comes from the GitHub App, not this workflow',
   },
   {
     id: 'D015',
