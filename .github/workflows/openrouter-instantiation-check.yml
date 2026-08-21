@@ -200,7 +200,7 @@ jobs:
               `- \`ADMIN_GITHUB_TOKEN\`: ${hasAdmin ? '✅ configured' : '⚠️ not configured (using GITHUB_TOKEN)'}\n\n` +
               `**Detail:** ${detail}\n\n` +
               (ok
-                ? `_Next check: ~24h (cron \`17 6 * * *\`). Run on demand from the Actions tab if you need a fresh probe._`
+                ? `_No recurring check is scheduled (scheduled runs are frozen — see #17849). Run this workflow on demand from the Actions tab for a fresh probe._`
                 : `_If this stays broken for more than 24 hours the Ralph loop will escalate ` +
                   `this issue to \`needs-human\` and ping the repo owner._`);
 

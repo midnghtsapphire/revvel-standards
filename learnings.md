@@ -538,3 +538,61 @@ cascade from `wr/agents/HIERARCHY.md`, but only `wr-rewrite.yml` uses it, and
 that workflow is `runs-on: self-hosted` pointing at `127.0.0.1:1234`; its four
 runs all failed. GitHub-hosted runners cannot reach a laptop, so Layer 0 only
 pays off for work run locally, not in CI.
+
+**Date/Time:** 2026-08-21
+
+**Task Attempted:** Finish the LM Studio (Layer 0) work. `wr/agents/HIERARCHY.md`
+targets 60–70% of work on local LLMs and says the router should "default to
+Layer 0"; the owner runs LM Studio on a Windows Lenovo laptop and wanted the
+existing implementation completed rather than rebuilt.
+
+**Outcome:** The cascade is now shared rather than trapped. `scripts/local_llm.py`
+holds the LM Studio → Ollama → OpenRouter chain, `scripts/wr_rewrite.py`
+delegates to it instead of carrying a private copy, and `docs/LOCAL_LLM_SETUP.md`
+covers the Windows-specific setup. 1300/1300 tests, 227 workflows valid,
+chaosmender exit 0.
+
+**Root Cause of Failure (If any):** Three separate things, only one of which was
+the code. (1) The cascade existed but lived *inside* `wr_rewrite.py`, so it was
+reachable from exactly one workflow and every other caller in the repo went
+straight to OpenRouter — the code was written, it just was not shared. (2) That
+one workflow is `runs-on: self-hosted` pointing at `127.0.0.1:1234`, and all four
+of its recorded runs failed in ~23s because no self-hosted runner existed; a
+GitHub-hosted runner cannot reach a laptop, so Layer 0 had never completed a
+single run. (3) A real bug found while testing: `urllib` honours
+`http_proxy`/`https_proxy` for *every* request including ones to `127.0.0.1`, so
+on any machine behind a corporate proxy or VPN — which a work laptop usually is —
+the call to LM Studio gets routed to the proxy, fails, and Layer 0 looks broken
+for a reason unrelated to LM Studio.
+
+**Self-Healing Fix / Learned Lesson:** (1) The cloud lane is now **opt-in, not
+fallback**: `call_openrouter` refuses unless `REVVEL_LLM_ALLOW_CLOUD` is exactly
+`"1"`, so "the laptop was asleep" produces a loud error naming the gate instead
+of a silent charge. The two workflows that genuinely need cloud judging opt in
+explicitly, in the workflow file, with a comment saying why. (2) Local lanes get
+an opener with `ProxyHandler({})` so loopback never goes through a proxy.
+(3) `tests/local-llm-cascade.test.js` exercises the cascade against stub HTTP
+servers rather than mocking it, and asserts a workflow that sets a loopback
+`LMSTUDIO_ENDPOINT` stays on a self-hosted runner — because the tempting fix for
+that red workflow is `ubuntu-latest`, which makes it green *and* 100% billed.
+Five mutations were applied and reverted: gate forced open, cascade reordered to
+try cloud first, proxy bypass removed, refusal made to print output anyway, and
+the runner switched to `ubuntu-latest`. Each was caught. **Lesson: shared code is
+not shared until something other than its original caller uses it.** The cascade
+had been "done" for weeks by the only measure anyone checked — it existed and it
+was correct — while delivering none of its value, because it had one consumer and
+no seam.
+
+**Second lesson, procedural:** while mutation-testing, a `cp` from a scratch
+backup failed silently and left the workflow mutated to `ubuntu-latest`. This is
+the same class of mistake as the earlier reverted-timeouts incident: **a file
+copy silently wins where a merge would conflict.** The catch was `git diff
+origin/main -- <file>` before committing, which showed the intended change only.
+Verify a restore by diffing against the base, never by trusting the copy.
+
+**Next Action:** Layer 0 pays off only for work that runs on the owner's machine.
+CI cannot reach it, so the remaining OpenRouter spend is the per-PR reviewer
+fleet (#17850) — ~13 bots, several routed through `scripts/openrouter-personas.js`,
+currently failing free only because the account sits at 402. Topping up credits
+re-arms that burn. The gate implemented here is the mechanism that fix should
+reuse: refuse the paid call unless a budget signal is explicitly set.
