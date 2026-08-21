@@ -228,7 +228,7 @@ jobs:
               `- OpenRouter orchestrator skill: [skills/openrouter-swarms/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/openrouter-swarms/SKILL.md)`,
               `- Ralph self-healing loop: [skills/ralph-loop/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/ralph-loop/SKILL.md)`,
               '',
-              '_Automated by `.github/workflows/openrouter-assignee.yml` — runs 24/7 on event triggers + hourly cron sweep_'
+              '_Automated by `.github/workflows/openrouter-assignee.yml` — runs on new/reopened issues and pull requests, or on demand from the Actions tab. There is no scheduled sweep._'
             ].join('\n');
 
             try {
@@ -438,7 +438,7 @@ jobs:
                   `- OpenRouter orchestrator skill: [skills/openrouter-swarms/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/openrouter-swarms/SKILL.md)`,
                   `- Ralph self-healing loop: [skills/ralph-loop/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/ralph-loop/SKILL.md)`,
                   '',
-                  '_Automated by `.github/workflows/openrouter-assignee.yml` — 24/7 cron sweep (picked up by hourly run)_'
+                  '_Automated by `.github/workflows/openrouter-assignee.yml` — event-triggered (issues / pull requests). There is no scheduled sweep; run it from the Actions tab to re-route._'
                 ].join('\n');
 
                 try {
