@@ -91,10 +91,11 @@ jobs:
 
             const dryRun = process.env.DRY_RUN === 'true';
 
-            // Spend gate (#17850): the LLM branch bills OpenRouter, so it needs an
-            // explicit opt-in. The rest of this step — routing and labelling — is
-            // free and still runs, which is why the gate is here rather than an
-            // `if:` on the whole step.
+            /* Spend gate (#17850). The LLM branch bills OpenRouter, so it needs an
+            explicit opt-in. Routing and labelling are free and still run, which is why
+            the gate is here rather than an if on the whole step. This block is a YAML
+            FOLDED scalar, so every line is joined onto one; a line comment here would
+            comment out the rest of the folded line. That is exactly how this broke. */
             const cloudAllowed = process.env.REVVEL_LLM_ALLOW_CLOUD === '1';
             const useOpenRouter = process.env.USE_OPENROUTER === 'true' &&
             !!process.env.OPENROUTER_API_KEY && cloudAllowed;
