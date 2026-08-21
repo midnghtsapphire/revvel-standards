@@ -380,3 +380,146 @@ test('doctor does not report a usable lane when only embeddings are loaded', asy
     await close(server);
   }
 });
+
+/**
+ * LM Studio 0.4.0 additions: token auth, and a native `/api/v1` surface for
+ * model management.
+ *
+ * Both matter for the same reason — the two failures they prevent are the ones
+ * that look like something else. A secured server answers 401, which the client
+ * previously reported as "unreachable", sending you to check whether LM Studio
+ * was running when it plainly was. And "the wrong model is loaded" is the most
+ * common Layer 0 failure by far, so it needs a fix that does not require
+ * clicking around a UI.
+ */
+
+/** Stub of LM Studio 0.4.0: token-gated, with a native load endpoint. */
+function startSecuredStub(token, state, hits) {
+  return http.createServer((req, res) => {
+    hits.push(`${req.method} ${req.url} auth=${req.headers.authorization ?? 'none'}`);
+    res.setHeader('Content-Type', 'application/json');
+    if (req.headers.authorization !== `Bearer ${token}`) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: 'unauthorized' }));
+      return;
+    }
+    if (req.url.endsWith('/api/v1/models/load')) {
+      let body = '';
+      req.on('data', (c) => { body += c; });
+      req.on('end', () => {
+        state.loaded = JSON.parse(body || '{}').model;
+        res.end(JSON.stringify({ ok: true, model: state.loaded }));
+      });
+      return;
+    }
+    if (req.url.endsWith('/models')) {
+      res.end(JSON.stringify({ data: state.loaded ? [{ id: state.loaded }] : [] }));
+      return;
+    }
+    res.end(JSON.stringify({
+      model: state.loaded,
+      choices: [{ message: { content: 'SECURED ANSWER' } }],
+      usage: { total_tokens: 7 },
+    }));
+  });
+}
+
+test('a 401 from LM Studio says the token is missing, not that it is unreachable', async () => {
+  const hits = [];
+  const server = startSecuredStub('right-token', { loaded: 'gemma-3-4b-it' }, hits);
+  const port = await listen(server);
+  try {
+    const r = await runAsk({
+      LMSTUDIO_ENDPOINT: `http://127.0.0.1:${port}/v1`,
+      LMSTUDIO_API_KEY: '', // deliberately absent
+      OLLAMA_ENDPOINT: DEAD.OLLAMA_ENDPOINT,
+      REVVEL_LLM_ALLOW_CLOUD: '',
+    });
+    assert.notStrictEqual(r.status, 0);
+    assert.match(
+      r.stderr,
+      /LMSTUDIO_API_KEY/,
+      'must name the variable to set — a bare "unreachable" sends you to check ' +
+        'whether the server is running, which it is',
+    );
+  } finally {
+    await close(server);
+  }
+});
+
+test('with the token set, the secured server answers normally', async () => {
+  const hits = [];
+  const server = startSecuredStub('right-token', { loaded: 'gemma-3-4b-it' }, hits);
+  const port = await listen(server);
+  try {
+    const r = await runAsk({
+      LMSTUDIO_ENDPOINT: `http://127.0.0.1:${port}/v1`,
+      LMSTUDIO_API_KEY: 'right-token',
+      OLLAMA_ENDPOINT: DEAD.OLLAMA_ENDPOINT,
+      REVVEL_LLM_ALLOW_CLOUD: '',
+    });
+    assert.strictEqual(r.status, 0, `expected success, got: ${r.stderr}`);
+    assert.match(r.stdout, /SECURED ANSWER/);
+    assert.ok(
+      hits.every((h) => h.includes('auth=Bearer right-token')),
+      `every request must carry the token; hits: ${hits.join(' | ')}`,
+    );
+  } finally {
+    await close(server);
+  }
+});
+
+test('`load` posts to the native /api/v1 surface, not the OpenAI-compatible one', async () => {
+  const hits = [];
+  const state = { loaded: null };
+  const server = startSecuredStub('t', state, hits);
+  const port = await listen(server);
+  try {
+    const { stdout } = await execFileAsync(
+      'python3',
+      [SCRIPT, 'load', 'gemma-3-4b-it'],
+      {
+        env: {
+          ...process.env,
+          LMSTUDIO_ENDPOINT: `http://127.0.0.1:${port}/v1`,
+          LMSTUDIO_API_KEY: 't',
+        },
+        encoding: 'utf8',
+        timeout: 30000,
+      },
+    );
+    assert.match(stdout, /loaded: gemma-3-4b-it/);
+    assert.strictEqual(state.loaded, 'gemma-3-4b-it', 'the server must have been told to load it');
+    assert.ok(
+      hits.some((h) => h.includes('/api/v1/models/load')),
+      `load must use the native path; hits: ${hits.join(' | ')}`,
+    );
+  } finally {
+    await close(server);
+  }
+});
+
+test('a 404 on load explains the LM Studio version requirement', async () => {
+  // Older builds have no /api/v1. The error has to say that, or it reads as
+  // "loading is broken" rather than "your LM Studio predates this endpoint".
+  const server = http.createServer((req, res) => {
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'not found' }));
+  });
+  const port = await listen(server);
+  try {
+    let stderr = '';
+    try {
+      await execFileAsync('python3', [SCRIPT, 'load', 'x'], {
+        env: { ...process.env, LMSTUDIO_ENDPOINT: `http://127.0.0.1:${port}/v1` },
+        encoding: 'utf8',
+        timeout: 30000,
+      });
+    } catch (err) {
+      stderr = err.stderr?.toString() ?? '';
+    }
+    assert.match(stderr, /0\.4\.0/, 'must name the version that introduced /api/v1');
+  } finally {
+    await close(server);
+  }
+});

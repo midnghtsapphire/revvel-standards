@@ -466,7 +466,7 @@ Coverage is in three layers:
   `scripts/local_llm.py` (Python). Every script that POSTs to a provider calls
   one of them; `openrouter-personas.js` is covered transitively through
   `openrouter-routing.js`.
-- **Workflows that can bill** — ten of them, gated three different ways
+- **Workflows that can bill** — seventeen of them, gated three different ways
   depending on what the step does. A step whose whole purpose is the model
   call gets a step-level `if:`; `openhands-resolver` gets a job-level one
   because its LLM config is job-wide; and `priority-router`,
@@ -480,10 +480,29 @@ Coverage is in three layers:
   noticed, and disabling them when spend is the problem would be exactly
   backwards.
 
+- **Third-party actions** — seven workflows hand a paid LLM credential to an
+  action that calls the provider inside its own code:
+  `maxlim0/AI-PR-Reviewer`, `maxlim0/actions-progci-fail`,
+  `fridzema/ai-weekly-changelog-action`, `sipyourdrink-ltd/bernstein`,
+  `koki-develop/claude-renovate-review`, `omnedia/panda-ops` and
+  `tarmojussila/xai-code-review`. **No provider URL appears in any of those
+  files** — it lives in the action's own source, which this repo does not
+  contain. They were missed for exactly that reason (#17860) and are now gated
+  like the rest.
+
 `tests/llm-spend-gate-coverage.test.js` discovers call sites by scanning for
 the POST rather than trusting a list, so a new ungated one fails the build —
 and it revokes a probe's exemption the moment that probe starts posting a
-completion.
+completion. A separate check asserts on **a paid credential crossing into code
+we do not control**, which is what catches the third-party class.
+
+**The lesson the third-party miss taught, worth keeping:** a guard that greps
+for a *symptom* misses every path that reaches the same outcome another way.
+The provider URL was a proxy for "this bills" — a good proxy for thirteen call
+sites and a useless one for seven, with nothing inside the check able to tell
+the two cases apart. A green result meaning *"I found no instances of the
+pattern I know how to see"* reads identically to *"there are no instances."*
+When a guard's predicate is a proxy, name what it cannot see.
 
 **A caution on reading the 402.** Before this gate, spend was zero only because
 the OpenRouter account was out of credits. That is an outage that looks like a
