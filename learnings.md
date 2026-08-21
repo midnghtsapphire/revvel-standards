@@ -793,3 +793,47 @@ every conversion date from the row fails.
 **Rule.** A cost document that no test consumes is decoration
 (RVS-VERIFY-001). If a service can charge the account, the check that proves it
 is priced must fail when it is not.
+
+## 2026-08-21 — The keyless Perplexity failover never sent a request
+
+**Symptom.** The operator, watching spend: "it is supposed to failover to keyless
+Perplexity which it never has." Correct, and the reason is worse than a bug.
+
+**What was there.** `config/routing-failover.yml` has declared a tier-2 keyless
+Perplexity lane since WR-4481 — `provider: perplexity`, `keyless: true`,
+`model: perplexity/sonar`, with explicit trigger enums. `scripts/lane-failover.js`
+reads it, decides the failover, labels the route `lane-failover`, and appends a
+class to the FAILURE-LEDGER.
+
+**What was missing.** `lane-failover.js` imports `fs`, `path`, and
+`failure-ledger`. **No HTTP client.** The only other mentions of
+api.perplexity.ai in the repo are a `curl` health probe in `agent-monitor.yml`
+and a *commented-out* line in `search_orchestrator.py`. So the lane had a
+producer — config, decision function, ledger class, three tests — and no
+consumer. Every failover it ever "performed" was a string.
+
+This is RVS-VERIFY-001 in its purest form: the marker described a network call
+that did not happen, and the existing tests asserted on the decision rather than
+the request, so they passed throughout.
+
+**Found alongside it.** `routedChat` — the single entry point for every persona
+in `openrouter-personas.js`, DRAGNET included — was one call to
+`callOpenRouter`. `scripts/local_llm.py` had implemented Layer 0 for Python
+months earlier, but no JS caller could reach LM Studio. The operator was running
+a local model at zero cost that the fleet could not use.
+
+**Fix.** `scripts/local_llm.js` and `scripts/perplexity-lane.js` are the missing
+consumers; `routedChat` now walks free lanes first — LM Studio → keyless
+Perplexity → OpenRouter (billed, gated). Ordered by cost, not by the routing
+table's tier numbering: a free remote lane beats a paid one.
+
+**Honest limit, recorded so it does not become the next decoration.** Whether
+Perplexity serves a request with no `Authorization` header is Perplexity's call.
+If they refuse, the lane now throws with the real status code and we see it. That
+is still a strict improvement: before, the failover produced no request and
+therefore no evidence either way.
+
+**Rule.** Before trusting a declared fallback, find the line that opens the
+socket. A routing table, a decision function, and a ledger entry are three
+producers and zero consumers. Test the request, not the decision — a test that
+asserts on the label passes just as well when nothing is sent.
