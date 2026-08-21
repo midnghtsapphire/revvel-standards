@@ -16,6 +16,8 @@
 
 const https = require("https");
 const { assertCloudAllowed } = require("./llm-spend-gate");
+const localLlm = require("./local_llm");
+const perplexityLane = require("./perplexity-lane");
 const fs = require('fs');
 const path = require('path');
 
@@ -237,6 +239,40 @@ async function routedChat({ profile, messages, temperature, max_tokens, apiKey, 
     console.log(`🔀 Routing profile: ${profile}`);
     console.log(`📝 Description: ${profileConfig.description}`);
     console.log(`🎯 Requested models (fallback order): ${profileConfig.models.join(" → ")}`);
+  }
+
+  /*
+   * Free lanes first. Until 2026-08-21 this function went straight to
+   * OpenRouter, which is why DRAGNET — and every other persona in
+   * scripts/openrouter-personas.js — could not reach the LM Studio model
+   * running on the operator's own machine, and why the keyless Perplexity
+   * tier-2 that config/routing-failover.yml has declared since WR-4481 had
+   * never once been called (scripts/lane-failover.js decides the failover but
+   * imports no HTTP client, so it produced a label and no request).
+   *
+   * Order is by cost, not by the routing table's tier numbering:
+   *   Layer 0  LM Studio   free, local
+   *   Layer 2  Perplexity  free, keyless
+   *   Layer 1  OpenRouter  billed — and refused unless REVVEL_LLM_ALLOW_CLOUD=1
+   *
+   * A lane that is simply absent (laptop asleep, CI runner that cannot reach
+   * 127.0.0.1, Perplexity refusing a keyless request) throws its own lane
+   * error and we move on. Anything else propagates: a real bug in a free lane
+   * must not be laundered into a paid call.
+   */
+  for (const lane of [localLlm, perplexityLane]) {
+    try {
+      const result = await lane.chat({ messages, temperature, max_tokens });
+      if (!silent) {
+        console.log(`✅ ${lane.LANE} answered with ${result.modelUsed} (no spend)`);
+      }
+      return { ...result, profile, profileDescription: profileConfig.description };
+    } catch (err) {
+      if (err.lane !== lane.LANE) throw err;
+      if (!silent) {
+        console.log(`↪️  ${lane.LANE} unavailable (${err.message}) — trying next lane`);
+      }
+    }
   }
 
   try {
