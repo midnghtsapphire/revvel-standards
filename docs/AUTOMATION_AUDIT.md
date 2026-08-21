@@ -1261,3 +1261,62 @@ establish that this one was new. That is a standing argument for replacing the
 linter rather than living around it — this is now the third distinct
 false-positive class it has produced, after `secrets.X || secrets.Y` and
 behaviour that depends on whether an unrelated `env:` block exists.
+
+## 2026-08-21 — A cascade nothing could configure, and the wrong keyless lane
+
+Nine workflows changed. Two defects, one theme.
+
+### The nine workflows
+
+`persona-comment-trigger`, `dragnet-ci-autofix`, `dragnet-team-assignment`,
+`agent-scorecard`, `deep-search-research`, `octopus-review-fallback`,
+`perplexity-research-agent`, `recurse-ml`, `update-agent-creator-data`.
+
+Each runs a `node scripts/*.js` that reaches `routedChat`. Each now passes
+`LMSTUDIO_ENDPOINT`, `LMSTUDIO_API_KEY`, `LMSTUDIO_MODEL`, `PERPLEXITY_API_KEY`
+and `REVVEL_LLM_ALLOW_CLOUD`. `persona-comment-trigger` and `dragnet-ci-autofix`
+additionally install the keyless Perplexity bridge.
+
+### Defect 1 — the cascade had no configuration surface
+
+PR #17868 gave `routedChat` a free-lane cascade. Every persona workflow passed
+exactly one variable, `OPENROUTER_API_KEY`. On a GitHub runner that leaves
+Layer 0 resolving to the runner's own `127.0.0.1` — never the operator's
+laptop — and the paid lane refused by the spend gate. `/dragnet` on a pull
+request could not answer by any route.
+
+This is the same producer-without-consumer shape #17868 existed to fix. Adding
+a cascade and not wiring its configuration is adding a control nobody can
+operate.
+
+### Defect 2 — "keyless Perplexity" was implemented against an API that needs a key
+
+`scripts/perplexity-lane.js` POSTed to `api.perplexity.ai` with no
+`Authorization` header. That API requires a key; the path could only 401.
+
+The real keyless lane was already here — `callPerplexityNoKey`, shelling out to
+the `helallao/perplexity-ai` Python package. It was missed because it contains
+no HTTP client and never names `api.perplexity.ai`: it is a Python heredoc
+behind `execFileSync`. Now extracted to `scripts/perplexity-no-key-bridge.js`
+and shared by both callers.
+
+### What the guard changed about the method
+
+`tests/persona-workflows-plumb-the-lanes.test.js` walks the require graph of
+every `node scripts/*.js` a workflow runs, rather than trusting a hand-built
+list of call sites.
+
+That distinction was not academic. Grepping by hand found **two** workflows. The
+require walk found **nine** — including `dragnet-ci-autofix.yml`, DRAGNET's other
+lane, and `update-agent-creator-data.yml`, which had been opened, read, and
+wrongly cleared as documentation-only.
+
+A blanket rule would have been wrong in the other direction: 44 workflows carry
+`OPENROUTER_API_KEY` and several are deliberate free `/models` health probes
+that never chat.
+
+**Rule.** When a search for a capability comes back empty, what has been
+established is that the *search terms* are absent. Search for the effect — a
+subprocess, a package name, an install hint — not only for the mechanism you
+expect. And enumerate consumers mechanically: the hand-built list here was
+wrong by more than 4x, in the direction that leaves the bug in place.

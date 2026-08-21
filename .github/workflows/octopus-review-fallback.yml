@@ -85,6 +85,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # Lane config (#17868): without these routedChat has nowhere to go —
+          # Layer 0 resolves to the runner's own loopback and the paid lane is
+          # refused by the spend gate. See docs/LOCAL_LLM_SETUP.md.
+          LMSTUDIO_ENDPOINT: ${{ secrets.LMSTUDIO_ENDPOINT }}
+          LMSTUDIO_API_KEY: ${{ secrets.LMSTUDIO_API_KEY }}
+          LMSTUDIO_MODEL: ${{ vars.LMSTUDIO_MODEL }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
           # issue_comment → the PR the banner landed on; dispatch → the input.
           PR_NUMBER: ${{ github.event.issue.number || github.event.inputs.pr_number }}
           # schedule → sweep mode ("absence after N minutes" lane).

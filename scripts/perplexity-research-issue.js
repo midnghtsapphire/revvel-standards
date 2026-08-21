@@ -39,77 +39,12 @@ const CONFIG = {
   outputFile: '/tmp/perplexity-research.md',
 };
 
-const NO_KEY_INSTALL_HINT =
-  'python3 -m pip install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"';
+// The keyless bridge lives in scripts/perplexity-no-key-bridge.js so this
+// script and scripts/perplexity-lane.js share one copy (#17870). Two
+// inline copies would drift, and the drift would be invisible until one
+// of them silently stopped matching the installed Python package.
+const { NO_KEY_BRIDGE, NO_KEY_INSTALL_HINT } = require('./perplexity-no-key-bridge');
 
-const NO_KEY_BRIDGE = `
-import sys
-
-prompt = sys.argv[1]
-labs_model = sys.argv[2]
-fallback_mode = sys.argv[3]
-install_hint = sys.argv[4]
-
-try:
-    from perplexity import LabsClient, Client
-except Exception as exc:
-    raise SystemExit(
-        f"Missing no-key Perplexity dependency ({exc}). Install with: {install_hint}"
-    )
-
-def normalize(value):
-    if isinstance(value, str):
-        return value.strip()
-
-    if isinstance(value, dict):
-        for key in ("output", "answer", "text", "content"):
-            candidate = value.get(key)
-            if isinstance(candidate, str) and candidate.strip():
-                return candidate.strip()
-
-        chunks = value.get("chunks")
-        if isinstance(chunks, list):
-            parts = []
-            for chunk in chunks:
-                if not isinstance(chunk, dict):
-                    continue
-                for key in ("text", "answer", "content"):
-                    candidate = chunk.get(key)
-                    if isinstance(candidate, str) and candidate.strip():
-                        parts.append(candidate.strip())
-                        break
-            if parts:
-                return "\\n".join(parts).strip()
-
-    return ""
-
-labs_error = ""
-response_text = ""
-
-try:
-    response_text = normalize(LabsClient().ask(prompt, model=labs_model))
-except Exception as exc:
-    labs_error = str(exc)
-
-if not response_text:
-    try:
-        response_text = normalize(Client().search(prompt, mode=fallback_mode))
-    except Exception as exc:
-        if labs_error:
-            raise SystemExit(
-                f"LabsClient failed: {labs_error}; Client.search failed: {exc}"
-            )
-        raise SystemExit(f"Client.search failed: {exc}")
-
-if not response_text:
-    if labs_error:
-        raise SystemExit(
-            f"No response returned from no-key Perplexity bridge. LabsClient detail: {labs_error}"
-        )
-    raise SystemExit("No response returned from no-key Perplexity bridge.")
-
-print(response_text)
-`;
 
 async function main() {
   const issueNumber = process.env.ISSUE_NUMBER;
