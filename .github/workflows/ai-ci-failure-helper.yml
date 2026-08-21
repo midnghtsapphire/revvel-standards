@@ -28,7 +28,11 @@ jobs:
             echo "OPENROUTER_API_KEY is configured."
           fi
       - name: AI failure helper
-        if: env.OPENROUTER_API_KEY != ''
+        # Spend gate (#17850): this third-party action calls a paid LLM provider
+        # with the key handed to it below, so the spend is real even though no
+        # openrouter.ai URL appears in this file. Runs only when the repository
+        # variable REVVEL_LLM_ALLOW_CLOUD is "1". See docs/LOCAL_LLM_SETUP.md.
+        if: (env.OPENROUTER_API_KEY != '') && vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         # v0.13 was never released upstream — the newest tag is v0.12, so this
         # ref has always 404'd and the step has never run (#17832). Pinned to
         # the SHA v0.12 points at, per CLAUDE.md gotcha #8.

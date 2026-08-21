@@ -316,3 +316,67 @@ test('wr_rewrite delegates to the shared cascade instead of reimplementing it', 
     );
   }
 });
+
+/**
+ * An embedding model is not a chat model.
+ *
+ * LM Studio lists every loaded model in /v1/models — embedding models included.
+ * The first version of `call_lmstudio` picked `loaded[0]`, so a user whose only
+ * loaded model was `text-embedding-nomic-embed-text-v1.5` would have had that
+ * id sent to /chat/completions and got back a provider error naming nothing
+ * useful. Reported from a real setup, not imagined.
+ */
+test('LM Studio with only an embedding model reports why, not a generic failure', async () => {
+  const hits = [];
+  const server = http.createServer((req, res) => {
+    hits.push(req.url);
+    res.setHeader('Content-Type', 'application/json');
+    if (req.url.endsWith('/models')) {
+      res.end(JSON.stringify({
+        data: [{ id: 'text-embedding-nomic-embed-text-v1.5' }],
+      }));
+      return;
+    }
+    res.end(JSON.stringify({ choices: [{ message: { content: 'should not happen' } }] }));
+  });
+  const port = await listen(server);
+  try {
+    const r = await runAsk({
+      LMSTUDIO_ENDPOINT: `http://127.0.0.1:${port}/v1`,
+      OLLAMA_ENDPOINT: DEAD.OLLAMA_ENDPOINT,
+      REVVEL_LLM_ALLOW_CLOUD: '',
+    });
+    assert.notStrictEqual(r.status, 0, 'must not claim success');
+    assert.match(r.stderr, /embedding/i, 'must name the actual problem');
+    assert.match(
+      r.stderr,
+      /chat\/instruct|chat model/i,
+      'must say what to load instead',
+    );
+    assert.ok(
+      !hits.some((u) => u.includes('chat/completions')),
+      `must not send an embedding model to the completions endpoint; hits: ${hits.join(', ')}`,
+    );
+  } finally {
+    await close(server);
+  }
+});
+
+test('doctor does not report a usable lane when only embeddings are loaded', async () => {
+  const server = http.createServer((req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ data: [{ id: 'nomic-embed-text-v1.5' }] }));
+  });
+  const port = await listen(server);
+  try {
+    const r = await runDoctor({
+      LMSTUDIO_ENDPOINT: `http://127.0.0.1:${port}/v1`,
+      OLLAMA_ENDPOINT: DEAD.OLLAMA_ENDPOINT,
+      REVVEL_LLM_ALLOW_CLOUD: '',
+    });
+    assert.strictEqual(r.status, 1, 'a lane that cannot serve work is not OK');
+    assert.match(r.stdout, /embedding/i, 'must say why');
+  } finally {
+    await close(server);
+  }
+});

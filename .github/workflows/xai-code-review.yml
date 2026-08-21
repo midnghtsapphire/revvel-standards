@@ -56,7 +56,10 @@ jobs:
           fi
 
       - name: xAI Code Review
-        if: env.XAI_API_KEY != ''
+        # Spend gate (#17850): this third-party action calls xAI with the key from
+        # the job env, so the spend is real even though no provider URL appears in
+        # this file. Runs only when REVVEL_LLM_ALLOW_CLOUD is "1".
+        if: (env.XAI_API_KEY != '') && vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         # Advisory only — never block merge on a transient xAI outage.
         continue-on-error: true
         # pin: tarmojussila/xai-code-review@v0.1.0

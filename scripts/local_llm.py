@@ -169,14 +169,29 @@ def _openai_chat(endpoint: str, model: str, prompt: str, headers: dict,
     return text, out.get("model") or model, int(tokens)
 
 
-def lmstudio_models(timeout: int = 10) -> list:
-    """Model ids LM Studio currently has loaded. Empty list if unreachable."""
+# An embedding model cannot serve /chat/completions. LM Studio lists it in
+# /v1/models alongside chat models, so picking "the first loaded model" can
+# quietly select one and fail with a provider error that names nothing useful.
+EMBEDDING_HINTS = ("embed", "embedding", "bge-", "gte-", "e5-", "nomic-embed")
+
+
+def is_embedding_model(model_id: str) -> bool:
+    """True when the id looks like an embedding model rather than a chat model."""
+    return any(h in (model_id or "").lower() for h in EMBEDDING_HINTS)
+
+
+def lmstudio_models(timeout: int = 10, chat_only: bool = False) -> list:
+    """Model ids LM Studio currently has loaded. Empty list if unreachable.
+
+    `chat_only` drops embedding models, which cannot answer a chat completion.
+    """
     endpoint = _endpoint("LMSTUDIO_ENDPOINT", DEFAULT_LMSTUDIO_ENDPOINT)
     try:
         out = _get_json(f"{endpoint}/models", timeout)
     except Exception:  # noqa: BLE001 - probing; unreachable is an answer
         return []
-    return [m.get("id") for m in (out.get("data") or []) if m.get("id")]
+    ids = [m.get("id") for m in (out.get("data") or []) if m.get("id")]
+    return [i for i in ids if not is_embedding_model(i)] if chat_only else ids
 
 
 def call_lmstudio(prompt: str, model: str = "") -> Completion:
@@ -191,7 +206,15 @@ def call_lmstudio(prompt: str, model: str = "") -> Completion:
             raise LaneUnavailable(
                 f"no model loaded and {endpoint}/models did not answer — "
                 "is LM Studio running with its server started?")
-        model = loaded[0]
+        chat = [m for m in loaded if not is_embedding_model(m)]
+        if not chat:
+            raise LaneUnavailable(
+                "LM Studio has only embedding model(s) loaded — "
+                + ", ".join(loaded)
+                + ". An embedding model cannot answer a chat completion. Load a "
+                "chat/instruct model in LM Studio (anything whose name ends in "
+                "-instruct or -chat) and start the server again.")
+        model = chat[0]
     try:
         text, resolved, tokens = _openai_chat(
             endpoint, model, prompt, {}, _timeout())
@@ -281,11 +304,16 @@ def probe() -> list:
 
     lm_endpoint = _endpoint("LMSTUDIO_ENDPOINT", DEFAULT_LMSTUDIO_ENDPOINT)
     models = lmstudio_models()
-    out.append(LaneStatus(
-        LANE_LMSTUDIO, lm_endpoint, bool(models),
-        f"{len(models)} model(s) loaded" if models
-        else "no answer — LM Studio not running, or its server is not started",
-        models))
+    chat = [m for m in models if not is_embedding_model(m)]
+    if not models:
+        detail = "no answer — LM Studio not running, or its server is not started"
+    elif not chat:
+        detail = (f"{len(models)} model(s) loaded, but ALL are embedding models — "
+                  "an embedding model cannot answer a chat completion. Load a "
+                  "chat/instruct model too.")
+    else:
+        detail = f"{len(chat)} chat model(s) loaded"
+    out.append(LaneStatus(LANE_LMSTUDIO, lm_endpoint, bool(chat), detail, models))
 
     ol_endpoint = _endpoint("OLLAMA_ENDPOINT", DEFAULT_OLLAMA_ENDPOINT)
     try:
