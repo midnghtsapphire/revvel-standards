@@ -24,7 +24,7 @@ upgrade decision can be made.
 | Tool | Current tier | Current cost | Next-tier name | Next-tier cost | Fleet decision | Source |
 | --- | --- | --- | --- | --- | --- | --- |
 | Keploy | Free | $0 | Pro / Team | est. $20–$40 / seat / mo | keep | keploy.io/pricing |
-| Vercel | Hobby | $0 | Pro | $20 / user / mo | keep | vercel.com/pricing |
+| Vercel | Hobby — **account blocked** | $0 | Pro | $20 / user / mo | keep, but **three deployment checks fail red on every PR** until the account is unblocked (#17831, owner-only) | vercel.com/pricing |
 | LM Studio (Layer 0) | Local — runs on the operator's machine | **$0** | — | n/a | **keep — try first** (`scripts/local_llm.py`; `wr/agents/HIERARCHY.md` targets 60–70% of work here) | lmstudio.ai |
 | Ollama (Layer 0b) | Local — runs on the operator's machine | **$0** | — | n/a | keep (optional second local lane) | ollama.com |
 | OpenRouter (Layer 1) | usage-priced (no tier) | varies — **account at 402, balance exhausted** | — | n/a | **keep, but gated** — `scripts/local_llm.py` refuses this lane unless `REVVEL_LLM_ALLOW_CLOUD=1`; ~270 scheduled calls/day removed by the cron freeze (#17849) | openrouter.ai/pricing |
@@ -34,9 +34,10 @@ upgrade decision can be made.
 | ImgBot | Open-source | $0 | — | n/a (free indefinitely) | keep | imgbot.net |
 | CodeRabbit | Free (limited) | $0 | Pro | est. $24 / user / mo | **keep** (free; codebase-index value; D009) | coderabbit.ai/pricing |
 | Bito | **CUT 2026-07-08** | $0 (was free-limited) | — | — | **cut** (zero unique catches; workflow skips gracefully when key is absent; D006) | bito.ai/pricing |
-| RecurseML | **CUT 2026-07-08** | $0 (was free-limited) | — | — | **cut** (zero unique catches; workflow skips when key is absent; D007) | app.recurse.ml (verify) |
+| RecurseML | **RESTORED 2026-08-19** (D014 reverses D007) | $0 | — | — | **keep** — two delivery mechanisms, only one was ever measured: the `recurse-ml.yml` workflow lane no-ops without `RECURSE_ML_API_KEY`, but the **GitHub App posts its `recurseml/analysis` check independently of that workflow and never needed the secret**. It stayed installed through the entire D007 cut. Currently reporting `error` on every PR (#17855) | app.recurse.ml (verify) |
 | Mabl | **PAUSED 2026-05-27** | $0 | — | est. starts $150+ / mo; note: local/CI CLI runs are credit-free (see `skills/mabl-expert/`) | **cut** (replaced by Keploy; D010) | mabl.com/pricing (verify) |
-| Octopus Review | **REPLACED 2026-07-08** | $0 (hosted; monthly AI quota hit) | BYOK / self-host | $0 platform + provider usage | **replace → ai-pr-review-openrouter.yml** (D008) | octopus-review.ai (verify) |
+| Octopus Review | **REPLACED 2026-07-08** — but the App is still installed | $0 (hosted; out of credits) | BYOK / self-host | $0 platform + provider usage | **replace → ai-pr-review-openrouter.yml** (D008). The decision was made; the App was never uninstalled and still comments on every PR, currently "Your organization is out of credits". Owner has said to keep it — the monthly quota is used deliberately | octopus-review.ai (verify) |
+| Devin | **Trial expired** | $0 (no credits) | per their pricing | per their pricing | keep (inert) — posts `Devin Review` on every PR reading "Full review skipped: trial expired and no credits remaining"; referenced by 14 workflows, all of which no-op | devin.ai/pricing (verify) |
 | Augment Code | Free (limited) | $0 | per their pricing | per their pricing | keep | augmentcode.com |
 | Stacker (stacker-bot) | Free (installed #16874, install `150619571`) | $0 | — | n/a (free indefinitely) | **keep** (stacked-PR TOC + merge-order guard; legacy CLI) | github.com/apps/stacker-bot · stacker-site.now.sh |
 | Graphite | Free tier (public / ≤10 users) | $0 | Team | est. $25 / user / mo | keep (preferred modern stacking; see GRAPHITE_INTEGRATION.md) | graphite.dev/pricing |
