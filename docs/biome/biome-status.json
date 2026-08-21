@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-20T23:06:50.144Z",
+  "generated_at": "2026-08-21T00:11:40.687Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,17 +15,17 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 32427210383,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32427210383",
+            "id": 32431537132,
+            "name": "API Monitor",
+            "path": ".github/workflows/api-monitor.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32431537132",
             "conclusion": "failure"
           },
           {
-            "id": 32427190973,
-            "name": "Daily WR & PR Summary",
-            "path": ".github/workflows/daily-wr-summary.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32427190973",
+            "id": 32431466447,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32431466447",
             "conclusion": "failure"
           }
         ],
