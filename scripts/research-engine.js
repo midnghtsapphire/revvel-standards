@@ -2,6 +2,7 @@
 "use strict";
 
 const fs = require("fs");
+const { assertCloudAllowed } = require("./llm-spend-gate");
 const https = require("https");
 const path = require("path");
 
@@ -299,6 +300,8 @@ function requestJson({ hostname, pathName, method, headers = {}, payload }) {
 }
 
 async function callOpenRouter({ apiKey, repository, model, systemPrompt, userPrompt, maxTokens = 3500 }) {
+  // Spend gate (#17850): refuse unless someone deliberately allowed it.
+  assertCloudAllowed("research-engine");
   const response = await requestJson({
     hostname: OPENROUTER_HOST,
     pathName: OPENROUTER_PATH,

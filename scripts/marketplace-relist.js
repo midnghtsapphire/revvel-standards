@@ -59,6 +59,7 @@
  */
 
 const fs = require("fs");
+const { assertCloudAllowed } = require("./llm-spend-gate");
 const path = require("path");
 const https = require("https");
 
@@ -356,6 +357,8 @@ class SpendTracker {
 // ---------------------------------------------------------------------------
 
 function openrouterRequest(body) {
+  // Spend gate (#17850): refuse unless someone deliberately allowed it.
+  assertCloudAllowed("marketplace-relist");
   return new Promise((resolve, reject) => {
     const payload = JSON.stringify(body);
     const req = https.request(
