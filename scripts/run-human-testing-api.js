@@ -23,6 +23,7 @@
 "use strict";
 
 const https = require("https");
+const { assertCloudAllowed } = require("./llm-spend-gate");
 const fs = require("fs");
 const path = require("path");
 
@@ -57,6 +58,8 @@ const OPENROUTER_PATH = "/api/v1/chat/completions";
 // ---------------------------------------------------------------------------
 
 function callOpenRouter(model, systemPrompt, userPrompt) {
+  // Spend gate (#17850): refuse unless someone deliberately allowed it.
+  assertCloudAllowed("run-human-testing-api");
   return new Promise((resolve, reject) => {
     const body = JSON.stringify({
       model,

@@ -15,6 +15,7 @@
  */
 
 const fs = require('fs');
+const { assertCloudAllowed } = require("./llm-spend-gate");
 const path = require('path');
 const https = require('https');
 
@@ -52,6 +53,8 @@ const assetsDir = path.join(contentDir, 'assets');
  * Call OpenRouter API
  */
 async function callOpenRouter(model, messages, maxTokens = 4000) {
+  // Spend gate (#17850): refuse unless someone deliberately allowed it.
+  assertCloudAllowed("content-automation");
   return new Promise((resolve, reject) => {
     const payload = JSON.stringify({
       model,

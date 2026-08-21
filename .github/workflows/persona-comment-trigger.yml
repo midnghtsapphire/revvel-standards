@@ -78,6 +78,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install no-key Perplexity bridge
+        # Layer 2 of the routedChat cascade is the helallao/perplexity-ai
+        # Python package (scripts/perplexity-no-key-bridge.js), not the official
+        # API — that one needs a key. Without this install the lane cannot run
+        # on a runner, and with LM Studio unreachable from CI the persona has
+        # no free lane left. Same step perplexity-research-agent.yml uses.
+        # Non-fatal: a failed install must degrade to the next lane, not kill
+        # the job, so the persona still answers if a paid lane is enabled.
+        continue-on-error: true
+        run: |
+          python3 -m pip install --user \
+            "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -90,6 +102,18 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           COMMENT_BODY: ${{ github.event.comment.body }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # Layer 0/2/1 lane config (#17868). Without these the cascade in
+          # routedChat has nothing to reach: LM Studio resolves to the runner's
+          # own 127.0.0.1 (never the operator's laptop), and OpenRouter is
+          # refused because the spend gate variable is absent. Set
+          # LMSTUDIO_ENDPOINT to a reachable URL (a tunnel to the operator's
+          # machine) to keep this lane free; REVVEL_LLM_ALLOW_CLOUD must be "1"
+          # before anything bills.
+          LMSTUDIO_ENDPOINT: ${{ secrets.LMSTUDIO_ENDPOINT }}
+          LMSTUDIO_API_KEY: ${{ secrets.LMSTUDIO_API_KEY }}
+          LMSTUDIO_MODEL: ${{ vars.LMSTUDIO_MODEL }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
         run: |
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "::warning::OPENROUTER_API_KEY not set — persona reply skipped (no-key bridge handles The Professor; other personas need the key)."

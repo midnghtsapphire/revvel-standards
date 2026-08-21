@@ -2,6 +2,7 @@
 "use strict";
 
 const https = require("https");
+const { assertCloudAllowed } = require("./llm-spend-gate");
 const fs = require("fs");
 const path = require("path");
 
@@ -329,6 +330,8 @@ const OR_FREE_MODELS = process.env.OR_FREE_MODELS
 // planned for it." Triage ALWAYS cascades through all 6 lanes before surfacing
 // a failure. Lane 6 (static rule-based) never fails. See docs/OPENROUTER_TRIAGE_PROCESS.md.
 async function callOpenRouter(systemPrompt, userPrompt) {
+  // Spend gate (#17850): refuse unless someone deliberately allowed it.
+  assertCloudAllowed("openrouter-triage");
   const referer = `https://github.com/${GITHUB_REPOSITORY}`;
 
   const response = await requestJson({

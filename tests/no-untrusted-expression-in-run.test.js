@@ -68,11 +68,8 @@ const KNOWN_REMAINING = new Set([
   'api-rate-limit-handler.yml :: ${{ inputs.agent_used }}',
   'api-rate-limit-handler.yml :: ${{ inputs.error_message }}',
   'api-rate-limit-handler.yml :: ${{ inputs.failed_workflow }}',
-  'auto-error-handler.yml :: ${{ inputs.attempted_fixes }}',
-  'auto-error-handler.yml :: ${{ inputs.error_context }}',
   'auto-error-handler.yml :: ${{ inputs.error_message }}',
   'auto-error-handler.yml :: ${{ inputs.workflow_run_id }}',
-  'bulk-close-failure-spam.yml :: ${{ inputs.max_to_close }}',
   'fork-audit-bot.yml :: ${{ inputs.config_path }}',
   'gumloop-pdf-pipeline.yml :: ${{ inputs.keywords }}',
   'gumloop-pdf-pipeline.yml :: ${{ inputs.niche }}',
@@ -87,12 +84,6 @@ const KNOWN_REMAINING = new Set([
   'run-human-testing-api.yml :: ${{ inputs.output_file }}',
   'run-human-testing-api.yml :: ${{ inputs.target_url }}',
   'run-human-testing-api.yml :: ${{ inputs.test_scenarios }}',
-  'ui-creation-engine.yml :: ${{ inputs.business }}',
-  'ui-creation-engine.yml :: ${{ inputs.industry }}',
-  'ui-creation-engine.yml :: ${{ inputs.issue_number }}',
-  'ui-creation-engine.yml :: ${{ inputs.location }}',
-  'ui-creation-engine.yml :: ${{ inputs.platform }}',
-  'ui-creation-engine.yml :: ${{ inputs.services }}',
 ]);
 
 // Expressions whose value an actor can choose.

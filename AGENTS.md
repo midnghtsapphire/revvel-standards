@@ -222,6 +222,11 @@ npm test             # product-specific tests (if defined)
 
 ### Known gotchas
 
+- **Never call an LLM provider directly.** Route through
+  `scripts/local_llm.py` (Python) or `scripts/llm-spend-gate.js` (JavaScript).
+  Local first, and the paid lane is refused unless `REVVEL_LLM_ALLOW_CLOUD=1`.
+  A new ungated call site fails the build. See **Layer 0** below.
+
 - **`affiliate-hub` peer dependencies:** `npm install` may fail due to peer
   dependency conflicts. Use `npm install --legacy-peer-deps` if needed.
 - **Music Video Creator ESLint:** A known ESLint configuration issue may surface
@@ -271,6 +276,85 @@ npm test             # product-specific tests (if defined)
   bridge in `scripts/openrouter-triage.js` → `triageWithFallback()`). If triage
   or research "isn't processing," check the key **and** the balance at
   <https://openrouter.ai/credits> before assuming a code bug.
+
+## Layer 0 — local LLMs first, and the spend gate
+
+Read this before you make any LLM call from this repo.
+
+`wr/agents/HIERARCHY.md` puts local models at Layer 0 and targets 60–70% of
+work there. `scripts/local_llm.py` implements that ordering for every caller:
+**LM Studio → Ollama → OpenRouter**, with the paid lane refused by default.
+
+### The gate
+
+Nothing here may bill a provider unless someone said so. `REVVEL_LLM_ALLOW_CLOUD`
+must be exactly `"1"` — `true`, `yes` and `TRUE` all fail closed, deliberately,
+so a half-remembered value cannot spend money.
+
+- JavaScript: `scripts/llm-spend-gate.js` → `assertCloudAllowed('your-caller')`
+- Python: `cloud_allowed()` in `scripts/local_llm.py`, or the local
+  `_assert_cloud_allowed` helpers
+- Workflows: the repository **variable** of the same name, checked with
+  `if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'`
+
+`tests/llm-spend-gate-coverage.test.js` **discovers** call sites rather than
+trusting a list, so a new ungated one fails the build. Do not work around it —
+if your call genuinely needs the cloud, open the gate in that one workflow with
+a comment saying why the work cannot run locally.
+
+Why it exists: ~$80 of OpenRouter spend appeared in a single day with nobody
+touching the repo. 46 scheduled workflows fired ~496 runs/day, ten of them
+calling OpenRouter (#17849). Spend then sat at zero for months for the *wrong*
+reason — the account was at 402, which is an outage that looks like a control.
+
+### Using it
+
+```bash
+python3 scripts/local_llm.py doctor          # what is reachable, exits non-zero if nothing is
+python3 scripts/local_llm.py load <model-id> # load a model without touching the LM Studio UI
+python3 scripts/local_llm.py ask "prompt"    # one completion; prints the lane and whether it billed
+```
+
+```python
+import sys; sys.path.insert(0, "scripts")
+import local_llm
+r = local_llm.complete("...")
+r.lane      # 'lane-0-lmstudio'
+r.is_local  # True -> this cost nothing
+```
+
+`complete(..., allow_cloud=False)` forbids the paid lane for that call even if
+the environment allows it. A caller can narrow the gate; nothing can widen it.
+
+### Gotchas that have actually bitten
+
+- **An embedding model is not a chat model.** LM Studio lists both in
+  `/v1/models`. Selecting "the first loaded model" can pick
+  `text-embedding-*` and send it to `/chat/completions`, which fails with a
+  provider error naming nothing useful. `is_embedding_model()` filters them; if
+  only embeddings are loaded, `doctor` says so and exits non-zero.
+- **A 401 is not "unreachable".** LM Studio 0.4.0 can require a bearer token
+  (`LMSTUDIO_API_KEY`). Reporting a secured server as unreachable sends you to
+  check whether LM Studio is running when it plainly is. The model probe takes
+  a `strict` flag for exactly this — and strict still raises `LaneUnavailable`
+  rather than a raw error, or failover to Ollama breaks.
+- **Two different API surfaces.** Inference uses the OpenAI-compatible `/v1`;
+  model management (`load`, `unload`, `download`) lives on the native
+  `/api/v1`, which needs LM Studio 0.4.0+. `lmstudio_native_base()` derives one
+  from the other so they cannot drift apart. A 404 on `load` usually means an
+  older LM Studio, not a broken endpoint.
+- **`urllib` sends `127.0.0.1` through `http_proxy`.** On a machine behind a
+  corporate proxy or VPN — which a work laptop usually is — the call to your own
+  LM Studio gets routed to the proxy and Layer 0 looks broken for a reason that
+  has nothing to do with LM Studio. Local lanes use an opener with
+  `ProxyHandler({})`. If you write a new local client, do the same.
+- **A GitHub-hosted runner cannot reach a laptop.** `ubuntu-latest` is a VM in
+  Azure; `127.0.0.1` is its own loopback. Every LLM call made from CI is a
+  billed call. `.github/workflows/wr-rewrite.yml` is `runs-on: self-hosted` for
+  this reason, and `tests/local-llm-cascade.test.js` pins that — "fixing" it to
+  `ubuntu-latest` makes it green *and* 100% billed.
+
+Setup, including the Windows specifics: `docs/LOCAL_LLM_SETUP.md`.
 
 ## Commenting
 

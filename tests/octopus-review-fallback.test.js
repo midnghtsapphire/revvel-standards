@@ -86,7 +86,18 @@ test('workflow covers all three lanes: quota comment, sweep schedule, manual dis
   const workflow = yaml.parse(fs.readFileSync(workflowPath, 'utf8'));
   const triggers = workflow.on || workflow[true]; // yaml parses bare `on:` as boolean true
   assert.ok(triggers.issue_comment, 'issue_comment trigger present');
-  assert.ok(triggers.schedule, 'schedule trigger present');
+  // COST FREEZE 2026-08-21: the schedule is commented out in the workflow,
+  // preserved in place (RVS-AGENT-001) rather than deleted. ~496 scheduled
+  // runs/day across 46 workflows drove the Actions bill on a repo with no
+  // product traffic. tests/no-scheduled-workflows.test.js is the guard that
+  // keeps it off; this assertion is inverted to match that decision, so a
+  // silent re-enable fails here too.
+  assert.strictEqual(triggers.schedule, undefined, 'schedule must stay frozen (cost freeze)');
+  assert.match(
+    fs.readFileSync(workflowPath, 'utf8'),
+    /^\s*#\s*schedule:/m,
+    'the frozen sweep schedule must remain in the file, commented, so it can be restored',
+  );
   assert.ok(triggers.workflow_dispatch, 'workflow_dispatch trigger present');
 });
 

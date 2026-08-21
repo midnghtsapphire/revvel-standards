@@ -106,6 +106,41 @@ test('a guard widened to swallow 403 as well is FLAGGED', () => {
   assert.equal(findings.length, 1);
 });
 
+test('the handle-404-then-throw form is accepted', () => {
+  // `arsc-labels.yml` writes the inverse of the guard #17787 taught the
+  // scanner, and was reported as unguarded for it. Both shapes let a non-404
+  // escape; only one was recognised.
+  const findings = scan(`for (const name of names) {
+  try {
+    ${CALL};
+    removed.push(name);
+  } catch (error) {
+    if (error.status === 404) {
+      missing.push(name);
+      continue;
+    }
+    throw error;
+  }
+}`);
+  assert.deepEqual(findings, [], 'a 404 branch that LEAVES, then an unconditional throw');
+});
+
+test('a 404 branch that falls through to the throw is FLAGGED', () => {
+  // The shape above is safe only because `continue` leaves. Log-and-fall-
+  // through re-throws the 404 as well, which is the opposite bug — the
+  // desired end state treated as a failure — and must not be accepted just
+  // for containing the same tokens.
+  const findings = scan(`try {
+  ${CALL};
+} catch (error) {
+  if (error.status === 404) {
+    core.info('already gone');
+  }
+  throw error;
+}`);
+  assert.equal(findings.length, 1);
+});
+
 test('an unguarded call is FLAGGED', () => {
   // Row 4: unchanged behaviour.
   const findings = scan(`${CALL};`);

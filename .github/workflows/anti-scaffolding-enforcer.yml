@@ -293,7 +293,10 @@ jobs:
               });
               console.log('✅ Removed scaffolding-detected label');
             } catch (e) {
-              // Label might not exist, that's OK
+              // A 404 is the desired end state — the label is absent. Any other
+              // status (401/403 on a restricted token) must surface, or the PR
+              // silently keeps a label saying it is scaffolded.
+              if (e.status !== 404) throw e;
               console.log('ℹ️ Label not present or already removed');
             }
             
@@ -306,6 +309,7 @@ jobs:
               });
               console.log('✅ Removed needs-completion label');
             } catch (e) {
+              if (e.status !== 404) throw e;
               console.log('ℹ️ Label not present or already removed');
             }
             

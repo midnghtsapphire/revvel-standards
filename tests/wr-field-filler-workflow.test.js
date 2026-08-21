@@ -34,12 +34,20 @@ test('wr-field-filler self-heals on downstream failure via workflow_run', () => 
 });
 
 test('wr-field-filler runs a scheduled sweep for stragglers', () => {
-  const sched = triggers.schedule;
-  assert.ok(Array.isArray(sched) && sched.length > 0, 'schedule trigger must exist');
-  // 15-minute cadence: exact string can drift; assert every 15 min pattern.
-  const cron = sched[0].cron || '';
-  assert.match(cron, /^\*\/(1|5|10|15|20|30)\s+\*\s+\*\s+\*\s+\*$/,
-    `schedule cron must be a minute-cadence sweep, got "${cron}"`);
+  // COST FREEZE 2026-08-21: the schedule is commented out in the workflow,
+  // preserved in place (RVS-AGENT-001) rather than deleted. ~496 scheduled
+  // runs/day across 46 workflows drove the Actions bill on a repo with no
+  // product traffic. tests/no-scheduled-workflows.test.js is the guard that
+  // keeps it off; this assertion is inverted to match that decision, so a
+  // silent re-enable fails here too.
+  assert.strictEqual(triggers.schedule, undefined, 'schedule must stay frozen (cost freeze)');
+  // The 15-minute sweep was 96 runs/day on its own. Stragglers are now picked
+  // up by the issues / workflow_run triggers, or by a manual dispatch.
+  const source = fs.readFileSync(WF_PATH, 'utf8');
+  assert.match(source, /^\s*#\s*schedule:/m,
+    'the frozen sweep schedule must remain in the file, commented, so it can be restored');
+  assert.match(source, /^\s*#\s*-\s*cron:/m,
+    'the frozen cron expression must remain, commented, so the cadence is recoverable');
 });
 
 test('wr-field-filler exposes workflow_dispatch for manual runs', () => {

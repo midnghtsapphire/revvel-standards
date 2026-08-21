@@ -92,6 +92,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install no-key Perplexity bridge
+        # Layer 2 of the routedChat cascade is the helallao/perplexity-ai
+        # Python package (scripts/perplexity-no-key-bridge.js), not the official
+        # API — that one needs a key. Without this install the lane cannot run
+        # on a runner, and with LM Studio unreachable from CI the persona has
+        # no free lane left. Same step perplexity-research-agent.yml uses.
+        # Non-fatal: a failed install must degrade to the next lane, not kill
+        # the job, so the persona still answers if a paid lane is enabled.
+        continue-on-error: true
+        run: |
+          python3 -m pip install --user \
+            "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -113,6 +125,14 @@ jobs:
           CHECK_SUITE_URL: ${{ github.event.check_suite.url }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # Lane config (#17868): without these routedChat has nowhere to go —
+          # Layer 0 resolves to the runner's own loopback and the paid lane is
+          # refused by the spend gate. See docs/LOCAL_LLM_SETUP.md.
+          LMSTUDIO_ENDPOINT: ${{ secrets.LMSTUDIO_ENDPOINT }}
+          LMSTUDIO_API_KEY: ${{ secrets.LMSTUDIO_API_KEY }}
+          LMSTUDIO_MODEL: ${{ vars.LMSTUDIO_MODEL }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
         run: node scripts/dragnet-ci-autofix.js
 
   # ─────────────────────────────────────────────────────────────────────────

@@ -351,19 +351,56 @@ The issue says "@why is this not autoprocessing please fix and do this WR" — l
 
 ### Scheduled Workflows
 
-| Workflow | Schedule | Purpose | Status |
-|----------|----------|---------|--------|
-| `openrouter-instantiation-check.yml` | Daily 06:17 UTC | OpenRouter health | ✅ Active |
-| `triage-cron.yml` | Hourly | Sweep untriaged items | ✅ Active |
-| `migration-cron.yml` | Custom | Database migrations | ✅ Active |
-| `stale-branch-cleanup.yml` | Daily 03:00 | Clean stale branches | ✅ Active |
-| `stale-docs-check.yml` | Weekly | Check doc freshness | ✅ Active |
-| `workflow-health-dashboard.yml` | Daily | Monitor workflows | ✅ Active |
-| `ai-weekly-changelog.yml` | Weekly | Generate changelog | ✅ Active |
-| `biome-inspector.yml` | Every 6h | Credit-free completion auditor — HTTP-checks each app's live link, files a worklist of unfinished projects | ✅ Active |
-| `api-monitor.yml` | Every 30 min | Probes `api.github.com` and `openrouter.ai/api/v1`; fails the run on any non-2xx/3xx or timeout | ✅ Active (2026-08-17) |
+**Status as of 2026-08-21: every scheduled workflow is FROZEN.** The table
+below is kept as the record of what the schedules were, not what runs now.
 
-**Assessment:** ✅ All critical cron jobs are configured and active.
+The 46 scheduled workflows frozen on 2026-08-21 totalled **~496 runs/day (~14,900/month)** on a
+repository with no product traffic, and ten of them called OpenRouter on every
+fire — roughly 270 billed LLM calls a day with nobody touching the repo. Every
+`schedule:` block is now commented out in place, with its cron expression
+preserved (RVS-AGENT-001), and every affected workflow keeps
+`workflow_dispatch` so it can still be run on demand. See #17849 and #17851.
+
+| Workflow | Former schedule | Purpose | Status |
+|----------|-----------------|---------|--------|
+| `triage-cron.yml` | Hourly | Sweep untriaged items | ❄️ Frozen — dispatch only |
+| `migration-cron.yml` | Custom | Database migrations | ❄️ Frozen — dispatch only |
+| `stale-branch-cleanup.yml` | Daily 03:00 | Clean stale branches | ❄️ Frozen — dispatch only |
+| `stale-docs-check.yml` | Weekly | Check doc freshness | ❄️ Frozen — dispatch only |
+| `workflow-health-dashboard.yml` | Daily | Monitor workflows | ❄️ Frozen — dispatch only |
+| `ai-weekly-changelog.yml` | Weekly | Generate changelog | ❄️ Frozen — dispatch only |
+| `biome-inspector.yml` | Every 6h | Credit-free completion auditor — HTTP-checks each app's live link, files a worklist of unfinished projects | ❄️ Frozen — dispatch only |
+| `api-monitor.yml` | Every 30 min | Probes `api.github.com` and `openrouter.ai/api/v1`; fails the run on any non-2xx/3xx or timeout | ❄️ Frozen — dispatch only |
+| `agent-monitor.yml` | Every 15 min (96/day) | Agent health | ❄️ Frozen — dispatch only |
+| `wr-field-filler.yml` | Every 15 min (96/day) | Fill blank WR fields | ❄️ Frozen — still fires on `issues` / `workflow_run` |
+| `fleet-controller.yml` | 4× per hour (96/day) | Grid-level scheduler | ❄️ Frozen — dispatch only |
+| …35 more | see each file's commented block | | ❄️ Frozen — dispatch only |
+
+Three further workflows — `agent-audit-logger.yml`, `apisec-scan.yml` and
+`neuralegion.yml` — already carried commented-out schedules before this freeze
+and are not counted in the 46. Grepping for a commented `schedule:` therefore
+returns 49 files, not 46; only the 46 carry the `COST FREEZE` banner.
+
+`openrouter-instantiation-check.yml` is **not** in this list: it never had a
+schedule. It did, however, tell readers `_Next check: ~24h (cron 17 6 * * *)_`
+in the issue comment it posts — a cadence that belonged to `watchtower.yml`,
+which the freeze stopped. That sentence was corrected rather than left to
+promise a check that will never fire (RVS-VERIFY-001: a claim with no producer).
+
+**Assessment:** ❄️ No workflow runs itself. Scheduled runs are 0/day, down
+from ~496/day. Re-enabling one is a deliberate act: uncomment its block and add
+the filename to `ALLOWED_SCHEDULED` in
+`tests/no-scheduled-workflows.test.js`, which otherwise fails the build. That
+guard also asserts the aggregate run rate stays at 0/day and that no frozen
+workflow was left without a `workflow_dispatch` trigger — the sum is what
+nobody was holding before, and a per-workflow review is what let 46 individually
+reasonable schedules add up to a four-figure run count.
+
+**Note on what this did and did not save.** This repository is public and every
+workflow uses standard runners, so Actions minutes here are free and unmetered;
+the freeze does not reduce a GitHub bill. What it stops is the OpenRouter spend
+on the ten scheduled workflows that call it. Any GitHub charge has a different
+source and needs its own diagnosis.
 
 ### The gate on `main` must be able to fail
 
@@ -414,6 +451,86 @@ pins both the aggregation and the ordering, since a check that runs after
 Any future workflow that *acts* on CI state (promoting drafts, clearing
 labels, enabling auto-merge) must read both surfaces. Reading one suite's
 conclusion, or check runs alone, is how a red PR reads as green.
+
+### The spend gate: one repository variable, not fifteen edits
+
+Since #17850 nothing in this repo bills an LLM provider without an explicit
+opt-in. `REVVEL_LLM_ALLOW_CLOUD` must be exactly `"1"` — `true`, `yes` and
+`TRUE` all fail closed, so a half-remembered value cannot spend money. Set it
+under **Settings → Secrets and variables → Actions → Variables**.
+
+Coverage is in three layers:
+
+- **Scripts** — `scripts/llm-spend-gate.js` (JavaScript) and the
+  `_assert_cloud_allowed` helpers plus `cloud_allowed()` in
+  `scripts/local_llm.py` (Python). Every script that POSTs to a provider calls
+  one of them; `openrouter-personas.js` is covered transitively through
+  `openrouter-routing.js`.
+- **Workflows that can bill** — seventeen of them, gated three different ways
+  depending on what the step does. A step whose whole purpose is the model
+  call gets a step-level `if:`; `openhands-resolver` gets a job-level one
+  because its LLM config is job-wide; and `priority-router`,
+  `pdf-work-request-router` and `wr-auto-classify` are gated *inside* the
+  script, because those steps also route, comment and label and that work is
+  free and must keep running.
+- **Workflows that cannot bill** — `agent-monitor`, `api-monitor`,
+  `openrouter-key-reset`, `openrouter-instantiation-check` and `lane-canary`
+  hit `GET /api/v1/models` or probe reachability. Only `/chat/completions`
+  bills. These are deliberately **not** gated: they are how an outage gets
+  noticed, and disabling them when spend is the problem would be exactly
+  backwards.
+
+- **Third-party actions** — seven workflows hand a paid LLM credential to an
+  action that calls the provider inside its own code:
+  `maxlim0/AI-PR-Reviewer`, `maxlim0/actions-progci-fail`,
+  `fridzema/ai-weekly-changelog-action`, `sipyourdrink-ltd/bernstein`,
+  `koki-develop/claude-renovate-review`, `omnedia/panda-ops` and
+  `tarmojussila/xai-code-review`. **No provider URL appears in any of those
+  files** — it lives in the action's own source, which this repo does not
+  contain. They were missed for exactly that reason (#17860) and are now gated
+  like the rest.
+
+`tests/llm-spend-gate-coverage.test.js` discovers call sites by scanning for
+the POST rather than trusting a list, so a new ungated one fails the build —
+and it revokes a probe's exemption the moment that probe starts posting a
+completion. A separate check asserts on **a paid credential crossing into code
+we do not control**, which is what catches the third-party class.
+
+**The lesson the third-party miss taught, worth keeping:** a guard that greps
+for a *symptom* misses every path that reaches the same outcome another way.
+The provider URL was a proxy for "this bills" — a good proxy for thirteen call
+sites and a useless one for seven, with nothing inside the check able to tell
+the two cases apart. A green result meaning *"I found no instances of the
+pattern I know how to see"* reads identically to *"there are no instances."*
+When a guard's predicate is a proxy, name what it cannot see.
+
+**A caution on reading the 402.** Before this gate, spend was zero only because
+the OpenRouter account was out of credits. That is an outage that looks like a
+control: ask what would fail if it were removed and the answer is the balance.
+Do not treat an empty account as protection.
+
+### Layer 0: why `wr-rewrite.yml` is `runs-on: self-hosted`
+
+`wr/agents/HIERARCHY.md` puts local LLMs at Layer 0 with a target share of
+60-70% of work. `.github/workflows/wr-rewrite.yml` is the only workflow wired
+to it, via `LMSTUDIO_ENDPOINT: http://127.0.0.1:1234/v1`.
+
+It has four recorded runs. All four failed, all in July 2026, the last three in
+~23 seconds — the shape of a job no runner picked up. **Layer 0 has never
+completed a run in CI, and cannot.** GitHub-hosted runners are VMs in Azure;
+`127.0.0.1` is their own loopback, not the operator's laptop. That is why the
+job is `self-hosted`, and the tempting "fix" of switching it to `ubuntu-latest`
+would make it green *and* route every call to the billed lane, permanently.
+`tests/local-llm-cascade.test.js` asserts that any workflow setting a loopback
+`LMSTUDIO_ENDPOINT` stays on a self-hosted runner, so that swap fails the build.
+
+The cascade itself now lives in `scripts/local_llm.py` rather than inside
+`scripts/wr_rewrite.py`, so anything in the repo can reach Layer 0. Its cloud
+lane is opt-in: `call_openrouter` refuses unless `REVVEL_LLM_ALLOW_CLOUD` is
+exactly `"1"`, so a sleeping laptop raises a loud error naming the gate instead
+of silently billing. `wr-rewrite.yml` and `ops/wr-rewrite.workflow.yml` set that
+variable explicitly, in the workflow file, because judging needs distinct model
+families that only the cloud lane provides. Setup: `docs/LOCAL_LLM_SETUP.md`.
 
 ### Dormant: filed where GitHub Actions does not look
 
@@ -1144,3 +1261,62 @@ establish that this one was new. That is a standing argument for replacing the
 linter rather than living around it — this is now the third distinct
 false-positive class it has produced, after `secrets.X || secrets.Y` and
 behaviour that depends on whether an unrelated `env:` block exists.
+
+## 2026-08-21 — A cascade nothing could configure, and the wrong keyless lane
+
+Nine workflows changed. Two defects, one theme.
+
+### The nine workflows
+
+`persona-comment-trigger`, `dragnet-ci-autofix`, `dragnet-team-assignment`,
+`agent-scorecard`, `deep-search-research`, `octopus-review-fallback`,
+`perplexity-research-agent`, `recurse-ml`, `update-agent-creator-data`.
+
+Each runs a `node scripts/*.js` that reaches `routedChat`. Each now passes
+`LMSTUDIO_ENDPOINT`, `LMSTUDIO_API_KEY`, `LMSTUDIO_MODEL`, `PERPLEXITY_API_KEY`
+and `REVVEL_LLM_ALLOW_CLOUD`. `persona-comment-trigger` and `dragnet-ci-autofix`
+additionally install the keyless Perplexity bridge.
+
+### Defect 1 — the cascade had no configuration surface
+
+PR #17868 gave `routedChat` a free-lane cascade. Every persona workflow passed
+exactly one variable, `OPENROUTER_API_KEY`. On a GitHub runner that leaves
+Layer 0 resolving to the runner's own `127.0.0.1` — never the operator's
+laptop — and the paid lane refused by the spend gate. `/dragnet` on a pull
+request could not answer by any route.
+
+This is the same producer-without-consumer shape #17868 existed to fix. Adding
+a cascade and not wiring its configuration is adding a control nobody can
+operate.
+
+### Defect 2 — "keyless Perplexity" was implemented against an API that needs a key
+
+`scripts/perplexity-lane.js` POSTed to `api.perplexity.ai` with no
+`Authorization` header. That API requires a key; the path could only 401.
+
+The real keyless lane was already here — `callPerplexityNoKey`, shelling out to
+the `helallao/perplexity-ai` Python package. It was missed because it contains
+no HTTP client and never names `api.perplexity.ai`: it is a Python heredoc
+behind `execFileSync`. Now extracted to `scripts/perplexity-no-key-bridge.js`
+and shared by both callers.
+
+### What the guard changed about the method
+
+`tests/persona-workflows-plumb-the-lanes.test.js` walks the require graph of
+every `node scripts/*.js` a workflow runs, rather than trusting a hand-built
+list of call sites.
+
+That distinction was not academic. Grepping by hand found **two** workflows. The
+require walk found **nine** — including `dragnet-ci-autofix.yml`, DRAGNET's other
+lane, and `update-agent-creator-data.yml`, which had been opened, read, and
+wrongly cleared as documentation-only.
+
+A blanket rule would have been wrong in the other direction: 44 workflows carry
+`OPENROUTER_API_KEY` and several are deliberate free `/models` health probes
+that never chat.
+
+**Rule.** When a search for a capability comes back empty, what has been
+established is that the *search terms* are absent. Search for the effect — a
+subprocess, a package name, an install hint — not only for the mechanism you
+expect. And enumerate consumers mechanically: the hand-built list here was
+wrong by more than 4x, in the direction that leaves the bug in place.

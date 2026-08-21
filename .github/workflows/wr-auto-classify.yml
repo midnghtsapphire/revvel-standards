@@ -82,6 +82,9 @@ jobs:
       MODEL: openai/gpt-4o-mini
     steps:
       - name: Classify and apply
+        env:
+          # Spend gate (#17850). Unset = the paid branch is skipped.
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
         run: |
           set -euo pipefail
           python3 <<'PYEOF'
@@ -272,6 +275,13 @@ jobs:
                   "whose values are the chosen option strings. Example: "
                   '{"Output Type": "cli-product", "Priority": "medium"}'
               )
+
+              # Spend gate (#17850): this call bills OpenRouter. Classification
+              # falls back to the rule-based path when the gate is shut, so the
+              # step still applies labels rather than failing.
+              if os.environ.get("REVVEL_LLM_ALLOW_CLOUD", "").strip() != "1":
+                  print("Skipping OpenRouter call: REVVEL_LLM_ALLOW_CLOUD is not '1' (spend gate).")
+                  raise SystemExit(0)
 
               data = json.dumps({
                   "model": MODEL,

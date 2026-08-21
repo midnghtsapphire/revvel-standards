@@ -479,11 +479,14 @@ jobs:
       - name: Notify on failure
         if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trustforge.outputs.notify_on_failure == 'true' && steps.trustforge.outputs.ssl_errors != '0'
         uses: actions/github-script@v9.0.0
+        env:
+          RUN_NUMBER: ${{ steps.trustforge.outputs.run_number }}
+          SSL_ERRORS: ${{ steps.trustforge.outputs.ssl_errors }}
         with:
           script: |
             const { owner, repo } = context.repo;
-            const runNumber = '${{ steps.trustforge.outputs.run_number }}';
-            const sslErrors = '${{ steps.trustforge.outputs.ssl_errors }}';
+            const runNumber = process.env.RUN_NUMBER || '';
+            const sslErrors = process.env.SSL_ERRORS || '';
             await github.rest.issues.create({
               owner,
               repo,
@@ -506,12 +509,16 @@ jobs:
       - name: Notify on warning
         if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trustforge.outputs.notify_on_warning == 'true' && steps.trustforge.outputs.total_issues != '0' && steps.trustforge.outputs.ssl_errors == '0'
         uses: actions/github-script@v9.0.0
+        env:
+          RUN_NUMBER: ${{ steps.trustforge.outputs.run_number }}
+          SCHEMA_ERRORS: ${{ steps.trustforge.outputs.schema_errors }}
+          LINK_ERRORS: ${{ steps.trustforge.outputs.link_errors }}
         with:
           script: |
             const { owner, repo } = context.repo;
-            const runNumber = '${{ steps.trustforge.outputs.run_number }}';
-            const schemaErrors = '${{ steps.trustforge.outputs.schema_errors }}';
-            const linkErrors = '${{ steps.trustforge.outputs.link_errors }}';
+            const runNumber = process.env.RUN_NUMBER || '';
+            const schemaErrors = process.env.SCHEMA_ERRORS || '';
+            const linkErrors = process.env.LINK_ERRORS || '';
             await github.rest.issues.create({
               owner,
               repo,
