@@ -19,11 +19,15 @@ name: 📱 Auto Deploy to Stores
 # C) Manual workflow_dispatch — useful for re-running a specific issue/platform
 
 on:
-  pull_request:
-    types: [closed]
-    branches: [main]
-  issues:
-    types: [labeled]
+  # QUIET THE FLEET 2026-08-21: auto-triggers disabled before closing the open
+  # PR/issue backlog. Closing a PR against main fired a store deploy, and the
+  # `issues: labeled` path fired one per label. Neither should happen while the
+  # backlog is being cleared. Preserved commented, not deleted (RVS-AGENT-001).
+  # pull_request:
+  #   types: [closed]
+  #   branches: [main]
+  # issues:
+  #   types: [labeled]
   workflow_dispatch:
     inputs:
       issue_number:
