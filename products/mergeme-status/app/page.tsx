@@ -279,7 +279,7 @@ cd products/mergeme-status && npm test && npm run dev   # http://localhost:3012`
 
       <footer style={{ ...S.meta, borderTop: '1px solid #30363d', paddingTop: 16 }}>
         Live DoD page:{' '}
-        <a href="https://revvel-standards.vercel.app/docs/mergeme-status/">
+        <a href="https://midnghtsapphire.github.io/revvel-standards/docs/mergeme-status/">
           revvel-standards.vercel.app/docs/mergeme-status/
         </a>
         {' · '}

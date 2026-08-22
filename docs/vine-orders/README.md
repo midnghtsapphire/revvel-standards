@@ -16,11 +16,11 @@ above is safe to share and test.
 
 ---
 
-# Amazon Orders upload page
+## Amazon Orders upload page
 
 ## Open this URL only
 
-<https://revvel-standards.vercel.app/docs/vine-orders/>
+<https://midnghtsapphire.github.io/revvel-standards/docs/vine-orders/>
 
 ## What to click (in order)
 
@@ -32,4 +32,4 @@ above is safe to share and test.
 ## What NOT to expect
 
 - The dashed "Choose CSV" box is a **file picker on your computer**, not a product website.
-- The main hub <https://revvel-standards.vercel.app/> does not upload orders.
+- The main hub <https://midnghtsapphire.github.io/revvel-standards/> does not upload orders.

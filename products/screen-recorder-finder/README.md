@@ -2,7 +2,7 @@
 
 ## Live Deployment
 
-▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/screen-recorder-finder/)**
+▶️ **[Open the live app & test it](https://midnghtsapphire.github.io/revvel-standards/docs/screen-recorder-finder/)**
 
 ## Features
 

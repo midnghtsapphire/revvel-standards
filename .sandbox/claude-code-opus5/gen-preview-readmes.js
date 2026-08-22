@@ -73,9 +73,12 @@ for (const name of live) {
     ? fs.readFileSync(readmePath, 'utf8').trim()
     : '';
 
-  // Never clobber existing prose — keep it below the generated block.
+  // Never clobber existing prose — keep it below the generated block. Demote
+  // any H1 it carries to H2 first: this file already opens with "# <name>", and
+  // a second top-level heading trips markdownlint MD025.
+  const preservedBody = previous.replace(/^# (?!#)/gm, '## ');
   const preserved =
-    previous && !previous.includes(url) ? `\n---\n\n${previous}\n` : '';
+    previous && !previous.includes(url) ? `\n---\n\n${preservedBody}\n` : '';
 
   const body = [
     `# ${name}`,

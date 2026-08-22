@@ -21,7 +21,7 @@ Badges are **at-a-glance health**, not decoration. Every badge must resolve to a
 [![Label allowlist](https://github.com/midnghtsapphire/revvel-standards/actions/workflows/label-allowlist.yml/badge.svg)](https://github.com/midnghtsapphire/revvel-standards/actions/workflows/label-allowlist.yml)
 [![Formal verify](https://github.com/midnghtsapphire/revvel-standards/actions/workflows/formal-auto-wr.yml/badge.svg)](https://github.com/midnghtsapphire/revvel-standards/actions/workflows/formal-auto-wr.yml)
 [![Agent scorecard](https://github.com/midnghtsapphire/revvel-standards/actions/workflows/agent-scorecard.yml/badge.svg)](https://github.com/midnghtsapphire/revvel-standards/actions/workflows/agent-scorecard.yml)
-[![Standards site](https://img.shields.io/badge/standards-revvel--standards.vercel.app-7C5CFF)](https://revvel-standards.vercel.app)
+[![Standards site](https://img.shields.io/badge/standards-revvel--standards.vercel.app-7C5CFF)](https://midnghtsapphire.github.io/revvel-standards)
 ```
 
 ## Badge types we use
