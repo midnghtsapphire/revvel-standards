@@ -5,15 +5,19 @@
 name: Website green-o-meter
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - README.md
-      - index.html
-      - oaudrey/**
-      - docs/**
-      - .github/workflows/green-website.yml
+  # QUIET THE FLEET 2026-08-21: the push trigger is disabled too. The COST
+  # FREEZE below already cut this workflow's cron, but `docs/**` is a very wide
+  # path filter, so ordinary doc commits kept waking it. Preserved commented,
+  # not deleted (RVS-AGENT-001).
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - README.md
+  #     - index.html
+  #     - oaudrey/**
+  #     - docs/**
+  #     - .github/workflows/green-website.yml
   # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
   # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
   # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
