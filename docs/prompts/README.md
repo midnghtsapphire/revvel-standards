@@ -8,7 +8,7 @@ Promhoeador collects; Promptinator files.
 
 ## Layout
 
-```text
+```
 docs/prompts/
   <type>/
     <prompt-name>.md          # reusable prompt
@@ -38,10 +38,10 @@ docs/prompts/
 
 ## Sister libraries
 
-- Private hoard: <https://github.com/midnghtsapphire/AI-Conversation-Archive>
-- Typed starter: <https://github.com/midnghtsapphire/oz-prompt-library>
-- Empty 16k stub: <https://github.com/midnghtsapphire/prompt-library>
-- PM templates: <https://github.com/midnghtsapphire/product-manager-prompts>
+- Private hoard: https://github.com/midnghtsapphire/AI-Conversation-Archive
+- Typed starter: https://github.com/midnghtsapphire/oz-prompt-library
+- Empty 16k stub: https://github.com/midnghtsapphire/prompt-library
+- PM templates: https://github.com/midnghtsapphire/product-manager-prompts
 
 ## Rule
 

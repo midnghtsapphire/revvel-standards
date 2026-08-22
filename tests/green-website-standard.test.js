@@ -44,29 +44,19 @@ function assertGreenWorkflow(relativePath, { requiresFixedDefaultUrl }) {
   if (doc.name !== 'Website green-o-meter') {
     throw new Error(`${relativePath} must use the standard workflow name`);
   }
-  // COST FREEZE 2026-08-21: the live weekly schedule AND the live push trigger
-  // are commented out in place (RVS-AGENT-001), not deleted. `docs/**` is a
-  // very wide path filter, so ordinary doc commits kept waking the job. See
-  // tests/no-scheduled-workflows.test.js. Templates keep both triggers so a
-  // downstream copy still runs weekly / on docs push.
-  if (!on.workflow_dispatch) {
-    throw new Error(`${relativePath} must support workflow_dispatch`);
+  // COST FREEZE 2026-08-21: the weekly schedule is commented out in place
+  // (RVS-AGENT-001), not deleted. See tests/no-scheduled-workflows.test.js.
+  if (!on.push || !on.workflow_dispatch) {
+    throw new Error(`${relativePath} must support push and workflow_dispatch`);
   }
+  // Only the live workflow bills us. templates/ is copied into other repos and
+  // keeps its schedule so a downstream copy still runs weekly.
   const isLive = relativePath.startsWith('.github/workflows/');
   if (isLive && on.schedule) {
     throw new Error(`${relativePath} schedule must stay frozen (cost freeze)`);
   }
   if (isLive && !/^\s*#\s*schedule:/m.test(content)) {
     throw new Error(`${relativePath} must keep its frozen schedule commented in place`);
-  }
-  if (isLive && on.push) {
-    throw new Error(`${relativePath} live push trigger must stay frozen (cost freeze)`);
-  }
-  if (isLive && !/^\s*#\s*push:/m.test(content)) {
-    throw new Error(`${relativePath} must keep its frozen push trigger commented in place`);
-  }
-  if (!isLive && !on.push) {
-    throw new Error(`${relativePath} is a template and must keep a push trigger`);
   }
   if (!isLive && !on.schedule) {
     throw new Error(`${relativePath} is a template and must keep a weekly schedule`);

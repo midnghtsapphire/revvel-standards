@@ -58,11 +58,6 @@ jobs:
 
       - name: Set lowercase image name
         id: meta
-        env:
-          # workflow_dispatch free text — must not be interpolated into the
-          # shell. A quote in the value would close the literal and execute
-          # the rest. Read $TAG_SUFFIX instead (tests/no-untrusted-expression-in-run.test.js).
-          TAG_SUFFIX: ${{ github.event.inputs.tag_suffix }}
         run: |
           set -euo pipefail
           OWNER="$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
@@ -79,7 +74,7 @@ jobs:
             SAFE_TAG="$(echo "${RAW_TAG}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g')"
             TAGS="${TAGS}"$'\n'"${IMAGE}:${SAFE_TAG}"
           fi
-          EXTRA="${TAG_SUFFIX:-}"
+          EXTRA="${{ github.event.inputs.tag_suffix }}"
           if [[ -n "${EXTRA}" ]]; then
             SAFE_EXTRA="$(echo "${EXTRA}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g')"
             TAGS="${TAGS}"$'\n'"${IMAGE}:${SAFE_EXTRA}"

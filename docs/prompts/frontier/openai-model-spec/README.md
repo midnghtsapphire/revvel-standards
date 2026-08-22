@@ -1,7 +1,7 @@
 # OpenAI Model Spec (2026-08-18)
 
-- Spec: <https://model-spec.openai.com/2026-08-18.html>
-- Repo (CC0): <https://github.com/openai/model_spec>
+- Spec: https://model-spec.openai.com/2026-08-18.html
+- Repo (CC0): https://github.com/openai/model_spec
 
 This is the intended-behavior document, not ChatGPT's hidden system prompt.
 

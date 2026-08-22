@@ -1,6 +1,6 @@
 # Anthropic claude.ai system prompts (official)
 
-Source: <https://platform.claude.com/docs/en/release-notes/system-prompts>
+Source: https://platform.claude.com/docs/en/release-notes/system-prompts
 
 Consumer (claude.ai / iOS / Android) system prompts. They do **not** apply to the Claude API.
 
