@@ -1,0 +1,17 @@
+name: Prosecute Merge
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  prosecute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: midnghtsapphire/revvel-standards/products/merge-prosecutor@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          pr-number: ${{ github.event.pull_request.number }}
+          test-command: "npm test"
