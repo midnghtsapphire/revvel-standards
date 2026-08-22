@@ -30,7 +30,7 @@ jobs:
       - name: Audit workflow action references
         id: audit
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -uo pipefail
 
