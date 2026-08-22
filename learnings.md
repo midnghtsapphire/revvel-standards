@@ -1024,3 +1024,12 @@ issue N" over "X will fix this."
 `.github/workflows/openrouter-triage.yml`,
 `docs/playbooks/wr-manual-processes.md` §1–§2, CLAUDE.md gotcha #6,
 `standards/VERIFY_THE_POSTCONDITION.md`.
+
+---
+
+- **Date/Time:** 2026-08-22
+- **Task Attempted:** OpenRouter-first with LM Studio fallback for OpenRouter Coder and OpenRouter Agent only.
+- **Outcome:** CAN-PARTIAL. Scripts try OpenRouter first, then LM Studio, only when not on a GitHub-hosted runner. Actions jobs stay `ubuntu-latest` and do not probe localhost. Coder default model is `moonshotai/kimi-k2` (no opus-4.7 default).
+- **Root Cause of Failure:** GitHub-hosted `ubuntu-latest` cannot see `http://127.0.0.1:1234` on the laptop. The only self-hosted LLM job in-repo is `wr-rewrite.yml` (not Coder/Agent), and its recorded runs failed because no self-hosted runner existed. Wiring localhost fallback into Coder/Agent YAML would always fail and look like a working fallback.
+- **Self-Healing Fix / Learned Lesson:** Do not invent a tunnel from GitHub-hosted ubuntu to a laptop. Guard LM Studio fallback on `RUNNER_ENVIRONMENT` / `GITHUB_ACTIONS`. Do not set `REVVEL_LLM_ALLOW_CLOUD=1` on a job that cannot see LM Studio. Do not invert `scripts/local_llm.py`'s Layer-0-first `complete()` for the fleet — Coder/Agent call `call_lmstudio` only as their own fallback. An explicit `WR_MODEL=anthropic/claude-opus-4.7` still burns the $16; leaving it unset uses kimi-k2.
+- **Next Action:** Spend gate stays required on these Actions jobs until a self-hosted runner that can see LM Studio exists. PR #17897 remains the flake8 vehicle — do not touch it.

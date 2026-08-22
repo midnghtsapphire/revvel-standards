@@ -245,6 +245,28 @@ exactly the monitoring you want when spend is the problem — and
 `tests/llm-spend-gate-coverage.test.js` fails if one of them ever starts posting
 a completion.
 
+### OpenRouter Coder and Agent — CANNOT reach LM Studio from Actions
+
+`.github/workflows/openrouter-coder.yml` and `openrouter-agent.yml` both
+`runs-on: ubuntu-latest`. Those jobs **CANNOT** reach LM Studio. There is no
+self-hosted runner label for Coder/Agent, and GitHub-hosted ubuntu cannot see
+`http://127.0.0.1:1234` on the laptop. Do not set `REVVEL_LLM_ALLOW_CLOUD=1`
+in those jobs' env: that would bill OpenRouter with no real local fallback.
+
+The scripts (`.github/scripts/openrouter_coder.py`,
+`.github/scripts/openrouter_agent.py`) try OpenRouter first, then LM Studio,
+**only when they are not on a GitHub-hosted runner** (local CLI, or a future
+self-hosted runner on the laptop). Output names the lane
+(`lane-1-openrouter` or `lane-0-lmstudio`).
+
+Coder default model is `moonshotai/kimi-k2` (same as `scripts/local_llm.py`).
+If `WR_MODEL` is set to `anthropic/claude-opus-4.7` (secret, var, or env),
+that still burns the $16 credit — the script will use whatever `WR_MODEL`
+says. Leave it unset.
+
+The fleet cascade in `scripts/local_llm.py` stays Layer-0-first. Coder/Agent
+are the exception (OpenRouter first) and only for these two scripts.
+
 ## 5. Using it from your own scripts
 
 ```python
