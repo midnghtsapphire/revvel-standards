@@ -170,6 +170,9 @@ through this workflow.
 (`auto-fix`, `ralph-loop`, `wr-stuck`, `auto-error`) that have been stuck in
 `triage:new` for > 1 hour and resets all of them in a single pass.
 
+It automatically triggers both `openrouter-assignee.yml` and `openrouter-triage.yml`
+workflows for each issue found.
+
 ### When to use
 
 - A batch of issues got stuck (e.g., after an API outage).
