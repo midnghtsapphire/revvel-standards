@@ -2,7 +2,7 @@
 
 ## Live Deployment
 
-▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/pplx-api-skills/)**
+▶️ **[Open the live app & test it](https://midnghtsapphire.github.io/revvel-standards/docs/pplx-api-skills/)**
 
 > Until the monorepo Vercel project picks up this path, run locally on port **3012** (see Quick Start). Deploy steps: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md).
 
