@@ -16,7 +16,9 @@
  * Option A was blocked on a hardcoded string.
  *
  * The label IS reachable: `CIRCLE_PULL_REQUEST` carries the PR URL on every PR
- * build. It needs a token, because this repository is private.
+ * build. A token is only required when GitHub refuses an anonymous read.
+ * This repo is public — job 18484 stayed red after `allow-destroy` was on
+ * the PR because the script refused to call the API without GITHUB_TOKEN.
  *
  * These tests drive the SHIPPED script in a throwaway git repo with a stubbed
  * `curl` on PATH, so they exercise the resolution as it will run rather than a
@@ -100,6 +102,21 @@ test('the allow-destroy label ratifies a deletion', () => {
   assert.match(r.stderr, /allow-destroy label found on PR #1234/);
 });
 
+test('a public-repo label lookup ratifies without GITHUB_TOKEN', () => {
+  // Job 18484 (#17891): CircleCI had no token, the PR already carried
+  // allow-destroy, and the script never asked GitHub. Anonymous reads work
+  // on this public repo; refusing them is what kept policy-check red.
+  const dir = repoWithADeletion();
+  const bin = stubCurl(dir, { body: LABELLED });
+  const r = run(dir, {
+    CIRCLE_PULL_REQUEST: 'https://github.com/o/r/pull/1234',
+    CIRCLE_PROJECT_USERNAME: 'o',
+    CIRCLE_PROJECT_REPONAME: 'r',
+  }, { bin });
+  assert.equal(r.status, 0, `expected anonymous lookup to ratify:\n${r.stdout}\n${r.stderr}`);
+  assert.match(r.stderr, /allow-destroy label found on PR #1234/);
+});
+
 test('a PR without the label is still blocked', () => {
   const dir = repoWithADeletion();
   const bin = stubCurl(dir, { body: UNLABELLED });
@@ -136,11 +153,14 @@ test('the label must be a label, not a word in the PR body', () => {
 test('no token fails CLOSED, and names what is missing', () => {
   // An unreadable label is not permission. But a check that just says "no" is
   // how the old hardcoded `false` stayed unnoticed, so it has to say WHY.
+  // Stub curl fails so this is the private-repo / unreachable-API path, not
+  // the public-repo success path above.
   const dir = repoWithADeletion();
-  const r = run(dir, { CIRCLE_PULL_REQUEST: 'https://github.com/o/r/pull/1234' });
+  const bin = stubCurl(dir, { exitCode: 22 });
+  const r = run(dir, { CIRCLE_PULL_REQUEST: 'https://github.com/o/r/pull/1234' }, { bin });
   assert.equal(r.status, 1);
-  assert.match(r.stderr, /no GITHUB_TOKEN in this job/);
-  assert.match(r.stderr, /Add GITHUB_TOKEN/);
+  assert.match(r.stderr, /no GITHUB_TOKEN is set in this job/);
+  assert.match(r.stderr, /add GITHUB_TOKEN/i);
 });
 
 test('an API failure fails CLOSED', () => {

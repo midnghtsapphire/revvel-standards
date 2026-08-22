@@ -41,7 +41,11 @@ set -euo pipefail
 # never turn green, and a ratified deletion could not merge (#17829).
 #
 # The label IS reachable: CIRCLE_PULL_REQUEST carries the PR URL on every PR
-# build. It needs a token, because this repository is private.
+# build. A token is only required when the GitHub API refuses an anonymous
+# read (private repo, or rate-limited). This repo is public — PR labels
+# return 200 without auth. Job 18484 on #17891 stayed red after allow-destroy
+# was applied because the old path refused to call the API at all when
+# CircleCI had no GITHUB_TOKEN, so the sanctioned label could never ratify.
 #
 # Fails CLOSED, and says why. An unreadable label is not permission.
 resolve_allow_destroy() {
@@ -63,27 +67,35 @@ resolve_allow_destroy() {
   esac
 
   local token="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
-  if [ -z "$token" ]; then
-    echo "   ℹ️  allow-destroy cannot be checked: no GITHUB_TOKEN in this job." >&2
-    echo "      Add GITHUB_TOKEN (read access) to the CircleCI project or a" >&2
-    echo "      context attached to policy-check, and a human's allow-destroy" >&2
-    echo "      label will ratify a deletion here as it already does in" >&2
-    echo "      no-destroy-guard.yml. Until then this check stays strict." >&2
-    echo "false"; return 0
-  fi
-
   # Secret on stdin, never in argv — `curl -H "Authorization: Bearer $T"` puts
   # the token in the process list for anything that can read /proc
   # (CLAUDE.md gotcha #4). --config - takes the header from stdin instead.
+  # Authorization is omitted when no token is set so a public repo can still
+  # be read. Do not send "Bearer " with an empty token — GitHub treats that
+  # as a bad credential and 401s a request that would have been 200 anonymous.
   local slug="${CIRCLE_PROJECT_USERNAME:-}/${CIRCLE_PROJECT_REPONAME:-}"
+  local curl_cfg
+  if [ -n "$token" ]; then
+    curl_cfg="$(printf 'header = "Authorization: Bearer %s"\nheader = "Accept: application/vnd.github+json"\n' "$token")"
+  else
+    curl_cfg=$'header = "Accept: application/vnd.github+json"\n'
+  fi
   local body
   if ! body="$(
-    printf 'header = "Authorization: Bearer %s"\nheader = "Accept: application/vnd.github+json"\n' "$token" \
+    printf '%s' "$curl_cfg" \
       | curl --config - --silent --show-error --fail --max-time 20 \
           "https://api.github.com/repos/${slug}/pulls/${pr_number}" 2>/dev/null
   )"; then
-    echo "   ℹ️  allow-destroy lookup failed (API unreachable or token lacks" >&2
-    echo "      access to ${slug}). Staying strict." >&2
+    if [ -z "$token" ]; then
+      echo "   ℹ️  allow-destroy cannot be checked: anonymous GitHub API lookup" >&2
+      echo "      failed and no GITHUB_TOKEN is set in this job." >&2
+      echo "      Public repos should succeed without a token; if this repo is" >&2
+      echo "      private, add GITHUB_TOKEN (read access) to the CircleCI" >&2
+      echo "      project or a context attached to policy-check." >&2
+    else
+      echo "   ℹ️  allow-destroy lookup failed (API unreachable or token lacks" >&2
+      echo "      access to ${slug}). Staying strict." >&2
+    fi
     echo "false"; return 0
   fi
 
