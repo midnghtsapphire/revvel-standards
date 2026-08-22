@@ -9,19 +9,19 @@
 
 ## Architecture Mapping
 
-*   **oAudrey**: Target enterprise platform for near-metal + deterministic-AI capabilities.
-*   **OpenRouter**: Routing mechanism for LLM integration.
-*   **GOAP (Goal-Oriented Action Planning)**: The swarm structure dispatched by NoseyNoodle.
-*   **Existing Fleet Files**: Integrated seamlessly, preserving current functionality without a second controller.
+* **oAudrey**: Target enterprise platform for near-metal + deterministic-AI capabilities.
+* **OpenRouter**: Routing mechanism for LLM integration.
+* **GOAP (Goal-Oriented Action Planning)**: The swarm structure dispatched by NoseyNoodle.
+* **Existing Fleet Files**: Integrated seamlessly, preserving current functionality without a second controller.
 
 ## Workflow Insertion Points
 
-*   **Consume**: conceptually consumes `research:complete` labels.
-*   **Emit**: emits `wr:code` to trigger code implementation via `openrouter-coder.yml`.
-*   **No new issues workflow**: We do **not** add another `issues: opened` workflow. The engine acts as a bridge.
+* **Consume**: conceptually consumes `research:complete` labels.
+* **Emit**: emits `wr:code` to trigger code implementation via `openrouter-coder.yml`.
+* **No new issues workflow**: We do **not** add another `issues: opened` workflow. The engine acts as a bridge.
 
 ## Implementation Details
-- JSON schema for metal findings: `schemas/metal-findings.schema.json`
-- Validation engine: `scripts/metal-findings-engine.js`
+* JSON schema for metal findings: `schemas/metal-findings.schema.json`
+* Validation engine: `scripts/metal-findings-engine.js`
 
 This structure ensures that metal findings are properly structured, validated, and seamlessly fit into the existing execution OS defined by `engines/CONTRACT.md`.
