@@ -1170,6 +1170,12 @@
       "source": "/products/printbank/README.md"
     },
     {
+      "url": "https://revvel-standards.vercel.app/docs/ghcr-console/",
+      "project": "ghcr-console",
+      "type": "vercel",
+      "source": "/products/ghcr-console/README.md"
+    },
+    {
       "url": "http://localhost:3007>",
       "project": "graphify-evaluator",
       "type": "test",
@@ -1431,5 +1437,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-08-22T01:45:47.318Z"
+  "lastUpdated": "2026-08-22T01:50:14.555Z"
 }
