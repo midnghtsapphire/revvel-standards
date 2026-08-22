@@ -2,7 +2,7 @@
 
 ## Live Deployment
 
-▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/goap-swarm-console/)**
+▶️ **[Open the live app & test it](https://midnghtsapphire.github.io/revvel-standards/docs/goap-swarm-console/)**
 
 > If the monorepo static path is not yet wired on Vercel, run locally on port **3012** (see Quick Start) or deploy this folder as its own Vercel project (`vercel.json` included).
 

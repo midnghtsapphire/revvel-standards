@@ -14,7 +14,7 @@ const {
   WORKLIST_MARKER,
 } = require('../scripts/biome/inspector');
 
-const BASE = 'https://revvel-standards.vercel.app';
+const BASE = 'https://midnghtsapphire.github.io/revvel-standards';
 
 test('deriveLiveUrl: explicit live_url wins', () => {
   assert.equal(deriveLiveUrl('x', { live_url: 'https://x.dev' }, BASE), 'https://x.dev');

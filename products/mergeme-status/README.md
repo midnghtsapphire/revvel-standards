@@ -2,7 +2,7 @@
 
 ## Live Deployment
 
-▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/mergeme-status/)**
+▶️ **[Open the live app & test it](https://midnghtsapphire.github.io/revvel-standards/docs/mergeme-status/)**
 
 ## What It Is
 

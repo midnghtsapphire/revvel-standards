@@ -2,7 +2,7 @@
 
 ## Live Deployment
 
-▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/groq-code-review/)**
+▶️ **[Open the live app & test it](https://midnghtsapphire.github.io/revvel-standards/docs/groq-code-review/)**
 
 > Until the monorepo docs route is published, run locally on port **3012** (`npm run dev`).
 

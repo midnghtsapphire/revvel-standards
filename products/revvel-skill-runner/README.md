@@ -2,7 +2,7 @@
 
 ## Live Deployment
 
-▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/revvel-skill-runner/)**
+▶️ **[Open the live app & test it](https://midnghtsapphire.github.io/revvel-standards/docs/revvel-skill-runner/)**
 
 ## Structure
 
