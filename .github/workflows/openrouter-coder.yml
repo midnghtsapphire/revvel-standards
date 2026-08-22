@@ -5,6 +5,14 @@ name: OpenRouter Coder
 # issue_comment trigger was removed — bots posting "Research Findings:"
 # comments used to start builds with no human approval, which is how the
 # fleet ran away. See docs/DEFINITION_OF_DONE.md two-phase pipeline.
+#
+# CANNOT reach LM Studio from this job. runs-on is ubuntu-latest (GitHub-hosted
+# Azure VM). http://127.0.0.1:1234 and http://localhost:1234 here are the
+# runner, not Audrey's laptop. Do not wire a localhost fallback in this YAML —
+# it would always fail and look like a working fallback. Do not set
+# REVVEL_LLM_ALLOW_CLOUD=1 here unless a runner that can actually see LM Studio
+# exists. The spend gate stays required on this job. The Python script will
+# fall back to LM Studio only on a local CLI or a future self-hosted runner.
 on:
   issues:
     types: [labeled]
@@ -86,6 +94,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests pyyaml
 
+      # Spend gate is intentionally unset. This runner cannot see LM Studio, so
+      # opening the gate would bill OpenRouter with no real local fallback.
+      # WR_MODEL is also unset: the script defaults to moonshotai/kimi-k2.
+      # Setting WR_MODEL=anthropic/claude-opus-4.7 would burn the $16 credit.
       - name: Run OpenRouter coder
         if: steps.ctx.outputs.skip != 'true'
         env:
@@ -112,7 +124,9 @@ jobs:
             Automated code changes for issue #${{ steps.ctx.outputs.issue_number }}.
 
             **Agent used:** openrouter
-            **Fallback chain:** OpenRouter → OpenHands (opt-in)
+            **Fallback:** LM Studio only when this script runs on a machine that
+            can reach it (local CLI / self-hosted). This Actions job is
+            ubuntu-latest and CANNOT reach LM Studio on the laptop.
           branch: openrouter/issue-${{ steps.ctx.outputs.issue_number }}
           delete-branch: true
 

@@ -1,5 +1,14 @@
 name: OpenRouter Agent
 
+# CANNOT reach LM Studio from this job. runs-on is ubuntu-latest (GitHub-hosted
+# Azure VM). http://127.0.0.1:1234 and http://localhost:1234 here are the
+# runner, not Audrey's laptop. Do not wire a localhost fallback in this YAML —
+# it would always fail and look like a working fallback. Do not set
+# REVVEL_LLM_ALLOW_CLOUD=1 in this job's env. The spend gate on the API step
+# stays required until a runner that can actually see LM Studio exists. The
+# Python script falls back to LM Studio only on a local CLI or a future
+# self-hosted runner.
+
 on:
   issue_comment:
     types: [created]
@@ -26,76 +35,44 @@ jobs:
       (github.event_name == 'issues' && github.event.action == 'opened'))
 
     steps:
-      - name: Build prompt context
-        id: context
+      - name: Checkout
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run OpenRouter agent
+        # Spend gate (#17850): this step bills OpenRouter when the script takes
+        # the cloud lane. It runs only when the repository variable
+        # REVVEL_LLM_ALLOW_CLOUD is set to "1". Unset = skip. This job does
+        # NOT set that variable in env, and it does NOT probe localhost:1234 —
+        # ubuntu-latest cannot see the laptop LM Studio. See docs/LOCAL_LLM_SETUP.md.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
+        id: ai
         env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
           EVENT_NAME: ${{ github.event_name }}
           ISSUE_TITLE: ${{ github.event.issue.title || github.event.pull_request.title }}
           ISSUE_BODY: ${{ github.event.issue.body || github.event.pull_request.body }}
           COMMENT_BODY: ${{ github.event.comment.body }}
           SENDER: ${{ github.event.sender.login }}
         run: |
-          USER_PROMPT=$(echo "$COMMENT_BODY" | sed 's/@openrouter-agent//g' | xargs)
-
-          if [ "$EVENT_NAME" = "issues" ]; then
-            SYSTEM_MSG="You are a helpful GitHub assistant for the revvel-standards repository. A new issue was just opened. Provide a concise summary and suggest next steps or relevant standards."
-            PROMPT="Issue title: $ISSUE_TITLE\n\nIssue body:\n$ISSUE_BODY"
-          else
-            SYSTEM_MSG="You are a helpful GitHub assistant for the revvel-standards repository. Answer the user's question clearly and concisely. Reference relevant standards or patterns when applicable."
-            PROMPT="Context - Issue/PR: $ISSUE_TITLE\n\nUser ($SENDER) asked: $USER_PROMPT"
-          fi
-
-          SYSTEM_ESCAPED=$(echo "$SYSTEM_MSG" | jq -Rs .)
-          PROMPT_ESCAPED=$(echo "$PROMPT" | jq -Rs .)
-
-          echo "system=$SYSTEM_ESCAPED" >> $GITHUB_OUTPUT
-          echo "prompt=$PROMPT_ESCAPED" >> $GITHUB_OUTPUT
-
-      - name: Call OpenRouter API
-        # Spend gate (#17850): this step bills OpenRouter. It runs only when the
-        # repository variable REVVEL_LLM_ALLOW_CLOUD is set to "1". Unset = skip,
-        # so an idle repo cannot spend. See docs/LOCAL_LLM_SETUP.md.
-        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
-        id: ai
-        env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: |
-          SYSTEM=${{ steps.context.outputs.system }}
-          PROMPT=${{ steps.context.outputs.prompt }}
-
-          PAYLOAD=$(jq -n \
-            --argjson system "$SYSTEM" \
-            --argjson prompt "$PROMPT" \
-            '{
-              model: "anthropic/claude-3.5-sonnet",
-              max_tokens: 1024,
-              messages: [
-                { role: "system", content: $system },
-                { role: "user", content: $prompt }
-              ]
-            }')
-
-          RESPONSE=$(curl -sf https://openrouter.ai/api/v1/chat/completions \
-            -H "Authorization: Bearer $OPENROUTER_API_KEY" \
-            -H "Content-Type: application/json" \
-            -H "HTTP-Referer: https://github.com/midnghtsapphire/revvel-standards" \
-            -H "X-Title: revvel-standards OpenRouter Agent" \
-            -d "$PAYLOAD")
-
-          if [ $? -ne 0 ]; then
-            echo "reply=⚠️ OpenRouter API call failed. Check your OPENROUTER_API_KEY secret." >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          REPLY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // "⚠️ No response returned."')
-          echo "reply<<EOF" >> $GITHUB_OUTPUT
-          echo "$REPLY" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          python -m pip install --upgrade pip
+          pip install requests
+          python .github/scripts/openrouter_agent.py
 
       - name: Post reply as comment
+        if: ${{ always() && steps.ai.outputs.reply != '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPLY: ${{ steps.ai.outputs.reply }}
+          LANE: ${{ steps.ai.outputs.lane }}
+          MODEL: ${{ steps.ai.outputs.model }}
           REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
         run: |
@@ -104,7 +81,7 @@ jobs:
           $REPLY
 
           ---
-          *Powered by [OpenRouter](https://openrouter.ai) · Model: \`anthropic/claude-3.5-sonnet\`*" \
+          *Powered by [OpenRouter](https://openrouter.ai) · lane: \`$LANE\` · model: \`$MODEL\`*" \
             '{ body: $body }')
 
           gh api "repos/$REPO/issues/$ISSUE_NUMBER/comments" \
