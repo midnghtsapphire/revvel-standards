@@ -182,3 +182,7 @@ templates/mcp/custom-server/mcp_server/server.py::W293 4
 templates/mcp/custom-server/tests/test_server.py::E302 1
 tools/harvest.py::F401 1
 tools/harvest.py::W504 1
+update_uv_lock.py::E302 1
+update_uv_lock.py::E305 1
+update_uv_lock.py::E501 2
+update_uv_lock.py::F401 1
