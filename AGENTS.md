@@ -165,6 +165,7 @@ collisions:
 | GoSQLX SQL Linter | `products/gosqlx-sql-linter` | 3012 | Next.js. Multi-dialect SQL lint playground + API aligned with GoSQLX rules; CI twin of `.github/workflows/gosqlx-lint.yml`. |
 | Easy Env Vars | `products/easy-env-vars` | 3012 | Next.js. Safe briantist/ezenv env-block composer with injection/cycle validation and workflow export. |
 | MergeMe Status | `products/mergeme-status` | 3012 | Next.js. mergeme.dev wiring status console + owner Slack/GitHub App setup checklist (WR #16824). |
+| GHCR Console | `products/ghcr-console` | 3012 | Next.js. GitHub Container Registry setup console + image ref builder + owner Packages checklist (WR #17695). Image: `ghcr.io/midnghtsapphire/revvel-standards/ghcr-console`. |
 | pplx-api Skills Console | `products/pplx-api-skills` | 3012 | Next.js. Perplexity API integration with skills/tools framework, auth, rate limits, BOM lookup, monitoring. Needs `PERPLEXITY_API_KEY` for live mode (mock works without). |
 | Caspian Channel Console | `products/caspian-channel-console` | 3012 | Static SPA. Multi-channel agent planner/simulator from Caspian SDK research (WR-16898). |
 | Greenfield UI Lab | `products/greenfield-ui-lab` | 3012 | Next.js. Modernized idea board + day wallet from rgn/greenfield-ui research patterns. |
@@ -190,6 +191,7 @@ cd products/wr-title-studio      && npm run dev -- -p 3012
 cd products/gosqlx-sql-linter    && npm run dev -- -p 3012
 cd products/easy-env-vars        && npm run dev -- -p 3012
 cd products/mergeme-status       && npm run dev -- -p 3012
+cd products/ghcr-console         && npm run dev -- -p 3012
 cd products/pplx-api-skills      && npm run dev -- -p 3012
 # Static: python3 -m http.server 3012 -d products/caspian-channel-console/public
 cd products/greenfield-ui-lab     && npm run dev -- -p 3012

@@ -30,7 +30,8 @@ apps:
   revvel-skill-runner:    { path: products/revvel-skill-runner,    type: web, live_url: "" }
   screen-recorder-finder: { path: products/screen-recorder-finder, type: web, live_url: "" }
   ugc-review-generator:   { path: products/ugc-review-generator,   type: web, live_url: "" }
-  caspian-channel-console: { path: products/caspian-channel-console, type: web, live_url: "https://midnghtsapphire.github.io/revvel-standards/docs/caspian-channel-console/" }
+  caspian-channel-console: { path: products/caspian-channel-console, type: web, live_url: "https://revvel-standards.vercel.app/docs/caspian-channel-console/" }
+  ghcr-console:           { path: products/ghcr-console,           type: web, live_url: "https://revvel-standards.vercel.app/docs/ghcr-console/" }
   coldtrace:              { path: coldtrace,                        type: web, live_url: "" }
   fieldwork:              { path: fieldwork,                        type: web, live_url: "" }
   osint-hub:              { path: osint-hub,                        type: web, live_url: "" }
