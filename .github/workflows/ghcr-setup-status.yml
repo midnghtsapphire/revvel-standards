@@ -1,0 +1,125 @@
+name: GHCR setup status
+
+# Audits whether GitHub Container Registry is wired into revvel-standards (WR #17695).
+# Repo-side surfaces are checked by scripts/ghcr-setup.js (exit 0 = wired).
+# Quiet by default on schedule. workflow_dispatch can comment on a WR/PR.
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Optional issue/PR number to comment the markdown report on
+        required: false
+        type: string
+      fail_if_unwired:
+        description: Fail the job when repo-side wiring is incomplete
+        required: false
+        type: boolean
+        default: true
+  schedule:
+    # Weekly Tuesday 15:19 UTC — drift watch
+    - cron: '19 15 * * 2'
+  push:
+    paths:
+      - 'scripts/ghcr-setup.js'
+      - 'docs/GHCR_SETUP.md'
+      - 'docs/SECRETS_MAP.md'
+      - 'products/ghcr-console/**'
+      - 'Dockerfile'
+      - '.github/workflows/ghcr-publish.yml'
+      - '.github/workflows/ghcr-setup-status.yml'
+      - 'tests/ghcr-setup.test.js'
+      - 'standards/DOCKER.md'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  checks: write
+
+concurrency:
+  group: ghcr-setup-status-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  audit:
+    name: Audit GHCR wiring
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install root deps
+        run: npm ci --ignore-scripts
+
+      - name: Run GHCR setup auditor
+        id: audit
+        run: |
+          set +e
+          node scripts/ghcr-setup.js --out /tmp/ghcr-report.json
+          code=$?
+          set -e
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          if [ -f /tmp/ghcr-report.json ]; then
+            wired=$(node -e "const r=require('/tmp/ghcr-report.json'); process.stdout.write(String(r.wired))")
+            score=$(node -e "const r=require('/tmp/ghcr-report.json'); process.stdout.write(String(r.score))")
+            echo "wired=$wired" >> "$GITHUB_OUTPUT"
+            echo "score=$score" >> "$GITHUB_OUTPUT"
+            node scripts/ghcr-setup.js --markdown > /tmp/ghcr-report.md
+            echo "Report score=$score wired=$wired exit=$code"
+            cat /tmp/ghcr-report.md
+          fi
+          exit 0
+
+      - name: Publish job summary
+        if: always()
+        run: |
+          {
+            echo "## GitHub Container Registry wiring"
+            echo ""
+            if [ -f /tmp/ghcr-report.md ]; then cat /tmp/ghcr-report.md; else echo "_no report_"; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on issue/PR when requested
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.issue_number != '' }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+        with:
+          script: |
+            const fs = require('fs');
+            const issue_number = Number(process.env.ISSUE_NUMBER);
+            if (!Number.isFinite(issue_number) || issue_number <= 0) {
+              core.setFailed(`invalid issue_number: ${process.env.ISSUE_NUMBER}`);
+              return;
+            }
+            const body = fs.existsSync('/tmp/ghcr-report.md')
+              ? fs.readFileSync('/tmp/ghcr-report.md', 'utf8')
+              : '_GHCR wiring report missing._';
+            const { owner, repo } = context.repo;
+            await github.rest.issues.createComment({
+              owner, repo, issue_number,
+              body: body + `\n\n_Automated by \`ghcr-setup-status.yml\` run ${context.runId}._`,
+            });
+
+      - name: Fail when unwired (dispatch default / push)
+        if: |
+          (github.event_name == 'push') ||
+          (github.event_name == 'workflow_dispatch' && inputs.fail_if_unwired)
+        run: |
+          code="${{ steps.audit.outputs.exit_code }}"
+          if [ "$code" != "0" ]; then
+            echo "GitHub Container Registry is not fully wired (auditor exit $code)."
+            exit 1
+          fi
+          echo "GHCR wiring OK (score ${{ steps.audit.outputs.score }})."

@@ -19,11 +19,15 @@ name: 📱 Auto Deploy to Stores
 # C) Manual workflow_dispatch — useful for re-running a specific issue/platform
 
 on:
-  pull_request:
-    types: [closed]
-    branches: [main]
-  issues:
-    types: [labeled]
+  # QUIET THE FLEET 2026-08-21: auto-triggers disabled before closing the open
+  # PR/issue backlog. Closing a PR against main fired a store deploy, and the
+  # `issues: labeled` path fired one per label. Neither should happen while the
+  # backlog is being cleared. Preserved commented, not deleted (RVS-AGENT-001).
+  # pull_request:
+  #   types: [closed]
+  #   branches: [main]
+  # issues:
+  #   types: [labeled]
   workflow_dispatch:
     inputs:
       issue_number:
@@ -176,9 +180,11 @@ jobs:
       - name: Verify deep research completion
         id: check
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ needs.gate.outputs.issue_number }}
         with:
           script: |
-            const issueNumber = '${{ needs.gate.outputs.issue_number }}';
+            const issueNumber = process.env.ISSUE_NUMBER || '';
 
             // No linked issue — hard fail: a WR issue is mandatory for store deploys
             if (!issueNumber) {
@@ -404,10 +410,13 @@ jobs:
       - name: Comment on PR
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          DEPLOY_RESULT: ${{ steps.deploy.outputs.result }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
         with:
           script: |
-            const result = '${{ steps.deploy.outputs.result }}';
-            const url    = '${{ steps.deploy.outputs.url }}';
+            const result = process.env.DEPLOY_RESULT || '';
+            const url    = process.env.DEPLOY_URL || '';
             const run    = '${{ github.run_id }}';
             const ok     = result && !result.includes('SKIPPED');
             const prNum  = context.payload.pull_request?.number;
@@ -533,10 +542,13 @@ jobs:
       - name: Comment on PR
         if: always()
         uses: actions/github-script@v9.0.0
+        env:
+          DEPLOY_RESULT: ${{ steps.deploy.outputs.result }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
         with:
           script: |
-            const result = '${{ steps.deploy.outputs.result }}';
-            const url    = '${{ steps.deploy.outputs.url }}';
+            const result = process.env.DEPLOY_RESULT || '';
+            const url    = process.env.DEPLOY_URL || '';
             const run    = '${{ github.run_id }}';
             const ok     = result && !result.includes('SKIPPED');
             const prNum  = context.payload.pull_request?.number;
@@ -565,20 +577,28 @@ jobs:
     steps:
       - name: Post deployment summary to WR issue
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ needs.gate.outputs.issue_number }}
+          ANDROID_RESULT: ${{ needs.deploy-android.outputs.result }}
+          IOS_RESULT: ${{ needs.deploy-ios.outputs.result }}
+          ANDROID_URL: ${{ needs.deploy-android.outputs.url }}
+          IOS_URL: ${{ needs.deploy-ios.outputs.url }}
+          ANDROID_JOB_RESULT: ${{ needs.deploy-android.result }}
+          IOS_JOB_RESULT: ${{ needs.deploy-ios.result }}
         with:
           script: |
-            const issueNumber = '${{ needs.gate.outputs.issue_number }}';
+            const issueNumber = process.env.ISSUE_NUMBER || '';
             if (!issueNumber) return;
 
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${{ github.run_id }}`;
 
-            const androidResult = `${{ needs.deploy-android.outputs.result }}`;
-            const iosResult     = `${{ needs.deploy-ios.outputs.result }}`;
-            const androidUrl    = `${{ needs.deploy-android.outputs.url }}`;
-            const iosUrl        = `${{ needs.deploy-ios.outputs.url }}`;
+            const androidResult = process.env.ANDROID_RESULT || '';
+            const iosResult     = process.env.IOS_RESULT || '';
+            const androidUrl    = process.env.ANDROID_URL || '';
+            const iosUrl        = process.env.IOS_URL || '';
 
-            const androidRan = '${{ needs.deploy-android.result }}' !== 'skipped';
-            const iosRan     = '${{ needs.deploy-ios.result }}'     !== 'skipped';
+            const androidRan = process.env.ANDROID_JOB_RESULT !== 'skipped';
+            const iosRan     = process.env.IOS_JOB_RESULT !== 'skipped';
 
             const androidOk = androidRan && androidResult && !androidResult.includes('SKIPPED') && !androidResult.includes('FAILED');
             const iosOk     = iosRan     && iosResult     && !iosResult.includes('SKIPPED')     && !iosResult.includes('FAILED');

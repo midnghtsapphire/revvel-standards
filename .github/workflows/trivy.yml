@@ -6,8 +6,12 @@ on:
   push:
     branches:
       - main
-  schedule:
-    - cron: 45 4 * * 1
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   - cron: 45 4 * * 1
   workflow_dispatch: null
 permissions:
   contents: read
@@ -21,7 +25,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run Trivy filesystem scan
-        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8
+        # a9c7b0f0 no longer exists in the upstream repo — the ref 404s and the
+        # job fails at setup. Re-pinned to the current release (#17832).
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
           scan-ref: .

@@ -13,15 +13,23 @@ name: RecurseML — Autonomous Code Review
 # See: DECISIONS.md D014 (and D007 for the original cut).
 # ──────────────────────────────────────────────────────────────────────────────
 
+# DISABLED TRIGGER 2026-08-21 (D016): pull_request, push
+# Owner cut this lane during the cost freeze. Triggers are commented, not
+# deleted (RVS-AGENT-001) — re-enable by uncommenting the block below.
+#
+# IMPORTANT, and the exact mistake D007 made: commenting this file does NOT
+# stop the RecurseML App posting `recurseml/analysis`. That is a GitHub App and it
+# reports independently of any workflow here. Removing its check requires
+# uninstalling or reconfiguring the App in repository settings — see #17872.
 on:
-  # Restored by D014 — these are the exact triggers D007 commented out.
-  pull_request:
-    types: [opened, synchronize, reopened]
-  push:
-    branches:
-      - main
-      - release/**
-      - hotfix/**
+#  # Restored by D014 — these are the exact triggers D007 commented out.
+#  pull_request:
+#    types: [opened, synchronize, reopened]
+#  push:
+#    branches:
+#      - main
+#      - release/**
+#      - hotfix/**
   workflow_dispatch:
     inputs:
       target_branch:
@@ -165,6 +173,12 @@ jobs:
       - name: OpenRouter backup code review
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # Lane config (#17868) — see docs/LOCAL_LLM_SETUP.md.
+          LMSTUDIO_ENDPOINT: ${{ secrets.LMSTUDIO_ENDPOINT }}
+          LMSTUDIO_API_KEY: ${{ secrets.LMSTUDIO_API_KEY }}
+          LMSTUDIO_MODEL: ${{ vars.LMSTUDIO_MODEL }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
         run: |
           echo "RecurseML failed — running OpenRouter backup review."
 

@@ -211,8 +211,8 @@ _Last intent: stop hunting folders; one root file for start → next. Detail liv
 
 **Do not use the hub homepage for uploads.** Use:
 
-- <https://revvel-standards.vercel.app/docs/vine-orders/>
-- or <https://revvel-standards.vercel.app/vine-orders.html>
+- <https://midnghtsapphire.github.io/revvel-standards/docs/vine-orders/>
+- or <https://midnghtsapphire.github.io/revvel-standards/vine-orders.html>
 
 That page accepts your CSV in the browser. The main Vercel site only shows docs/folders.
 

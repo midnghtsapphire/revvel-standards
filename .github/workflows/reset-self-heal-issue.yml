@@ -4,7 +4,9 @@ name: 🔄 Reset Self-Heal Issue
 # actionlint rejects it (#17742). Kept as a comment, which is where this
 # text was always going to be read from anyway.
 # Reset a self-heal issue for reprocessing by removing and re-adding
-# the self-heal labels, then triggering the OpenRouter assignee workflow.
+# the self-heal labels, then dispatching openrouter-assignee.yml AND
+# openrouter-triage.yml for that issue_number. Comments only claim what
+# was actually dispatched (WR #17736).
 
 on:
   workflow_dispatch:
@@ -108,22 +110,52 @@ jobs:
               throw error;
             }
 
-      - name: Trigger OpenRouter Assignee workflow
+      # Dispatch BOTH the assignee router and the triage cascade for this
+      # specific issue. Assignee alone is first-line-of-sight routing and used
+      # to be a no-op for already-labelled items; triage is what posts a real
+      # analysis comment (WR #17736). Each dispatch is tracked independently so
+      # the comment never claims a trigger that did not fire.
+      # issue_number arrives via env: (not `${{ }}` in the run body) so a quote
+      # in the input cannot break out of the shell string (#17644 ratchet).
+      - name: Trigger OpenRouter recovery workflows
         id: trigger
         env:
           GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
         if: steps.validate.outputs.exists == 'true'
         run: |
-          echo "Triggering openrouter-assignee workflow..."
+          set +e
+          assignee_ok=false
+          triage_ok=false
+
+          echo "Triggering openrouter-assignee.yml for issue #${ISSUE_NUMBER}..."
           if gh workflow run openrouter-assignee.yml \
-            --repo ${{ github.repository }} \
+            --repo "${{ github.repository }}" \
             --field dry_run=false \
-            --field issue_number=${{ inputs.issue_number }}; then
+            --field "issue_number=${ISSUE_NUMBER}"; then
+            assignee_ok=true
+            echo "✅ openrouter-assignee.yml dispatched for #${ISSUE_NUMBER}"
+          else
+            echo "❌ Failed to dispatch openrouter-assignee.yml"
+          fi
+
+          echo "Triggering openrouter-triage.yml for issue #${ISSUE_NUMBER}..."
+          if gh workflow run openrouter-triage.yml \
+            --repo "${{ github.repository }}" \
+            --field "issue_number=${ISSUE_NUMBER}"; then
+            triage_ok=true
+            echo "✅ openrouter-triage.yml dispatched for #${ISSUE_NUMBER}"
+          else
+            echo "❌ Failed to dispatch openrouter-triage.yml"
+          fi
+
+          echo "assignee_success=${assignee_ok}" >> "$GITHUB_OUTPUT"
+          echo "triage_success=${triage_ok}" >> "$GITHUB_OUTPUT"
+
+          if [ "$assignee_ok" = true ] && [ "$triage_ok" = true ]; then
             echo "success=true" >> "$GITHUB_OUTPUT"
-            echo "✅ OpenRouter assignee workflow triggered"
           else
             echo "success=false" >> "$GITHUB_OUTPUT"
-            echo "❌ Failed to trigger openrouter-assignee workflow"
           fi
 
       - name: Post reset comment
@@ -132,10 +164,22 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
           TRIGGER_SUCCESS: ${{ steps.trigger.outputs.success }}
+          ASSIGNEE_SUCCESS: ${{ steps.trigger.outputs.assignee_success }}
+          TRIAGE_SUCCESS: ${{ steps.trigger.outputs.triage_success }}
         with:
           script: |
             const issueNumber = parseInt(process.env.ISSUE_NUMBER, 10);
             const triggerSuccess = process.env.TRIGGER_SUCCESS === 'true';
+            const assigneeSuccess = process.env.ASSIGNEE_SUCCESS === 'true';
+            const triageSuccess = process.env.TRIAGE_SUCCESS === 'true';
+            const stamp = new Date().toISOString();
+
+            const assigneeLine = assigneeSuccess
+              ? '- Dispatched `openrouter-assignee.yml` for this issue (force re-route even if `openrouter` label present)'
+              : '- ⚠️ **Failed** to dispatch `openrouter-assignee.yml`';
+            const triageLine = triageSuccess
+              ? '- Dispatched `openrouter-triage.yml` for this issue (produces the triage comment)'
+              : '- ⚠️ **Failed** to dispatch `openrouter-triage.yml`';
 
             if (triggerSuccess) {
               const resetComment = [
@@ -146,11 +190,12 @@ jobs:
                 '**Actions taken:**',
                 '- Removed self-heal labels: `auto-fix`, `ralph-loop`, `scorecard`',
                 '- Re-added self-heal labels',
-                '- Triggered OpenRouter assignee workflow for this specific issue',
+                assigneeLine,
+                triageLine,
                 '',
-                'The Ralph Loop will now re-evaluate and attempt to fix this issue.',
+                '**What this guarantees:** the two downstream workflows were *dispatched* for this issue number. It does **not** guarantee triage succeeds (that depends on API keys/credits and the issue content). Watch the Actions runs and the next triage comment on this issue.',
                 '',
-                `_Reset by \`reset-self-heal-issue\` workflow — ${new Date().toISOString()}_`,
+                `_Reset by \`reset-self-heal-issue\` workflow — ${stamp}_`,
               ].join('\n');
 
               await github.rest.issues.createComment({
@@ -159,21 +204,22 @@ jobs:
                 issue_number: issueNumber,
                 body: resetComment,
               });
-              console.log('Posted success reset comment');
+              console.log('Posted success reset comment (dispatch confirmed)');
             } else {
               const errorComment = [
-                '## ❌ Self-Heal Issue Reset Failed',
+                '## ❌ Self-Heal Issue Reset Incomplete',
                 '',
-                'The reset workflow failed to dispatch the OpenRouter assignee workflow.',
+                'Label reset ran, but one or more downstream recovery dispatches failed.',
                 '',
                 '**Actions taken:**',
                 '- Removed self-heal labels: `auto-fix`, `ralph-loop`, `scorecard`',
                 '- Re-added self-heal labels',
-                '- ⚠️ **Failed** to trigger OpenRouter assignee workflow',
+                assigneeLine,
+                triageLine,
                 '',
-                'Adding `needs-human` label for manual inspection.',
+                'Adding `needs-human` label for manual inspection. Re-run this workflow after checking Actions permissions (`actions: write`) and that both target workflows exist on the default branch.',
                 '',
-                `_Reset by \`reset-self-heal-issue\` workflow — ${new Date().toISOString()}_`,
+                `_Reset by \`reset-self-heal-issue\` workflow — ${stamp}_`,
               ].join('\n');
 
               await github.rest.issues.createComment({
@@ -190,17 +236,29 @@ jobs:
                 labels: ['needs-human'],
               });
               console.log('Posted error comment and added needs-human label');
-              core.setFailed('Failed to trigger openrouter-assignee.yml');
+              core.setFailed('One or more recovery workflow dispatches failed');
             }
 
       - name: Summary
-        if: steps.validate.outputs.exists == 'true'
+        if: always() && steps.validate.outputs.exists == 'true'
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.validate.outputs.title }}
+          TRIGGER_SUCCESS: ${{ steps.trigger.outputs.success }}
+          ASSIGNEE_SUCCESS: ${{ steps.trigger.outputs.assignee_success }}
+          TRIAGE_SUCCESS: ${{ steps.trigger.outputs.triage_success }}
         run: |
           echo "=========================================="
-          echo "✅ Issue #${{ inputs.issue_number }} Reset Complete"
+          echo "Issue #${ISSUE_NUMBER} reset report"
           echo "=========================================="
           echo ""
-          echo "Issue: ${{ steps.validate.outputs.title }}"
+          echo "Issue: ${ISSUE_TITLE}"
+          echo "Assignee dispatch: ${ASSIGNEE_SUCCESS:-unknown}"
+          echo "Triage dispatch:   ${TRIAGE_SUCCESS:-unknown}"
           echo ""
-          echo "The issue has been reset and is ready for reprocessing."
-          echo "The OpenRouter assignee workflow is now running."
+          if [ "${TRIGGER_SUCCESS}" = "true" ]; then
+            echo "Both recovery workflows were dispatched for this issue."
+          else
+            echo "Reset did NOT fully succeed — see the issue comment and needs-human label."
+            exit 1
+          fi

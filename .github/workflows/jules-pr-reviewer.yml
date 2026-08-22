@@ -13,13 +13,19 @@ name: Jules PR Reviewer
 # To re-enable auto-triggers as-is: uncomment the pull_request: block below.
 # ──────────────────────────────────────────────────────────────────────────────
 
+# TRIGGER ACTUALLY COMMENTED 2026-08-21 (#17871). The SILENCED banner above
+# has been here since 2026-05-28 and told readers to "uncomment the
+# pull_request: block below" — while that block was live. It ran on every PR,
+# polled a broken third-party action 44 times over ~13 minutes, and posted a
+# red check. Commit c8867736a rewrote 247 workflows through a YAML serializer
+# and left the banner describing a state the file was not in.
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - ready_for_review
+#  pull_request:
+#    types:
+#      - opened
+#      - synchronize
+#      - reopened
+#      - ready_for_review
   workflow_dispatch: null
 permissions:
   contents: read

@@ -16,6 +16,10 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Check OpenRouter credits
+        # Spend gate (#17850): this step bills OpenRouter. It runs only when the
+        # repository variable REVVEL_LLM_ALLOW_CLOUD is set to "1". Unset = skip,
+        # so an idle repo cannot spend. See docs/LOCAL_LLM_SETUP.md.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         id: check_credits
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

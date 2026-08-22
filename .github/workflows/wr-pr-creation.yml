@@ -60,14 +60,32 @@ jobs:
             const numericMatch = rawIssueNumber.match(/#?(\d+)/);
             if (numericMatch) {
               issueNumber = numericMatch[1];
-            } else {
-              // Try to extract from run URL as fallback (format: .../runs/27566386345/jobs/...)
-              const runUrl = process.env.GITHUB_RUN_URL || '';
-              const runIdMatch = runUrl.match(/\/runs\/(\d+)\//);
-              if (runIdMatch) {
-                core.warning(`Could not get issue number from event/inputs, falling back to run ID extraction`);
-              }
             }
+            // REVVEL-DISABLED | AGENT: claude-code | MODEL: not-recorded | WR: #17827 | DATE: 2026-08-20 | STATUS: FAILED
+            // REASON: this "fallback" could never fall back, in two independent
+            //   ways. `GITHUB_RUN_URL` is not a GitHub default variable and
+            //   nothing bound it, so `runUrl` was always '' and the branch was
+            //   dead. And had it matched, it captured the RUN id — which is not
+            //   an issue number — and then only logged, never assigning
+            //   `issueNumber`. A marker announcing a recovery that does not
+            //   happen (RVS-VERIFY-001).
+            // OWNER: @midnghtsapphire — deleting rather than disabling is a
+            //   human's call (RVS-AGENT-001 §7). Recovering an issue number
+            //   from a run id needs an API lookup; if that is wanted, it is a
+            //   feature to design, not a line to repair.
+            //
+            // } else {
+            //   // Try to extract from run URL as fallback (format: .../runs/27566386345/jobs/...)
+            //   const runUrl = process.env.GITHUB_RUN_URL || '';
+            //   const runIdMatch = runUrl.match(/\/runs\/(\d+)\//);
+            //   if (runIdMatch) {
+            //     core.warning(`Could not get issue number from event/inputs, falling back to run ID extraction`);
+            //   }
+            // }
+            //
+            // The `if (!issueNumber)` skip below already handles the case
+            // honestly, which is what actually ran the whole time.
+            // REVVEL-DISABLED-END
             
             function skip(reason, { notify = context.eventName !== 'issue_comment' } = {}) {
               core.info(`Skipping WR PR creation: ${reason}`);
@@ -862,10 +880,12 @@ jobs:
       - name: Create Pull Request
         id: create_pr
         uses: actions/github-script@v9.0.0
+        env:
+          BRANCH_NAME: ${{ steps.create_branch.outputs.BRANCH_NAME }}
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
-            const branchName = '${{ steps.create_branch.outputs.BRANCH_NAME }}';
+            const branchName = process.env.BRANCH_NAME || '';
             const issueTitle = (process.env.ISSUE_TITLE || '').replace(/^\[WR\]\s*/i, '');
 
             const prTitle = `[WR] ${issueTitle}`;
@@ -922,10 +942,12 @@ jobs:
             return { number: pr.number, url: pr.html_url };
       - name: Apply labels to PR
         uses: actions/github-script@v9.0.0
+        env:
+          PR_NUMBER: ${{ steps.create_pr.outputs.pr_number }}
         with:
           script: |
-            const issueNumber = parseInt('${{ env.ISSUE_NUMBER }}', 10);
-            const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
+            const issueNumber = Number(process.env.ISSUE_NUMBER);
+            const prNumber = parseInt(process.env.PR_NUMBER || '', 10);
             const normalizeLabel = (label) => typeof label === 'string' ? label : label.name;
             const { data: issue } = await github.rest.issues.get({
               owner: context.repo.owner,
@@ -1046,18 +1068,22 @@ jobs:
           starting_branch: ${{ steps.create_branch.outputs.BRANCH_NAME }}
       - name: Comment on issue
         uses: actions/github-script@v9.0.0
+        env:
+          PR_NUMBER: ${{ steps.create_pr.outputs.pr_number }}
+          PR_URL: ${{ steps.create_pr.outputs.pr_url }}
+          BRANCH_NAME: ${{ steps.create_branch.outputs.BRANCH_NAME }}
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
-            const prNumber = parseInt('${{ steps.create_pr.outputs.pr_number }}', 10);
-            const prUrl = '${{ steps.create_pr.outputs.pr_url }}';
+            const prNumber = parseInt(process.env.PR_NUMBER || '', 10);
+            const prUrl = process.env.PR_URL || '';
 
             const comment = `🎉 **WR PR Created!**
 
             I've created a pull request with the initial WR document based on the research findings.
 
             **PR:** #${prNumber}  
-            **Branch:** \`${{ steps.create_branch.outputs.BRANCH_NAME }}\`  
+            **Branch:** \`${process.env.BRANCH_NAME || ''}\`  
             **Status:** 🟡 Awaiting Jules refinement
 
             ### What's next?

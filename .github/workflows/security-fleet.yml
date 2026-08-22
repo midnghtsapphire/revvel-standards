@@ -33,8 +33,12 @@ on:
     types: [created, edited]
   pull_request:
     types: [opened, edited, synchronize]
-  schedule:
-    - cron: '30 6 * * 1' # weekly, Monday 06:30 UTC
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   - cron: '30 6 * * 1' # weekly, Monday 06:30 UTC
   workflow_dispatch: {}
 
 permissions:
@@ -161,6 +165,43 @@ jobs:
               return;
             }
 
+            // Dedup on the FINDING, not on the subject.
+            //
+            // Every PR that fixes a finding quotes the finding to explain it,
+            // which re-fires the same detector against a new subject number,
+            // which looks new, which files another issue. One finding, four
+            // issues: #17772 -> #17804/#17805 -> #17814/#17815 -> #17826/#17828,
+            // each attached to the PR trying to resolve the previous one. The
+            // label check in this job's `if:` closed the issue->issue loop; the
+            // `pull_request` arm short-circuits ahead of it, and fix PRs live
+            // there (#17842).
+            //
+            // Not a body-content skip: refusing to scan a PR that mentions
+            // `security-fleet` would let anything evade the detector by saying
+            // the word. The scan is unchanged; only what counts as "already
+            // filed" is.
+            // GITHUB_WORKSPACE is always set on a runner. The fallback is for
+            // tests/security-fleet-no-duplicate-issues.test.js, which drives
+            // this script with a stub `process` — a lookup that only works on
+            // a runner cannot be exercised anywhere else.
+            const repoRoot = (process.env && process.env.GITHUB_WORKSPACE)
+              || (typeof process.cwd === 'function' ? process.cwd() : '.');
+            const { fingerprint, marker, bodyHasFingerprint } =
+              require(`${repoRoot}/scripts/security-fleet-fingerprint.js`);
+            const fp = fingerprint(withFindings);
+
+            const alreadyKnown = open.find((i) => bodyHasFingerprint(i.body, fp));
+            if (alreadyKnown) {
+              // Record the sighting rather than dropping it — the trail is why
+              // the chain above was legible at all (RVS-PRESERVE-001).
+              core.info(`Same finding as #${alreadyKnown.number}; recording the subject there.`);
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: alreadyKnown.number,
+                body: `Also seen on ${process.env.SOURCE_URL || subject} — same finding (\`${fp}\`), not filed separately.`,
+              });
+              return;
+            }
+
             const body = [
               'Automated finding from the `security-fleet` event lane (`scripts/security-fleet.js`).',
               '',
@@ -172,6 +213,8 @@ jobs:
                 '',
               ]),
               'Report-only — a human must confirm before any action. See `skills/security-fleet/SKILL.md`.',
+              '',
+              marker(fp),
             ].join('\n');
 
             await github.rest.issues.create({ owner, repo, title, body, labels: ['security', 'security-fleet'] });
@@ -252,7 +295,7 @@ jobs:
                 if (existing) {
                   await github.rest.issues.update({
                     owner, repo, issue_number: existing.number, state: 'closed',
-                    body: `${existing.body}\n\n_Auto-closed: 0 findings on the latest weekly sweep._`,
+                    body: `${existing.body}\n\n_Auto-closed: 0 findings on the latest sweep._`,
                   });
                   core.info(`Closed resolved ${m.handle} issue #${existing.number}.`);
                 }
@@ -260,7 +303,7 @@ jobs:
               }
 
               const body = [
-                `Automated weekly sweep from \`security-fleet\` ${m.handle} (${m.desc}).`,
+                `Automated sweep from \`security-fleet\` ${m.handle} (${m.desc}). Scheduled runs are frozen (#17849); this ran on demand.`,
                 '',
                 `Detector: \`scripts/security-fleet.js ${m.key}\`. First 50 findings shown below.`,
                 '',

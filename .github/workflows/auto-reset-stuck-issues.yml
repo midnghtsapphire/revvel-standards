@@ -106,18 +106,58 @@ jobs:
                 labels: SELF_HEAL_LABELS,
               });
               console.log(`  Re-added: ${SELF_HEAL_LABELS.join(', ')}`);
+
+              // Dispatch recovery workflows
+              let assigneeDispatched = false;
+              let triageDispatched = false;
+
+              try {
+                await github.rest.actions.createWorkflowDispatch({
+                  owner: OWNER,
+                  repo: REPO,
+                  workflow_id: 'openrouter-assignee.yml',
+                  ref: context.ref,
+                  inputs: { issue_number: String(issueNumber) }
+                });
+                assigneeDispatched = true;
+                console.log('  Triggered openrouter-assignee.yml');
+              } catch (err) {
+                console.error('  Failed to trigger openrouter-assignee.yml', err.message);
+              }
+
+              try {
+                await github.rest.actions.createWorkflowDispatch({
+                  owner: OWNER,
+                  repo: REPO,
+                  workflow_id: 'openrouter-triage.yml',
+                  ref: context.ref,
+                  inputs: { issue_number: String(issueNumber) }
+                });
+                triageDispatched = true;
+                console.log('  Triggered openrouter-triage.yml');
+              } catch (err) {
+                console.error('  Failed to trigger openrouter-triage.yml', err.message);
+              }
               
               // Post reset comment
+              const actionsTaken = [
+                `- Removed self-heal labels: \`${SELF_HEAL_LABELS.join('`, `')}\``,
+                '- Re-added self-heal labels'
+              ];
+
+              if (assigneeDispatched) actionsTaken.push('- Triggered OpenRouter assignee workflow');
+              if (triageDispatched) actionsTaken.push('- Triggered OpenRouter triage workflow');
+              if (!assigneeDispatched || !triageDispatched) actionsTaken.push('- ⚠️ **Failed** to trigger one or more recovery workflows');
+
               const resetComment = [
                 '## 🔄 Auto-Reset by Stale Issue Sweep',
                 '',
                 `This issue was automatically reset (stuck in \`triage:new\` for >1 hour).`,
                 '',
                 '**Actions taken:**',
-                `- Removed self-heal labels: \`${SELF_HEAL_LABELS.join('`, `')}\``,
-                `- Re-added self-heal labels`,
-                `- Triggered OpenRouter assignee workflow`,
+                ...actionsTaken,
                 '',
+                ...(!assigneeDispatched || !triageDispatched ? ['Adding `needs-human` label for manual inspection.', ''] : []),
                 '_Auto-reset by `auto-reset-stuck-issues.yml` workflow — ' + new Date().toISOString() + '_',
               ].join('\n');
               
@@ -128,6 +168,16 @@ jobs:
                 body: resetComment,
               });
               console.log(`  Posted reset comment`);
+
+              if (!assigneeDispatched || !triageDispatched) {
+                await github.rest.issues.addLabels({
+                  owner: OWNER,
+                  repo: REPO,
+                  issue_number: issueNumber,
+                  labels: ['needs-human'],
+                });
+                console.log('  Added needs-human label due to dispatch failure');
+              }
               
               // Small delay between issues
               await new Promise(r => setTimeout(r, 1000));

@@ -47,25 +47,28 @@ function headings() {
 }
 
 /**
- * The catalog is present three times (#17810). This is a RATCHET, pinned by
- * entry title, never by a total.
+ * The catalog's nine entries, each exactly once.
  *
- * It may only SHRINK, and only by name: removing a copy means lowering that
- * entry's number here in the same commit. Raising one — or adding a title —
- * is not a fix. When every entry reaches 1, delete this map and replace the
- * assertion below with a flat "no title appears twice".
+ * This was a copy-count ratchet: the catalog was present THREE times, in three
+ * write-ups that had drifted apart — entry 2 prescribed three different fixes,
+ * and only one matched CLAUDE.md. A lookup landed on whichever copy came
+ * first, which was not that one.
+ *
+ * #17843 merged them, keeping every distinct claim, so the ratchet reached its
+ * stated end condition and is gone. What is left is the flat rule it existed
+ * to converge on: no entry appears twice.
  */
-const COPIES = Object.freeze({
-  '1. Unguarded `removeLabel` race (PR #15821)': 3,
-  '2. Missing `allowError` on internal API helpers (PR #15824)': 3,
-  '3. Default `GITHUB_TOKEN` on agent-created PRs (PR #15823)': 3,
-  '4. Secrets via argv vs. stdin (PR #15825)': 3,
-  '5. Bash bare-array-variable bug (PR #15827)': 3,
-  '6. Exit codes as proxy metrics vs. true resolution state (PR #15826)': 3,
-  '7. `nosemgrep` suppression comment adjacency (PR #15825)': 3,
-  '8. Broken third-party GitHub Action failing every PR (PR #15828)': 3,
-  '9. A marker asserting a postcondition nothing verified (PRs #17782, #17791, #17792, #17793, #17797)': 1,
-});
+const ENTRIES = Object.freeze([
+  '1. Unguarded `removeLabel` race (PR #15821)',
+  '2. Missing `allowError` on internal API helpers (PR #15824)',
+  '3. Default `GITHUB_TOKEN` on agent-created PRs (PR #15823)',
+  '4. Secrets via argv vs. stdin (PR #15825)',
+  '5. Bash bare-array-variable bug (PR #15827)',
+  '6. Exit codes as proxy metrics vs. true resolution state (PR #15826)',
+  '7. `nosemgrep` suppression comment adjacency (PR #15825)',
+  '8. Broken third-party GitHub Action failing every PR (PR #15828)',
+  '9. A marker asserting a postcondition nothing verified (PRs #17782, #17791, #17792, #17793, #17797)',
+]);
 
 test('every catalog entry is Symptom -> Root cause -> Fix, exactly once each', () => {
   // The splice was invisible to every other check in the repo: it produced a
@@ -95,32 +98,24 @@ test('every catalog entry is Symptom -> Root cause -> Fix, exactly once each', (
   });
 });
 
-test('the catalog contains exactly the entries the ratchet names', () => {
-  const seen = new Map();
-  for (const { line } of headings()) {
-    const title = line.replace(/^### /, '');
-    seen.set(title, (seen.get(title) ?? 0) + 1);
-  }
+test('every catalog entry appears exactly once, in order', () => {
+  const seen = headings().map(({ line }) => line.replace(/^### /, ''));
 
+  const dupes = seen.filter((t, i) => seen.indexOf(t) !== i);
   assert.deepEqual(
-    [...seen.keys()].sort(),
-    Object.keys(COPIES).sort(),
-    'an entry appeared or vanished without the ratchet being updated',
+    [...new Set(dupes)],
+    [],
+    'an entry appears more than once — a lookup lands on whichever copy comes ' +
+      'first, and three copies of this catalog had drifted into disagreeing ' +
+      'about entry 2 before anyone noticed (#17810)',
   );
 
-  for (const [title, count] of seen) {
-    assert.ok(
-      count <= COPIES[title],
-      `"${title}" now appears ${count}x, up from ${COPIES[title]}x — the ` +
-        'catalog is already tripled (#17810); a fourth copy is not a fix',
-    );
-    assert.equal(
-      count,
-      COPIES[title],
-      `"${title}" appears ${count}x but the ratchet says ${COPIES[title]}x — ` +
-        'removing a copy is welcome, but lower the number here in the same commit',
-    );
-  }
+  assert.deepEqual(
+    seen,
+    [...ENTRIES],
+    'the catalog gained, lost or reordered an entry; entry 9 spent a release ' +
+      'filed between 1 and 2, where a reader counting down never reached it',
+  );
 });
 
 test('the stated pattern count matches the entries that exist', () => {
@@ -129,7 +124,7 @@ test('the stated pattern count matches the entries that exist', () => {
   // just short of.
   const WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven',
     'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
-  const distinct = Object.keys(COPIES).length;
+  const distinct = ENTRIES.length;
 
   const intro = lines().find((l) => /^\w+ patterns, each observed/.test(l));
   assert.ok(intro, 'the catalog intro line must be present');

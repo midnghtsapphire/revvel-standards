@@ -1,0 +1,15 @@
+# Keep root docker build context small (ship-to-market + Dockerfile).
+# The image only needs products/ghcr-console/**.
+**
+!products/
+!products/ghcr-console/
+!products/ghcr-console/**
+products/ghcr-console/node_modules
+products/ghcr-console/.next
+products/ghcr-console/tests
+**/.git
+**/node_modules
+**/.next
+**/.env
+**/.env.*
+**/npm-debug.log*

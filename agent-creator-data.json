@@ -1500,16 +1500,16 @@
   "profiles": [
     {
       "id": "orchestrator",
-      "description": "Opus twins for general orchestration — Opus 4.8 with Opus 4.7 fallback",
+      "description": "Opus twins for general orchestration — Opus 5 with Opus 4.8 fallback",
       "provider": "openrouter",
-      "primary": "anthropic/claude-opus-4.8",
+      "primary": "anthropic/claude-opus-5",
       "use_for": []
     },
     {
       "id": "code_patch",
-      "description": "Best coder — Opus 4.8, twin 4.7 fallback",
+      "description": "Best coder — Opus 5, twin 4.8 fallback",
       "provider": "openrouter",
-      "primary": "anthropic/claude-opus-4.8",
+      "primary": "anthropic/claude-opus-5",
       "use_for": [
         "code",
         "file-edit",
@@ -1521,7 +1521,7 @@
       "id": "best_coder",
       "description": "Alias of code_patch for legacy workflow compatibility",
       "provider": "openrouter",
-      "primary": "anthropic/claude-opus-4.8",
+      "primary": "anthropic/claude-opus-5",
       "use_for": [
         "code",
         "file-edit",
@@ -1531,7 +1531,7 @@
     },
     {
       "id": "reasoning",
-      "description": "Hard reasoning, planning, hard debugging, math — Claude Fable 5, Opus 4.8 fallback",
+      "description": "Hard reasoning, planning, hard debugging, math — Claude Fable 5, Opus 5 fallback",
       "provider": "openrouter",
       "primary": "anthropic/claude-fable-5",
       "use_for": [
@@ -1580,9 +1580,9 @@
     },
     {
       "id": "review",
-      "description": "PR/code review — Opus 4.7 (deliberately not the coding twin), DeepSeek R1 fallback",
+      "description": "PR/code review — Opus 4.8 (deliberately not the coding twin), DeepSeek R1 fallback",
       "provider": "openrouter",
-      "primary": "anthropic/claude-opus-4.7",
+      "primary": "anthropic/claude-opus-4.8",
       "use_for": [
         "review",
         "pr-review",
@@ -1593,7 +1593,7 @@
       "id": "best_reviewer",
       "description": "Alias of review profile for legacy workflow compatibility",
       "provider": "openrouter",
-      "primary": "anthropic/claude-opus-4.7",
+      "primary": "anthropic/claude-opus-4.8",
       "use_for": [
         "review",
         "pr-review",

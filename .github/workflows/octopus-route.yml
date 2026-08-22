@@ -21,13 +21,21 @@ name: Octopus Issue Router
 # downstream coder runs.
 # ──────────────────────────────────────────────────────────────────────────────
 
+# DISABLED TRIGGER 2026-08-21 (D016): issues
+# Owner cut this lane during the cost freeze. Triggers are commented, not
+# deleted (RVS-AGENT-001) — re-enable by uncommenting the block below.
+#
+# IMPORTANT, and the exact mistake D007 made: commenting this file does NOT
+# stop the octopus-review[bot] App commenting on PRs. That is a GitHub App and it
+# reports independently of any workflow here. Removing its check requires
+# uninstalling or reconfiguring the App in repository settings — see #17872.
 on:
-  issues:
-    # `opened` covers newly-filed Octopus issues. `labeled` is the recovery
-    # hook the recovery-engine uses to re-translate issues that missed the
-    # original opened-event window (the original engine labeled them
-    # `has-conflicts` which did NOTHING here — fixed in this PR).
-    types: [opened, labeled]
+#  issues:
+#    # `opened` covers newly-filed Octopus issues. `labeled` is the recovery
+#    # hook the recovery-engine uses to re-translate issues that missed the
+#    # original opened-event window (the original engine labeled them
+#    # `has-conflicts` which did NOTHING here — fixed in this PR).
+#    types: [opened, labeled]
   workflow_dispatch:
     inputs:
       backfill:

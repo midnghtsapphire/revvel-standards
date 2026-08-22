@@ -6,6 +6,7 @@
 **Research Date:** 2026-08-20  
 **Researcher:** Jules (Google) + OpenRouter  
 **WR Status:** ✅ Complete
+**WR Status:** 🟡 In Progress
 
 ---
 
@@ -31,6 +32,11 @@
    - Remove `patch_ossar.js` from the ratchet array because the file has been successfully expunged.
 4. **Fix `MODULE_NOT_FOUND` Errors:**
    - Run `npm install --save-dev yaml` and check dependencies for `tests/wr-fill-sweep.test.js`.
+<!-- Detailed scope: what's in, what's out, boundaries with other WRs. -->
+
+## Approach
+
+<!-- Proposed approach / design sketch. Alternatives considered. -->
 
 ## Acceptance Criteria
 
@@ -57,3 +63,27 @@ Through this research and test failure analysis, we learned that test assertions
 Similarly, cleanup operations (like removing `patch_ossar.js`) must ensure that negative-assertion tests ("no root junk") are updated concurrently, as ratchets cannot self-heal structural absence.
 
 Finally, dependency drift (like `yaml` being missing from `devDependencies`) can silently break disjoint test suites. Moving forward, test assertions should be designed to describe the necessary invariants (e.g., `timeout >= 60`) rather than brittle exact values.
+<!-- Known risks, fragile files touched, rollback plan. -->
+
+## Competitor & Pricing Intelligence
+
+<!--
+For Competitor and GitHub Star Intelligence WRs, the competitor/pricing table
+must list actual prices (e.g. "$99-299/month"), not vague labels like "Paid tiers".
+If a competitor's price is unknown, write:
+"Pricing data pending — competitive benchmark research required."
+Do not ship incomplete competitive intelligence. This rule is kept in sync with
+scripts/research-engine.js by tests/research-engine.test.js.
+-->
+
+## Learnings — What & Why
+
+N/A — pending Jules refinement
+
+<!--
+Guidance: agents completing other WR types should fill this in themselves once
+done — capture what was learned and _why_ it matters, not just what changed.
+For follow-up-generated WRs this section is populated automatically by the
+Follow-up Checkbox Router with the original follow-up text, a link to the
+source PR/issue, and (if applicable) a note that this is a chained follow-up.
+-->
