@@ -32,6 +32,45 @@ diff --git a/test.js b/test.js
   assert.ok(duplicates.length > 0, 'Should detect duplicate block');
 });
 
+test('does not flag a reused fail-closed idiom in two distant functions', () => {
+  const diffText = `
++++ b/action/run-prosecutor.mjs
++async function fetchComments(response) {
++  const body = await response.text().catch(() => '');
++  throw new GitHubApiError('comments failed ' + body.slice(0, 200));
++}
++async function fetchDiff(response) {
++  const extra = 'unrelated added line so the two copies are not back-to-back';
++  const more = 'another separator so keep-both cannot align on a 2-line window';
++  const body = await response.text().catch(() => '');
++  throw new GitHubApiError('diff failed ' + body.slice(0, 200));
++}
+`;
+  const duplicates = detectDuplicatedBlocks(diffText);
+  assert.equal(duplicates.length, 0, 'reused error handling is not a keep-both merge');
+});
+
+test('does not flag similar test fixtures scattered through one file', () => {
+  const diffText = `
++++ b/tests/prosecutor.test.js
++  const diffText = \`
++function sayHello() {
++  console.log("hello");
++}
++\`;
++  const comments = [{ user: { login: "reviewer1" } }];
++  const fetchImpl = async (url) => jsonResponse([], { ok: false, status: 403 });
++  const later = \`
++function sayHello() {
++  console.log("hello");
++}
++\`;
++  const fetchImpl2 = async () => jsonResponse(null, { ok: false, status: 502 });
+`;
+  const duplicates = detectDuplicatedBlocks(diffText);
+  assert.equal(duplicates.length, 0, 'repeated fixtures are not a keep-both merge');
+});
+
 test('detects unresolved conflict markers', () => {
   const diffText = `
 diff --git a/test.js b/test.js

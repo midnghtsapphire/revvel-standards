@@ -165,9 +165,47 @@ export function computeLevenshtein(a, b) {
   return matrix[a.length][b.length];
 }
 
+const KEEP_BOTH_MIN_LEN = 2;
+const KEEP_BOTH_MAX_LEN = 16;
+const KEEP_BOTH_MAX_GAP = 1;
+
+/**
+ * Keep-both means two similar copies sit back-to-back in the added lines
+ * (conflict resolution kept current and incoming). A file-wide 2-line
+ * 85% scan is not that: it flags any reused idiom in the same file.
+ * Why this matters: wiring this action on the default-branch PR path
+ * made that scan a real gate. PR #17899 failed `prosecute` on 8 hits
+ * that were the fail-closed `response.text()` + `GitHubApiError` pair
+ * used twice, plus repeated test fixtures — not a bad merge.
+ * If this starts missing a real keep-both, check that the two copies
+ * are consecutive (or one added line apart) and at least 2 lines each.
+ */
+function findConsecutiveKeepBoth(additions, start) {
+  for (let gap = 0; gap <= KEEP_BOTH_MAX_GAP; gap++) {
+    for (let len = KEEP_BOTH_MIN_LEN; len <= KEEP_BOTH_MAX_LEN; len++) {
+      const j = start + len + gap;
+      if (j + len > additions.length) break;
+      if (additions[start].file !== additions[j].file) return null;
+
+      const blockA = additions.slice(start, start + len).map((a) => a.text).join(' ');
+      const blockB = additions.slice(j, j + len).map((a) => a.text).join(' ');
+      const maxLen = Math.max(blockA.length, blockB.length);
+      if (!maxLen) continue;
+      const distance = computeLevenshtein(blockA, blockB);
+      if (distance < maxLen * 0.15) {
+        return {
+          file: additions[start].file,
+          blockA,
+          blockB,
+          distance
+        };
+      }
+    }
+  }
+  return null;
+}
+
 export function detectDuplicatedBlocks(diffText) {
-  // mathematical approach to find chunks that are too similar and added in a single diff
-  // this looks for situations where 'current' and 'incoming' were both kept
   const additions = [];
   const lines = diffText.split('\n');
   let currentFile = '';
@@ -184,30 +222,14 @@ export function detectDuplicatedBlocks(diffText) {
   }
 
   const duplicates = [];
-  // block length of 2 lines for testing flexibility
-  for (let i = 0; i < additions.length - 3; i++) {
-    const blockA = additions.slice(i, i + 2).map(a => a.text).join(' ');
-
-    for (let j = i + 2; j < additions.length - 1; j++) {
-      if (additions[i].file !== additions[j].file) continue;
-
-      // don't compare the block against itself (ensure no overlap)
-      if (j >= i + 2) {
-        const blockB = additions.slice(j, j + 2).map(a => a.text).join(' ');
-        const distance = computeLevenshtein(blockA, blockB);
-        const maxLen = Math.max(blockA.length, blockB.length);
-
-        // if blocks are 85% similar, flag as potential bad merge
-        if (distance < maxLen * 0.15) {
-          duplicates.push({
-            file: additions[i].file,
-            blockA,
-            blockB,
-            distance
-          });
-        }
-      }
-    }
+  const seen = new Set();
+  for (let i = 0; i < additions.length - KEEP_BOTH_MIN_LEN; i++) {
+    const hit = findConsecutiveKeepBoth(additions, i);
+    if (!hit) continue;
+    const key = `${hit.file}\n${hit.blockA}\n${hit.blockB}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    duplicates.push(hit);
   }
 
   return duplicates;

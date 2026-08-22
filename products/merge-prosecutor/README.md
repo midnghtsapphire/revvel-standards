@@ -8,7 +8,7 @@
 
 Merge Prosecutor is a deterministic, mathematical GitHub Action that evaluates pull requests for merge quality. It guards against bad merges by:
 1. Detecting unresolved Git conflict markers.
-2. Using Levenshtein distance on sliding windows to detect duplicated blocks of code resulting from poorly resolved conflicts (where both "current" and "incoming" were kept).
+2. Using Levenshtein distance on **consecutive** added-line copies to detect keep-both merges (current and incoming kept back-to-back). A file-wide 2-line scan is not used — that false-failed PRs that reused an error-handling idiom or repeated test fixtures (see #17899 `prosecute`).
 3. Running test suites to ensure the merge didn't break unintended functionality.
 4. Scanning pull request comments for dismissive language (e.g., "not my error", "leave it", "out of scope") and automatically generating Work Request (WR) tickets when developers try to punt on bugs.
 
