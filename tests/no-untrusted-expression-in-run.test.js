@@ -79,7 +79,6 @@ const KNOWN_REMAINING = new Set([
   'mabl.yml :: ${{ inputs.plan-labels }}',
   'research-module.yml :: ${{ inputs.output_file }}',
   'research-module.yml :: ${{ inputs.question }}',
-  'reset-self-heal-issue.yml :: ${{ inputs.issue_number }}',
   'run-human-testing-api.yml :: ${{ inputs.app_name }}',
   'run-human-testing-api.yml :: ${{ inputs.output_file }}',
   'run-human-testing-api.yml :: ${{ inputs.target_url }}',
