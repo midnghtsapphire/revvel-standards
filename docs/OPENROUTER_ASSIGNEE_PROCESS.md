@@ -108,6 +108,18 @@ gh workflow run "OpenRouter Assignee — First Line of Sight" -f dry_run=true
 
 A dry run logs what *would* be routed without making changes — useful when first enabling the workflow on a repo with a lot of existing open issues.
 
+Targeted recovery (WR #17736) passes `--field issue_number=<N>`. That path
+**force-reroutes** even when the issue already has the `openrouter` label —
+the default-path idempotency skip would otherwise make every reset a no-op.
+`no-triage` is still honored. Reset also dispatches `openrouter-triage.yml`
+for the same issue so a real triage comment is posted.
+
+```bash
+gh workflow run openrouter-assignee.yml \
+  --field dry_run=false \
+  --field issue_number=<NUMBER>
+```
+
 ---
 
 ## How this relates to existing workflows

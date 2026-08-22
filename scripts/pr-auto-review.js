@@ -19,6 +19,7 @@
 
 const https = require("https");
 
+const { assertCloudAllowed } = require("./llm-spend-gate");
 // Environment variables
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
@@ -201,6 +202,8 @@ async function getPRDiff() {
  * Calls OpenRouter API to perform code review with rate limiting
  */
 async function callOpenRouter(systemPrompt, userPrompt) {
+  // Spend gate (#17850): refuse unless someone deliberately allowed it.
+  assertCloudAllowed("pr-auto-review");
   // Basic rate limiting: wait before making API call
   await new Promise(resolve => setTimeout(resolve, OPENROUTER_RATE_LIMIT_DELAY));
   

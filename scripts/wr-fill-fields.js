@@ -49,6 +49,7 @@
  */
 
 const fs = require('fs');
+const { assertCloudAllowed } = require("./llm-spend-gate");
 const path = require('path');
 const https = require('https');
 const yaml = require('yaml');
@@ -283,6 +284,8 @@ function mkMsgs(sys, usr) {
 }
 
 function orRequest(payload) {
+  // Spend gate (#17850): refuse unless someone deliberately allowed it.
+  assertCloudAllowed("wr-fill-fields");
   const key = process.env.OPENROUTER_API_KEY;
   if (!key) return Promise.reject(new Error('OPENROUTER_API_KEY not set'));
   const body = JSON.stringify({ temperature: 0.2, ...payload });

@@ -46,7 +46,7 @@ The safest fix is to treat deep research as the default gate for WR PR creation:
 - **Current WR Issue:** #13555 is open and already carries `weekly-research`, `deep-research`, `research-engine`, and `research:*` labels.
 - **Current PR:** #13556 was generated too early and contains a template-heavy WR instead of a research-backed one.
 - **Relevant Failure:** `WR PR Creation` run `26061851461` failed after a PR comment retriggered the workflow and exhausted the GitHub App installation core quota while fetching `issues/13556`.
-- **Deployment Status:** Repository homepage is `https://revvel-standards.vercel.app`; this WR itself is internal automation work, not a new deployable product.
+- **Deployment Status:** Repository homepage is `https://midnghtsapphire.github.io/revvel-standards`; this WR itself is internal automation work, not a new deployable product.
 
 ### Repository Structure Relevant to This WR
 

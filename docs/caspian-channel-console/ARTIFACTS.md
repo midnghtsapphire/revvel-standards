@@ -1,13 +1,13 @@
 # caspian-channel-console — Delivery Artifacts
 
 > WR-16898 · Code path: `products/caspian-channel-console`
-> Live: [https://revvel-standards.vercel.app/docs/caspian-channel-console/](https://revvel-standards.vercel.app/docs/caspian-channel-console/)
+> Live: [https://midnghtsapphire.github.io/revvel-standards/docs/caspian-channel-console/](https://midnghtsapphire.github.io/revvel-standards/docs/caspian-channel-console/)
 
 ## Definition-of-Done requirements
 
 | Requirement | Status | Notes |
 | --- | :---: | --- |
-| Live deployment URL | ✅ | <https://revvel-standards.vercel.app/docs/caspian-channel-console/> |
+| Live deployment URL | ✅ | <https://midnghtsapphire.github.io/revvel-standards/docs/caspian-channel-console/> |
 | README `## Live Deployment` | ✅ | present |
 | Live web test interface | ✅ | planner, simulator, export, pricing |
 | Monetization wired | ✅ | Starter/Pro/Enterprise + waitlist |

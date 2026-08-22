@@ -490,3 +490,495 @@ detector), `tests/chaosmender.test.js` (the regression tests).
 
 **Next Action:** Human (`midnghtsapphire`) reviews/merges the fix PR; do not reopen #16791. Optionally wire `node scripts/check-dependabot-split-deps.js` into `automation-doctor` / CI later.
 **Next Action:** Fleet review focus for this PR should be *checking the two proven fixes* (WR-01, WR-02/03) and the two small dependency fixes (WR-04), not re-deriving them. Three items need an owner/product decision before any agent writes code: WR-05 (`ship-to-market.yml`'s missing `record.js` — build it or comment out the video-deliverable step), WR-06/WR-07 (`label-inventory.js` / `validate_jsonl.py` — wire in or archive-with-attribution, never delete per standing owner preference). WR-08 flags that the WR-drafting pipeline itself — 35 fully-drafted WRs across two prior audits, never filed as GitHub issues — is the largest unwired-flow pattern in the repo by volume; needs an owner pass over `wr/pending/` to mark stale/superseded items before a bulk-filing workflow gets built. WR-09's 16 scanner hits are queued for the next audit to individually root-cause. Two proposed CI vaccines from this session (`find-duplicate-json-keys.js`-style package.json lint; "named test/workflow file must exist" check for `scripts/**` and `skills/**/SKILL.md`) are not yet wired into `scripts/automation-doctor.js` — good candidates for a fast follow-up WR once this PR lands.
+
+**Date/Time:** 2026-08-21
+
+**Task Attempted:** Stop the GitHub Actions spend. Owner reported a $600 GitHub
+bill and unexplained OpenRouter burn on a repository with no product traffic,
+and asked to kill the cron jobs.
+
+**Outcome:** All 46 scheduled workflows de-scheduled — 496 runs/day (~14,900/month)
+to 0. Schedules are commented out in place, not deleted (RVS-AGENT-001); every
+affected workflow keeps `workflow_dispatch`, so nothing lost the ability to run,
+only the ability to run itself. 1291/1291 tests pass, 227 workflows valid.
+
+**Root Cause of Failure (If any):** No single workflow looked expensive. The cost
+was the sum, and nothing in the repo ever computed that sum. Four schedules alone
+were 336 runs/day (`agent-monitor` and `wr-field-filler` at `*/15`, `fleet-controller`
+at `7,22,37,52`, `api-monitor` at `*/30`), and each was individually defensible in
+its own PR. Worse, four existing tests asserted that a schedule *must exist* —
+`daily-diagnostic-audit`, `octopus-review-fallback`, `wr-field-filler-workflow`,
+`green-website-standard` — so the ratchet only ever turned one way: adding a cron
+was routine, removing one broke the build. The repo had a guard for the wrong
+direction.
+
+**Self-Healing Fix / Learned Lesson:** (1) `tests/no-scheduled-workflows.test.js`
+parses every live workflow, expands each cron expression to a runs/day figure,
+and fails on any active schedule not in a name-pinned `ALLOWED_SCHEDULED` list
+(currently empty) or over a `MAX_SCHEDULED_RUNS_PER_DAY` ceiling of 0. A third
+test asserts every de-scheduled workflow still exposes `workflow_dispatch`, so
+the freeze cannot strand a workflow with no way to run at all. Mutation-tested:
+re-adding one `*/15` cron fails two of the three tests with the run rate named in
+the message; stripping a `workflow_dispatch` fails the third. (2) The four tests
+that pinned "schedule must exist" were inverted to pin the freeze instead, each
+with the reason inline — a decision that changed needs its guard changed, not
+deleted. (3) `templates/cicd/` is explicitly exempt: those files are copied into
+other repos and are not billed here. **Lesson: a recurring cost needs a control
+that sums it.** Per-workflow review can approve 46 individually reasonable
+schedules into a four-figure bill, because no reviewer is holding the total. The
+guard has to assert the aggregate, in the unit that gets billed.
+
+**Next Action:** Scheduled runs are the fixed cost and are now zero, but the
+variable cost is untouched: 72 workflows fire on `pull_request`, 40 on `push`,
+42 on `issues`, 10 on `issue_comment`. A single PR still fans out to ~70 runs,
+and bot comment storms multiply it. That needs the same treatment — an aggregate
+budget with a guard — and is the next lever, not a follow-up note. Separately,
+`scripts/wr_rewrite.py` already implements the LM Studio -> Ollama -> OpenRouter
+cascade from `wr/agents/HIERARCHY.md`, but only `wr-rewrite.yml` uses it, and
+that workflow is `runs-on: self-hosted` pointing at `127.0.0.1:1234`; its four
+runs all failed. GitHub-hosted runners cannot reach a laptop, so Layer 0 only
+pays off for work run locally, not in CI.
+
+**Date/Time:** 2026-08-21
+
+**Task Attempted:** Finish the LM Studio (Layer 0) work. `wr/agents/HIERARCHY.md`
+targets 60–70% of work on local LLMs and says the router should "default to
+Layer 0"; the owner runs LM Studio on a Windows Lenovo laptop and wanted the
+existing implementation completed rather than rebuilt.
+
+**Outcome:** The cascade is now shared rather than trapped. `scripts/local_llm.py`
+holds the LM Studio → Ollama → OpenRouter chain, `scripts/wr_rewrite.py`
+delegates to it instead of carrying a private copy, and `docs/LOCAL_LLM_SETUP.md`
+covers the Windows-specific setup. 1300/1300 tests, 227 workflows valid,
+chaosmender exit 0.
+
+**Root Cause of Failure (If any):** Three separate things, only one of which was
+the code. (1) The cascade existed but lived *inside* `wr_rewrite.py`, so it was
+reachable from exactly one workflow and every other caller in the repo went
+straight to OpenRouter — the code was written, it just was not shared. (2) That
+one workflow is `runs-on: self-hosted` pointing at `127.0.0.1:1234`, and all four
+of its recorded runs failed in ~23s because no self-hosted runner existed; a
+GitHub-hosted runner cannot reach a laptop, so Layer 0 had never completed a
+single run. (3) A real bug found while testing: `urllib` honours
+`http_proxy`/`https_proxy` for *every* request including ones to `127.0.0.1`, so
+on any machine behind a corporate proxy or VPN — which a work laptop usually is —
+the call to LM Studio gets routed to the proxy, fails, and Layer 0 looks broken
+for a reason unrelated to LM Studio.
+
+**Self-Healing Fix / Learned Lesson:** (1) The cloud lane is now **opt-in, not
+fallback**: `call_openrouter` refuses unless `REVVEL_LLM_ALLOW_CLOUD` is exactly
+`"1"`, so "the laptop was asleep" produces a loud error naming the gate instead
+of a silent charge. The two workflows that genuinely need cloud judging opt in
+explicitly, in the workflow file, with a comment saying why. (2) Local lanes get
+an opener with `ProxyHandler({})` so loopback never goes through a proxy.
+(3) `tests/local-llm-cascade.test.js` exercises the cascade against stub HTTP
+servers rather than mocking it, and asserts a workflow that sets a loopback
+`LMSTUDIO_ENDPOINT` stays on a self-hosted runner — because the tempting fix for
+that red workflow is `ubuntu-latest`, which makes it green *and* 100% billed.
+Five mutations were applied and reverted: gate forced open, cascade reordered to
+try cloud first, proxy bypass removed, refusal made to print output anyway, and
+the runner switched to `ubuntu-latest`. Each was caught. **Lesson: shared code is
+not shared until something other than its original caller uses it.** The cascade
+had been "done" for weeks by the only measure anyone checked — it existed and it
+was correct — while delivering none of its value, because it had one consumer and
+no seam.
+
+**Second lesson, procedural:** while mutation-testing, a `cp` from a scratch
+backup failed silently and left the workflow mutated to `ubuntu-latest`. This is
+the same class of mistake as the earlier reverted-timeouts incident: **a file
+copy silently wins where a merge would conflict.** The catch was `git diff
+origin/main -- <file>` before committing, which showed the intended change only.
+Verify a restore by diffing against the base, never by trusting the copy.
+
+**Next Action:** Layer 0 pays off only for work that runs on the owner's machine.
+CI cannot reach it, so the remaining OpenRouter spend is the per-PR reviewer
+fleet (#17850) — ~13 bots, several routed through `scripts/openrouter-personas.js`,
+currently failing free only because the account sits at 402. Topping up credits
+re-arms that burn. The gate implemented here is the mechanism that fix should
+reuse: refuse the paid call unless a budget signal is explicitly set.
+
+**Date/Time:** 2026-08-21
+
+**Task Attempted:** Close the three open cost/correctness issues in one sitting —
+#17854 (workflows advertising cadences they never had), #17855 (cost index drift),
+#17850 (the per-PR reviewer fan-out that re-arms the moment credits are topped up).
+
+**Outcome:** Three PRs, one fix each. #17856 and #17857 merged. The spend gate is
+the third. 1310/1310 tests, 227 workflows valid, chaosmender exit 0.
+
+**Root Cause of Failure (If any):** All three are the same shape — a claim with
+no consumer — but the *mechanisms* differed, and getting each one right required
+checking rather than pattern-matching:
+
+1. **Never true.** `openrouter-assignee.yml` advertised an "hourly cron sweep" and
+   has never had a `schedule:`. `fork-audit-bot.yml` told users a failed
+   assignment would be retried by that same sweep.
+2. **Falsified by an edit elsewhere.** The cron freeze made `security-fleet`'s
+   "weekly sweep" and `watchtower`'s cadence false without touching those files.
+3. **Falsified by a reversal that never propagated.** D007 cut RecurseML; D014
+   reversed D007 on 2026-08-19; `TOOL_COST_INDEX.md` still cited D007. The
+   decision log was *right the whole time* — the failure was one-way propagation.
+4. **Masked, not absent.** The reviewer fan-out costs nothing today only because
+   OpenRouter returns 402. The 402 is an outage that looks like a control.
+
+**Self-Healing Fix / Learned Lesson:** (1) `scripts/llm-spend-gate.js` mirrors
+`local_llm.py`'s gate on the JS side, same `REVVEL_LLM_ALLOW_CLOUD` variable, and
+is wired into all eleven JS and both Python scripts that POST to a provider.
+(2) `tests/llm-spend-gate-coverage.test.js` **discovers** call sites by scanning
+for the POST rather than trusting a list, so a new ungated script fails the build.
+The fifteen workflows that still `curl` inline are named individually in a
+shrink-only ratchet — naming the gap beats implying coverage I do not have.
+(3) `tests/no-false-cadence-claims.test.js` and
+`tests/tool-cost-index-matches-decisions.test.js` cover mechanisms 1–3.
+
+**Two lessons worth keeping:**
+
+- **Check the claim before writing the guard.** I filed #17855 saying the index
+  drifted because "nothing reconciles the table against the workflows." Reading
+  `DECISIONS.md` showed that was wrong: D014 records the reversal in plain terms
+  and `recurse-ml.yml`'s header explains it in detail. The real failure was
+  narrower — a reversal recorded in one place and never propagated — and it
+  produced a *better* guard (parse `REVERSE D0NN`, fail on a stale citation) than
+  the vague one my issue implied. Same for Bito, which I had listed as drift in
+  the issue and which turned out to be correctly cut. **An issue is a hypothesis;
+  verify it before the fix hardens the wrong thing into a test.**
+- **Guard the guard.** Rewording `REVERSE D007` to `UNDO D007` in DECISIONS.md
+  would leave the reversal check parsing nothing and passing forever — a check
+  that always passes is indistinguishable from one that works. Asserting the
+  parser still finds the specific reversal it was written for is what keeps it
+  honest. The same applies to the cadence scanner (a JS `//` comment must not
+  trip it) and the coverage ratchet (an entry that no longer needs the exception
+  must be flagged for removal).
+
+**Next Action:** The fifteen inline workflow curls are the remaining gap and are
+named in `UNGATED_WORKFLOW_CURLS`. Owner-only and still open: the GitHub billing
+breakdown (this repo is public with standard runners, so its Actions are free and
+the reported charge is not from here), the Actions spending limit, and the Vercel
+account block (#17831). **Do not top up OpenRouter credits until the fifteen are
+gated** — that is precisely the burn the 402 is currently hiding.
+
+**Date/Time:** 2026-08-21
+
+**Task Attempted:** Verify my own claim. After merging #17859 I told the owner
+"nothing can spend without you saying so." A merge-tail notification showed
+`ai-pr-reviewer` still calling OpenRouter, so I checked instead of assuming the
+comment was stale.
+
+**Outcome:** The claim was wrong. **Seven** workflows hand a paid LLM credential
+to a *third-party action* that makes the call inside its own code —
+`maxlim0/AI-PR-Reviewer`, `maxlim0/actions-progci-fail`,
+`fridzema/ai-weekly-changelog-action`, `sipyourdrink-ltd/bernstein`,
+`koki-develop/claude-renovate-review`, `omnedia/panda-ops`, and
+`tarmojussila/xai-code-review`. All now gated; the guard extended to see them.
+1312/1312, 227 workflows valid, chaosmender exit 0.
+
+**Root Cause of Failure (If any):** `tests/llm-spend-gate-coverage.test.js`
+scanned for `openrouter.ai/api`. **No provider URL appears in any of those seven
+files.** The URL lives inside the action's own source, which this repo does not
+contain — so the scan reported full coverage over a set it could not observe,
+and I repeated that number to the owner as if it were a measurement.
+
+**Self-Healing Fix / Learned Lesson:** The new detector asserts on the thing that
+actually predicts spend — **a paid credential crossing into code we do not
+control** — rather than on a symptom of it. First draft over-fired on four
+workflows; checking each showed one true positive (`xai-code-review`, job-level
+`XAI_API_KEY` consumed by the action) and three false ones: `agent-fallback` and
+`openrouter-coder` shell out to scripts already gated in #17858, and
+`ship-to-market`'s third-party actions are Docker and gh-pages, which do not
+consume the key. Rather than loosen the check, it now recognises invocation of a
+gated script as coverage and carries a small `NON_LLM_ACTIONS` allowlist where
+each entry is there because it was checked.
+
+**The lesson, and it generalises well past this repo: a guard that greps for a
+symptom misses every path that reaches the same outcome another way.** The URL
+was a proxy for "this bills." It was a good proxy for thirteen call sites and a
+useless one for seven, and nothing distinguished the two cases from inside the
+check. When a guard's predicate is a proxy, name what it cannot see — the earlier
+version implied completeness it never had.
+
+**Second lesson: a claim to the user is a postcondition too (RVS-VERIFY-001).**
+"Nothing can spend" was a marker with no producer. What made it checkable was one
+contradicting observation — a bot still calling out — and taking it seriously
+instead of explaining it away as a pre-merge artifact.
+
+**Next Action:** Five of the seven third-party actions are pinned to floating
+tags (`@v0.3`, `@v1`, `@v1.3.1`, `@v2.7.0`, `@0.1.3`) rather than a commit SHA,
+against CLAUDE.md gotcha #8. Not fixed here — separate change, and pinning an
+action whose upstream may have moved needs the owner's call on which revision to
+freeze.
+
+**Date/Time:** 2026-08-21
+
+**Task Attempted:** Wire LM Studio 0.4.0's native `/api/v1` surface — token auth
+and model loading — into `scripts/local_llm.py`, and document Layer 0 properly
+for visiting agents.
+
+**Outcome:** `LMSTUDIO_API_KEY` support, a `load` subcommand, `doctor --load`,
+and a Layer 0 section in `AGENTS.md` where a visiting agent actually looks.
+1320/1320 tests, 227 workflows valid, chaosmender exit 0.
+
+**Root Cause of Failure (If any):** No outage — this closed two latent traps.
+The client sent no auth header at all, so a secured LM Studio would have
+answered 401 and the client would have reported it as *unreachable*. And the
+most common Layer 0 failure in practice is not "the server is down" but "the
+wrong model is loaded", which previously required the UI to fix.
+
+**Self-Healing Fix / Learned Lesson:** Two things worth carrying forward, both
+found by a test rather than by reading the code:
+
+1. **A test that asserts on the *message* caught a hole the behaviour tests
+   could not.** The 401 case failed on the first run — not because the handler
+   was wrong, but because `lmstudio_models()` swallowed every exception and
+   returned `[]`, so the 401 never reached the handler at all. The probe could
+   not distinguish "unreachable" from "unauthorized", which is exactly the
+   confusion the work existed to prevent. Asserting *"the error must name
+   `LMSTUDIO_API_KEY`"* found that; asserting "it fails" would not have.
+
+2. **Then the fix broke failover, and that was also caught.** Adding
+   `strict=True` re-raised the raw `URLError`, which escaped the caller's
+   `except LaneUnavailable` and took the whole cascade down instead of moving
+   to Ollama. Strict has to mean *explain it*, not *crash*. Three previously
+   passing tests went red and named the regression immediately.
+
+**Also recorded for visiting agents (AGENTS.md, new Layer 0 section):** the two
+API surfaces (`/v1` for inference, `/api/v1` for management, derived from each
+other so they cannot drift); embedding models are not chat models; `urllib`
+routes `127.0.0.1` through `http_proxy`; a GitHub-hosted runner cannot reach a
+laptop, so every CI LLM call is a billed call.
+
+**Next Action:** None outstanding for Layer 0. Owner-only and still open: the
+GitHub billing breakdown (this repo is public with standard runners — its
+Actions are free, so the reported charge is not from here), the Actions spending
+limit, and the Vercel account block (#17831). Five third-party review actions
+remain pinned to floating tags rather than SHAs, against gotcha #8 — filed, not
+fixed, because choosing a revision to freeze is an owner call.
+
+## 2026-08-21 — The cost index listed 24 tools and priced none of the paid ones
+
+**Symptom.** The owner opened GitHub billing looking for the source of a $566
+Copilot overage and found a larger charge nobody was tracking: Rollbar on
+`advanced_4000K`, **$1,208/yr**, free trial converting in three days. Also
+billing monthly: Deploybot-app Pro ($45) and Create Issue Branch ($10).
+
+**What the repo said.** `docs/TOOL_COST_INDEX.md` calls itself the "single
+source of truth for current + next-tier costs of every SaaS the pipeline uses"
+and is read by `docs/API_LIMIT_AUTO_UPGRADE.md` at a quota wall. It listed 24
+tools. Every paid one was absent. Rollbar did appear in
+`docs/Universal-BOM_List/TOOLING_AND_TESTING_BOM.md` — as "🆓 Free Tier — Free
+(5k items/mo) / $12+/mo", the price of a plan the account is not on. That is
+worse than an omission: it reads as a checked fact and it is off by 100x.
+
+**Why it went unnoticed for so long.** Twenty-four rows of `$0` look like a cost
+review has happened. Nobody had ever added a row for a service that charges,
+because the free tiers were the interesting ones to research and the paid ones
+arrived through the Marketplace install flow, which touches no file in the repo.
+The index measured what was easy to see.
+
+**The near-miss inside the fix.** The first draft of the Deploybot row read
+"CUT — zero references in `.github/`, `scripts/`, or any config", derived from a
+grep. The owner corrected it immediately: they use it. Deploybot is configured
+in its own dashboard, so a repo-wide grep finds nothing whether it is load-
+bearing or dead. **Absence of a repo reference is not evidence a marketplace app
+is unused** — the same reasoning that produced D007's wrong RecurseML cut, where
+the measured lane was not the running one. The row now says so in as many words,
+so the wrong conclusion is not re-derived from a fresh grep.
+
+**Fix.** `tests/billed-subscriptions-are-indexed.test.js` name-pins each paid
+line item read off the billing page and requires a row stating a non-zero
+amount, plus the trial conversion date for anything mid-trial. A count would
+have passed while naming the wrong four. Mutation-tested against the exact
+defects: deleting the Rollbar row fails, repricing it to `$0` fails, stripping
+every conversion date from the row fails.
+
+**Rule.** A cost document that no test consumes is decoration
+(RVS-VERIFY-001). If a service can charge the account, the check that proves it
+is priced must fail when it is not.
+
+## 2026-08-21 — The keyless Perplexity failover never sent a request
+
+**Symptom.** The operator, watching spend: "it is supposed to failover to keyless
+Perplexity which it never has." Correct, and the reason is worse than a bug.
+
+**What was there.** `config/routing-failover.yml` has declared a tier-2 keyless
+Perplexity lane since WR-4481 — `provider: perplexity`, `keyless: true`,
+`model: perplexity/sonar`, with explicit trigger enums. `scripts/lane-failover.js`
+reads it, decides the failover, labels the route `lane-failover`, and appends a
+class to the FAILURE-LEDGER.
+
+**What was missing.** `lane-failover.js` imports `fs`, `path`, and
+`failure-ledger`. **No HTTP client.** The only other mentions of
+api.perplexity.ai in the repo are a `curl` health probe in `agent-monitor.yml`
+and a *commented-out* line in `search_orchestrator.py`. So the lane had a
+producer — config, decision function, ledger class, three tests — and no
+consumer. Every failover it ever "performed" was a string.
+
+This is RVS-VERIFY-001 in its purest form: the marker described a network call
+that did not happen, and the existing tests asserted on the decision rather than
+the request, so they passed throughout.
+
+**Found alongside it.** `routedChat` — the single entry point for every persona
+in `openrouter-personas.js`, DRAGNET included — was one call to
+`callOpenRouter`. `scripts/local_llm.py` had implemented Layer 0 for Python
+months earlier, but no JS caller could reach LM Studio. The operator was running
+a local model at zero cost that the fleet could not use.
+
+**Fix.** `scripts/local_llm.js` and `scripts/perplexity-lane.js` are the missing
+consumers; `routedChat` now walks free lanes first — LM Studio → keyless
+Perplexity → OpenRouter (billed, gated). Ordered by cost, not by the routing
+table's tier numbering: a free remote lane beats a paid one.
+
+**Honest limit, recorded so it does not become the next decoration.** Whether
+Perplexity serves a request with no `Authorization` header is Perplexity's call.
+If they refuse, the lane now throws with the real status code and we see it. That
+is still a strict improvement: before, the failover produced no request and
+therefore no evidence either way.
+
+**Rule.** Before trusting a declared fallback, find the line that opens the
+socket. A routing table, a decision function, and a ledger entry are three
+producers and zero consumers. Test the request, not the decision — a test that
+asserts on the label passes just as well when nothing is sent.
+
+## 2026-08-21 — `/dragnet` could not answer on a PR by any route
+
+**Symptom.** Operator: "i cant do anything until /dragnet can work prs."
+
+**Cause 1 — the cascade was unreachable from CI.** #17868 gave `routedChat`
+free lanes. Every workflow that runs a persona passed exactly one variable,
+`OPENROUTER_API_KEY`. On a GitHub runner that means: `LMSTUDIO_ENDPOINT` unset →
+Layer 0 resolves to `http://127.0.0.1:1234/v1`, which is the *runner's* loopback
+and never the operator's laptop; `REVVEL_LLM_ALLOW_CLOUD` unset → the paid lane
+throws. Nine workflows, no lane configuration, no possible success.
+
+The same producer-without-consumer shape as the bug #17868 existed to fix. A
+cascade nothing can configure is a cascade nothing can use.
+
+**Cause 2 — I built the wrong "keyless" lane.** `scripts/perplexity-lane.js` as
+merged POSTed to api.perplexity.ai with no `Authorization` header. The official
+API requires a key, so that path could only ever 401. It executed — strictly
+better than the label it replaced — but it could never answer.
+
+The real keyless lane was already in the repo and I missed it:
+`callPerplexityNoKey` in `scripts/perplexity-research-issue.js` shells out to
+the `helallao/perplexity-ai` Python package, no key of any kind. That is what
+`config/routing-failover.yml` has always meant by "keyless Perplexity". I
+searched for `api.perplexity.ai` and for HTTP clients, and the real lane used
+neither — it was a Python heredoc behind `execFileSync`.
+
+**Two things the guard caught that I did not.** I plumbed the workflows by
+grep and got 2. A test that walks the require graph of every `node scripts/*.js`
+a workflow runs found **9**, including `dragnet-ci-autofix.yml` — DRAGNET's other
+lane — and `update-agent-creator-data.yml`, which I had inspected by hand and
+wrongly dismissed as docs-only.
+
+**Rule.** When you search for a capability and conclude it is absent, you have
+established that *your search terms* are absent. Search for the effect
+(a subprocess, a package name, an install hint), not only for the mechanism you
+expect. And discover consumers mechanically — a hand-built list of call sites
+was wrong by more than 4x here, in the direction that leaves the bug in place.
+
+## 2026-08-21 — Turning off a workflow does not turn off a GitHub App
+
+**Request.** "i want to comment out octopus, recurselm?"
+
+**The trap.** Commenting those workflows removes neither red check. `recurseml/analysis`
+is posted by the RecurseML **App**; the 🐙 out-of-credits comment by the
+**octopus-review[bot] App**. Both report independently of every workflow in the
+repo. Only uninstalling the Apps removes them (#17872).
+
+**This repo has already paid for this lesson once.** D007 cut RecurseML on
+"key absent → no results posted", which measured `recurse-ml.yml` — a lane that
+by construction could post nothing without the secret — while the App posted its
+check throughout. D014 reversed D007 for exactly that reason, two days ago. The
+same confusion was available again, in the same session, on the same tool.
+
+**What was actually done.** D016 comments the triggers on `recurse-ml.yml`,
+`octopus-route.yml` and `octopus-review-fallback.yml` — real value, because both
+lanes burn runner time producing nothing (RecurseML no-ops without its secret,
+Octopus is out of credits). D016 records in as many words that D014's *evidence*
+stands and only the cost posture changed, so a later reader does not mistake this
+for "D014 was wrong".
+
+**Three existing guards fired, and each was right.**
+
+1. `decision-workflow-integrity.test.js` — "D014 enabled automatic triggers on
+   recurse-ml.yml, but it now has none... the decision needs reversing on the
+   record first." It refused the change until D016 existed.
+2. `tool-cost-index-matches-decisions.test.js` — caught the cost-index row still
+   citing D014 the moment D016 was added. That guard was written this morning.
+3. `recurse-ml-workflow.test.js` — its own failure message named the required
+   process: add a DECISIONS.md entry "rather than editing this file quietly".
+
+Every one of them was a *producer with a consumer*. They cost three extra edits
+and prevented an undocumented reversal of a two-day-old decision.
+
+**Two self-inflicted bugs while doing it**, both from bulk edits:
+- Inserting a table row directly above `---` turned it into a setext heading
+  (MD003). A markdown table row is only a table row if a `---` is not directly
+  beneath it.
+- The comment-out pass double-commented an already-commented `# schedule:`
+  block, producing `#  # schedule:` and breaking the guard that requires a
+  restorable `# schedule:`. **When commenting out a block, check what is already
+  a comment** — idempotence is not free.
+
+**Rule.** Before disabling something, find the thing that actually emits the
+behaviour. A workflow, a GitHub App, and a marketplace subscription are three
+different mechanisms; switching off the one you can see in the repo proves
+nothing about the other two.
+
+---
+
+## TM-0007 — Documented recovery dispatch that cannot target the stuck issue
+
+**Discovered:** 2026-08-19 / fixed 2026-08-22  **Discovered-by:** Claude Code (live reset of five stuck WRs)  **PR/issue:** #17736
+**Category:** false-success / workflow-dispatch-contract
+
+**Symptom:** `reset-self-heal-issue.yml` reported success and posted
+"Triggered OpenRouter assignee workflow / The Ralph Loop will now
+re-evaluate" on five stuck WRs. None moved. `updated_at` stayed pinned
+to the reset timestamps; `research:blocked` stayed applied.
+
+**Root cause (three stacked defects, plus a later partial land):**
+1. Downstream `openrouter-assignee.yml` `workflow_dispatch` originally had
+   no `issue_number` input, so the reset could not tell it which issue to
+   act on. Main later grew the input and the reset started forwarding it.
+2. Even with `issue_number`, the assignee job treated the `openrouter`
+   label as a hard idempotency skip — exactly the label stuck WRs already
+   carry — so targeted dispatch was still a no-op.
+3. Assignee is first-line-of-sight routing only; the triage *comment*
+   comes from `openrouter-triage.yml`, which ignored targeted
+   `issue_number` and ran a full-repo sweep instead. The reset comment
+   asserted an outcome ("Ralph Loop will re-evaluate") that no step
+   performed (CLAUDE.md gotcha #6 / RVS-VERIFY-001).
+
+**Detection heuristic:** A recovery/reset comment that claims a
+downstream workflow "will" do work is a decoration unless (a) the
+dispatch passes the target id the child workflow declares, (b) the
+child actually has a job that runs for that id, and (c) the comment is
+gated on the dispatch exit code and only claims *dispatch*, not
+completion. Declaring an input is not enough if the child still skips.
+
+**Autofix pattern:**
+```text
+parent: gh workflow run child.yml --field issue_number=$N
+        + track success=true/false per child; comment + needs-human on fail
+child:  workflow_dispatch.inputs.issue_number
+        + targeted job when issue_number set (bypass idempotency keys
+          that strand recovery: openrouter label, etc.)
+        + sweep only when issue_number empty
+tests:  assert inputs declared; assert parent forwards fields;
+        assert force-reroute; assert success copy cannot claim
+        Ralph/triage completion
+```
+
+**Prevention rule:** Playbook CLI snippets and reset comments are
+contracts. If docs pass `--field X`, the workflow must declare `X`.
+If a comment says a child ran, the step that posted it must have
+observed that child's dispatch succeeding. Prefer "dispatched X for
+issue N" over "X will fix this."
+
+**Related:** `tests/workflows-inputs.test.js`,
+`.github/workflows/reset-self-heal-issue.yml`,
+`.github/workflows/openrouter-assignee.yml`,
+`.github/workflows/openrouter-triage.yml`,
+`docs/playbooks/wr-manual-processes.md` §1–§2, CLAUDE.md gotcha #6,
+`standards/VERIFY_THE_POSTCONDITION.md`.
