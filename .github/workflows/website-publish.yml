@@ -11,15 +11,11 @@ name: Website Publish (Hub Registry)
 # same push; this workflow only maintains the registry + closes the loop.
 
 on:
-  # QUIET THE FLEET 2026-08-21: Vercel publish disabled at owner request while
-  # spend is being brought under control. Preserved commented, not deleted
-  # (RVS-AGENT-001) — re-enable by uncommenting. Deploys still run on demand
-  # via workflow_dispatch.
-  # push:
-  #   branches: [main]
-  #   paths:
-  #     - data/hub/entries/**
-  #     - scripts/build-hub-registry.js
+  push:
+    branches: [main]
+    paths:
+      - data/hub/entries/**
+      - scripts/build-hub-registry.js
   workflow_dispatch: {}
 
 permissions:
