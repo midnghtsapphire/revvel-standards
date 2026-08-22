@@ -36,11 +36,10 @@ jobs:
   prosecute:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: midnghtsapphire/revvel-standards/products/merge-prosecutor@main
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - uses: ./products/merge-prosecutor
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           pr-number: ${{ github.event.pull_request.number }}
-          test-command: "npm test"
 ```
