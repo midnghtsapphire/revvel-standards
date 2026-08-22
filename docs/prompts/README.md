@@ -8,25 +8,25 @@ Promhoeador collects; Promptinator files.
 
 ## Layout
 
-```
+```text
 docs/prompts/
   <type>/
     <prompt-name>.md          # reusable prompt
     <prompt-name>/
       SYSTEM_PROMPT.md        # drop-in system prompt
-```
+```text
 
 ## Types in use
 
-| Type | What goes here |
-|---|---|
-| `LLM/` | System / persona prompts (credentialgate, vspr-smos, malama) |
-| `architecture/` | System design and attention / SCALE templates |
-| `research/` | R&D and evaluation prompts |
-| `code/` | Review and coding-agent prompts |
-| `agents/` | AGENTS.md-style operating instructions |
-| `automation/` | Workflow prompts (private copies only if they name accounts) |
-| `compliance/` | Audit / compliance playbooks |
+| Type            | What goes here                                               |
+| --------------- | ------------------------------------------------------------ |
+| `LLM/`          | System / persona prompts (credentialgate, vspr-smos, malama) |
+| `architecture/` | System design and attention / SCALE templates                |
+| `research/`     | R&D and evaluation prompts                                   |
+| `code/`         | Review and coding-agent prompts                              |
+| `agents/`       | AGENTS.md-style operating instructions                       |
+| `automation/`   | Workflow prompts (private copies only if they name accounts) |
+| `compliance/`   | Audit / compliance playbooks                                 |
 
 ## Already filed here
 
@@ -38,10 +38,10 @@ docs/prompts/
 
 ## Sister libraries
 
-- Private hoard: https://github.com/midnghtsapphire/AI-Conversation-Archive
-- Typed starter: https://github.com/midnghtsapphire/oz-prompt-library
-- Empty 16k stub: https://github.com/midnghtsapphire/prompt-library
-- PM templates: https://github.com/midnghtsapphire/product-manager-prompts
+- Private hoard: <https://github.com/midnghtsapphire/AI-Conversation-Archive>
+- Typed starter: <https://github.com/midnghtsapphire/oz-prompt-library>
+- Empty 16k stub: <https://github.com/midnghtsapphire/prompt-library>
+- PM templates: <https://github.com/midnghtsapphire/product-manager-prompts>
 
 ## Rule
 

@@ -1,7 +1,8 @@
 # Master R&D Engineering Prompt
+
 ## DOE Screening + TRIZ + MEErP + LCA + BNAT + Lead Search + Merchandise Framework
 
-*7 Powerful Frameworks in 1 Prompt*
+_7 Powerful Frameworks in 1 Prompt_
 
 This prompt converts any LLM into an autonomous R&D think-tank that rigorously tests, breaks down, and either rebuilds or replaces your concept with a superior paradigm.
 

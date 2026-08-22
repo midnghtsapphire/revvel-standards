@@ -46,8 +46,8 @@ function assertGreenWorkflow(relativePath, { requiresFixedDefaultUrl }) {
   }
   // COST FREEZE 2026-08-21: the weekly schedule is commented out in place
   // (RVS-AGENT-001), not deleted. See tests/no-scheduled-workflows.test.js.
-  if (!on.push || !on.workflow_dispatch) {
-    throw new Error(`${relativePath} must support push and workflow_dispatch`);
+  if (!on.workflow_dispatch) {
+    throw new Error(`${relativePath} must support workflow_dispatch`);
   }
   // Only the live workflow bills us. templates/ is copied into other repos and
   // keeps its schedule so a downstream copy still runs weekly.

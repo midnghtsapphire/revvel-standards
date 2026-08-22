@@ -18,7 +18,7 @@ on:
         default: true
   schedule:
     # Weekly Tuesday 15:19 UTC — drift watch
-    - cron: '19 15 * * 2'
+#     - cron: '19 15 * * 2'
   push:
     paths:
       - 'scripts/ghcr-setup.js'
