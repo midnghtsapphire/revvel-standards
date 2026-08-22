@@ -26,8 +26,29 @@ whether the human or another agent is the supervisor.
    - `octopus-review` (auto-applied by Octopus on every issue it files) →
      translated by `.github/workflows/octopus-route.yml` into the standard
      vocabulary above (`work-request` + `wr:code` + `[WR]` title prefix).
-     The dispatcher (`.github/workflows/agent-dispatcher.yml`) also routes
-     `octopus-review`-labeled issues to openrouter as belt-and-suspenders.
+     **D016 (2026-08-21) cut this lane's `issues:` trigger** — the hosted
+     Octopus account is out of credits, so the translation ran on nothing.
+     `workflow_dispatch` survives for manual re-translation, and the trigger
+     is commented in place rather than deleted, so restoring it is a one-line
+     change once credits exist. Note the `octopus-review` label itself is
+     applied by the **GitHub App**, which D016 does not touch (#17872) — so
+     the label may still arrive with nothing translating it. The dispatcher
+     (`.github/workflows/agent-dispatcher.yml`) still routes
+     `octopus-review`-labeled issues to openrouter, which remains the live
+     belt-and-suspenders path for exactly that case.
+   **Routing runs; the LLM branch may not.** `priority-router.yml`,
+   `pdf-work-request-router.yml` and `wr-auto-classify.yml` each do two things:
+   free work (routing, labelling, posting the router comment) and a paid
+   OpenRouter call that refines the result. Since #17850 the paid half is
+   gated on the repository variable `REVVEL_LLM_ALLOW_CLOUD` being exactly
+   `"1"`; unset — the default — it is skipped and the free half still runs.
+   So a WR **is** still routed and labelled with the gate shut. What it does
+   not get is the model-assisted refinement, and the run logs say so
+   explicitly rather than failing. Set the variable under Settings → Secrets
+   and variables → Actions → Variables to re-enable it. Full map of which
+   workflows are gated, and which reach `openrouter.ai` but cannot spend, is
+   in `docs/LOCAL_LLM_SETUP.md`.
+
 2. The body must have an **Acceptance criteria** section that's testable
    (per `docs/DEFINITION_OF_DONE.md`).
 3. Provenance: name the source of the request (e.g., "Octopus Review audit

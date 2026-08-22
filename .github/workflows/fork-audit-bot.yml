@@ -52,10 +52,12 @@ jobs:
     steps:
       - name: Find and heal unassigned fork-audit issues
         uses: actions/github-script@v9.0.0
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const isDryRun = '${{ inputs.dry_run }}' === 'true';
+            const isDryRun = process.env.DRY_RUN === 'true';
 
             // Fetch all open issues carrying the fork-audit label.
             const issues = await github.paginate(github.rest.issues.listForRepo, {
@@ -109,7 +111,7 @@ jobs:
               try {
                 const assignLine = assignSucceeded
                   ? '- ✅ Assigned `@oaudrey` — OpenRouter / oAudrey orchestrator'
-                  : '- ⚠️ Assignment of `@oaudrey` failed (non-fatal); labels are present and the orchestrator will pick it up on the next sweep';
+                  : '- ⚠️ Assignment of `@oaudrey` failed (non-fatal). Labels are present, but there is no scheduled sweep to retry this — re-run `openrouter-assignee.yml` from the Actions tab to route it.';
                 await github.rest.issues.createComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,

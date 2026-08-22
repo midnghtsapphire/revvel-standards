@@ -17,6 +17,7 @@
 
 const https = require("https");
 
+const { assertCloudAllowed } = require("./llm-spend-gate");
 // Environment variables
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
@@ -200,6 +201,8 @@ async function getPRDiff() {
  * Calls OpenRouter API with PR context and review feedback
  */
 async function callOpenRouter(systemPrompt, userPrompt) {
+  // Spend gate (#17850): refuse unless someone deliberately allowed it.
+  assertCloudAllowed("pr-review-request-handler");
   const referer = `https://github.com/${GITHUB_REPOSITORY}`;
   const response = await requestJson({
     hostname: OPENROUTER_HOST,

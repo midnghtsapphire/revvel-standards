@@ -7,8 +7,12 @@ name: BIOME Inspector
 # loop drives them to completion. No AI keys — GITHUB_TOKEN + plain HTTP only.
 
 on:
-  schedule:
-    - cron: '30 */6 * * *'  # every 6 hours, offset from sheaf (hourly :00) to avoid a push race
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   - cron: '30 */6 * * *'  # every 6 hours, offset from sheaf (hourly :00) to avoid a push race
   workflow_dispatch: {}
 
 permissions:

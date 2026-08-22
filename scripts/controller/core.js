@@ -38,8 +38,8 @@ const DEFAULTS = Object.freeze({
 // a drift test in controller-core.test.js checks this chain against the SSOT
 // denylist so a banned model can never sneak back in.
 const DEFAULT_MODEL_CHAIN = Object.freeze([
-  'anthropic/claude-opus-4.8', // Opus twin — primary
-  'anthropic/claude-opus-4.7', // Opus twin — fallback
+  'anthropic/claude-opus-5', // Opus twin — primary
+  'anthropic/claude-opus-4.8', // Opus twin — fallback
   'anthropic/claude-fable-5', // reasoning-tier escalation (Claude 5 family)
 ]);
 

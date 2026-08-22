@@ -1,0 +1,169 @@
+name: GHCR publish
+
+# Build and push the ghcr-console image to GitHub Container Registry.
+# WR #17695 — https://github.blog/news-insights/product-news/introducing-github-container-registry/
+#
+# Auth: job GITHUB_TOKEN + permissions.packages: write (no extra secret for same-repo push).
+# Optional private-pull token name: GHCR_READ_TOKEN (docs/SECRETS_MAP.md).
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+    paths:
+      - 'products/ghcr-console/**'
+      - 'Dockerfile'
+      - '.github/workflows/ghcr-publish.yml'
+      - 'scripts/ghcr-setup.js'
+  workflow_dispatch:
+    inputs:
+      tag_suffix:
+        description: Optional extra tag (in addition to sha + latest on main)
+        required: false
+        type: string
+      dry_run:
+        description: Build only — do not push
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: write
+  attestations: write
+  id-token: write
+
+concurrency:
+  group: ghcr-publish-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  # GHCR requires lowercase image names
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/revvel-standards/ghcr-console
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  publish:
+    name: Build and push ghcr-console
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
+      tags: ${{ steps.meta.outputs.tags }}
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set lowercase image name
+        id: meta
+        run: |
+          set -euo pipefail
+          OWNER="$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+          REPO="$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')"
+          IMAGE="ghcr.io/${OWNER}/${REPO}/ghcr-console"
+          echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
+
+          TAGS="${IMAGE}:sha-$(echo '${{ github.sha }}' | cut -c1-12)"
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            TAGS="${TAGS}"$'\n'"${IMAGE}:latest"
+          fi
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            RAW_TAG="${GITHUB_REF_NAME}"
+            SAFE_TAG="$(echo "${RAW_TAG}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g')"
+            TAGS="${TAGS}"$'\n'"${IMAGE}:${SAFE_TAG}"
+          fi
+          EXTRA="${{ github.event.inputs.tag_suffix }}"
+          if [[ -n "${EXTRA}" ]]; then
+            SAFE_EXTRA="$(echo "${EXTRA}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g')"
+            TAGS="${TAGS}"$'\n'"${IMAGE}:${SAFE_EXTRA}"
+          fi
+
+          {
+            echo "tags<<EOF"
+            printf '%s\n' "${TAGS}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Publishing image=${IMAGE}"
+          echo "Tags:"
+          printf '  %s\n' ${TAGS}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+      - name: Log in to GitHub Container Registry
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run != true }}
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata labels
+        id: docker_meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
+        with:
+          images: ${{ steps.meta.outputs.image }}
+          labels: |
+            org.opencontainers.image.title=ghcr-console
+            org.opencontainers.image.description=GitHub Container Registry setup console (WR #17695)
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: products/ghcr-console
+          file: products/ghcr-console/Dockerfile
+          push: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run != true }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.docker_meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: false
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "## GHCR publish"
+            echo ""
+            echo "- Image: \`${{ steps.meta.outputs.image }}\`"
+            echo "- Digest: \`${{ steps.build.outputs.digest }}\`"
+            echo "- Dry run: \`${{ github.event.inputs.dry_run || 'false' }}\`"
+            echo ""
+            echo "### Tags"
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+            echo ""
+            echo "Auditor: \`node scripts/ghcr-setup.js\`"
+            echo "Docs: \`docs/GHCR_SETUP.md\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  audit:
+    name: Audit GHCR wiring
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: publish
+    if: always()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install root deps
+        run: npm ci --ignore-scripts
+
+      - name: Run GHCR setup auditor
+        run: |
+          node scripts/ghcr-setup.js --markdown | tee /tmp/ghcr-report.md
+          node scripts/ghcr-setup.js --out /tmp/ghcr-report.json
+          cat /tmp/ghcr-report.md >> "$GITHUB_STEP_SUMMARY"

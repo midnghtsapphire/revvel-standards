@@ -99,12 +99,14 @@ jobs:
         if: env.JULES_API_KEY != ''
         id: get_issue
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ matrix.issue-number }}
         with:
           script: |
             const issue = await github.rest.issues.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: ${{ matrix.issue-number }}
+              issue_number: Number(process.env.ISSUE_NUMBER)
             });
             return issue.data;
       - name: Invoke Jules on Unblocked Issue

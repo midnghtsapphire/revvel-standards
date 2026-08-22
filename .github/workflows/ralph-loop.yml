@@ -45,9 +45,11 @@ jobs:
         id: count-attempts
         if: steps.find-pr.outputs.result != 'null'
         uses: actions/github-script@v9.0.0
+        env:
+          PR_NUMBER: ${{ steps.find-pr.outputs.result }}
         with:
           script: |
-            const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
+            const pr_number = parseInt(process.env.PR_NUMBER || '', 10);
             let comments = []; try { const { data } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -64,10 +66,13 @@ jobs:
           steps.find-pr.outputs.result != 'null' &&
           fromJSON(steps.count-attempts.outputs.result) < 5
         uses: actions/github-script@v9.0.0
+        env:
+          ATTEMPT_COUNT: ${{ steps.count-attempts.outputs.result }}
+          PR_NUMBER: ${{ steps.find-pr.outputs.result }}
         with:
           script: |
-            const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
-            const attempt   = parseInt('${{ steps.count-attempts.outputs.result }}') + 1;
+            const pr_number = parseInt(process.env.PR_NUMBER || '', 10);
+            const attempt   = parseInt(process.env.ATTEMPT_COUNT || '', 10) + 1;
             const workflow  =
               context.payload.check_suite?.app?.name ||
               context.payload.workflow_run?.name ||
@@ -116,9 +121,11 @@ jobs:
           steps.find-pr.outputs.result != 'null' &&
           fromJSON(steps.count-attempts.outputs.result) >= 5
         uses: actions/github-script@v9.0.0
+        env:
+          PR_NUMBER: ${{ steps.find-pr.outputs.result }}
         with:
           script: |
-            const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
+            const pr_number = parseInt(process.env.PR_NUMBER || '', 10);
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -187,9 +194,11 @@ jobs:
       - name: Remove won't-merge label on CI pass
         if: steps.find-pr.outputs.result != 'null'
         uses: actions/github-script@v9.0.0
+        env:
+          PR_NUMBER: ${{ steps.find-pr.outputs.result }}
         with:
           script: |
-            const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
+            const pr_number = parseInt(process.env.PR_NUMBER || '', 10);
 
             // Fetch current labels
             const { data: pr } = await github.rest.pulls.get({

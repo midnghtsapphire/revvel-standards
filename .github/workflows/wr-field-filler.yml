@@ -27,10 +27,14 @@ on:
     # on `completed + failure` conclusions, so a green run is a no-op.
     workflows: ["WR PR Creation", "WR Lint"]
     types: [completed]
-  schedule:
-    # Every 15 min. Catches: WRs opened before this workflow existed, events
-    # that were dropped (label races), and edits where the fill errored.
-    - cron: "*/15 * * * *"
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   # Every 15 min. Catches: WRs opened before this workflow existed, events
+  #   # that were dropped (label races), and edits where the fill errored.
+  #   - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
       issue_number:

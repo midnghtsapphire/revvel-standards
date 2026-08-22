@@ -65,11 +65,15 @@ jobs:
     steps:
       - name: Create daily cleanup report
         uses: actions/github-script@v9.0.0
+        env:
+          CLOSED: ${{ needs.self-heal.outputs.closed }}
+          DUPLICATES: ${{ needs.self-heal.outputs.duplicates }}
+          LABELED: ${{ needs.self-heal.outputs.labeled }}
         with:
           script: |
-            const closed = '${{ needs.self-heal.outputs.closed }}';
-            const duplicates = '${{ needs.self-heal.outputs.duplicates }}';
-            const labeled = '${{ needs.self-heal.outputs.labeled }}';
+            const closed = process.env.CLOSED || '';
+            const duplicates = process.env.DUPLICATES || '';
+            const labeled = process.env.LABELED || '';
             
             const body = [
               `## 🔧 Daily Self-Heal Report`,

@@ -2,7 +2,7 @@
 
 ## Live Deployment
 
-▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/life-insurance-lead-saas/)**
+▶️ **[Open the live app & test it](https://midnghtsapphire.github.io/revvel-standards/docs/life-insurance-lead-saas/)**
 
 ## Features
 - Next.js 15 with App Router

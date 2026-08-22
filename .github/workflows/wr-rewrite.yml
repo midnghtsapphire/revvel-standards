@@ -17,6 +17,10 @@ jobs:
     timeout-minutes: 60
     env:
       LMSTUDIO_ENDPOINT: http://127.0.0.1:1234/v1
+      # Judging needs distinct model families, which only the cloud lane
+      # provides, so this job opts in explicitly. scripts/local_llm.py
+      # refuses to spend without it — see docs/LOCAL_LLM_SETUP.md.
+      REVVEL_LLM_ALLOW_CLOUD: "1"
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:

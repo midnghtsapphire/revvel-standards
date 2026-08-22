@@ -1,8 +1,26 @@
-# Amazon Orders upload page
+# vine-orders
+
+## Live link
+
+<https://midnghtsapphire.github.io/revvel-standards/docs/vine-orders/>
+
+Served by GitHub Pages from this repository via
+`.github/workflows/static.yml`, which deploys on every push to `main`.
+No Vercel project, no DigitalOcean app, no build step, no cost.
+Verified reachable 2026-08-21.
+
+## Status: has real content
+
+This page renders an actual interface rather than a stub, so the link
+above is safe to share and test.
+
+---
+
+## Amazon Orders upload page
 
 ## Open this URL only
 
-<https://revvel-standards.vercel.app/docs/vine-orders/>
+<https://midnghtsapphire.github.io/revvel-standards/docs/vine-orders/>
 
 ## What to click (in order)
 
@@ -14,4 +32,4 @@
 ## What NOT to expect
 
 - The dashed "Choose CSV" box is a **file picker on your computer**, not a product website.
-- The main hub <https://revvel-standards.vercel.app/> does not upload orders.
+- The main hub <https://midnghtsapphire.github.io/revvel-standards/> does not upload orders.

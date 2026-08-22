@@ -61,7 +61,10 @@ jobs:
             | head -5000 > "$RUNNER_TEMP/pr-diff.txt"
           echo "diff_length=$(wc -c < "$RUNNER_TEMP/pr-diff.txt")" >> "$GITHUB_OUTPUT"
       - name: Analyze with AI
-        if: env.OPENROUTER_API_KEY != '' && steps.diff.outputs.diff_length > 0
+        # Spend gate (#17850): this bills OpenRouter. Runs only when the repository
+        # variable REVVEL_LLM_ALLOW_CLOUD is set to "1". Unset = skip, so an idle
+        # repo cannot spend. See docs/LOCAL_LLM_SETUP.md.
+        if: (env.OPENROUTER_API_KEY != '' && steps.diff.outputs.diff_length > 0) && vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         # Advisory only — this step's own prompt says "PASS is advisory only;
         # the real test suite gates the final verdict". So its *outage* must
         # not gate either. Without this, an OpenRouter error or an out-of-

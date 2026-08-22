@@ -1,7 +1,12 @@
 name: Social Media Automation
 on:
-  pull_request:
-    types: [closed]
+  # QUIET THE FLEET 2026-08-21: this fired on EVERY closed PR with no further
+  # condition. With ~674 PRs opened in three weeks — nearly all machine-authored
+  # — closing the backlog would have posted to social accounts once per PR.
+  # Preserved commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # pull_request:
+  #   types: [closed]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -63,22 +68,37 @@ jobs:
       #          "$ZAPIER_WEBHOOK_URL"
       #     fi
 
-      # --- DIRECT TWITTER/X POSTING ---
-      - name: Post to Twitter/X
-        if: vars.TWITTER_ENABLED == 'true'
-        uses: ch一经/ch一经-action@v1
-        with:
-          twitter_api_key: ${{ secrets.TWITTER_API_KEY }}
-          twitter_api_secret: ${{ secrets.TWITTER_API_KEY_SECRET }}
-          twitter_access_token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
-          twitter_access_token_secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
-          tweet: ${{ steps.format_posts.outputs.twitter_post }}
-
-      # --- DIRECT LINKEDIN POSTING ---
-      - name: Post to LinkedIn
-        if: vars.LINKEDIN_ENABLED == 'true'
-        uses: v，增量/linkedin-post-action@v1
-        with:
-          linkedin_access_token: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
-          content: ${{ steps.format_posts.outputs.linkedin_post }}
-          visibility: PUBLIC
+      # --- DIRECT TWITTER/X AND LINKEDIN POSTING ---
+      #
+      # REVVEL-DISABLED | AGENT: claude-code | MODEL: not-recorded | WR: #17832 | DATE: 2026-08-20 | STATUS: FAILED
+      # REASON: both `uses:` refs contained CJK characters and cannot resolve —
+      #   `ch一经/ch一经-action@v1` and `v，增量/linkedin-post-action@v1` are not
+      #   GitHub account names. The runner resolves every step's action during
+      #   "Prepare all required actions", BEFORE any `if:` is evaluated, so the
+      #   `vars.*_ENABLED` guards did not help: the job failed on every merged
+      #   PR, at setup, having run nothing.
+      # OWNER: @midnghtsapphire — choosing which posting actions to trust is a
+      #   supply-chain decision with live credentials attached
+      #   (TWITTER_API_KEY, LINKEDIN_ACCESS_TOKEN). Substituting plausible
+      #   look-alikes would be worse than the outage. CLAUDE.md gotcha #8.
+      # TICKET: #17832
+      #
+      # - name: Post to Twitter/X
+      #   if: vars.TWITTER_ENABLED == 'true'
+      #   uses: <owner>/<repo>@<40-char-sha>  # v1
+      #   with:
+      #     twitter_api_key: ${{ secrets.TWITTER_API_KEY }}
+      #     twitter_api_secret: ${{ secrets.TWITTER_API_KEY_SECRET }}
+      #     twitter_access_token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+      #     twitter_access_token_secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+      #     tweet: ${{ steps.format_posts.outputs.twitter_post }}
+      #
+      # - name: Post to LinkedIn
+      #   if: vars.LINKEDIN_ENABLED == 'true'
+      #   uses: <owner>/<repo>@<40-char-sha>  # v1
+      #   with:
+      #     linkedin_access_token: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+      #     content: ${{ steps.format_posts.outputs.linkedin_post }}
+      #     visibility: PUBLIC
+      #
+      # REVVEL-DISABLED-END

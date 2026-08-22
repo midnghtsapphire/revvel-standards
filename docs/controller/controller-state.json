@@ -1,5 +1,14 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-08-20T21:34:29.679Z",
-  "workflows": {}
+  "updated_at": "2026-08-21T02:19:17.493Z",
+  "workflows": {
+    "dynamic/copilot-swe-agent/copilot": {
+      "count": 2,
+      "tried": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "last_cut_at": "2026-08-20T22:21:28.493Z"
+    }
+  }
 }

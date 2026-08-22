@@ -1,7 +1,11 @@
 name: AI Weekly Changelog
 on:
-  schedule:
-    - cron: 0 6 * * MON
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   - cron: 0 6 * * MON
   workflow_dispatch:
     inputs:
       days_back:
@@ -60,7 +64,11 @@ jobs:
             echo "OPENROUTER_API_KEY is configured."
           fi
       - name: Generate Weekly Changelog
-        if: env.OPENROUTER_API_KEY != ''
+        # Spend gate (#17850): this third-party action calls a paid LLM provider
+        # with the key handed to it below, so the spend is real even though no
+        # openrouter.ai URL appears in this file. Runs only when the repository
+        # variable REVVEL_LLM_ALLOW_CLOUD is "1". See docs/LOCAL_LLM_SETUP.md.
+        if: (env.OPENROUTER_API_KEY != '') && vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         uses: fridzema/ai-weekly-changelog-action@0.1.3
         with:
           openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}

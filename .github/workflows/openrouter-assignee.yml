@@ -38,7 +38,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: openrouter-assignee-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || 'cron-sweep' }}
+  # Include workflow_dispatch issue_number so concurrent targeted resets do not
+  # serialize under the shared 'cron-sweep' bucket (WR #17736).
+  group: openrouter-assignee-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || github.event.inputs.issue_number || 'cron-sweep' }}
   cancel-in-progress: false
 
 env:
@@ -84,10 +86,19 @@ jobs:
         id: check
         if: steps.resolve.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          ITEM_KIND: ${{ steps.resolve.outputs.item_kind }}
+          # Targeted dispatch from reset-self-heal-issue must re-route even when
+          # the openrouter label is already present — that label is why stuck
+          # WRs never restarted (WR #17736). Comparison is evaluated by Actions
+          # to a boolean before it reaches the script (safe in env:).
+          FORCE_REROUTE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.issue_number != '' }}
         with:
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
-            const itemKind = '${{ steps.resolve.outputs.item_kind }}';
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
+            const itemKind = process.env.ITEM_KIND || '';
+            const forceReroute = process.env.FORCE_REROUTE === 'true';
             let item;
 
             try {
@@ -111,18 +122,24 @@ jobs:
 
             const labels = (item.labels || []).map(l => typeof l === 'string' ? l : l.name);
 
-            // Skip if already has openrouter label (sole idempotency key)
-            if (labels.includes('openrouter')) {
+            // Skip if has no-triage label (always honored, even on force re-route)
+            if (labels.includes('no-triage')) {
+              core.notice(`${itemKind} #${issueNumber} has no-triage label; skipping`);
+              core.setOutput('skip', 'true');
+              return;
+            }
+
+            // Skip if already has openrouter label — unless this is a targeted
+            // workflow_dispatch with issue_number (manual/reset recovery path).
+            // Default path still uses `openrouter` as the sole idempotency key.
+            if (labels.includes('openrouter') && !forceReroute) {
               core.notice(`${itemKind} #${issueNumber} already has openrouter label`);
               core.setOutput('skip', 'true');
               return;
             }
 
-            // Skip if has no-triage label
-            if (labels.includes('no-triage')) {
-              core.notice(`${itemKind} #${issueNumber} has no-triage label; skipping`);
-              core.setOutput('skip', 'true');
-              return;
+            if (forceReroute && labels.includes('openrouter')) {
+              core.notice(`${itemKind} #${issueNumber}: force re-route via targeted dispatch (openrouter label present)`);
             }
 
             core.setOutput('skip', 'false');
@@ -130,10 +147,12 @@ jobs:
       - name: Apply routing labels
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
             const labelsToAdd = ['openrouter', 'auto-fix', 'copilot', 'role:orchestrator'];
 
             for (const label of labelsToAdd) {
@@ -154,10 +173,12 @@ jobs:
         id: assign
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
 
             try {
               await github.rest.issues.addAssignees({
@@ -177,18 +198,21 @@ jobs:
         if: steps.resolve.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
         env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          DISPLAY_KIND: ${{ steps.resolve.outputs.display_kind }}
+          ASSIGN_SUCCEEDED: ${{ steps.assign.outputs.assigned }}
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
-            const displayKind = '${{ steps.resolve.outputs.display_kind }}';
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
+            const displayKind = process.env.DISPLAY_KIND || '';
             const hasApiKey = process.env.HAS_API_KEY === 'true';
             const apiKeyStatus = hasApiKey
               ? '🟢 Configured'
               : '⚠️ Not configured — set OPENROUTER_API_KEY in Actions secrets';
 
-            const assignSucceeded = '${{ steps.assign.outputs.assigned }}' === 'true';
+            const assignSucceeded = process.env.ASSIGN_SUCCEEDED === 'true';
             const assigneeLine = assignSucceeded
               ? '- ✅ Assignee: `@oaudrey` (GitHub-visible oAudrey/OpenRouter orchestrator)'
               : '- ⚠️ Assignee: `@oaudrey` — assignment attempted but failed (labels still applied; routing is finalized)';
@@ -218,7 +242,7 @@ jobs:
               `- OpenRouter orchestrator skill: [skills/openrouter-swarms/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/openrouter-swarms/SKILL.md)`,
               `- Ralph self-healing loop: [skills/ralph-loop/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/ralph-loop/SKILL.md)`,
               '',
-              '_Automated by `.github/workflows/openrouter-assignee.yml` — runs 24/7 on event triggers + hourly cron sweep_'
+              '_Automated by `.github/workflows/openrouter-assignee.yml` — runs on new/reopened issues and pull requests, or on demand from the Actions tab. There is no scheduled sweep._'
             ].join('\n');
 
             try {
@@ -253,10 +277,11 @@ jobs:
         id: discover
         uses: actions/github-script@v9.0.0
         env:
+          DRY_RUN: ${{ steps.dry-run-check.outputs.dry_run }}
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:
           script: |
-            const isDryRun = '${{ steps.dry-run-check.outputs.dry_run }}' === 'true';
+            const isDryRun = process.env.DRY_RUN === 'true';
             const hasApiKey = process.env.HAS_API_KEY === 'true';
 
             const items = await github.paginate(github.rest.issues.listForRepo, {
@@ -323,11 +348,12 @@ jobs:
         if: steps.discover.outputs.count != '0'
         uses: actions/github-script@v9.0.0
         env:
+          DRY_RUN: ${{ steps.dry-run-check.outputs.dry_run }}
           HAS_API_KEY: ${{ secrets.OPENROUTER_API_KEY != '' }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
-            const isDryRun = '${{ steps.dry-run-check.outputs.dry_run }}' === 'true';
+            const isDryRun = process.env.DRY_RUN === 'true';
             const hasApiKey = process.env.HAS_API_KEY === 'true';
             const apiKeyStatus = hasApiKey
               ? '🟢 Configured'
@@ -426,7 +452,7 @@ jobs:
                   `- OpenRouter orchestrator skill: [skills/openrouter-swarms/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/openrouter-swarms/SKILL.md)`,
                   `- Ralph self-healing loop: [skills/ralph-loop/SKILL.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/skills/ralph-loop/SKILL.md)`,
                   '',
-                  '_Automated by `.github/workflows/openrouter-assignee.yml` — 24/7 cron sweep (picked up by hourly run)_'
+                  '_Automated by `.github/workflows/openrouter-assignee.yml` — event-triggered (issues / pull requests). There is no scheduled sweep; run it from the Actions tab to re-route._'
                 ].join('\n');
 
                 try {

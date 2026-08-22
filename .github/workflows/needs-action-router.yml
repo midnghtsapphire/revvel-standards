@@ -78,10 +78,26 @@ jobs:
       - name: Assign to Copilot (OpenRouter orchestrator)
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.has_assignee != 'true' && steps.resolve.outputs.dry_run != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          ITEM_KIND: ${{ steps.resolve.outputs.item_kind }}
+          # Spend gate (#17864): assigning @Copilot starts a paid coding-agent
+          # session. Unset = skip the assignment; routing labels still apply.
+          REVVEL_ALLOW_COPILOT_ASSIGN: ${{ vars.REVVEL_ALLOW_COPILOT_ASSIGN }}
         with:
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
-            const itemKind = '${{ steps.resolve.outputs.item_kind }}';
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
+            const itemKind = process.env.ITEM_KIND || '';
+
+            /* SPEND GATE (#17864). Assigning @Copilot starts a Copilot coding-agent
+            session, and those consume PAID premium requests. 657 such sessions ran
+            in this repository before anyone saw a bill. Routing labels are free and
+            applied elsewhere in this workflow regardless. Set the repository
+            variable REVVEL_ALLOW_COPILOT_ASSIGN to "1" to turn assignment back on. */
+            if (process.env.REVVEL_ALLOW_COPILOT_ASSIGN !== '1') {
+              core.info(`Skipping @Copilot assignment for ${itemKind} #${issueNumber}: REVVEL_ALLOW_COPILOT_ASSIGN is not "1" (spend gate).`);
+              return;
+            }
 
             try {
               await github.rest.issues.addAssignees({
@@ -98,10 +114,13 @@ jobs:
       - name: Apply routing labels
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          HAS_OPENROUTER: ${{ steps.resolve.outputs.has_openrouter }}
         with:
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
-            const hasOpenRouter = '${{ steps.resolve.outputs.has_openrouter }}' === 'true';
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
+            const hasOpenRouter = process.env.HAS_OPENROUTER === 'true';
 
             const routingLabels = [
               'openrouter',
@@ -134,9 +153,11 @@ jobs:
       - name: Remove needs-action label
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
         with:
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
 
             try {
               await github.rest.issues.removeLabel({
@@ -147,16 +168,22 @@ jobs:
               });
               core.info('✅ Removed needs-action label (routing complete)');
             } catch (error) {
-              // Label might have been removed already by another process
-              core.notice(`Could not remove needs-action label: ${error.message}`);
+              // 404 = another process already removed it, which is the end state
+              // we wanted. Anything else means the label is STILL there and the
+              // item stays in the needs-action queue forever.
+              if (error.status !== 404) throw error;
+              core.notice(`needs-action label already gone: ${error.message}`);
             }
       - name: Post routing comment
         if: steps.resolve.outputs.skip != 'true' && steps.resolve.outputs.dry_run != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          DISPLAY_KIND: ${{ steps.resolve.outputs.display_kind }}
         with:
           script: |
-            const issueNumber = parseInt('${{ steps.resolve.outputs.issue_number }}');
-            const displayKind = '${{ steps.resolve.outputs.display_kind }}';
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
+            const displayKind = process.env.DISPLAY_KIND || '';
 
             // Check if we've already posted a routing comment
             const comments = await github.rest.issues.listComments({
@@ -225,10 +252,13 @@ jobs:
       - name: Log dry run results
         if: steps.resolve.outputs.dry_run == 'true' && steps.resolve.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          DISPLAY_KIND: ${{ steps.resolve.outputs.display_kind }}
         with:
           script: |
-            const issueNumber = '${{ steps.resolve.outputs.issue_number }}';
-            const displayKind = '${{ steps.resolve.outputs.display_kind }}';
+            const issueNumber = process.env.ISSUE_NUMBER || '';
+            const displayKind = process.env.DISPLAY_KIND || '';
 
             core.notice('═══════════════════════════════════════════════════════');
             core.notice('DRY RUN — No changes were made');
@@ -242,11 +272,15 @@ jobs:
       - name: Summary
         if: steps.resolve.outputs.skip != 'true'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
+          DISPLAY_KIND: ${{ steps.resolve.outputs.display_kind }}
+          DRY_RUN: ${{ steps.resolve.outputs.dry_run }}
         with:
           script: |
-            const issueNumber = '${{ steps.resolve.outputs.issue_number }}';
-            const displayKind = '${{ steps.resolve.outputs.display_kind }}';
-            const dryRun = '${{ steps.resolve.outputs.dry_run }}' === 'true';
+            const issueNumber = process.env.ISSUE_NUMBER || '';
+            const displayKind = process.env.DISPLAY_KIND || '';
+            const dryRun = process.env.DRY_RUN === 'true';
 
             const summary = [
               '# Needs Action Router Results',

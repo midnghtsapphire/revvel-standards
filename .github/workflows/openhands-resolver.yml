@@ -54,12 +54,11 @@ jobs:
     steps:
       - name: Post one-time setup-needed notice
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ needs.preflight.outputs.issue_number }}
         with:
           script: |
-            const issueNumber = parseInt(
-              '${{ needs.preflight.outputs.issue_number }}',
-              10
-            );
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
             if (!issueNumber) return;
 
             // Don't repeat the notice on every label-fire; check for an
@@ -116,7 +115,10 @@ jobs:
     name: Run OpenHands resolver
     needs: preflight
     runs-on: ubuntu-latest
-    if: needs.preflight.outputs.configured == 'true'
+    # Spend gate (#17850): this bills OpenRouter. Runs only when the repository
+    # variable REVVEL_LLM_ALLOW_CLOUD is set to "1". Unset = skip, so an idle
+    # repo cannot spend. See docs/LOCAL_LLM_SETUP.md.
+    if: needs.preflight.outputs.configured == 'true' && vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     env:
       ISSUE_NUMBER: ${{ needs.preflight.outputs.issue_number }}
       LLM_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -172,7 +174,7 @@ jobs:
                 `${emoji} **OpenHands Resolver** — outcome: \`${outcome}\``,
                 '',
                 outcome === 'success'
-                  ? 'A PR has been opened against `openhands/issue-${{ env.ISSUE_NUMBER }}`. See the linked Pull Request below.'
+                  ? 'A PR has been opened against `openhands/issue-' + issueNumber + '`. See the linked Pull Request below.'
                   : 'The resolver did not produce a clean PR. Check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for diagnostics.',
                 '',
                 `_Triggered by label \`fix-me\` on issue #${issueNumber}._`,
