@@ -260,7 +260,7 @@ const NON_LLM_ACTIONS = [
  * inside the script, not in the YAML.
  */
 const INVOKES_GATED_SCRIPT =
-  /(scripts\/openrouter-triage\.js|\.github\/scripts\/openrouter_coder\.py|scripts\/pr-auto-review\.js|scripts\/wr-fill-fields\.js|scripts\/openrouter-personas\.js)/;
+  /(scripts\/openrouter-triage\.js|\.github\/scripts\/openrouter_coder\.py|\.github\/scripts\/openrouter_agent\.py|scripts\/pr-auto-review\.js|scripts\/wr-fill-fields\.js|scripts\/openrouter-personas\.js)/;
 
 test('a workflow handing a paid LLM credential to a third-party action is gated', () => {
   const dir = path.join(REPO_ROOT, '.github', 'workflows');

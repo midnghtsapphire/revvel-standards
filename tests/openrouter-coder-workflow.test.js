@@ -65,3 +65,53 @@ test('openrouter-coder workflow accepts dispatcher prompt input without rejectin
   assert.strictEqual(inputs.prompt.required, false);
   assert.strictEqual(inputs.prompt.type, 'string');
 });
+
+test('openrouter-coder Actions job stays github-hosted and does not fake an LM Studio fallback', () => {
+  const workflow = loadWorkflow();
+  const source = fs.readFileSync(workflowPath, 'utf8');
+  const live = source
+    .split('\n')
+    .filter((l) => !/^\s*#/.test(l))
+    .join('\n');
+  const step = getOpenRouterRunStep(workflow);
+
+  assert.strictEqual(
+    workflow.jobs.code['runs-on'],
+    'ubuntu-latest',
+    'Coder Actions is GitHub-hosted; ubuntu-latest CANNOT reach laptop LM Studio',
+  );
+  assert.ok(
+    !Object.hasOwn(step.env || {}, 'REVVEL_LLM_ALLOW_CLOUD'),
+    'do not open the spend gate on a runner that cannot see LM Studio',
+  );
+  assert.ok(
+    !Object.hasOwn(step.env || {}, 'WR_MODEL'),
+    'leaving WR_MODEL unset uses the cheap kimi-k2 default; setting opus burns the $16',
+  );
+  assert.doesNotMatch(live, /LMSTUDIO_ENDPOINT/);
+  assert.doesNotMatch(live, /127\.0\.0\.1:1234/);
+  assert.doesNotMatch(live, /localhost:1234/);
+  assert.match(source, /CANNOT reach LM Studio/);
+});
+
+test('openrouter-coder script defaults to kimi-k2 and refuses LM Studio on github-hosted', () => {
+  const source = fs.readFileSync(coderScriptPath, 'utf8');
+  const { spawnSync } = require('node:child_process');
+
+  assert.match(source, /DEFAULT_OPENROUTER_MODEL = "moonshotai\/kimi-k2"/);
+  assert.doesNotMatch(
+    source,
+    /env\("WR_MODEL", "anthropic\/claude-opus-4\.7"\)/,
+    'opus must not be the implicit default',
+  );
+  assert.match(source, /is_github_hosted_runner/);
+  assert.match(source, /lane-1-openrouter/);
+  assert.match(source, /lane-0-lmstudio/);
+
+  const result = spawnSync('python3', [coderScriptPath, '--self-test'], {
+    encoding: 'utf8',
+    cwd: repoRoot,
+  });
+  assert.strictEqual(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /self-test ok/);
+});
