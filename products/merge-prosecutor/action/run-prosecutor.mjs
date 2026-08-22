@@ -8,37 +8,54 @@ function log(msg) {
   console.log(`[Merge Prosecutor] ${msg}`);
 }
 
-async function fetchPRComments(token, repo, prNumber) {
-  const url = `https://api.github.com/repos/${repo}/issues/${prNumber}/comments`;
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': `token ${token}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'merge-prosecutor'
-    }
-  });
-  if (!response.ok) {
-    log(`Failed to fetch issue comments: ${response.statusText}`);
-    return [];
+function parseLinkHeader(header) {
+  if (!header || header.length === 0) return null;
+  const parts = header.split(',');
+  for (const part of parts) {
+    const section = part.split(';');
+    if (section.length !== 2) continue;
+    const url = section[0].replace(/<(.*)>/, '$1').trim();
+    const name = section[1].replace(/rel="(.*)"/, '$1').trim();
+    if (name === 'next') return url;
   }
-  return response.json();
+  return null;
+}
+
+async function fetchAllPages(url, token, logMessage) {
+  let results = [];
+  let nextUrl = url;
+  while (nextUrl) {
+    const response = await fetch(nextUrl, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'merge-prosecutor'
+      }
+    });
+    if (!response.ok) {
+      log(`${logMessage}: ${response.statusText}`);
+      throw new Error(logMessage);
+    }
+    const data = await response.json();
+    results = results.concat(data);
+    const linkHeader = response.headers.get('link');
+    nextUrl = parseLinkHeader(linkHeader);
+  }
+  return results;
+}
+
+async function fetchPRComments(token, repo, prNumber) {
+  const url = `https://api.github.com/repos/${repo}/issues/${prNumber}/comments?per_page=100`;
+  return fetchAllPages(url, token, 'Failed to fetch issue comments');
 }
 
 async function fetchPRReviewComments(token, repo, prNumber) {
-  const url = `https://api.github.com/repos/${repo}/pulls/${prNumber}/comments`;
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': `token ${token}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'merge-prosecutor'
-    }
-  });
-  if (!response.ok) {
-    log(`Failed to fetch PR review comments: ${response.statusText}`);
-    return [];
-  }
-  return response.json();
+  const url = `https://api.github.com/repos/${repo}/pulls/${prNumber}/comments?per_page=100`;
+  return fetchAllPages(url, token, 'Failed to fetch PR review comments');
 }
+
+export const dismissiveRegex = /\b(not my (error|bug|problem)|leave it|out of scope)\b/i;
+export const codeBlockRegex = /```[a-zA-Z0-9_-]*\r?\n([\s\S]*?)```/gi;
 
 export function computeLevenshtein(a, b) {
   if (a.length === 0) return b.length;
@@ -147,7 +164,6 @@ export function detectUnimplementedSuggestions(diffText, comments) {
     if (!comment.body) continue;
 
     // Look for markdown code blocks in the comment body
-    const codeBlockRegex = /```[a-z]*\n([\s\S]*?)```/gi;
     let match;
     while ((match = codeBlockRegex.exec(comment.body)) !== null) {
       const suggestion = match[1].trim();
@@ -167,10 +183,7 @@ export function detectUnimplementedSuggestions(diffText, comments) {
         // check if this line is close to any added line
         let lineFound = false;
         for (const aLine of additions) {
-          if (aLine.includes(sLine)) {
-             lineFound = true;
-             break;
-          }
+
           const maxLen = Math.max(sLine.length, aLine.length);
           if (maxLen > 0) {
             const distance = computeLevenshtein(sLine, aLine);
@@ -253,9 +266,20 @@ async function main() {
      });
      if (response.ok) {
          diffContent = await response.text();
+         if (!diffContent || diffContent.trim() === '') {
+             log(`Diff is empty. Check PR contents.`);
+             process.exitCode = 1;
+             return;
+         }
      } else {
          log(`Failed to fetch diff: ${response.statusText}`);
+         process.exitCode = 1;
+         return;
      }
+  } else if (!diffContent || diffContent.trim() === '') {
+     log(`Diff is empty. Check PR contents.`);
+     process.exitCode = 1;
+     return;
   }
 
   log("1. Checking for unresolved conflicts...");
@@ -291,12 +315,18 @@ async function main() {
 
   log("4. Checking for dismissive comments...");
   if (token && repo && prNumber) {
-      const issueComments = await fetchPRComments(token, repo, prNumber);
-      const reviewComments = await fetchPRReviewComments(token, repo, prNumber);
+      let issueComments = [];
+      let reviewComments = [];
+      try {
+        issueComments = await fetchPRComments(token, repo, prNumber);
+        reviewComments = await fetchPRReviewComments(token, repo, prNumber);
+      } catch (err) {
+        log(`API fetch failed, marking as failure.`);
+        process.exitCode = 1;
+        return;
+      }
 
       const allComments = [...issueComments, ...reviewComments];
-
-      const dismissiveRegex = /not my (error|bug|problem)|leave it|out of scope|not my error leave it/i;
 
       const dismissiveComments = allComments.filter(c => c.body && dismissiveRegex.test(c.body));
 

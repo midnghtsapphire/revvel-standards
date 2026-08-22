@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { detectDuplicatedBlocks, detectUnresolvedConflicts, detectUnimplementedSuggestions } from '../action/run-prosecutor.mjs';
+import { detectDuplicatedBlocks, detectUnresolvedConflicts, detectUnimplementedSuggestions, dismissiveRegex, codeBlockRegex } from '../action/run-prosecutor.mjs';
 
 function testDuplicates() {
   const diffText = `
@@ -38,6 +38,20 @@ diff --git a/test.js b/test.js
   console.log('testConflicts passed');
 }
 
+function testRegexDefects() {
+  assert.strictEqual(dismissiveRegex.test('cleave it'), false, 'Should not match substring cleave it');
+  assert.strictEqual(dismissiveRegex.test('leave it'), true, 'Should match leave it');
+  assert.strictEqual(dismissiveRegex.test('not my bug'), true, 'Should match not my bug');
+  assert.strictEqual(dismissiveRegex.test('out of scope'), true, 'Should match out of scope');
+
+  const snippet = 'console.log(1);';
+  const cBlock = '```javascript\r\n' + snippet + '\r\n```';
+  codeBlockRegex.lastIndex = 0;
+  assert.strictEqual(codeBlockRegex.exec(cBlock)[1].trim(), snippet, 'Should extract code block with CRLF and lang tag');
+
+  console.log('testRegexDefects passed');
+}
+
 function testUnimplementedSuggestions() {
   const diffText = `
 diff --git a/test.js b/test.js
@@ -51,7 +65,7 @@ diff --git a/test.js b/test.js
 
   const comments = [
     {
-      body: "You should use `console.error` instead:\n```javascript\nfunction sayHello() {\n  console.error(\"hello\");\n}\n```",
+      body: "You should use `console.error` instead:\r\n```javascript\r\nfunction sayHello() {\r\n  console.error(\"hello\");\r\n}\r\n```",
       html_url: "http://example.com/comment1",
       user: { login: "reviewer1" }
     },
@@ -73,3 +87,4 @@ diff --git a/test.js b/test.js
 testDuplicates();
 testConflicts();
 testUnimplementedSuggestions();
+testRegexDefects();

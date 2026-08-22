@@ -1,0 +1,23 @@
+name: Prosecute Merge
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  prosecute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Merge Prosecutor
+        uses: ./products/merge-prosecutor
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          pr-number: ${{ github.event.pull_request.number }}
+          test-command: "npm test"
