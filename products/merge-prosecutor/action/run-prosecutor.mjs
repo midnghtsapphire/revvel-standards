@@ -1,43 +1,145 @@
 #!/usr/bin/env node
 
 import { execSync } from 'node:child_process';
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+
+export class GitHubApiError extends Error {
+  constructor(message, extras = {}) {
+    super(message);
+    this.name = 'GitHubApiError';
+    this.status = extras.status;
+    this.url = extras.url;
+  }
+}
 
 function log(msg) {
   console.log(`[Merge Prosecutor] ${msg}`);
 }
 
-async function fetchPRComments(token, repo, prNumber) {
-  const url = `https://api.github.com/repos/${repo}/issues/${prNumber}/comments`;
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': `token ${token}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'merge-prosecutor'
-    }
-  });
-  if (!response.ok) {
-    log(`Failed to fetch issue comments: ${response.statusText}`);
-    return [];
-  }
-  return response.json();
+export function githubHeaders(token, accept = 'application/vnd.github.v3+json') {
+  return {
+    Authorization: `token ${token}`,
+    Accept: accept,
+    'User-Agent': 'merge-prosecutor'
+  };
 }
 
-async function fetchPRReviewComments(token, repo, prNumber) {
-  const url = `https://api.github.com/repos/${repo}/pulls/${prNumber}/comments`;
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': `token ${token}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'merge-prosecutor'
+/**
+ * Parse GitHub's Link header for rel="next".
+ * Why: comments endpoints paginate at 30/100 items; stopping at page 1
+ * silently drops later review comments and looks like a clean pass.
+ * If this fails: check that the mock/real response exposes headers.get('link').
+ */
+export function parseNextLink(linkHeader) {
+  if (!linkHeader || typeof linkHeader !== 'string') return null;
+  const parts = linkHeader.split(',');
+  for (const part of parts) {
+    const match = part.match(/<([^>]+)>\s*;\s*rel="next"/i);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+/**
+ * Fail-closed paginated JSON GET. API errors throw GitHubApiError — they
+ * must not become [] and look like "no comments".
+ */
+export async function fetchPaginatedJson(startUrl, { token, fetchImpl = fetch, perPage = 100 } = {}) {
+  if (!token) {
+    throw new GitHubApiError('GITHUB_TOKEN is required for GitHub API fetches');
+  }
+
+  const results = [];
+  const first = new URL(startUrl);
+  first.searchParams.set('per_page', String(perPage));
+  first.searchParams.set('page', '1');
+
+  let nextUrl = first.toString();
+  let pages = 0;
+  const maxPages = 50;
+
+  while (nextUrl && pages < maxPages) {
+    pages += 1;
+    const response = await fetchImpl(nextUrl, { headers: githubHeaders(token) });
+    if (!response.ok) {
+      const body = await response.text().catch(() => '');
+      throw new GitHubApiError(
+        `GitHub API ${response.status} ${response.statusText} for ${nextUrl}: ${body.slice(0, 200)}`,
+        { status: response.status, url: nextUrl }
+      );
     }
+
+    const data = await response.json();
+    if (!Array.isArray(data)) {
+      throw new GitHubApiError(`GitHub API returned non-array JSON for ${nextUrl}`, { url: nextUrl });
+    }
+    results.push(...data);
+
+    const headers = response.headers;
+    const link = headers && typeof headers.get === 'function'
+      ? headers.get('link')
+      : null;
+    const linkedNext = parseNextLink(link);
+    if (linkedNext) {
+      nextUrl = linkedNext;
+      continue;
+    }
+    if (data.length === perPage) {
+      const u = new URL(nextUrl);
+      const currentPage = Number(u.searchParams.get('page') || '1');
+      u.searchParams.set('page', String(currentPage + 1));
+      nextUrl = u.toString();
+      continue;
+    }
+    nextUrl = null;
+  }
+
+  return results;
+}
+
+export async function fetchPRComments(token, repo, prNumber, fetchImpl = fetch) {
+  const url = `https://api.github.com/repos/${repo}/issues/${prNumber}/comments`;
+  return fetchPaginatedJson(url, { token, fetchImpl });
+}
+
+export async function fetchPRReviewComments(token, repo, prNumber, fetchImpl = fetch) {
+  const url = `https://api.github.com/repos/${repo}/pulls/${prNumber}/comments`;
+  return fetchPaginatedJson(url, { token, fetchImpl });
+}
+
+/**
+ * Fail-closed PR diff. A failed fetch or empty body must not become "" and
+ * look like a clean pass (no conflicts, no duplicates, no unimplemented).
+ */
+export async function resolveDiff({ token, repo, prNumber, diffContent, fetchImpl = fetch }) {
+  if (diffContent && String(diffContent).trim()) {
+    return String(diffContent);
+  }
+
+  if (!token || !repo || !prNumber) {
+    throw new GitHubApiError(
+      'No DIFF_CONTENT and missing GITHUB_TOKEN / GITHUB_REPOSITORY / PR_NUMBER — refusing to pass on an empty diff'
+    );
+  }
+
+  const url = `https://api.github.com/repos/${repo}/pulls/${prNumber}`;
+  const response = await fetchImpl(url, {
+    headers: githubHeaders(token, 'application/vnd.github.v3.diff')
   });
   if (!response.ok) {
-    log(`Failed to fetch PR review comments: ${response.statusText}`);
-    return [];
+    const body = await response.text().catch(() => '');
+    throw new GitHubApiError(
+      `Failed to fetch PR diff: ${response.status} ${response.statusText} ${body.slice(0, 200)}`,
+      { status: response.status, url }
+    );
   }
-  return response.json();
+
+  const text = await response.text();
+  if (!text || !String(text).trim()) {
+    throw new GitHubApiError('PR diff was empty — refusing to treat as a clean pass', { url });
+  }
+  return text;
 }
 
 export function computeLevenshtein(a, b) {
@@ -129,63 +231,81 @@ export function detectUnresolvedConflicts(diffText) {
   return conflictMarkers;
 }
 
+/**
+ * Language tag may be empty, mixed-case, or include +/# (c++, C#).
+ * Fence opener must accept CRLF (`\r\n`) — the old `/```[a-z]*\n/` missed
+ * both uppercase tags and Windows line endings.
+ */
+export const CODE_BLOCK_RE = /```[^\n`]*\r?\n([\s\S]*?)```/g;
+
+export function extractCodeBlocks(body) {
+  if (!body) return [];
+  const blocks = [];
+  const re = new RegExp(CODE_BLOCK_RE.source, 'g');
+  let match;
+  while ((match = re.exec(body)) !== null) {
+    const suggestion = match[1].replace(/\r\n/g, '\n').trim();
+    if (suggestion) blocks.push(suggestion);
+  }
+  return blocks;
+}
+
+/**
+ * Exact line or tight Levenshtein — never String.includes.
+ * Why: `aLine.includes(sLine)` flagged "log" inside "console.log" and any
+ * short suggestion fragment that appeared as a substring.
+ */
+export function suggestionLineMatches(suggestionLine, addedLine) {
+  if (suggestionLine === addedLine) return true;
+  const maxLen = Math.max(suggestionLine.length, addedLine.length);
+  if (maxLen === 0) return false;
+  const distance = computeLevenshtein(suggestionLine, addedLine);
+  return distance < maxLen * 0.10;
+}
+
+export function isHumanReviewer(comment) {
+  const login = comment && comment.user && comment.user.login ? String(comment.user.login) : '';
+  if (!login) return false;
+  if (comment.user && comment.user.type === 'Bot') return false;
+  if (/\[bot\]$/i.test(login)) return false;
+  return true;
+}
+
 export function detectUnimplementedSuggestions(diffText, comments) {
-  // Extract all additions from the diff
   const additions = [];
-  const lines = diffText.split('\n');
+  const lines = String(diffText || '').split('\n');
 
   for (const line of lines) {
     if (line.startsWith('+') && !line.startsWith('+++')) {
       additions.push(line.slice(1).trim());
     }
   }
-  const addedText = additions.join('\n');
 
   const unimplemented = [];
 
   for (const comment of comments) {
     if (!comment.body) continue;
+    if (!isHumanReviewer(comment)) continue;
 
-    // Look for markdown code blocks in the comment body
-    const codeBlockRegex = /```[a-z]*\n([\s\S]*?)```/gi;
-    let match;
-    while ((match = codeBlockRegex.exec(comment.body)) !== null) {
-      const suggestion = match[1].trim();
-      if (suggestion.length < 10) continue; // Skip very small snippets
+    const blocks = extractCodeBlocks(comment.body);
+    for (const suggestion of blocks) {
+      if (suggestion.length < 10) continue;
 
-      // Calculate distance between suggestion and segments of addedText
-      // A simple heuristic: check if any line of the suggestion appears in the additions
-      // with a low Levenshtein distance, or just use substring inclusion for simplicity/math approach.
-
-      // mathematical approach: Check if the suggestion is largely present in the added text
-      // We will check if lines in the suggestion are mostly found in the additions.
       const suggestionLines = suggestion.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       if (suggestionLines.length === 0) continue;
 
       let foundLines = 0;
       for (const sLine of suggestionLines) {
-        // check if this line is close to any added line
         let lineFound = false;
         for (const aLine of additions) {
-          if (aLine.includes(sLine)) {
-             lineFound = true;
-             break;
-          }
-          const maxLen = Math.max(sLine.length, aLine.length);
-          if (maxLen > 0) {
-            const distance = computeLevenshtein(sLine, aLine);
-            // reduce fuzziness from 20% to 10% to prevent matching e.g. console.log to console.error
-            if (distance < maxLen * 0.10) {
-               lineFound = true;
-               break;
-            }
+          if (suggestionLineMatches(sLine, aLine)) {
+            lineFound = true;
+            break;
           }
         }
         if (lineFound) foundLines++;
       }
 
-      // Check if the suggestion implies something very specific that shouldn't just be considered "found"
-      // If we find 90%+ match it's probably implemented
       const matchRatio = foundLines / suggestionLines.length;
       if (matchRatio < 0.9) {
         unimplemented.push({
@@ -199,6 +319,16 @@ export function detectUnimplementedSuggestions(diffText, comments) {
   }
 
   return unimplemented;
+}
+
+/**
+ * Word-bounded dismissive phrases. Bare `leave it` without boundaries matched
+ * "leave items" / "leave iteration". Keep the original intent (punt language).
+ */
+export const DISMISSIVE_REGEX = /\bnot my (error|bug|problem)\b|\bleave it\b|\bout of scope\b/i;
+
+export function isDismissiveComment(body) {
+  return Boolean(body) && DISMISSIVE_REGEX.test(body);
 }
 
 function createWR(title, issueContext, learnings, rootDir) {
@@ -234,29 +364,21 @@ ${learnings}
   log(`Created WR: ${wrPath}`);
 }
 
-async function main() {
-  const token = process.env.GITHUB_TOKEN;
-  const repo = process.env.GITHUB_REPOSITORY;
-  const prNumber = process.env.PR_NUMBER;
-  const testCmd = process.env.TEST_COMMAND;
-  const workspaceDir = process.env.WORKSPACE_DIR || process.cwd();
-  let diffContent = process.env.DIFF_CONTENT || '';
+export async function main(env = process.env, fetchImpl = fetch) {
+  const token = env.GITHUB_TOKEN;
+  const repo = env.GITHUB_REPOSITORY;
+  const prNumber = env.PR_NUMBER;
+  const testCmd = env.TEST_COMMAND;
+  const workspaceDir = env.WORKSPACE_DIR || process.cwd();
+  const providedDiff = env.DIFF_CONTENT || '';
 
-  if (!diffContent && token && repo && prNumber) {
-     const url = `https://api.github.com/repos/${repo}/pulls/${prNumber}`;
-     const response = await fetch(url, {
-         headers: {
-             'Authorization': `token ${token}`,
-             'Accept': 'application/vnd.github.v3.diff',
-             'User-Agent': 'merge-prosecutor'
-         }
-     });
-     if (response.ok) {
-         diffContent = await response.text();
-     } else {
-         log(`Failed to fetch diff: ${response.statusText}`);
-     }
-  }
+  const diffContent = await resolveDiff({
+    token,
+    repo,
+    prNumber,
+    diffContent: providedDiff,
+    fetchImpl
+  });
 
   log("1. Checking for unresolved conflicts...");
   const conflicts = detectUnresolvedConflicts(diffContent);
@@ -291,14 +413,12 @@ async function main() {
 
   log("4. Checking for dismissive comments...");
   if (token && repo && prNumber) {
-      const issueComments = await fetchPRComments(token, repo, prNumber);
-      const reviewComments = await fetchPRReviewComments(token, repo, prNumber);
+      const issueComments = await fetchPRComments(token, repo, prNumber, fetchImpl);
+      const reviewComments = await fetchPRReviewComments(token, repo, prNumber, fetchImpl);
 
       const allComments = [...issueComments, ...reviewComments];
 
-      const dismissiveRegex = /not my (error|bug|problem)|leave it|out of scope|not my error leave it/i;
-
-      const dismissiveComments = allComments.filter(c => c.body && dismissiveRegex.test(c.body));
+      const dismissiveComments = allComments.filter(c => isHumanReviewer(c) && isDismissiveComment(c.body));
 
       if (dismissiveComments.length > 0) {
           log(`Found ${dismissiveComments.length} dismissive comments.`);
