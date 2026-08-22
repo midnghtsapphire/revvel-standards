@@ -35,7 +35,6 @@ const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_BASELINE = path.join(ROOT, 'config', 'flake8-baseline.txt');
 
 const FLAKE8_EXCLUDE =
-  '.git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,.pytest_cache,mcp-servers/gemini-notebook-mcp-cli';
   '.git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,'
   + '.pytest_cache,'
   // Vendored upstream project with its own [tool.ruff] config — see .flake8.
