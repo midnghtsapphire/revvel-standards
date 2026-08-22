@@ -200,6 +200,7 @@ If two docs conflict: **`MASTER.md` ordering wins** for process; **this file win
 | `GOAL.md` | Revenue targets |
 | `SYSTEM_STATE.md` | Infra status (update at session end) |
 | `REMINDERS.md` | “If you’re about to do X, read Y” |
+| `standards/PEDAL_TO_THE_METAL_ENTERPRISE.md` | Enterprise oAudrey / near-metal inventory (map only) |
 
 ---
 
