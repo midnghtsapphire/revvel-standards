@@ -33,6 +33,10 @@ Forces the `wr-pr-creation.yml` workflow to run for a specific issue. This
 creates (or recreates) the WR branch, generates the WR document from the
 template, and opens a pull request.
 
+`wr-pr-creation.yml` accepts a required `issue_number` `workflow_dispatch`
+input (the concurrency group already keys on it). Dispatch without that field
+is rejected by GitHub.
+
 ### When to use
 
 - Your WR issue completed research (Jules posted findings) but no PR appeared.
@@ -43,8 +47,8 @@ template, and opens a pull request.
 
 **Via GitHub UI:**
 
-1. Go to **Actions** → **wr-pr-creation** → **"Run workflow"**
-2. Enter the issue number in the `issue_number` field
+1. Go to **Actions** → **WR PR Creation** → **"Run workflow"**
+2. Enter the issue number in the **`issue_number`** field (required)
 3. Click **"Run workflow"**
 
 **Via CLI:**
@@ -55,7 +59,13 @@ gh workflow run wr-pr-creation.yml \
   --repo midnghtsapphire/revvel-standards
 ```
 
+Replace `<NUMBER>` with the bare issue number (e.g. `17695`), not a URL.
+
 ### Caveats
+
+⚠️ **`issue_number` is required** — A bare `gh workflow run wr-pr-creation.yml`
+with no `--field` is rejected. The workflow has no other live triggers
+(quiet-mode); dispatch is the only path.
 
 ⚠️ **Duplicate PRs** — If a PR already exists for that issue, the workflow
 checks for it and will skip creation (or re-use the branch) unless the
@@ -79,12 +89,22 @@ run will use the new template. Old WR documents are not retroactively updated.
 ### What it does
 
 `reset-self-heal-issue.yml` performs a full label-reset cycle on a specific
-issue: removes stale labels, re-adds routing labels, posts a comment, and
-triggers `openrouter-assignee.yml` so Ralph Loop picks it up again.
+issue, then dispatches **two** recovery workflows for that issue number:
+
+1. `openrouter-assignee.yml` with `--field issue_number=<N>` (force re-route
+   even if the issue already has the `openrouter` label)
+2. `openrouter-triage.yml` with `--field issue_number=<N>` (runs the triage
+   cascade and posts a real triage comment on **that** issue)
+
+The reset comment is **conditional on those dispatches actually succeeding**.
+If either dispatch fails, the comment says so and the issue gets `needs-human`.
+The comment never claims that Ralph Loop / triage "will" finish — only that the
+downstream runs were dispatched (WR #17736).
 
 ### When to use
 
-- An issue has been stuck with `wr-stuck` or `triage:new` for > 1 hour.
+- An issue has been stuck with `wr-stuck`, `research:blocked`, or `triage:new`
+  for > 1 hour.
 - Automation tried and failed, you want one clean retry.
 - You know the root cause was transient (API blip, rate limit) and want a fresh start.
 
@@ -92,9 +112,11 @@ triggers `openrouter-assignee.yml` so Ralph Loop picks it up again.
 
 **Via GitHub UI:**
 
-1. Go to **Actions** → **reset-self-heal-issue** → **"Run workflow"**
-2. Enter the issue number
+1. Go to **Actions** → **🔄 Reset Self-Heal Issue** → **"Run workflow"**
+2. Enter the issue number in the **`issue_number`** field (required)
 3. Click **"Run workflow"**
+4. Open the issue and wait for the reset comment, then a new triage comment
+   from `openrouter-triage.yml`
 
 **Via CLI:**
 
@@ -104,9 +126,24 @@ gh workflow run reset-self-heal-issue.yml \
   --repo midnghtsapphire/revvel-standards
 ```
 
+**What success looks like:**
+
+1. The reset run itself is green.
+2. The issue gets a `## 🔄 Self-Heal Issue Reset` comment listing both
+   dispatches as done (not a failure/`needs-human` comment).
+3. Within a few minutes, `openrouter-triage.yml` posts a new triage analysis
+   comment on **that same issue**.
+4. Optionally confirm the two child runs under **Actions** filtered by the
+   workflow names above.
+
 ### Caveats
 
-⚠️ **Don't spam resets** — Each reset triggers OpenRouter and Jules. Running
+⚠️ **Dispatch ≠ triage success** — A green reset only proves the two child
+workflows were *queued* for this issue number. Triage can still fail (unfunded
+`OPENROUTER_API_KEY`, `no-triage` label, API outage). Check the triage run log
+and the issue comments.
+
+⚠️ **Don't spam resets** — Each reset triggers OpenRouter triage. Running
 it 5× in a row burns API budget and creates noisy issue comments. Wait 30
 minutes between retries.
 
@@ -114,9 +151,14 @@ minutes between retries.
 secret, a misconfigured workflow, or an invalid WR description, resetting will
 just fail again. Diagnose first.
 
-⚠️ **Label collisions** — If you manually added labels before resetting, the
-reset may remove them. Note which labels you added and re-apply if needed after
-the reset completes.
+⚠️ **Label collisions** — Reset removes/re-adds `auto-fix`, `ralph-loop`, and
+`scorecard` only. Other labels you added manually are left alone. The
+`openrouter` label is intentionally **not** removed; targeted dispatch force
+re-routes anyway.
+
+⚠️ **`/dragnet please complete`** remains a separate owner-comment recovery
+path and is still valid if you need an immediate agent reply without going
+through this workflow.
 
 ---
 
@@ -435,25 +477,37 @@ Closes the issue manually, marking the WR as abandoned or resolved without a cod
 - The WR was a duplicate.
 - The scope was reshaped into a different WR.
 - The Prime Directive evaluation rejected the request.
+- A reset (§2) applied `needs-human` and you have decided not to recover the WR.
 
 ### How
 
 1. Open the issue on GitHub.
-2. Scroll to the bottom.
-3. Click **"Close issue"** with reason **"Won't fix"** or **"Duplicate"**.
-4. Remove `wr:in-progress` label to stop automation from re-triggering.
+2. Leave a one-line reason comment (required by the caveats below).
+3. Remove automation labels so watchdogs do not bounce it back open:
+   `wr:in-progress`, `auto-fix`, `ralph-loop`, `scorecard`, `needs-human`,
+   and (if present) `research:blocked` / `wr-stuck`.
+4. Scroll to the bottom.
+5. Click **"Close issue"** with reason **"Won't fix"** or **"Duplicate"**.
+
+Do **not** run §2 reset just before closing — that re-dispatches triage and
+fights the close.
 
 ### Caveats
 
 ⚠️ **Automation may re-open it** — Some watchdog workflows re-open closed issues
-if they have certain labels. Remove `wr:in-progress`, `auto-fix`, `ralph-loop`, and `needs-human`
-labels before closing to prevent this.
+if they have certain labels. Remove `wr:in-progress`, `auto-fix`, `ralph-loop`,
+`scorecard`, and `needs-human` labels before closing to prevent this.
 
 ⚠️ **Leave a reason** — Closed WRs without explanation create confusion later.
 Always write a comment: "Closing as duplicate of #N" or "Out of scope for Phase 1."
 
 ⚠️ **Related PR stays open** — Closing the issue doesn't close any linked PR.
 Close the PR separately.
+
+⚠️ **`needs-human` from a failed reset** — If §2 failed to dispatch recovery
+workflows it adds `needs-human`. Closing without reading that failure comment
+hides a real automation outage; check Actions first if you did not expect the
+label.
 
 ---
 
@@ -607,4 +661,4 @@ re-enable auto-merge. Always have `won't-merge` on PRs you want held.
 
 ---
 
-_Last updated: see git log. Changes require a PR with the `docs:` prefix._
+*Last updated: see git log. Changes require a PR with the `docs:` prefix.*

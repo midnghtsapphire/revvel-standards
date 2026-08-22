@@ -30,9 +30,72 @@ permissions:
   pull-requests: write
   contents: read
 concurrency:
-  group: openrouter-triage-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  # Include workflow_dispatch issue_number so concurrent targeted recoveries do
+  # not collide under a single run_id-less bucket (WR #17736).
+  group: openrouter-triage-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || github.event.inputs.issue_number || github.run_id }}
   cancel-in-progress: false
 jobs:
+  # Targeted recovery path used by reset-self-heal-issue.yml. Must run even when
+  # the issue already carries `openrouter` — that label is the whole reason the
+  # stuck WR never restarted under the assignee-only path (WR #17736).
+  targeted-triage:
+    name: Targeted triage for issue #${{ inputs.issue_number }}
+    if: github.event_name == 'workflow_dispatch' && inputs.issue_number != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Resolve target issue metadata
+        id: target
+        uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+        with:
+          script: |
+            const raw = String(process.env.ISSUE_NUMBER || '');
+            const match = raw.match(/#?(\d+)/);
+            if (!match) {
+              core.setFailed(`Invalid issue_number input: ${raw}`);
+              return;
+            }
+            const issueNumber = parseInt(match[1], 10);
+            try {
+              const { data: issue } = await github.rest.issues.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+              });
+              const labels = (issue.labels || []).map((l) => typeof l === 'string' ? l : l.name);
+              if (labels.includes('no-triage')) {
+                core.notice(`#${issueNumber} has no-triage; skipping targeted triage`);
+                core.setOutput('skip', 'true');
+                return;
+              }
+              core.setOutput('skip', 'false');
+              core.setOutput('issue_number', String(issueNumber));
+              core.setOutput('issue_title', issue.title || '');
+              core.setOutput('issue_body', issue.body || '');
+              core.setOutput('event_kind', issue.pull_request ? 'pull_request' : 'issue');
+            } catch (error) {
+              core.setFailed(`Failed to fetch issue #${issueNumber}: ${error.message}`);
+            }
+      - name: Run cost-governed triage cascade
+        if: steps.target.outputs.skip != 'true'
+        # Fail-soft, same rationale as route-new: triage already self-reports
+        # (comment + needs-human) and must not dead-end recovery.
+        continue-on-error: true
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ steps.target.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.target.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.target.outputs.issue_body }}
+          EVENT_KIND: ${{ steps.target.outputs.event_kind }}
+          PROMPT: ${{ inputs.prompt }}
+        run: node scripts/openrouter-triage.js
+
   route-new:
     name: Route and triage new issue/PR
     if: github.event_name == 'issues' || github.event_name == 'pull_request_target'
@@ -117,7 +180,13 @@ jobs:
     timeout-minutes: 60
   sweep-discover:
     name: Discover items needing routing or triage-recovery
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    # Sweep only when this is a cron or an untargeted manual dispatch. A
+    # targeted issue_number dispatch is handled by targeted-triage above so we
+    # do not fan out a full-repo sweep on every reset (WR #17736).
+    # Note: omitted workflow_dispatch inputs resolve to '' in expressions, never null.
+    if: >-
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && inputs.issue_number == '')
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.collect.outputs.matrix }}
