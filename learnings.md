@@ -969,3 +969,58 @@ bypassed with `--no-verify`.
 `DEFAULT_MODEL_CHAIN`, `tests/controller-core.test.js`, MODEL_CONFIG.md,
 TM-0002 (both are wiring-drift: a comment or a test describing a state the
 code no longer has).
+## TM-0007 — Documented recovery dispatch that cannot target the stuck issue
+
+**Discovered:** 2026-08-19 / fixed 2026-08-22  **Discovered-by:** Claude Code (live reset of five stuck WRs)  **PR/issue:** #17736
+**Category:** false-success / workflow-dispatch-contract
+
+**Symptom:** `reset-self-heal-issue.yml` reported success and posted
+"Triggered OpenRouter assignee workflow / The Ralph Loop will now
+re-evaluate" on five stuck WRs. None moved. `updated_at` stayed pinned
+to the reset timestamps; `research:blocked` stayed applied.
+
+**Root cause (three stacked defects, plus a later partial land):**
+1. Downstream `openrouter-assignee.yml` `workflow_dispatch` originally had
+   no `issue_number` input, so the reset could not tell it which issue to
+   act on. Main later grew the input and the reset started forwarding it.
+2. Even with `issue_number`, the assignee job treated the `openrouter`
+   label as a hard idempotency skip — exactly the label stuck WRs already
+   carry — so targeted dispatch was still a no-op.
+3. Assignee is first-line-of-sight routing only; the triage *comment*
+   comes from `openrouter-triage.yml`, which ignored targeted
+   `issue_number` and ran a full-repo sweep instead. The reset comment
+   asserted an outcome ("Ralph Loop will re-evaluate") that no step
+   performed (CLAUDE.md gotcha #6 / RVS-VERIFY-001).
+
+**Detection heuristic:** A recovery/reset comment that claims a
+downstream workflow "will" do work is a decoration unless (a) the
+dispatch passes the target id the child workflow declares, (b) the
+child actually has a job that runs for that id, and (c) the comment is
+gated on the dispatch exit code and only claims *dispatch*, not
+completion. Declaring an input is not enough if the child still skips.
+
+**Autofix pattern:**
+```text
+parent: gh workflow run child.yml --field issue_number=$N
+        + track success=true/false per child; comment + needs-human on fail
+child:  workflow_dispatch.inputs.issue_number
+        + targeted job when issue_number set (bypass idempotency keys
+          that strand recovery: openrouter label, etc.)
+        + sweep only when issue_number empty
+tests:  assert inputs declared; assert parent forwards fields;
+        assert force-reroute; assert success copy cannot claim
+        Ralph/triage completion
+```
+
+**Prevention rule:** Playbook CLI snippets and reset comments are
+contracts. If docs pass `--field X`, the workflow must declare `X`.
+If a comment says a child ran, the step that posted it must have
+observed that child's dispatch succeeding. Prefer "dispatched X for
+issue N" over "X will fix this."
+
+**Related:** `tests/workflows-inputs.test.js`,
+`.github/workflows/reset-self-heal-issue.yml`,
+`.github/workflows/openrouter-assignee.yml`,
+`.github/workflows/openrouter-triage.yml`,
+`docs/playbooks/wr-manual-processes.md` §1–§2, CLAUDE.md gotcha #6,
+`standards/VERIFY_THE_POSTCONDITION.md`.

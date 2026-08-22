@@ -38,7 +38,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: openrouter-assignee-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || 'cron-sweep' }}
+  # Include workflow_dispatch issue_number so concurrent targeted resets do not
+  # serialize under the shared 'cron-sweep' bucket (WR #17736).
+  group: openrouter-assignee-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || github.event.inputs.issue_number || 'cron-sweep' }}
   cancel-in-progress: false
 
 env:
@@ -87,10 +89,16 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ steps.resolve.outputs.issue_number }}
           ITEM_KIND: ${{ steps.resolve.outputs.item_kind }}
+          # Targeted dispatch from reset-self-heal-issue must re-route even when
+          # the openrouter label is already present — that label is why stuck
+          # WRs never restarted (WR #17736). Comparison is evaluated by Actions
+          # to a boolean before it reaches the script (safe in env:).
+          FORCE_REROUTE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.issue_number != '' }}
         with:
           script: |
             const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
             const itemKind = process.env.ITEM_KIND || '';
+            const forceReroute = process.env.FORCE_REROUTE === 'true';
             let item;
 
             try {
@@ -114,18 +122,24 @@ jobs:
 
             const labels = (item.labels || []).map(l => typeof l === 'string' ? l : l.name);
 
-            // Skip if already has openrouter label (sole idempotency key)
-            if (labels.includes('openrouter')) {
+            // Skip if has no-triage label (always honored, even on force re-route)
+            if (labels.includes('no-triage')) {
+              core.notice(`${itemKind} #${issueNumber} has no-triage label; skipping`);
+              core.setOutput('skip', 'true');
+              return;
+            }
+
+            // Skip if already has openrouter label — unless this is a targeted
+            // workflow_dispatch with issue_number (manual/reset recovery path).
+            // Default path still uses `openrouter` as the sole idempotency key.
+            if (labels.includes('openrouter') && !forceReroute) {
               core.notice(`${itemKind} #${issueNumber} already has openrouter label`);
               core.setOutput('skip', 'true');
               return;
             }
 
-            // Skip if has no-triage label
-            if (labels.includes('no-triage')) {
-              core.notice(`${itemKind} #${issueNumber} has no-triage label; skipping`);
-              core.setOutput('skip', 'true');
-              return;
+            if (forceReroute && labels.includes('openrouter')) {
+              core.notice(`${itemKind} #${issueNumber}: force re-route via targeted dispatch (openrouter label present)`);
             }
 
             core.setOutput('skip', 'false');

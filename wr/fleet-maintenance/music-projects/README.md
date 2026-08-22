@@ -9,7 +9,7 @@ This repository is documentation-and-tooling first. The related shippable produc
 lives in `revvel-standards`:
 
 - Music Video Creator (live):
-  [https://revvel-standards.vercel.app/docs/music-video-creator/](https://revvel-standards.vercel.app/docs/music-video-creator/)
+  [https://midnghtsapphire.github.io/revvel-standards/docs/music-video-creator/](https://midnghtsapphire.github.io/revvel-standards/docs/music-video-creator/)
 
 When this hub gains its own static surface, the live URL will be recorded here
 under this heading.

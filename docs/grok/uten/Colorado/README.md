@@ -57,7 +57,7 @@ Detailed profiles for Virginia, Texas, Arizona, Georgia, California + others inc
 
 ## Live Public Dashboard
 
-**Live (Vercel):** <https://revvel-standards.vercel.app/docs/grok/uten/Colorado/dashboard.html>
+**Live (Vercel):** <https://midnghtsapphire.github.io/revvel-standards/docs/grok/uten/Colorado/dashboard.html>
 
 Or open `dashboard.html` directly in a browser. It includes:
 - Interactive state table with filtering
