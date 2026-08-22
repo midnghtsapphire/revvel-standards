@@ -5,9 +5,13 @@
 name: Hourly Star Growth & Prioritization Engine
 
 on:
-  schedule:
-    # Every hour on the hour
-    - cron: "0 * * * *"
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   # Every hour on the hour
+  #   - cron: "0 * * * *"
   workflow_dispatch:
 
 concurrency:
@@ -61,6 +65,6 @@ jobs:
       - name: Commit Updated Index & Optimizations
         uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5.0.1
         with:
-          commit_message: "auto: hourly star priority & discoverability update [skip ci]"
+          commit_message: "auto: star priority & discoverability update [skip ci]"
           file_pattern: "PRIORITIZED_STARS.md stars_state.json"
           commit_author: "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"

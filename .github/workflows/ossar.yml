@@ -1,3 +1,4 @@
+
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
@@ -8,14 +9,42 @@
 # https://github.com/github/ossar-action
 name: OSSAR
 
+# RETIRED 2026-08-20 (DECISIONS.md D015, WR #17748). Automatic triggers are
+# off; the workflow is kept, runnable on demand, per RVS-AGENT-001.
+#
+# OSSAR reported failure on EVERY pull request. The scan itself found nothing —
+# its own summary line was `Active results: 0` — and the job failed only because
+# one of its two tools never launched:
+#
+#   [Error] ToolLauncherNotFoundException: ...bandit_runner.exe
+#   [Error] Win32Exception: ... The filename or extension is too long.
+#   [Error] BreakException: Guardian detected one or more breaking results.
+#
+# The launcher path is 130 characters, half of Windows' 260-char MAX_PATH, so
+# path length is NOT the cause and enabling long paths would change nothing.
+# Win32 error 206 also fires when the COMMAND LINE exceeds its ~32KB limit,
+# which is what a per-file argument list over a repo this size produces.
+#
+# Moving the job to ubuntu-latest is not available either: github/ossar-action
+# is Windows-only, as the comment on `runs-on` below has said since this file
+# was generated from GitHub's template.
+#
+# Retiring it costs no coverage. OSSAR ran ESLint and bandit; both lanes are
+# already covered on Linux by checks that are green:
+#   - codeql.yml   — matrix includes `python` (bandit's lane, added WR #15693)
+#                    and `javascript-typescript` (ESLint's lane)
+#   - semgrep.yml  — p/security-audit, p/secrets, p/owasp-top-ten, p/cwe-top-25
+#
+# What this fixes is not a scan gap but a signal one: a permanently-red security
+# check is indistinguishable from one that just started failing for a real
+# reason, so every always-red check raises the cost of noticing the one that
+# matters. Guarded by tests/ossar-retired.test.js, which fails if the replacement
+# coverage disappears.
+#
+# To re-enable: restore the push/pull_request/schedule triggers below AND record
+# the reversal in DECISIONS.md. Do not re-enable without fixing the launcher.
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ "main" ]
-  schedule:
-    - cron: '23 6 * * 5'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -32,6 +61,27 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    # REMOVED: "Enable Windows Long Paths" (added by #17758, removed by #17764).
+    #
+    # It set LongPathsEnabled=1 and git core.longpaths as the job's first step,
+    # on the theory that OSSAR failed because bandit's launcher path exceeded
+    # the 260-character MAX_PATH limit. That theory does not survive
+    # measurement. From the failing log (#17748):
+    #
+    #   D:\a\revvel-standards\revvel-standards\.gdn\i\nuget\
+    #     Microsoft.Guardian.BanditRedist_windows_amd64.1.8.6.12\tools\
+    #     bandit_runner.exe
+    #   length = 130
+    #
+    # 130 of 260. Win32 error 206 also fires when the command LINE exceeds
+    # ~32KB, which fits a per-file argument list over a repo this size — a
+    # different cause the registry key does nothing for.
+    #
+    # Left as a comment rather than deleted so that reviving OSSAR does not
+    # start by re-adding it. If it is revived, keep "Verify OSSAR Execution"
+    # below: asserting the postcondition is the part that addressed the real
+    # defect (CLAUDE.md gotcha #6).
+
     - name: Checkout repository
       uses: actions/checkout@v4
 
@@ -49,9 +99,15 @@ jobs:
     - name: Run OSSAR
       uses: github/ossar-action@v1
       id: ossar
+      continue-on-error: true
 
       # Upload results to the Security tab
     - name: Upload OSSAR results
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: ${{ steps.ossar.outputs.sarifFile }}
+      if: always() && steps.ossar.outputs.sarifFile != ''
+
+    - name: Verify OSSAR Execution
+      if: always()
+      run: pwsh -Command "if (-not ('${{ steps.ossar.outputs.sarifFile }}')) { Write-Host '::error title=ToolCrashException::SARIF file path is empty.'; [Environment]::Exit(1) }; if (-not (Test-Path '${{ steps.ossar.outputs.sarifFile }}')) { Write-Host '::error title=ToolCrashException::SARIF file not found'; [Environment]::Exit(1) }; \$sarifContent = Get-Content '${{ steps.ossar.outputs.sarifFile }}' -Raw; if (\$sarifContent -notmatch 'bandit') { Write-Host '::error title=ToolCrashException::Bandit was not found in the SARIF output. Tool likely crashed before running.'; [Environment]::Exit(1) }; \$outcome = '${{ steps.ossar.outcome }}'; if (\$outcome -eq 'failure') { Write-Host '::error title=Security Findings Detected::OSSAR found security violations.'; [Environment]::Exit(1) }"

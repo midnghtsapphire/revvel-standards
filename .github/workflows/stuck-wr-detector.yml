@@ -212,7 +212,7 @@ jobs:
                     await github.rest.issues.removeLabel({
                       owner, repo, issue_number: issue.number, name,
                     });
-                  } catch (_) { /* ignore 404 */ }
+                  } catch (err) { if (err.status !== 404) throw err; }
                 }
               }
               await github.rest.issues.addLabels({

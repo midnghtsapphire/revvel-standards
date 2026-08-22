@@ -158,14 +158,6 @@ jobs:
 
       # -------------------------------------------------------------------------
       # STEP: Resolve PR context
-      - name: BITO Code Review (issue comment)
-        if: env.BITO_SKIP == 'false' && github.event_name == 'issue_comment'
-        uses: gitbito/codereviewagent@main
-        continue-on-error: true
-        with:
-          pr: ${{ steps.pr-context.outputs.url }}
-          command: ${{ github.event.comment.body }}
-          options: ${{ env.OPTIONS }}
       - name: Resolve PR context
         id: pr-context
         if: env.BITO_SKIP == 'false'
@@ -206,6 +198,14 @@ jobs:
       # -------------------------------------------------------------------------
       # STEP: Build BITO options
       # -------------------------------------------------------------------------
+      - name: BITO Code Review (issue comment)
+        if: env.BITO_SKIP == 'false' && github.event_name == 'issue_comment'
+        uses: gitbito/codereviewagent@main
+        continue-on-error: true
+        with:
+          pr: ${{ steps.pr-context.outputs.url }}
+          command: ${{ github.event.comment.body }}
+          options: ${{ env.OPTIONS }}
       - name: Build BITO options
         if: env.BITO_SKIP == 'false'
         run: |
@@ -249,10 +249,13 @@ jobs:
       - name: Update labels
         if: env.BITO_SKIP == 'false' && steps.pr-context.outputs.number != ''
         uses: actions/github-script@v9.0.0
+        env:
+          PR_NUMBER: ${{ steps.pr-context.outputs.number }}
+          REVIEW_OUTCOME: ${{ steps.bito-review.outcome }}
         with:
           script: |
-            const prNumber = parseInt('${{ steps.pr-context.outputs.number }}', 10);
-            const outcome = '${{ steps.bito-review.outcome }}';
+            const prNumber = parseInt(process.env.PR_NUMBER || '', 10);
+            const outcome = process.env.REVIEW_OUTCOME || '';
             
             const labels = ['bito-ai', 'bito-ai:review'];
             if (outcome === 'success') {

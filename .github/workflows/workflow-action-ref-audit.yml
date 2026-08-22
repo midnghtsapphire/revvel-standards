@@ -39,17 +39,55 @@ jobs:
           #   - lines that start with `#` (commented-out)
           #   - `./` local action paths
           #   - `docker://` image refs
-          mapfile -t REFS < <(
-            grep -RhnE '^\s*-?\s*uses:\s*[^#[:space:]]+' .github/workflows/ .github/actions/ 2>/dev/null \
-              | sed -E 's/^[^:]+:[0-9]+:\s*//; s/^-?\s*uses:\s*//' \
+          #
+          # CANDIDATES is everything left after those three exclusions. It is
+          # deliberately NOT filtered to legal owner/repo names.
+          # `-n` prints a line number and `-h` suppresses the filename, so the
+          # old pipeline's `sed 's/^[^:]+:[0-9]+:\s*//'` — which expects
+          # `path:line:` — matched nothing, and every candidate arrived still
+          # carrying `87:        uses: `. The legal-name filter then discarded
+          # ALL of them: this audit reported "✅ All 0 action refs resolved" on
+          # every run and had never validated a single ref (#17832).
+          #
+          # Keep the filename (`-E -n`, no `-h`) so the prefix is the shape the
+          # sed expects, strip the two prefixes separately, and drop the
+          # trailing `# v1.2.3` comment that SHA-pinned refs carry.
+          mapfile -t CANDIDATES < <(
+            grep -REn '^[[:space:]]*-?[[:space:]]*uses:[[:space:]]*[^#[:space:]]+' \
+              .github/workflows/ .github/actions/ 2>/dev/null \
+              | sed -E 's/^[^:]+:[0-9]+://' \
+              | sed -E 's/^[[:space:]]*-?[[:space:]]*uses:[[:space:]]*//' \
               | tr -d '"' | tr -d "'" \
+              | sed -E 's/[[:space:]]+#.*$//' \
               | grep -vE '^(\./|docker:\/\/|#)' \
-              | grep -E '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@' \
               | sort -u
           )
 
-          echo "Discovered ${#REFS[@]} unique action refs."
+          # This step used to end its extraction with
+          #
+          #     | grep -E '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@'
+          #
+          # which kept only refs whose owner/repo are legal GitHub names — and
+          # so DROPPED, before validation, the most broken kind of ref there
+          # is: one that is not even a legal name. Two refs containing CJK
+          # characters sat in social-media-automation.yml failing every merged
+          # PR at "Prepare all required actions", and this audit reported
+          # "✅ All N action refs resolved" the whole time, because N was the
+          # count it could parse presented as the count that exists (#17832).
+          #
+          # A ref this step cannot parse is now a FINDING, not a line to skip.
           BROKEN=()
+          REFS=()
+          for candidate in "${CANDIDATES[@]}"; do
+            if [[ "${candidate}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_./-]+@ ]]; then
+              REFS+=("${candidate}")
+            else
+              BROKEN+=("${candidate}")
+              echo "::error::Unparseable action ref: ${candidate} — not a legal owner/repo@ref. The runner resolves every step's action before any \`if:\` is evaluated, so this fails the job even when the step would be skipped."
+            fi
+          done
+
+          echo "Discovered ${#CANDIDATES[@]} unique action refs (${#REFS[@]} parseable, ${#BROKEN[@]} unparseable)."
           for full_ref in "${REFS[@]}"; do
             owner_repo="${full_ref%@*}"
             ref="${full_ref#*@}"
@@ -95,7 +133,7 @@ jobs:
             echo "❌ ${#BROKEN[@]} broken action ref(s) found."
             exit 1
           fi
-          echo "✅ All ${#REFS[@]} action refs resolved."
+          echo "✅ All ${#CANDIDATES[@]} action refs parsed and resolved."
       - name: Detect unpinned (non-SHA) action refs
         id: sha-pin-audit
         run: |
@@ -146,9 +184,11 @@ jobs:
           (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
            (github.event_name == 'push' && github.ref == 'refs/heads/main'))
         uses: actions/github-script@v9.0.0
+        env:
+          BROKEN_REFS: ${{ steps.audit.outputs.broken_refs }}
         with:
           script: |
-            const broken = (`${{ steps.audit.outputs.broken_refs }}` || '').trim();
+            const broken = (process.env.BROKEN_REFS || '').trim();
             if (!broken) return;
             const lines = broken.split('\n').filter(Boolean);
 

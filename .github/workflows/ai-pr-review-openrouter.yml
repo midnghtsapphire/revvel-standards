@@ -38,7 +38,11 @@ jobs:
             echo "OPENROUTER_API_KEY is configured."
           fi
       - name: AI PR Review
-        if: env.OPENROUTER_API_KEY != ''
+        # Spend gate (#17850): this third-party action calls a paid LLM provider
+        # with the key handed to it below, so the spend is real even though no
+        # openrouter.ai URL appears in this file. Runs only when the repository
+        # variable REVVEL_LLM_ALLOW_CLOUD is "1". See docs/LOCAL_LLM_SETUP.md.
+        if: (env.OPENROUTER_API_KEY != '') && vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         # continue-on-error so a transient GitHub API rate-limit spike never
         # hard-fails the PR — the AI review is advisory, not a gate.
         continue-on-error: true
@@ -65,6 +69,6 @@ jobs:
 
             Diff to review:
             {{DIFF}}
-    timeout-minutes: 30
+    timeout-minutes: 60
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

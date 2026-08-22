@@ -30,8 +30,15 @@ on:
         description: "PR number (required for `pr review`)"
         required: false
         type: number
-  pull_request_target:
-    types: [opened, ready_for_review]
+  # QUIET THE FLEET 2026-08-21: Octopus auto-review disabled at owner request.
+  # This was the last live Octopus trigger — D016 already cut octopus-route.yml
+  # and octopus-review-fallback.yml, but this one fired on every opened PR.
+  # Note the 🐙 out-of-credits comment comes from the octopus-review[bot] App,
+  # which reports independently of this workflow; silencing that needs the App
+  # uninstalled in repo settings (#17872), not a change here.
+  # Preserved commented, not deleted (RVS-AGENT-001).
+  # pull_request_target:
+  #   types: [opened, ready_for_review]
 
 permissions:
   contents: read

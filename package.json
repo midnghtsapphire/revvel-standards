@@ -19,6 +19,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "build": "npm run typecheck",
     "lint": "node scripts/markdownlint-repo.mjs",
+    "llm:doctor": "python3 scripts/local_llm.py doctor",
+    "llm:ask": "python3 scripts/local_llm.py ask",
     "lint:fix": "node scripts/markdownlint-repo.mjs --fix",
     "format": "dprint fmt",
     "format:check": "dprint check",

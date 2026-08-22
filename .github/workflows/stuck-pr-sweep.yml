@@ -38,10 +38,14 @@ on:
         type: number
         required: false
         default: 300
-  schedule:
-    # Mondays 13:00 UTC — early in the week so a fresh kick happens before
-    # owner returns to the queue.
-    - cron: "0 13 * * 1"
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   # Mondays 13:00 UTC — early in the week so a fresh kick happens before
+  #   # owner returns to the queue.
+  #   - cron: "0 13 * * 1"
 
 permissions:
   pull-requests: write

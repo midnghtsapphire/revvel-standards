@@ -1,13 +1,22 @@
 name: News with Cache
 on:
-  schedule:
-    - cron: '0 */6 * * *' # every 6h
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   - cron: '0 */6 * * *' # every 6h
+  workflow_dispatch:
 jobs:
   fetch:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+
+      - name: Get today’s date
+        id: date
+        run: echo "today=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
 
       - name: Restore cached news
         id: cache-news
@@ -16,10 +25,6 @@ jobs:
           path: news-cache.json
           key: news-${{ hashFiles('scripts/fetch_news.py') }}-${{ steps.date.outputs.today }}
           restore-keys: news-${{ hashFiles('scripts/fetch_news.py') }}-
-
-      - name: Get today’s date
-        id: date
-        run: echo "today=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
 
       - name: Fetch news (only if cache miss)
         if: steps.cache-news.outputs.cache-hit != 'true'

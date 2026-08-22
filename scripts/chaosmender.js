@@ -45,12 +45,112 @@ const CHECKS = {
 
 /**
  * LABEL-RACE-001
- * Find github.rest.issues.removeLabel calls that are NOT followed by a
- * .catch within the next 5 lines. Accepts:
- *   - .catch(err => { if (err.status !== 404) throw err; })  (preferred)
- *   - .catch(() => {})  (silent swallow — acceptable but not ideal)
- *   - a wrapper function named removeLabelSafe (veins-monitor pattern)
+ *
+ * Find `github.rest.issues.removeLabel` calls that are not guarded against a
+ * 404 — and only a 404.
+ *
+ * The rule's own `fix` field says what matters: "swallow ONLY 404. A 401/403
+ * must still surface." The scanner used to check for a literal `.catch` within
+ * five lines instead, which got both directions wrong (#17787):
+ *
+ *   - `try { ... } catch (e) { if (e.status !== 404) throw e; }` was reported
+ *     as unguarded, so the check was red on code that did exactly what the
+ *     ledger prescribes. A check that fails correct code is one people learn
+ *     to ignore.
+ *   - `.catch(() => {})` passed, and that is the defect the rule exists to
+ *     prevent: on a restricted token the label stays on the issue, the job
+ *     reports success, and the block is still in place.
+ *   - The five-line window was narrower than the house call style. A
+ *     `removeLabel({ owner, repo, issue_number, name })` written one property
+ *     per line spans six lines before any guard can appear.
+ *
+ * A guard now counts only if it re-throws everything that is not a 404, and it
+ * is found by walking the actual call expression rather than a line window.
  */
+
+/** Index of the character matching the opener at `open`, or -1. */
+function matchingIndex(src, open) {
+  const pairs = { '(': ')', '{': '}' };
+  const close = pairs[src[open]];
+  if (!close) return -1;
+  let depth = 0;
+  for (let i = open; i < src.length; i++) {
+    if (src[i] === src[open]) depth++;
+    else if (src[i] === close && --depth === 0) return i;
+  }
+  return -1;
+}
+
+/**
+ * True when a catch/`.catch` handler body re-throws anything that is not a 404.
+ *
+ * Deliberately strict: a widened condition such as
+ * `!== 404 && !== 403` reads as narrow while restoring the defect for the
+ * status that actually matters — a token without `issues: write`.
+ */
+/**
+ * True when this catch body lets a non-404 escape.
+ *
+ * Two shapes do that, and both are correct. #17787 taught this function the
+ * first; `arsc-labels.yml` writes the second, and was reported as unguarded
+ * for it — a check that fails correct code is one people learn to ignore,
+ * which is the failure mode this whole rule exists to avoid.
+ *
+ *   if (err.status !== 404) throw err;        // guard-and-throw
+ *   if (err.status === 404) { …; continue; }  // handle-404-then-fall-through
+ *   throw err;                                // …to an unconditional throw
+ *
+ * The second is only safe because the 404 branch LEAVES — `continue`, `break`,
+ * or `return` — so the trailing `throw` is unreachable for a 404 and reachable
+ * for everything else. A 404 branch that merely logs and falls through would
+ * re-throw the 404 too, which is a different bug; it is not accepted here.
+ */
+function rethrowsNon404(handler) {
+  const guardAndThrow = /\b(\w+)\.status\s*!==\s*404\s*\)\s*throw\s+\1\b/;
+  const handleThenThrow =
+    /\b(\w+)\.status\s*===\s*404\s*\)\s*\{[\s\S]*?\b(?:continue|break|return)\b[\s\S]*?\}[\s\S]*?\bthrow\s+\1\b/;
+  return guardAndThrow.test(handler) || handleThenThrow.test(handler);
+}
+
+/**
+ * Classify one call site: 'guarded' | 'swallows' | 'bare'.
+ * `swallows` and `bare` are both findings; they differ only in the hint.
+ */
+function classifyRemoveLabelCall(src, callIndex) {
+  const openParen = src.indexOf('(', callIndex);
+  if (openParen === -1) return 'bare';
+  const closeParen = matchingIndex(src, openParen);
+  if (closeParen === -1) return 'bare';
+
+  // 1. A `.catch(...)` chained directly onto the call.
+  const after = src.slice(closeParen + 1);
+  const chained = /^\s*\.catch\s*\(/.exec(after);
+  if (chained) {
+    const handlerOpen = closeParen + 1 + chained[0].length - 1;
+    const handlerClose = matchingIndex(src, handlerOpen);
+    if (handlerClose !== -1) {
+      return rethrowsNon404(src.slice(handlerOpen, handlerClose + 1)) ? 'guarded' : 'swallows';
+    }
+  }
+
+  // 2. An enclosing `try { ... } catch (e) { ... }`. Walk back to the nearest
+  //    `try {` whose block still contains the call.
+  const before = src.slice(0, callIndex);
+  for (const m of [...before.matchAll(/\btry\s*\{/g)].reverse()) {
+    const blockOpen = before.indexOf('{', m.index);
+    const blockClose = matchingIndex(src, blockOpen);
+    if (blockClose === -1 || blockClose < callIndex) continue; // does not enclose
+    const catchMatch = /^\s*catch\s*\(\s*\w+\s*\)\s*\{/.exec(src.slice(blockClose + 1));
+    if (!catchMatch) return 'bare';
+    const handlerOpen = blockClose + 1 + catchMatch[0].length - 1;
+    const handlerClose = matchingIndex(src, handlerOpen);
+    if (handlerClose === -1) return 'bare';
+    return rethrowsNon404(src.slice(handlerOpen, handlerClose + 1)) ? 'guarded' : 'swallows';
+  }
+
+  return 'bare';
+}
+
 function scanBareRemoveLabel(repoRoot) {
   const findings = [];
   const workflowDir = path.join(repoRoot, '.github', 'workflows');
@@ -60,29 +160,34 @@ function scanBareRemoveLabel(repoRoot) {
 
   for (const file of files) {
     const filepath = path.join(workflowDir, file);
-    const lines = fs.readFileSync(filepath, 'utf8').split('\n');
+    const src = fs.readFileSync(filepath, 'utf8');
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
+    // A `removeLabelSafe` wrapper is an accepted alternative — but only for
+    // calls INSIDE it. Exempting the whole file let a bare call elsewhere in
+    // the same file pass (#17787).
+    const safeWrapper = /function\s+removeLabelSafe\b/.exec(src);
+    let safeRange = null;
+    if (safeWrapper) {
+      const bodyOpen = src.indexOf('{', safeWrapper.index);
+      const bodyClose = matchingIndex(src, bodyOpen);
+      if (bodyClose !== -1) safeRange = [bodyOpen, bodyClose];
+    }
 
-      // Match a github.rest.issues.removeLabel call line
-      if (!/github\.rest\.issues\.removeLabel/.test(line)) continue;
+    for (const call of src.matchAll(/github\.rest\.issues\.removeLabel/g)) {
+      if (safeRange && call.index > safeRange[0] && call.index < safeRange[1]) continue;
 
-      // Check whether this file uses a removeLabelSafe wrapper function.
-      // If so, every call site in this file is considered guarded.
-      const fileContent = lines.join('\n');
-      if (/function\s+removeLabelSafe\b/.test(fileContent)) continue;
-
-      // Look ahead up to 5 lines for a .catch
-      const windowEnd = Math.min(i + 6, lines.length);
-      const window = lines.slice(i, windowEnd).join('\n');
-      if (/\.catch/.test(window)) continue;
+      const verdict = classifyRemoveLabelCall(src, call.index);
+      if (verdict === 'guarded') continue;
 
       findings.push({
         file: path.relative(repoRoot, filepath),
-        line: i + 1,
-        excerpt: line.trim(),
+        line: src.slice(0, call.index).split('\n').length,
+        excerpt: src.slice(0, call.index).split('\n').pop().trim() +
+          'github.rest.issues.removeLabel(...)',
         errorId: 'LABEL-RACE-001',
+        detail: verdict === 'swallows'
+          ? 'the handler swallows every error, including 401/403 — swallow ONLY 404'
+          : 'no 404 guard on this call',
       });
     }
   }
@@ -186,6 +291,27 @@ function scanGithubScriptColumn0(repoRoot) {
       // is the defect: it terminates the YAML block scalar prematurely. Flag
       // it BEFORE the "left the block" guard so we record the finding rather
       // than silently resetting state.
+      //
+      // Except when that column-0 line is a legitimate end to the block. A
+      // workflow whose LAST step is a github-script step is followed by the
+      // document's own top-level keys (`env:`, `jobs:`, `on:`) or a top-level
+      // comment, and those end the scalar correctly — the block was supposed to
+      // finish there. Flagging them made this check red on valid workflows
+      // (#17742): 4 of its 4 findings were of that shape, and every one of those
+      // files passes `npm run workflows:validate` and actionlint.
+      //
+      // This scanner is explicitly a heuristic — scripts/check-workflow-yaml.js
+      // is the definitive check — so where the two disagree, it defers.
+      const endsBlockLegitimately =
+        /^#/.test(line) ||                       // a top-level comment
+        /^[A-Za-z][A-Za-z0-9_-]*:/.test(line) || // a top-level mapping key
+        /^---\s*$/.test(line);                   // a document separator
+      if (indent === 0 && endsBlockLegitimately) {
+        inScriptBlock = false;
+        scriptIndent = -1;
+        continue;
+      }
+
       if (indent === 0) {
         findings.push({
           file: path.relative(repoRoot, filepath),
@@ -416,6 +542,7 @@ function parseArgs(argv) {
     ledger: DEFAULT_LEDGER,
     scope: null,
     changedOnly: false,
+    root: REPO_ROOT,
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
@@ -425,6 +552,12 @@ function parseArgs(argv) {
     else if (a === '--ledger' && next) { opts.ledger = next; i++; }
     else if (a === '--scope' && next) { opts.scope = next; i++; }
     else if (a === '--changed-only') opts.changedOnly = true;
+    // --root scans a tree other than this repository. Only tests use it: a
+    // guard that needs a live finding to prove it is not vacuous cannot get
+    // one from a repo that is clean, and the alternative — leaving a real
+    // defect in the tree so a test has something to find — is worse than the
+    // defect (tests/chaosmender-scope-is-real.test.js).
+    else if (a === '--root' && next) { opts.root = path.resolve(next); i++; }
   }
   return opts;
 }
@@ -452,7 +585,7 @@ async function main() {
     process.exit(1);
   }
 
-  let findings = runChecks(REPO_ROOT, ledger);
+  let findings = runChecks(opts.root, ledger);
   if (opts.changedOnly) {
     const changed = loadChangedFiles();
 

@@ -55,6 +55,18 @@ jobs:
           # Constant summon text — never interpolate the issue body into the shell.
           COMMENT_BODY: "/dragnet review this Work Request and instantiate the DRAGNET decision team, then drive the permanent-fix WR + PR."
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # Layer 0/2/1 lane config (#17868). Without these the cascade in
+          # routedChat has nothing to reach: LM Studio resolves to the runner's
+          # own 127.0.0.1 (never the operator's laptop), and OpenRouter is
+          # refused because the spend gate variable is absent. Set
+          # LMSTUDIO_ENDPOINT to a reachable URL (a tunnel to the operator's
+          # machine) to keep this lane free; REVVEL_LLM_ALLOW_CLOUD must be "1"
+          # before anything bills.
+          LMSTUDIO_ENDPOINT: ${{ secrets.LMSTUDIO_ENDPOINT }}
+          LMSTUDIO_API_KEY: ${{ secrets.LMSTUDIO_API_KEY }}
+          LMSTUDIO_MODEL: ${{ vars.LMSTUDIO_MODEL }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
         run: |
           if [ -z "${OPENROUTER_API_KEY}" ]; then
             echo "::warning::OPENROUTER_API_KEY not set — DRAGNET summon runs on the no-key bridge where available."

@@ -52,6 +52,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           USE_OPENROUTER: ${{ github.event.inputs.use_openrouter || 'true' }}
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: >
@@ -90,8 +91,14 @@ jobs:
 
             const dryRun = process.env.DRY_RUN === 'true';
 
+            /* Spend gate (#17850). The LLM branch bills OpenRouter, so it needs an
+            explicit opt-in. Routing and labelling are free and still run, which is why
+            the gate is here rather than an if on the whole step. This block is a YAML
+            FOLDED scalar, so every line is joined onto one; a line comment here would
+            comment out the rest of the folded line. That is exactly how this broke. */
+            const cloudAllowed = process.env.REVVEL_LLM_ALLOW_CLOUD === '1';
             const useOpenRouter = process.env.USE_OPENROUTER === 'true' &&
-            !!process.env.OPENROUTER_API_KEY;
+            !!process.env.OPENROUTER_API_KEY && cloudAllowed;
 
 
             const normalizePriority = (value) => {
@@ -242,9 +249,9 @@ jobs:
                     name: label,
                   });
                 } catch (e) {
-                  if (e.status !== 404) {
-                    core.notice(`Could not remove label "${label}": ${e.message}`);
-                  }
+                  // This branch used to `core.notice` a non-404 and carry on —
+                  // a notice is not a control. Re-throw it.
+                  if (e.status !== 404) throw e;
                 }
               }
 

@@ -17,7 +17,7 @@ jobs:
   openrouter-agent:
     name: Respond via OpenRouter
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     if: |
       github.event.sender.type != 'Bot' && (
@@ -52,6 +52,10 @@ jobs:
           echo "prompt=$PROMPT_ESCAPED" >> $GITHUB_OUTPUT
 
       - name: Call OpenRouter API
+        # Spend gate (#17850): this step bills OpenRouter. It runs only when the
+        # repository variable REVVEL_LLM_ALLOW_CLOUD is set to "1". Unset = skip,
+        # so an idle repo cannot spend. See docs/LOCAL_LLM_SETUP.md.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         id: ai
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

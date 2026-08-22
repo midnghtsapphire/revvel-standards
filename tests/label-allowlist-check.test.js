@@ -152,18 +152,25 @@ test('research:blocked and research:review-needed keep their distinct meaning', 
   assert.match(review.stdout, /research:review-needed → in-review/);
 });
 
-test('the allowlist fix adds no first-class labels (count pinned, not just under budget)', () => {
+test('first-class label count is pinned, not just checked against the budget', () => {
   const cfg = yaml.parse(fs.readFileSync(ALLOWLIST_PATH, 'utf8'));
   const names = cfg.labels.map((l) => (typeof l === 'string' ? l : l.name));
   assert.equal(cfg.max_labels_total, 80);
-  // Pinned, not just `<= 80`: an under-budget check still passes while three
-  // more first-class labels are spent. Spending budget must be deliberate and
-  // update this number, since only 3 slots remain.
+  // Pinned, not just `<= 80`: an under-budget check still passes while more
+  // first-class labels are spent. Spending budget must be deliberate and update
+  // this number.
+  //
+  // 77 → 80 in #17737: the `issue:*` lifecycle triad took the last three slots.
+  // The budget is now fully spent, so the next addition must alias, add a
+  // prefix rule, become a Project field, or make the case for raising the cap
+  // in writing. This assertion is what makes that unavoidable, and it fired on
+  // exactly the change it was written for.
   assert.equal(
     names.length,
-    77,
-    `allowlist is ${names.length} labels, expected 77 — this fix is alias/prefix-only. `
-      + `If you deliberately added a first-class label, update this count.`,
+    80,
+    `allowlist is ${names.length} labels, expected 80. `
+      + `If you deliberately added a first-class label, update this count — `
+      + `and note that the budget is spent, so you also need to raise the cap.`,
   );
 });
 

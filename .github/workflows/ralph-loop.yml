@@ -45,9 +45,11 @@ jobs:
         id: count-attempts
         if: steps.find-pr.outputs.result != 'null'
         uses: actions/github-script@v9.0.0
+        env:
+          PR_NUMBER: ${{ steps.find-pr.outputs.result }}
         with:
           script: |
-            const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
+            const pr_number = parseInt(process.env.PR_NUMBER || '', 10);
             let comments = []; try { const { data } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -64,10 +66,13 @@ jobs:
           steps.find-pr.outputs.result != 'null' &&
           fromJSON(steps.count-attempts.outputs.result) < 5
         uses: actions/github-script@v9.0.0
+        env:
+          ATTEMPT_COUNT: ${{ steps.count-attempts.outputs.result }}
+          PR_NUMBER: ${{ steps.find-pr.outputs.result }}
         with:
           script: |
-            const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
-            const attempt   = parseInt('${{ steps.count-attempts.outputs.result }}') + 1;
+            const pr_number = parseInt(process.env.PR_NUMBER || '', 10);
+            const attempt   = parseInt(process.env.ATTEMPT_COUNT || '', 10) + 1;
             const workflow  =
               context.payload.check_suite?.app?.name ||
               context.payload.workflow_run?.name ||
@@ -116,9 +121,11 @@ jobs:
           steps.find-pr.outputs.result != 'null' &&
           fromJSON(steps.count-attempts.outputs.result) >= 5
         uses: actions/github-script@v9.0.0
+        env:
+          PR_NUMBER: ${{ steps.find-pr.outputs.result }}
         with:
           script: |
-            const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
+            const pr_number = parseInt(process.env.PR_NUMBER || '', 10);
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -133,14 +140,19 @@ jobs:
 
             // Swap labels to human-review state
             for (const label of ['won\'t-merge', 'auto-fix']) {
-              try {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: pr_number,
-                  name: label,
-                });
-              } catch (_) {}
+              // The label already being absent is the desired end state, so a
+              // 404 is success (CLAUDE.md gotcha #1, LABEL-RACE-001). Anything
+              // else — 401, 403 on a restricted token, a 5xx — means the block
+              // may still be in place, and must not be reported as removed
+              // (gotcha #6).
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr_number,
+                name: label,
+              }).catch((err) => {
+                if (err.status !== 404) throw err;
+              });
             }
             try {
               await github.rest.issues.addLabels({
@@ -182,9 +194,11 @@ jobs:
       - name: Remove won't-merge label on CI pass
         if: steps.find-pr.outputs.result != 'null'
         uses: actions/github-script@v9.0.0
+        env:
+          PR_NUMBER: ${{ steps.find-pr.outputs.result }}
         with:
           script: |
-            const pr_number = parseInt('${{ steps.find-pr.outputs.result }}');
+            const pr_number = parseInt(process.env.PR_NUMBER || '', 10);
 
             // Fetch current labels
             const { data: pr } = await github.rest.pulls.get({
@@ -261,21 +275,26 @@ jobs:
 
             // Remove blocking labels
             for (const label of ["won't-merge", 'auto-fix']) {
-              try {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: pr_number,
-                  name: label,
-                });
-              } catch (_) {}
+              // The label already being absent is the desired end state, so a
+              // 404 is success (CLAUDE.md gotcha #1, LABEL-RACE-001). Anything
+              // else — 401, 403 on a restricted token, a 5xx — means the block
+              // may still be in place, and must not be reported as removed
+              // (gotcha #6).
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr_number,
+                name: label,
+              }).catch((err) => {
+                if (err.status !== 404) throw err;
+              });
             }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr_number,
-              body: `✅ **Ralph Loop — merge block removed**\n\nVerified on \\`${ref.slice(0, 7)}\\`: every check run completed without failure, and the combined commit status is not failing. Blocking labels cleared.`,
+              body: `✅ **Ralph Loop — merge block removed**\n\nVerified on \`${ref.slice(0, 7)}\`: every check run completed without failure, and the combined commit status is not failing. Blocking labels cleared.`,
             });
     timeout-minutes: 30
 env:

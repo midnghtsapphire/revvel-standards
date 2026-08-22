@@ -116,6 +116,14 @@ jobs:
                 body || '(empty)',
               ].join('\n');
 
+              // Spend gate (#17850): this call bills OpenRouter. The router comment
+              // above is free and has already been posted, so refuse only the paid
+              // part rather than skipping the whole step.
+              if (process.env.REVVEL_LLM_ALLOW_CLOUD !== '1') {
+                core.info('Skipping OpenRouter call: REVVEL_LLM_ALLOW_CLOUD is not "1" (spend gate).');
+                return;
+              }
+
               const openRouterRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
@@ -323,6 +331,8 @@ jobs:
               );
             }
         env:
+          # Spend gate (#17850). Unset = the paid branch is skipped.
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
           ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
           MAKE_PDF_WR_WEBHOOK_URL: ${{ secrets.MAKE_PDF_WR_WEBHOOK_URL }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

@@ -22,6 +22,7 @@
  */
 
 const https = require("https");
+const { assertCloudAllowed } = require("./llm-spend-gate");
 const fs = require("fs");
 const path = require("path");
 
@@ -73,6 +74,8 @@ function parseArgs() {
 // ---------------------------------------------------------------------------
 
 function callOpenRouter(model, systemPrompt, userPrompt) {
+  // Spend gate (#17850): refuse unless someone deliberately allowed it.
+  assertCloudAllowed("ui-creation-engine");
   return new Promise((resolve, reject) => {
     if (!OPENROUTER_API_KEY) {
       return reject(new Error("OPENROUTER_API_KEY environment variable is required."));

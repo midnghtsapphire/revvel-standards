@@ -4,8 +4,12 @@ name: WR-4600 Watchtower
 # a snapshot — proving you looked and found nothing is the point of a monitor.
 # An issue is summoned ONLY on a HARM/FLICKER/OCULAR row, never on a schedule.
 on:
-  schedule:
-    - cron: "17 6 * * *"   # 06:17 UTC — off-peak, dodges the :00 stampede
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   - cron: "17 6 * * *"   # 06:17 UTC — off-peak, dodges the :00 stampede
   workflow_dispatch:
     inputs:
       shard:

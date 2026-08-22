@@ -188,12 +188,19 @@ jobs:
       - name: Post results to issue
         if: github.event_name == 'issues' && steps.generate.outputs.output_path != ''
         uses: actions/github-script@v9.0.0
+        env:
+          OUTPUT_PATH: ${{ steps.generate.outputs.output_path }}
+          TOPIC: ${{ steps.params.outputs.topic }}
+          FORMAT: ${{ steps.params.outputs.format }}
+          ISSUE_NUMBER: ${{ steps.params.outputs.issue_number }}
+          AUTO_PUBLISH: ${{ vars.CONTENT_AUTO_PUBLISH }}
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const path = require('path');
-            const outputPath = '${{ steps.generate.outputs.output_path }}';
+            const outputPath = process.env.OUTPUT_PATH || '';
+            const issueNumber = Number(process.env.ISSUE_NUMBER);
             const metadataPath = path.join(outputPath, 'metadata.json');
 
             let metadata = {};
@@ -204,8 +211,8 @@ jobs:
             const comment = `✅ **Content Generation Complete!**
 
             **Generated Content:**
-            - **Title:** ${metadata.title || '${{ steps.params.outputs.topic }}'}
-            - **Format:** ${{ steps.params.outputs.format }}
+            - **Title:** ${metadata.title || process.env.TOPIC || ''}
+            - **Format:** ${process.env.FORMAT || ''}
             - **Word Count:** ${metadata.word_count || 'N/A'}
 
             **Output Location:** \`${outputPath}\`
@@ -230,16 +237,16 @@ jobs:
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: ${{ steps.params.outputs.issue_number }},
+              issue_number: issueNumber,
               body: comment
             });
 
-            const autoPublish = '${{ vars.CONTENT_AUTO_PUBLISH }}' === 'true';
+            const autoPublish = process.env.AUTO_PUBLISH === 'true';
             const label = autoPublish ? 'content:final' : 'content:draft';
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: ${{ steps.params.outputs.issue_number }},
+              issue_number: issueNumber,
               labels: [label]
             });
       - name: Handle errors

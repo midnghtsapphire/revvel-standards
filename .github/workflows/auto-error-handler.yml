@@ -54,6 +54,11 @@ jobs:
     outputs:
       issue_number: ${{ steps.create_issue.outputs.issue_number }}
       recovery_needed: ${{ steps.analyze.outputs.recovery_needed }}
+      # `create_issue` calls core.setOutput('issue_url', ...) but the job never
+      # exported it, so the summary line in `attempt-recovery` read
+      # `needs.capture-and-create-issue.outputs.issue_url` and printed
+      # "View issue: " with nothing after it (#17742).
+      issue_url: ${{ steps.create_issue.outputs.issue_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -113,18 +118,29 @@ jobs:
       - name: Create error issue
         id: create_issue
         uses: actions/github-script@v9.0.0
+        env:
+          ERROR_TYPE: ${{ inputs.error_type }}
+          ERROR_MESSAGE: ${{ inputs.error_message }}
+          ERROR_CONTEXT: ${{ inputs.error_context }}
+          ATTEMPTED_FIXES: ${{ inputs.attempted_fixes }}
+          WORKFLOW_RUN_ID: ${{ inputs.workflow_run_id }}
+          ANALYZED_LABELS: ${{ steps.analyze.outputs.labels }}
+          ANALYZED_ASSIGNEE: ${{ steps.analyze.outputs.assignee }}
+          CONTEXT_LOGS: ${{ steps.context.outputs.logs }}
+          CONTEXT_COMMITS: ${{ steps.context.outputs.commits }}
+          CONTEXT_BRANCH: ${{ steps.context.outputs.branch }}
         with:
           script: |
-            const errorType = '${{ inputs.error_type }}';
-            const errorMessage = '${{ inputs.error_message }}';
-            const errorContext = '${{ inputs.error_context }}';
-            const attemptedFixes = '${{ inputs.attempted_fixes }}' || '[]';
-            const workflowRunId = '${{ inputs.workflow_run_id }}';
-            const labels = '${{ steps.analyze.outputs.labels }}'.split(',');
-            const assignee = '${{ steps.analyze.outputs.assignee }}';
-            const logs = `${{ steps.context.outputs.logs }}`;
-            const commits = `${{ steps.context.outputs.commits }}`;
-            const branch = '${{ steps.context.outputs.branch }}';
+            const errorType = process.env.ERROR_TYPE || '';
+            const errorMessage = process.env.ERROR_MESSAGE || '';
+            const errorContext = process.env.ERROR_CONTEXT || '';
+            const attemptedFixes = process.env.ATTEMPTED_FIXES || '[]';
+            const workflowRunId = process.env.WORKFLOW_RUN_ID || '';
+            const labels = (process.env.ANALYZED_LABELS || '').split(',');
+            const assignee = process.env.ANALYZED_ASSIGNEE || '';
+            const logs = process.env.CONTEXT_LOGS || '';
+            const commits = process.env.CONTEXT_COMMITS || '';
+            const branch = process.env.CONTEXT_BRANCH || '';
 
             // Parse attempted fixes
             let fixes = [];
@@ -212,10 +228,13 @@ jobs:
       - name: Comment on related PR if exists
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ steps.create_issue.outputs.issue_number }}
+          ISSUE_URL: ${{ steps.create_issue.outputs.issue_url }}
         with:
           script: |
-            const issueNumber = '${{ steps.create_issue.outputs.issue_number }}';
-            const issueUrl = '${{ steps.create_issue.outputs.issue_url }}';
+            const issueNumber = process.env.ISSUE_NUMBER || '';
+            const issueUrl = process.env.ISSUE_URL || '';
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -289,9 +308,11 @@ jobs:
           retention-days: 30
       - name: Comment recovery results
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ needs.capture-and-create-issue.outputs.issue_number }}
         with:
           script: |
-            const issueNumber = ${{ needs.capture-and-create-issue.outputs.issue_number }};
+            const issueNumber = Number(process.env.ISSUE_NUMBER);
             const fs = require('fs');
 
             let recoveryLog = 'No recovery log available';

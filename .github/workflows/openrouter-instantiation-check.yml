@@ -47,6 +47,29 @@ jobs:
               }
             }
 
+            // removeLabel does NOT go through tryApi.
+            //
+            // tryApi is a blanket best-effort wrapper: it warns and returns
+            // null for any error. That is right for "create the tracking
+            // issue if you can", and wrong for a label removal, where a 404
+            // means the label is already absent — the end state we wanted —
+            // and a 401/403 means it is STILL THERE. Swallowing both leaves
+            // this workflow announcing a lifecycle it did not set, with the
+            // previous lifecycle label still on the issue alongside the new
+            // one (ChaosMender LABEL-RACE-001).
+            async function removeLabelIfPresent(name) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number,
+                  name,
+                });
+              } catch (err) {
+                if (err.status !== 404) throw err;
+              }
+            }
+
             // ── 1. Find or create the single tracking issue ───────────────
             const { data: searchResults } = await github.rest.search.issuesAndPullRequests({
               q: `repo:${context.repo.owner}/${context.repo.repo} is:issue in:title "${TRACKING_TITLE}"`,
@@ -97,14 +120,7 @@ jobs:
             async function setLifecycle(target) {
               for (const l of LIFECYCLE) {
                 if (l === target) continue;
-                await tryApi(`remove label ${l}`, () =>
-                  github.rest.issues.removeLabel({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number,
-                    name: l,
-                  })
-                );
+                await removeLabelIfPresent(l);
               }
               await tryApi(`add label ${target}`, () =>
                 github.rest.issues.addLabels({
@@ -184,7 +200,7 @@ jobs:
               `- \`ADMIN_GITHUB_TOKEN\`: ${hasAdmin ? '✅ configured' : '⚠️ not configured (using GITHUB_TOKEN)'}\n\n` +
               `**Detail:** ${detail}\n\n` +
               (ok
-                ? `_Next check: ~24h (cron \`17 6 * * *\`). Run on demand from the Actions tab if you need a fresh probe._`
+                ? `_No recurring check is scheduled (scheduled runs are frozen — see #17849). Run this workflow on demand from the Actions tab for a fresh probe._`
                 : `_If this stays broken for more than 24 hours the Ralph loop will escalate ` +
                   `this issue to \`needs-human\` and ping the repo owner._`);
 
@@ -259,14 +275,7 @@ jobs:
               // Success → clear the escalation labels so the signal stays honest.
               for (const l of ['openrouter:ralph-escalated', 'needs-human']) {
                 if (currentLabels.includes(l)) {
-                  await tryApi(`remove label ${l}`, () =>
-                    github.rest.issues.removeLabel({
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
-                      issue_number,
-                      name: l,
-                    })
-                  );
+                  await removeLabelIfPresent(l);
                 }
               }
             }
@@ -290,6 +299,6 @@ jobs:
               // on `needs-key` since that's an operator action, not a bug.
               core.setFailed(`OpenRouter probe failed: ${detail.split('\n')[0]}`);
             }
-    timeout-minutes: 30
+    timeout-minutes: 60
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

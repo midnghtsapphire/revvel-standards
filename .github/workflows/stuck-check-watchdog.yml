@@ -32,11 +32,13 @@ jobs:
       - name: Fetch stuck issues
         id: fetch
         uses: actions/github-script@v9.0.0
+        env:
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
           script: |
-            const thresholdHours = parseInt('${{ env.STUCK_THRESHOLD_HOURS }}');
-            const pendingHours = parseInt('${{ env.PENDING_THRESHOLD_HOURS }}');
-            const dryRun = ${{ github.event.inputs.dry_run == 'true' }};
+            const thresholdHours = parseInt(process.env.STUCK_THRESHOLD_HOURS || '', 10);
+            const pendingHours = parseInt(process.env.PENDING_THRESHOLD_HOURS || '', 10);
+            const dryRun = process.env.DRY_RUN === 'true';
             
             // Guard each list call: an installation rate-limit 403 here must
             // degrade gracefully (skip that label bucket) instead of
@@ -112,12 +114,15 @@ jobs:
         if: steps.fetch.outputs.count != '0'
         id: analyze
         uses: actions/github-script@v9.0.0
+        env:
+          STUCK_ISSUES: ${{ steps.fetch.outputs.stuck_issues }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
         with:
           script: |
-            const issues = JSON.parse('${{ steps.fetch.outputs.stuck_issues }}');
-            const thresholdHours = parseInt('${{ env.STUCK_THRESHOLD_HOURS }}');
-            const pendingHours = parseInt('${{ env.PENDING_THRESHOLD_HOURS }}');
-            const dryRun = ${{ github.event.inputs.dry_run == 'true' }};
+            const issues = JSON.parse(process.env.STUCK_ISSUES || '[]');
+            const thresholdHours = parseInt(process.env.STUCK_THRESHOLD_HOURS || '', 10);
+            const pendingHours = parseInt(process.env.PENDING_THRESHOLD_HOURS || '', 10);
+            const dryRun = process.env.DRY_RUN === 'true';
             
             const diagnoses = [];
             
@@ -284,12 +289,22 @@ jobs:
                 // remove lifecycle:stuck so it does not stay marked stuck forever.
                 const RESOLVED_ACTIONS = ['move-review', 'move-code', 'label-failed'];
                 if (issue.labels.includes('lifecycle:stuck') && RESOLVED_ACTIONS.includes(diagnosis.action)) {
+                  // `cleared_stuck` used to be set on the line below regardless
+                  // of whether the removal succeeded, because the catch swallowed
+                  // everything (#17799). On a 403 the diagnosis comment then
+                  // reported a resolution that had not happened and the issue
+                  // stayed marked stuck — the outcome this block exists to
+                  // prevent. RVS-VERIFY-001: assert the postcondition, do not
+                  // announce it.
+                  //
+                  // A 404 still counts as cleared: the label is absent, which is
+                  // the end state being claimed.
                   await github.rest.issues.removeLabel({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: issue.number,
                     name: 'lifecycle:stuck'
-                  }).catch(() => {});
+                  }).catch((err) => { if (err.status !== 404) throw err; });
                   diagnosis.cleared_stuck = true;
                 }
                 

@@ -143,6 +143,16 @@ test('parseArgs rejects flags that are missing values', () => {
   assert.throws(() => parseArgs(['--target']), /--target requires a value/);
 });
 
+
+test('no entry in baseline matches a path excluded by FLAKE8_EXCLUDE', () => {
+  const { isPathExcluded, loadBaseline } = require('../scripts/flake8-baseline-gate.js');
+  const baseline = loadBaseline(BASELINE);
+  for (const [key] of baseline.entries()) {
+    const filePath = key.split('::')[0];
+    assert.ok(!isPathExcluded(filePath), `baseline entry ${key} is excluded by FLAKE8_EXCLUDE`);
+  }
+});
+
 test('compareToBaseline flags only counts above baseline', () => {
   const baseline = new Map([
     ['a.py::F401', 2],
@@ -168,6 +178,32 @@ test('formatBaseline is stable and headered', () => {
     .split('\n')
     .filter((l) => l && !l.startsWith('#'));
   assert.deepEqual(body, ['a.py::F401 2', 'z.py::E501 1']);
+});
+
+test('baseline gate fails closed when it cannot run (does NOT report success)', () => {
+  // #17753 made this exit 0 with a warning. That inverts the gate's contract:
+  // a ratchet that could not measure has not established that nothing grew, so
+  // reporting success is a false negative dressed as a pass. CLAUDE.md gotcha
+  // #6 — exit 0 must mean the postcondition holds, not that the tool finished.
+  //
+  // The environmental excuse is also gone: CircleCI installs Python in
+  // .circleci/scripts/install-python-flake8.sh and GitHub Actions runners ship
+  // it, so no lane legitimately needs to skip.
+  const res = spawnSync(process.execPath, [GATE], {
+    encoding: 'utf8',
+    cwd: ROOT,
+    env: { ...process.env, PATH: '' }, // hide python3
+    timeout: 120000,
+  });
+  assert.notEqual(
+    res.status,
+    0,
+    'a gate that cannot execute flake8 must not exit 0 — that is a silent '
+      + `stop to debt enforcement.\nstdout:${res.stdout}\nstderr:${res.stderr}`
+  );
+  // And it must say which of the two problems it hit, since the fixes differ.
+  assert.match(res.stderr, /python3 is not available/);
+  assert.match(res.stderr, /fails closed by design/);
 });
 
 test('baseline gate exits 0 against the committed baseline (no new debt)', () => {
@@ -211,4 +247,124 @@ test('baseline gate exits non-zero when a fixture introduces new debt', () => {
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
+});
+
+/**
+ * Regression: the flake8 exclusion list is duplicated in FOUR places, and they
+ * silently disagreed.
+ *
+ * Landing the vendored `notebooklm-mcp-cli` MCP server (#17740) added 33
+ * findings over the baseline and turned `main` red. Its author added a
+ * `.flake8ignore` file intending to exclude it — but flake8 has no such
+ * concept, nothing reads that filename, and the exclusion did nothing.
+ *
+ * Worse, adding the path to `.flake8` alone is also insufficient: the gate
+ * passes `--exclude=` explicitly, which OVERRIDES `.flake8` entirely, and the
+ * workflow passes its own `exclude:` input to the action. All four must agree
+ * or an exclusion appears to work while doing nothing. That is what these
+ * assertions pin.
+ */
+
+const PY_WORKFLOW_YML = path.join(ROOT, '.github', 'workflows', 'python-flake8.yml');
+const FLAKE8IGNORE_PATH = path.join(ROOT, '.flake8ignore');
+
+function excludesFromFlake8Cfg() {
+  const raw = fs.readFileSync(FLAKE8_CFG, 'utf8');
+  const block = raw.split(/^exclude\s*=\s*$/m)[1] || '';
+  const stop = block.search(/^\s*[a-z-]+\s*=/m);
+  return (stop === -1 ? block : block.slice(0, stop))
+    .split('\n')
+    .map((l) => l.replace(/#.*$/, '').trim().replace(/,$/, ''))
+    .filter(Boolean);
+}
+
+test('gate --exclude and the workflow exclude: input are identical', () => {
+  const { FLAKE8_EXCLUDE } = require('../scripts/flake8-baseline-gate.js');
+  const wf = fs.readFileSync(PY_WORKFLOW_YML, 'utf8');
+  const m = wf.match(/exclude:\s*"([^"]+)"/);
+  assert.ok(m, 'python-flake8.yml must pass an exclude: input');
+  assert.equal(
+    m[1],
+    FLAKE8_EXCLUDE,
+    'the workflow exclude: input and the gate FLAKE8_EXCLUDE have drifted — '
+      + 'the advisory step and the real gate would then lint different file sets',
+  );
+});
+
+test('every path in .flake8ignore is genuinely excluded by the gate', () => {
+  const { FLAKE8_EXCLUDE } = require('../scripts/flake8-baseline-gate.js');
+  const gateSet = new Set(FLAKE8_EXCLUDE.split(',').map((s) => s.trim()));
+
+  const listed = fs
+    .readFileSync(FLAKE8IGNORE_PATH, 'utf8')
+    .split(/\r?\n/)
+    .map((l) => l.replace(/#.*$/, '').trim())
+    .filter(Boolean);
+
+  for (const p of listed) {
+    assert.ok(
+      gateSet.has(p),
+      `.flake8ignore lists "${p}" but the gate does not exclude it. `
+        + 'flake8 never reads .flake8ignore — that file is documentation only. '
+        + 'Add the path to FLAKE8_EXCLUDE in scripts/flake8-baseline-gate.js, '
+        + 'the exclude: input in python-flake8.yml, and .flake8.',
+    );
+  }
+});
+
+test('.flake8 and the gate exclude exactly the same set (drift in EITHER direction)', () => {
+  const { FLAKE8_EXCLUDE } = require('../scripts/flake8-baseline-gate.js');
+  const cfg = excludesFromFlake8Cfg();
+  const gate = FLAKE8_EXCLUDE.split(',').map((s) => s.trim()).filter(Boolean);
+
+  // Equality, not subset. A one-directional check misses the inverse drift:
+  // adding an exclusion to .flake8 alone would pass while the gate still lints
+  // the path, so a developer running `flake8` locally sees a clean tree and CI
+  // does not. Both directions are the same bug wearing different hats.
+  const onlyInGate = gate.filter((p) => !cfg.includes(p));
+  const onlyInCfg = cfg.filter((p) => !gate.includes(p));
+
+  assert.deepEqual(
+    onlyInGate,
+    [],
+    `the gate excludes ${JSON.stringify(onlyInGate)} but .flake8 does not — `
+      + 'a local `flake8` run would report findings CI never sees',
+  );
+  assert.deepEqual(
+    onlyInCfg,
+    [],
+    `.flake8 excludes ${JSON.stringify(onlyInCfg)} but the gate does not — `
+      + 'a local `flake8` run would look clean while CI fails on those paths',
+  );
+});
+
+test('no baseline entry names a path the gate excludes (no pre-accepted debt)', () => {
+  // #17753 regenerated the baseline without the vendored exclusion in effect,
+  // re-adding 29 entries under mcp-servers/gemini-notebook-mcp-cli — 70
+  // violations, pre-accepted. Nothing failed, because flake8 never reports on
+  // an excluded path, so those counts can never exceed baseline.
+  //
+  // That silence is the hazard. The entries sit as standing approval: move or
+  // remove the exclusion later and the debt is already blessed instead of
+  // failing the ratchet. Same shape as `.flake8ignore` — a config that looks
+  // load-bearing and is inert — except inert in the direction of accepting debt.
+  const { FLAKE8_EXCLUDE } = require('../scripts/flake8-baseline-gate.js');
+  const dirExclusions = FLAKE8_EXCLUDE.split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.includes('/')); // path prefixes, not bare names like `dist`
+
+  const unreachable = fs
+    .readFileSync(BASELINE, 'utf8')
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l && !l.startsWith('#'))
+    .filter((l) => dirExclusions.some((e) => l.startsWith(`${e}/`)));
+
+  assert.deepEqual(
+    unreachable,
+    [],
+    'These baseline entries name paths FLAKE8_EXCLUDE hides, so the gate can '
+      + 'never count them — they only pre-approve debt for whenever the '
+      + 'exclusion moves. Regenerate the baseline with the exclusions in effect.',
+  );
 });

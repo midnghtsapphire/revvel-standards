@@ -73,201 +73,18 @@ jobs:
 
             const title = issue.title || '';
             const body = issue.body || '';
-            const title = issue.title || '';
             const existingLabels = (issue.labels || []).map(
               l => typeof l === 'string' ? l : l.name
             );
 
-            function inferOutputTypeFromTitleTags(rawTitle) {
-              const tagMap = {
-                '#app': 'production-app',
-                '#apps': 'production-app',
-                '#tool': 'desktop-tool',
-                '#tools': 'desktop-tool',
-                '#pdf': 'sellable-pdf',
-                '#docs': 'technical-documentation',
-                '#doc': 'technical-documentation',
-                '#cli': 'cli-product',
-                '#api': 'api-product',
-                '#mcp': 'mcp-product',
-              };
-              const tags = (rawTitle || '').toLowerCase().match(/(?<!\w)#[a-z][a-z0-9-]*\b/g) || [];
-              for (const tag of tags) {
-                if (tagMap[tag]) return tagMap[tag];
-              }
-              return '';
-            }
-            function inferOutputTypeFromTitle(value) {
-              // Keep this mapping in sync with wr-auto-classify.yml so title-only
-              // WR intake resolves the same Output Type before/after the mirrored
-              // `output-type:*` label exists.
-              if (/(^|\s)#(?:app|apps)(?=\s|$)/i.test(value || '')) {
-                return 'production-app';
-              }
-              if (/(^|\s)#(?:tool|tools)(?=\s|$)/i.test(value || '')) {
-                return 'desktop-tool';
-              }
-              return '';
-            }
-            function inferOutputTypeFromTitle(text) {
-              const normalized = (text || '').toLowerCase();
-              if (/(?:^|\s)#app(?=\s|$)/.test(normalized)) return 'production-app';
-              if (/(?:^|\s)#(?:tool|tools)(?=\s|$)/.test(normalized)) return 'desktop-tool';
-              if (/(?:^|\s)#cli(?=\s|$)/.test(normalized)) return 'cli-product';
-              if (/(?:^|\s)#api(?=\s|$)/.test(normalized)) return 'api-product';
-              if (/(?:^|\s)#mcp(?=\s|$)/.test(normalized)) return 'mcp-product';
-              if (/(?:^|\s)#pdf(?=\s|$)/.test(normalized)) return 'sellable-pdf';
-              if (/(?:^|\s)#(?:doc|docs)(?=\s|$)/.test(normalized)) return 'technical-documentation';
-              return '';
-            }
-            function inferOutputTypeFromTitle(rawTitle) {
-              const title = (rawTitle || '').toLowerCase();
-              const routeTags = [
-                [/(^|\s)#(?:app|web-app)\b/, 'production-app'],
-                [/(^|\s)#desktop\b/, 'desktop-tool'],
-                [/(^|\s)#pdf\b/, 'sellable-pdf'],
-                [/(^|\s)#(?:docs?|documentation)\b/, 'technical-documentation'],
-                [/(^|\s)#api\b/, 'api-product'],
-                [/(^|\s)#cli\b/, 'cli-product'],
-                [/(^|\s)#mcp\b/, 'mcp-product'],
-                [/(^|\s)#video\b/, 'invention-flow'],
-                [/(^|\s)#tools?\b/, 'internal-script-automation'],
-              ];
-              for (const [pattern, outputType] of routeTags) {
-                if (pattern.test(title)) return outputType;
-              }
-              return '';
-            }
-            const inferTitleOutputType = (title) => {
-              const normalizedTitle = String(title || '').toLowerCase();
-              if (/(?:^|[^a-z0-9])#apps?\b/.test(normalizedTitle)) return 'production-app';
-              if (/(?:^|[^a-z0-9])#tools?\b/.test(normalizedTitle)) return 'desktop-tool';
-              if (/(?:^|[^a-z0-9])#pdf\b/.test(normalizedTitle)) return 'sellable-pdf';
-              if (/(?:^|[^a-z0-9])#api\b/.test(normalizedTitle)) return 'api-product';
-              if (/(?:^|[^a-z0-9])#cli\b/.test(normalizedTitle)) return 'cli-product';
-              if (/(?:^|[^a-z0-9])#mcp\b/.test(normalizedTitle)) return 'mcp-product';
-              if (/(?:^|[^a-z0-9])#docs?\b/.test(normalizedTitle)) return 'technical-documentation';
-              return '';
-            };
-
-            // Match the `### Output Type (required)` form section — tolerant of
-            // trailing parenthetical annotations and case (matches the same
-            // regex pattern as `wr-auto-classify.yml`).
+            // Output Type is read from three places, in this order:
+            //   1. the `### Output Type` section of the issue body
+            //   2. a mirrored `output-type:` label already on the issue
+            //   3. route tags in the title (`#app`, `#api`, `#cli`, ...)
             const sectionRegex =
               /(?:^|\s)###\s+Output Type[^\n]*\n+([^\n#]+)/im;
-            const inferOutputTypeFromTitle = (value) => {
-              if (/#(?:tool|tools|skill|skills)\b/i.test(value)) return 'desktop-tool';
-              if (/#(?:app|apps)\b/i.test(value)) return 'production-app';
-              return null;
-            };
-
             const m = body.match(sectionRegex);
-            const titleTagOutputTypeMap = [
-              [/#apps?\b/i, 'production-app'],
-              [/#tools?\b/i, 'desktop-tool'],
-              [/#skills?\b/i, 'desktop-tool'],
-              [/#pdfs?\b/i, 'sellable-pdf'],
-              [/#docs?\b/i, 'technical-documentation'],
-              [/#apis?\b/i, 'api-product'],
-              [/#cli\b/i, 'cli-product'],
-              [/#mcp\b/i, 'mcp-product'],
-            ];
-            const inferredOutputType =
-              titleTagOutputTypeMap.find(([pattern]) => pattern.test(title))?.[1] || '';
-            const explicitOutputType = m?.[1]?.trim() || '';
-            if (!explicitOutputType && !inferredOutputType) {
-              core.info('No Output Type section found in issue body — skipping route.');
-              return;
-            }
-            const outputType = (explicitOutputType || inferredOutputType).toLowerCase();
-            if (!explicitOutputType && inferredOutputType) {
-              core.info(`No Output Type section found; inferred Output Type from title tags: "${outputType}"`);
-            }
-            let outputType = (m?.[1] || '').trim().toLowerCase();
-            if (!outputType) {
-              outputType = inferOutputTypeFromTitleTags(title);
-              if (outputType) {
-                core.info(`No Output Type section found; inferred from title tags: "${outputType}"`);
-              }
-            }
-            if (!outputType) {
-              core.info('No Output Type section found in issue body or title tags — skipping route.');
-            const outputTypeLabel = existingLabels.find(label => label.startsWith('output-type:')) || '';
-            const outputType = (
-              m?.[1] ||
-              outputTypeLabel.replace(/^output-type:/, '') ||
-              inferOutputTypeFromTitle(title)
-            ).trim().toLowerCase();
-            if (!outputType) {
-              core.info('No Output Type section, mirrored output-type label, or title route tag found — skipping route.');
-              return;
-            }
-            core.info(`Resolved Output Type: "${outputType}"`);
-            const outputType =
-              (m?.[1] || '').trim().toLowerCase() ||
-              outputTypeLabel.replace(/^output-type:/, '').trim().toLowerCase() ||
-              inferOutputTypeFromTitle(title);
-            if (!outputType) {
-              core.info('No Output Type signal found in issue body, labels, or title tags — skipping route.');
-            const outputType = (m?.[1] || '').trim().toLowerCase() || inferOutputTypeFromTitle(title);
-            if (!outputType) {
-              core.info('No Output Type section or title route tags found — skipping route.');
-            const TITLE_ROUTE_TAG_OUTPUT_TYPE = {
-              tool: 'desktop-tool',
-              tools: 'desktop-tool',
-              app: 'production-app',
-            };
-            const inferOutputTypeFromTitleTags = (title = '') => {
-              const tags = Array.from(title.toLowerCase().matchAll(/#([a-z0-9_-]+)/g), tag => tag[1]);
-              for (const key of ['tool', 'tools', 'app']) {
-                if (tags.includes(key)) return TITLE_ROUTE_TAG_OUTPUT_TYPE[key];
-              }
-              return '';
-            };
 
-             const outputTypeFromBody = (m?.[1] || '').trim().toLowerCase();
-             const outputTypeFromTitle = inferOutputTypeFromTitleTags(issue.title || '').trim().toLowerCase();
-             const outputType =
-               outputTypeFromBody && outputTypeFromBody !== '_no response_'
-                 ? outputTypeFromBody
-                 : outputTypeFromTitle;
-             if (!outputType) {
-               core.info('No Output Type section or recognized title route tag found — skipping route.');
-               return;
-             }
-            const titleTag = (issue.title || '').match(/#(tool|tools|app)\b/i)?.[1]?.toLowerCase() || '';
-            const inferredFromTitle =
-              titleTag === 'tool' || titleTag === 'tools'
-                ? 'desktop-tool'
-                : titleTag === 'app'
-                  ? 'production-app'
-                  : '';
-            const outputType = ((m?.[1] || '').trim().toLowerCase() || inferredFromTitle);
-            if (!outputType) {
-              core.info('No Output Type section or title route tag found — skipping route.');
-            const outputType = (m?.[1] || '').trim().toLowerCase() || inferTitleOutputType(issue.title);
-            if (!outputType) {
-              core.info('No Output Type section found in issue body — skipping route.');
-            const outputType = (
-              m?.[1]?.trim().toLowerCase() ||
-              inferOutputTypeFromTitle(title) ||
-              ''
-            );
-            if (!outputType) {
-              core.info('No Output Type section or route tags found — skipping route.');
-            const title = issue.title || '';
-            const titleHasAppTag = /#apps?\b/i.test(title);
-            const titleHasToolTag = /#tools?\b/i.test(title);
-            const titleHasSkillTag = /#skills?\b/i.test(title);
-            const inferredFromTitle =
-              titleHasAppTag ? 'production-app' :
-              titleHasToolTag ? 'desktop-tool' :
-              titleHasSkillTag ? 'desktop-tool' :
-              '';
-
-            const outputType = (m?.[1] || inferredFromTitle || '').trim().toLowerCase();
-            if (!outputType) {
-              core.info('No Output Type section or title route tag found — skipping route.');
             const outputTypeLabel = existingLabels.find(label =>
               label.startsWith('output-type:')
             );
@@ -368,6 +185,6 @@ jobs:
               .addRaw(`Output Type: \`${outputType}\`\n\n`)
               .addRaw(`Labels applied: ${labelsToApply.length ? labelsToApply.map(l => `\`${l}\``).join(', ') : '_(none — all already present)_'}\n`)
               .write();
-    timeout-minutes: 30
+    timeout-minutes: 60
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

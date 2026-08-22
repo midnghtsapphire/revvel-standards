@@ -59,7 +59,7 @@ jobs:
           starting_branch: ${{ github.event.inputs.starting_branch }}
           include_last_commit: ${{ github.event.inputs.include_last_commit }}
           include_commit_log: ${{ github.event.inputs.include_commit_log }}
-    timeout-minutes: 30
+    timeout-minutes: 60
   detect-unblocked:
     name: Detect unblocked issues
     if: github.event_name == 'issues' && github.event.action == 'closed'
@@ -73,7 +73,7 @@ jobs:
       - name: Find Unblocked Issues
         id: finder
         uses: BeksOmega/on-unblocked@v1.0.0
-    timeout-minutes: 30
+    timeout-minutes: 60
   invoke-on-unblocked:
     name: Invoke Jules on unblocked issue
     needs: detect-unblocked
@@ -99,12 +99,14 @@ jobs:
         if: env.JULES_API_KEY != ''
         id: get_issue
         uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ matrix.issue-number }}
         with:
           script: |
             const issue = await github.rest.issues.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: ${{ matrix.issue-number }}
+              issue_number: Number(process.env.ISSUE_NUMBER)
             });
             return issue.data;
       - name: Invoke Jules on Unblocked Issue
@@ -113,7 +115,7 @@ jobs:
         with:
           prompt: ${{ fromJson(steps.get_issue.outputs.result).title }}. ${{ fromJson(steps.get_issue.outputs.result).body }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
-    timeout-minutes: 30
+    timeout-minutes: 60
   invoke-on-opened:
     name: Invoke Jules on new WR
     if: |-
@@ -143,6 +145,6 @@ jobs:
         with:
           prompt: ${{ github.event.issue.title }}. ${{ github.event.issue.body }}
           jules_api_key: ${{ secrets.JULES_API_KEY }}
-    timeout-minutes: 30
+    timeout-minutes: 60
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

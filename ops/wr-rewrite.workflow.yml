@@ -47,6 +47,10 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OLLAMA_ENDPOINT: ${{ secrets.OLLAMA_ENDPOINT }}
+          # Judging needs distinct model families, which only the cloud lane
+          # provides, so this step opts in explicitly. scripts/local_llm.py
+          # refuses to spend without it — see docs/LOCAL_LLM_SETUP.md.
+          REVVEL_LLM_ALLOW_CLOUD: "1"
 
       - name: PR — born green only
         run: |

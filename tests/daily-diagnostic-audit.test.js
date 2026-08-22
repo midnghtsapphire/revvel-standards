@@ -367,7 +367,18 @@ test('auto-diagnosed label is registered in .github/labels.yml', () => {
 test('workflow has schedule + workflow_dispatch triggers and narrow permissions', () => {
   const workflow = yaml.parse(fs.readFileSync(workflowPath, 'utf8'));
   const triggers = workflow.on || workflow[true]; // yaml parses bare `on:` as boolean true
-  assert.ok(triggers.schedule, 'schedule trigger present');
+  // COST FREEZE 2026-08-21: the schedule is commented out in the workflow,
+  // preserved in place (RVS-AGENT-001) rather than deleted. ~496 scheduled
+  // runs/day across 46 workflows drove the Actions bill on a repo with no
+  // product traffic. tests/no-scheduled-workflows.test.js is the guard that
+  // keeps it off; this assertion is inverted to match that decision, so a
+  // silent re-enable fails here too.
+  assert.strictEqual(triggers.schedule, undefined, 'schedule must stay frozen (cost freeze)');
+  assert.match(
+    fs.readFileSync(workflowPath, 'utf8'),
+    /^\s*#\s*schedule:/m,
+    'the frozen schedule must remain in the file, commented, so it can be restored',
+  );
   assert.ok(triggers.workflow_dispatch !== undefined, 'workflow_dispatch trigger present');
   assert.strictEqual(workflow.permissions.contents, 'read');
   assert.strictEqual(workflow.permissions.issues, 'write');
@@ -376,7 +387,10 @@ test('workflow has schedule + workflow_dispatch triggers and narrow permissions'
 
 test('workflow schedule does not collide exactly with self-healing.yml or repo-self-healer.yml', () => {
   const workflow = yaml.parse(fs.readFileSync(workflowPath, 'utf8'));
-  const cronExpr = workflow.on.schedule[0].cron;
+  const cronExpr = workflow.on?.schedule?.[0]?.cron;
+  // Frozen (cost freeze): nothing to collide with. The check still stands for
+  // the day the schedule is restored.
+  if (cronExpr === undefined) return;
 
   const selfHealing = yaml.parse(
     fs.readFileSync(path.join(REPO_ROOT, '.github', 'workflows', 'self-healing.yml'), 'utf8'),

@@ -158,288 +158,192 @@ This is the method actually used on 2026-07-13, not a theoretical one.
 
 ## Self-Healing Correction Pattern Catalog
 
-Eight patterns, each observed and fixed in the cited PR. Format:
+Nine patterns, each observed and fixed in the cited PR. Format:
 **Symptom** → **Root cause** → **Fix**.
 
+Use this as a lookup table before opening a new investigation — that is what
+`CLAUDE.md` sends you here for. If you fix a pattern that is not below, add it
+in the same shape and cite the PR. That is how self-healing compounds.
+
+> This catalog was present in this file **three times** between #15828 and
+> #17843, in three write-ups that had drifted apart — entry 2 prescribed three
+> different fixes, and only one of them matched `CLAUDE.md`. A lookup landed on
+> whichever copy came first. The copies are merged below, keeping every distinct
+> claim; where they disagreed, the version consistent with `CLAUDE.md` and with
+> the PRs actually cited leads, and the superseded advice is kept as a note
+> rather than dropped. See #17810.
+
 ### 1. Unguarded `removeLabel` race (PR #15821)
 
-- **Symptom:** Workflow step fails with `HttpError: Label does not exist on
+- **Symptom:** A workflow step fails with `HttpError: Label does not exist on
   this issue` when two workflows race to remove the same label.
-- **Root cause:** `octokit.rest.issues.removeLabel` throws 404 if the label is
-  already gone. No idempotency guard.
-- **Fix:** Wrap in `try { ... } catch (e) { if (e.status !== 404) throw e; }`,
-  or use the internal `removeLabelIfPresent` helper. Never call `removeLabel`
-  bare in a workflow that can race.
+- **Root cause:** `octokit.rest.issues.removeLabel` is not idempotent — it
+  throws 404 if the label is already gone, so the second caller of a pair
+  fails. No idempotency guard.
+- **Fix:** Wrap in a guard that swallows **only** 404:
+  `try { … } catch (e) { if (e.status !== 404) throw e; }`, or the chained
+  `.catch((err) => { if (err.status !== 404) throw err; })`. You may instead
+  check `listLabelsOnIssue` first, or use the internal `removeLabelIfPresent`
+  helper. Never call `removeLabel` bare in a workflow that can race.
+- **Since #17787 / #17799:** the guard is judged by what it *does*, not by the
+  presence of a `.catch`. `.catch(() => {})` is the defect this entry exists to
+  prevent, not a fix for it: it cannot tell "already gone" — the desired end
+  state — from "this token may not write labels". A 401 or 403 must still
+  surface. ChaosMender rule `LABEL-RACE-001` enforces this.
 
 ### 2. Missing `allowError` on internal API helpers (PR #15824)
 
-- **Symptom:** A helper that is *meant* to be best-effort (e.g. "comment on
-  issue if possible") aborts the entire workflow on transient 5xx.
-- **Root cause:** The helper called the API client directly without an
-  `allowError: true` (or equivalent try/catch) escape hatch. Callers had no
-  way to say "this is advisory."
-- **Fix:** Add an `allowError` option (default `false` to preserve strict
-  callers). When `true`, log-and-continue on non-2xx. Audit every call site
-  to set it explicitly.
-
-### 3. Default `GITHUB_TOKEN` on agent-created PRs (PR #15823)
-
-- **Symptom:** Agent-created PR triggers workflows but downstream jobs cannot
-  push labels/comments/reviews; the token has read-only scopes on PRs from
-  forks or from GITHUB_TOKEN-authored refs.
-- **Root cause:** The workflow relied on the default `GITHUB_TOKEN`, which is
-  intentionally minimal for security. Agent PRs need elevated but scoped
-  credentials.
-- **Fix:** Use a scoped bot PAT (or GitHub App installation token) stored as a
-  secret, and pass it explicitly to the steps that need write. Never widen the
-  default token's `permissions:` block globally as a shortcut.
-
-### 4. Secrets via argv vs. stdin (PR #15825)
-
-- **Symptom:** Secret value appears in `ps auxf` output on the runner and in
-  any process-listing debug step.
-- **Root cause:** Secret passed as a positional CLI argument
-  (`mycli --token=$SECRET`) instead of via stdin or an env var.
-- **Fix:** Pipe via stdin (`printf '%s' "$SECRET" | mycli --token-stdin`) or
-  pass via environment (`MYCLI_TOKEN="$SECRET" mycli`). Never argv.
-
-### 5. Bash bare-array-variable bug (PR #15827)
-
-- **Symptom:** Loop over an array only processes the first element, or
-  `set -u` reports "unbound variable" on a defined array.
-- **Root cause:** `$arr` in bash expands to `${arr[0]}`, not the whole array.
-  Must be `"${arr[@]}"`.
-- **Fix:** Always quote and index: `for x in "${arr[@]}"; do ... done`. Enable
-  `shellcheck` in CI for `.github/scripts/**/*.sh` to catch this class.
-
-### 6. Exit codes as proxy metrics vs. true resolution state (PR #15826)
-
-- **Symptom:** A dispatcher script exits `0` because "the agent ran," even
-  though the agent produced no PR / left the issue unresolved. Downstream
-  metrics report success; the issue silently rots.
-- **Root cause:** The script conflated "the subprocess did not crash" with
-  "the work is done." Exit code was a proxy for process health, not for
-  resolution.
-- **Fix:** Exit code must reflect **true resolution state**. If the agent
-  ran-but-produced-nothing, exit non-zero (or a distinct code, e.g. `2` for
-  "ran, no output") so the caller can distinguish. Document the code table in
-  the script header.
-
-### 7. `nosemgrep` suppression comment adjacency (PR #15825)
-
-- **Symptom:** Semgrep still flags a line that has a `# nosemgrep: rule-id`
-  comment "nearby."
-- **Root cause:** `nosemgrep` must be on the *same line* as the finding, or
-  on the immediately preceding line — not two lines up, not after a blank
-  line, not on the closing brace.
-- **Fix:** Place `# nosemgrep: <rule-id>` on the exact offending line (end of
-  line) or the line immediately above with no blank line between. Always cite
-  the specific rule id; never bare `# nosemgrep`.
-
-### 8. Broken third-party GitHub Action failing every PR (PR #15828)
-
-- **Symptom:** Every PR in the repo shows a red check from the same
-  third-party Action (e.g. a SAML-SSO registration Action pinned to a tag
-  that was force-moved or deleted upstream).
-- **Root cause:** Third-party Action pinned by mutable tag (`@v1`) rather than
-  by commit SHA. Upstream changed the tag; every workflow run now fetches a
-  broken ref.
-- **Fix:** Pin third-party Actions by full commit SHA with the tag as a
-  trailing comment: `uses: owner/action@<sha> # v1.2.3`. Add a Dependabot
-  entry so bumps are reviewed. If the Action is not essential, remove it.
-Each entry: **Symptom → Root Cause → Fix**, with the PR that established
-the pattern.
-Each entry is Symptom / Root Cause / Fix and cites the PR that shipped the
-correction. Use this catalog as a lookup table before opening a new
-investigation.
-
-### 1. Unguarded `removeLabel` race (PR #15821)
-
-- **Symptom:** Workflow fails with `HttpError: Label does not exist` when
-  two jobs both try to remove the same label.
-- **Root cause:** `octokit.rest.issues.removeLabel` throws on 404; a
-  concurrent job already removed it.
-- **Fix:** Wrap in `try { ... } catch (e) { if (e.status !== 404) throw; }`,
-  or use `github-script` with an explicit 404 swallow.
-
-### 2. Missing `allowError` on internal API helpers (PR #15824)
-
-- **Symptom:** Non-fatal internal API call aborts the whole workflow.
-- **Root cause:** Helper defaulted `allowError: false`; callers assumed
-  the opposite.
-- **Fix:** Callers that tolerate failure must pass `allowError: true`
-  explicitly. Helper documents the default at the top of the file.
-
-### 3. Default `GITHUB_TOKEN` on agent-created PRs (PR #15823)
-
-- **Symptom:** CI jobs on agent-authored PRs cannot trigger downstream
-  workflows.
-- **Root cause:** The default `GITHUB_TOKEN` on a PR opened by a bot
-  does not have `workflow: write` and does not re-trigger `on: push`
-  workflows.
-- **Fix:** Use a scoped PAT (or GitHub App token) stored as a secret
-  for agent PRs; keep the default token for human PRs.
-
-### 4. Secrets via argv vs. stdin (PR #15825)
-
-- **Symptom:** Secret leaks into `ps auxf` and CI logs.
-- **Root cause:** Passing tokens as CLI arguments (`--token $X`) exposes
-  them to any process on the runner.
-- **Fix:** Pipe secrets on stdin (`echo "$X" | tool --token-stdin`) or
-  read from an env var the tool consumes directly.
-
-### 5. Bash bare-array-variable bug (PR #15827)
-
-- **Symptom:** Only the first element of an array is passed to a
-  command; the rest are silently dropped.
-- **Root cause:** `$arr` in bash expands to `${arr[0]}`, not all
-  elements.
-- **Fix:** Always use `"${arr[@]}"` when passing an array to a
-  command. Add `shellcheck` to CI.
-
-### 6. Exit codes as proxy metrics vs. true resolution state (PR #15826)
-
-- **Symptom:** A script exits 0 and CI is green, but the underlying
-  problem is unresolved (e.g. "0 issues found" because the query
-  errored, not because the repo is clean).
-- **Root cause:** Exit code was being used as a proxy for "success"
-  when it only meant "the script ran to completion".
-- **Fix:** Emit an explicit machine-readable resolution state
-  (`{ "status": "clean" | "dirty" | "errored", ... }`) and gate on
-  *that*, not on exit code alone. Fail loudly on `errored`.
-
-### 7. `nosemgrep` suppression comment adjacency (PR #15825)
-
-- **Symptom:** Semgrep still flags the line the suppression was meant
-  to cover.
-- **Root cause:** `# nosemgrep: rule-id` must be on the same line as
-  the finding, or on the line immediately above with no blank line
-  between. A blank line, a comment, or a line-continuation breaks the
-  adjacency and the suppression silently no-ops.
-- **Fix:** Place `# nosemgrep: <rule-id>` on the exact offending line,
-  or the line directly above with no gap. Include the rule id — a bare
-  `# nosemgrep` is over-broad and will be rejected by review.
-
-### 8. Broken third-party GitHub Action failing every PR (PR #15828)
-
-- **Symptom:** Every PR's CI shows a red check from a workflow no one
-  recognizes (`saml-sso-registration.yml`), blocking merges.
-- **Root cause:** A third-party Action pinned by tag was updated
-  upstream in a breaking way; our workflow inherited the break.
-- **Fix:** Pin third-party Actions by full commit SHA, not by tag or
-  branch. When an Action is genuinely abandoned, remove the workflow
-  and record the removal in `learnings.md`.
-- **Root cause:** `removeLabel` is not idempotent; second caller 404s.
-- **Fix:** Wrap in a `try`/`catch` that swallows 404, or check
-  `listLabelsOnIssue` first. Never call `removeLabel` without a guard.
-
-### 2. Missing `allowError` on internal API helpers (PR #15824)
-
-- **Symptom:** A helper that is documented as "best-effort" aborts the
-  entire job on a transient 5xx.
-- **Root cause:** Helper forwards the raw Octokit call without the
-  `allowError` / retry wrapper used elsewhere in the codebase.
+- **Symptom:** A helper that is *meant* — or documented — to be best-effort
+  ("comment on the issue if possible") aborts the entire workflow or job on a
+  transient 5xx.
+- **Root cause:** The helper forwards the raw Octokit call without the shared
+  `allowError` / retry wrapper used elsewhere in the codebase, so callers had
+  no way to say "this is advisory."
 - **Fix:** Route all internal Octokit calls through the shared
-  `withRetry({ allowError: [404, 5xx] })` helper. Bare `octokit.rest.*`
-  calls in workflow scripts are a smell.
+  `withRetry({ allowError: [404, 5xx] })` helper. A bare `octokit.rest.*` call
+  in a workflow script is a smell. This is `CLAUDE.md` gotcha #2.
+- **Superseded:** two earlier write-ups of this entry prescribed *building* the
+  escape hatch — "add an `allowError` option, default `false`" and "callers
+  that tolerate failure must pass `allowError: true` explicitly, and the helper
+  documents the default at the top of the file". Both predate the shared
+  wrapper. Kept because a helper outside the wrapper's reach still needs an
+  explicit default, and callers still have to set it deliberately.
 
 ### 3. Default `GITHUB_TOKEN` on agent-created PRs (PR #15823)
 
-- **Symptom:** Agent-authored PR cannot trigger downstream workflows;
-  status checks never start.
-- **Root cause:** The default `GITHUB_TOKEN` intentionally does not trigger
-  further workflow runs. Agent PRs need a PAT or a GitHub App token.
-- **Fix:** Use a dedicated app-installation token (or a fine-scoped PAT
-  stored in `secrets.AGENT_PR_TOKEN`) when the agent opens the PR. Document
-  the token's scopes in `standards/`.
+- **Symptom:** An agent-authored PR opens, but downstream jobs cannot push
+  labels, comments or reviews — and status checks never start at all.
+- **Root cause:** Two properties of the default `GITHUB_TOKEN`, both
+  intentional. It is minimal by design, and read-only on PRs from forks or from
+  `GITHUB_TOKEN`-authored refs. And a push made with it **does not trigger
+  further workflow runs**, so `on: push` and `on: pull_request` workflows never
+  fire.
+- **Fix:** Use a dedicated GitHub App installation token, or a fine-scoped PAT
+  stored in `secrets.AGENT_PR_TOKEN`, when the agent opens the PR. Pass it
+  explicitly to the steps that need write; keep the default token for human
+  PRs; document the token's scopes in `standards/`. Never widen the default
+  token's `permissions:` block globally as a shortcut.
 
 ### 4. Secrets via argv vs. stdin (PR #15825)
 
-- **Symptom:** Secret value appears in `ps auxf` output and in the runner
-  process list, and is captured by any subprocess that reads `/proc`.
-- **Root cause:** Secret passed as a command-line argument
-  (`tool --token $SECRET`) instead of via stdin or an env var.
-- **Fix:** Pipe secrets through stdin (`echo "$SECRET" | tool --token-stdin`)
-  or `--token-file /dev/stdin`. Never interpolate a secret into argv.
+- **Symptom:** The secret's value appears in `ps auxf` output on the runner, in
+  the process list of any debug step, and in CI logs — and is readable by any
+  subprocess that can see `/proc`.
+- **Root cause:** The secret was passed as a command-line argument
+  (`tool --token $SECRET`, `mycli --token=$SECRET`) instead of via stdin or an
+  environment variable.
+- **Fix:** Pipe it on stdin — `printf '%s' "$SECRET" | tool --token-stdin`, or
+  `--token-file /dev/stdin` — or pass it in the environment for a tool that
+  reads one directly (`MYCLI_TOKEN="$SECRET" mycli`). Never interpolate a
+  secret into argv. `curl` takes its headers from `curl --config -`.
 
 ### 5. Bash bare-array-variable bug (PR #15827)
 
-- **Symptom:** Script silently processes only the first element of an
-  array; loop appears to run but does the wrong thing.
-- **Root cause:** `for x in $ARR` instead of `for x in "${ARR[@]}"`. Bare
-  `$ARR` in bash expands to the first element only.
-- **Fix:** Always `"${ARR[@]}"` with quotes and brackets. Add a
-  `shellcheck` pre-commit hook — SC2128 catches this exact bug.
+- **Symptom:** A loop or command receives only the first element of an array
+  and the rest are silently dropped — the script appears to run and does the
+  wrong thing. Under `set -u` it can instead report "unbound variable" on an
+  array that is plainly defined.
+- **Root cause:** Bare `$arr` in bash expands to `${arr[0]}`, not to the whole
+  array. `for x in $ARR` iterates one element.
+- **Fix:** Always quote and index: `for x in "${ARR[@]}"; do … done`. Run
+  `shellcheck` in CI over `.github/scripts/**/*.sh`, or as a pre-commit hook —
+  **SC2128** catches this exact bug.
 
 ### 6. Exit codes as proxy metrics vs. true resolution state (PR #15826)
 
-- **Symptom:** A workflow reports success (exit 0) while the underlying
-  issue is still unresolved, because the script's exit code reflects
-  "the tool ran" rather than "the problem is fixed."
-- **Root cause:** Conflating process-completion with outcome. `exit 0`
-  meant "analyzer finished," not "no findings."
-- **Fix:** Exit codes MUST reflect true resolution state. Wrap the tool
-  and re-exit non-zero when the postcondition (empty findings, closed
-  issue, green diff) is not met. Add an assertion, not a comment.
+- **Symptom:** A workflow reports success while the underlying problem is
+  untouched. Three shapes seen: a dispatcher exits `0` because "the agent ran"
+  though it produced no PR and left the issue unresolved; a scan reports
+  "0 issues found" because the *query* errored, not because the repo is clean;
+  a job goes green because the tool finished. Downstream metrics report
+  success and the issue silently rots.
+- **Root cause:** Conflating process-completion with outcome. `exit 0` meant
+  "the analyzer finished," not "there are no findings."
+- **Fix:** An exit code MUST reflect **true resolution state**. Wrap the tool
+  and re-exit non-zero when the postcondition — empty findings, closed issue,
+  green diff — is not met. **Assert, do not comment.** Where the caller needs
+  to tell outcomes apart, emit an explicit machine-readable state
+  (`{ "status": "clean" | "dirty" | "errored", … }`) and gate on *that*,
+  failing loudly on `errored`; or use a distinct exit code (e.g. `2` for "ran,
+  produced nothing") and document the code table in the script header.
 
 ### 7. `nosemgrep` suppression comment adjacency (PR #15825)
 
-- **Symptom:** Semgrep continues to flag a line that appears to have a
-  `# nosemgrep` suppression.
-- **Root cause:** The suppression comment must be on the *same line* as
-  the flagged expression, or on the immediately preceding line with no
-  blank line between. Any other placement is silently ignored.
-- **Fix:** Place `# nosemgrep: rule-id` on the exact flagged line, or on
-  the line immediately above with no gap. Include the rule-id so the
-  suppression is narrow and auditable.
+- **Symptom:** Semgrep keeps flagging a line that visibly has a `# nosemgrep`
+  suppression "nearby".
+- **Root cause:** The suppression must be on the *same line* as the flagged
+  expression, or on the line immediately above with **no blank line between**.
+  A blank line, an intervening comment, a line-continuation, or placing it on
+  the closing brace all break the adjacency, and the suppression silently
+  no-ops.
+- **Fix:** Put `# nosemgrep: <rule-id>` at the end of the exact flagged line,
+  or on the line directly above with no gap. Always name the rule id, so the
+  suppression is narrow and auditable — a bare `# nosemgrep` is over-broad and
+  will be rejected in review.
 
 ### 8. Broken third-party GitHub Action failing every PR (PR #15828)
 
-- **Symptom:** Every PR shows a red check from a workflow no one recently
-  touched; the failing step is inside a third-party Action.
-- **Root cause:** Upstream Action pushed a breaking change to its
-  floating tag (`@v3`, `@main`), or was archived/deleted.
-- **Fix:** Pin every third-party Action to a full commit SHA, not a tag.
-  Add Dependabot for `github-actions` ecosystem so pins get updated with
-  review. When a pinned Action goes stale, replace or fork; do not
-  unpin.
+- **Symptom:** Every PR in the repo shows a red check from a workflow nobody
+  recently touched or recognises (`saml-sso-registration.yml`), and merges are
+  blocked. The failing step is inside a third-party Action.
+- **Root cause:** The Action was pinned by a mutable tag (`@v1`, `@v3`,
+  `@main`). Upstream force-moved or deleted the tag, shipped a breaking change
+  behind it, or archived the repository — and every workflow run now fetches a
+  broken ref.
+- **Fix:** Pin every third-party Action to a full commit SHA with the tag as a
+  trailing comment: `uses: owner/action@<sha> # v1.2.3`. Add Dependabot for the
+  `github-actions` ecosystem so bumps arrive as reviewable PRs. When a pinned
+  Action goes stale, replace or fork it — **do not unpin**. If the Action is
+  not essential, remove the workflow and record the removal in `learnings.md`.
+  This is `CLAUDE.md` gotcha #8.
+- **Since #17832:** two further properties of `uses:` resolution, both learned
+  the hard way. The runner resolves **every** step's action during "Prepare all
+  required actions", *before* any `if:` is evaluated — so a `uses:` you believe
+  is switched off still has to resolve, and an unresolvable one fails the job
+  having run nothing. And `actionlint` validates the **shape** of a `uses:`,
+  not its existence: `owner/repo@ref` is correctly shaped whatever the
+  codepoints, which is how two refs containing CJK characters sat failing every
+  merged PR.
+
+### 9. A marker asserting a postcondition nothing verified (PRs #17782, #17791, #17792, #17793, #17797)
+
+- **Symptom:** A label, exit code, `Closes #N`, count, or comment states that
+  something happened. Every check is green. The thing did not happen. Often the
+  marker also *blocks* the work that would clear it, so the state cannot be
+  left — an open issue labelled `issue:done` could never receive another WR PR,
+  and nothing could remove the label.
+- **Root cause:** The signal was written without confirming the state, and read
+  without confirming it either. Both halves are needed for the defect and both
+  are single missing lines, so review sees nothing wrong: the defect is the
+  *absence* of a check elsewhere.
+- **Fix:** Establish the state first, then write the marker — and if you cannot
+  confirm the state, write no marker. On the consuming side, decide on the
+  state, and treat a marker that contradicts it as damage to repair rather than
+  a fact to obey. Guard it by **naming, not counting**; by asserting behaviour
+  rather than the presence of a string; by stripping comments before matching
+  source; and by mutation-testing the guard against the exact defect. Full
+  rule, with all eight observed instances:
+  `standards/VERIFY_THE_POSTCONDITION.md` (RVS-VERIFY-001).
 
 ---
 
 ## Where the memory lives
 
-- **This file** — audit methodology + fix-pattern catalog (the *before* and
-  the *lookup*).
-- **`learnings.md`** — dated per-incident postmortems (the *after*).
-- **`CLAUDE.md` "Recurring gotchas"** — short inline reminders for the agent
-  loop, with a pointer here for depth.
-- **`standards/GREEN_MAIN_STANDARD.md`** — the rule that main stays green;
-  this playbook is how we keep it green when it drifts.
+- **This file (`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md`)** — the *method*
+  (how to run an audit) and the *catalog* (the recurring patterns). The
+  *before* and the *lookup*. Update the catalog when a new recurring pattern is
+  fixed.
+- **`learnings.md`** — the chronological incident log: dated per-incident
+  postmortems, one entry per event. The *after*. Keep appending here; do not
+  fold an incident into this playbook until it recurs.
+- **`CLAUDE.md` "Recurring gotchas"** — the short-form checklist the agent
+  reads on every task, with a pointer here for depth. A new gotcha belongs
+  there once a pattern has bitten twice.
+- **`standards/GREEN_MAIN_STANDARD.md`** — the outcome contract this playbook
+  serves, and the invariant it exists to defend: `main` stays green. If the
+  playbook and the standard disagree, **the standard wins** and this file gets
+  updated.
 
-If you fix a pattern that isn't in the catalog above, add it here in the same
-Symptom / Root cause / Fix format and cite the PR. That is how self-healing
-compounds.
-- **`learnings.md`** — chronological incident log; one entry per
-  learned lesson, dated.
-- **`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md`** (this file) —
-  the *method* (how to audit) and the *catalog* (recurring patterns).
-- **`standards/GREEN_MAIN_STANDARD.md`** — the invariant this playbook
-  exists to defend: `main` stays green.
-- **`CLAUDE.md`** — day-to-day gotcha list for the next agent; points
-  here for the deeper method.
-
-When you learn something new in an audit: add the incident to
-`learnings.md`, and if the pattern is likely to recur, add a numbered
-entry to the catalog above with its originating PR.
-- **This file (`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md`)** — the
-  method and the fix-pattern catalog. Update the catalog when a new
-  recurring pattern is fixed.
-- **`learnings.md`** — individual incident write-ups, one per event.
-  Continue to append here; do not fold incidents into this playbook until
-  they recur.
-- **`CLAUDE.md` "Recurring gotchas"** — the short-form checklist the
-  agent reads on every task. New gotchas belong there once a pattern has
-  bitten twice.
-- **`standards/GREEN_MAIN_STANDARD.md`** — the outcome contract this
-  playbook serves. If the playbook and the standard disagree, the
-  standard wins and this file gets updated.
+When you learn something new in an audit: add the incident to `learnings.md`,
+and if the pattern is likely to recur, add a numbered entry to the catalog
+above with its originating PR.

@@ -9,8 +9,12 @@ on:
       - opened
       - reopened
       - ready_for_review
-  schedule:
-    - cron: 0 * * * *
+  # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
+  # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
+  # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
+  # Every workflow below keeps workflow_dispatch, so it still runs on demand.
+  # schedule:
+  #   - cron: 0 * * * *
   workflow_dispatch:
     inputs:
       issue_number:
@@ -110,7 +114,7 @@ jobs:
           EVENT_KIND: ${{ github.event_name == 'issues' && 'issue' || 'pull_request' }}
           PROMPT: ${{ inputs.prompt }}
         run: node scripts/openrouter-triage.js
-    timeout-minutes: 30
+    timeout-minutes: 60
   sweep-discover:
     name: Discover items needing routing or triage-recovery
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -182,7 +186,7 @@ jobs:
 
             core.setOutput('count', String(triageTargets.length));
             core.setOutput('matrix', JSON.stringify({ include: triageTargets }));
-    timeout-minutes: 45
+    timeout-minutes: 60
   sweep-triage:
     name: Sweep cost-governed triage
     # Runs whenever there are queued items — even with no OpenRouter key, the
@@ -223,6 +227,6 @@ jobs:
           EVENT_KIND: ${{ matrix.event_kind }}
           PROMPT: ${{ inputs.prompt }}
         run: node scripts/openrouter-triage.js
-    timeout-minutes: 15
+    timeout-minutes: 60
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
