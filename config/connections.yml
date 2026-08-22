@@ -186,6 +186,16 @@ connections:
     used_by: [mergeme-status.yml, products/mergeme-status]
     note: "Slack PR cards (one updating message per PR). Repo-side wiring audited by scripts/mergeme-wiring.js (WR #16824). GitHub App + Slack OAuth installed at https://mergeme.dev / marketplace — no MERGEME_API_KEY in this repo."
 
+  - id: ghcr
+    name: GitHub Container Registry (ghcr.io)
+    type: api
+    auth: github-token
+    status: verified
+    access: [oci-push, oci-pull, package-visibility]
+    connects_to: [github]
+    used_by: [ghcr-publish.yml, ghcr-setup-status.yml, products/ghcr-console, ship-to-market.yml]
+    note: "OCI images at ghcr.io. Same-repo push uses job GITHUB_TOKEN + permissions.packages: write (WR #17695). Optional GHCR_READ_TOKEN name documented in docs/SECRETS_MAP.md for private pulls on external hosts. Auditor: scripts/ghcr-setup.js."
+
   - id: perplexity
     name: Perplexity
     type: api
