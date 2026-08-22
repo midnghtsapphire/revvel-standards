@@ -1024,3 +1024,12 @@ issue N" over "X will fix this."
 `.github/workflows/openrouter-triage.yml`,
 `docs/playbooks/wr-manual-processes.md` §1–§2, CLAUDE.md gotcha #6,
 `standards/VERIFY_THE_POSTCONDITION.md`.
+
+---
+
+- **Date/Time:** 2026-08-22
+- **Task Attempted:** Unblock PR #17907 (`chore/disable-vercel-git-deploys`) after CircleCI lint-and-test and Ship Quality Check failed on SHA 84d14f9.
+- **Outcome:** `npm test` 1365/1365 pass. Vercel `git.deploymentEnabled: false` kept. Pushed more commits to the same branch.
+- **Root Cause of Failure:** The two `vercel.json` edits were fine. `npm test` was already red on the base: live `green-website.yml` has its push trigger frozen (test still required `on.push`); new `docs/prompts/**` files failed the markdown gate; `ghcr-setup-status.yml` still had a weekly cron; `ghcr-publish.yml` interpolated `github.event.inputs.tag_suffix` in a `run:` block; `config/flake8-baseline.txt` still listed 29 excluded `mcp-servers/gemini-notebook-mcp-cli/` paths.
+- **Self-Healing Fix / Learned Lesson:** Do not assume a 2-file vercel PR failed because of vercel.json. Read the 9 `not ok` lines from Ship Quality / `npm test` first. Cost-freeze tests must match the live workflow (commented `push:` and `schedule:`). A flake8 baseline that names an excluded path fails `loadBaseline` after flake8 already ran — drop those lines, do not raise counts.
+- **Next Action:** None for this PR. Vercel GitHub App "Account is blocked" statuses remain expected until git deploys stop firing on later SHAs; RecurseML skipped.
