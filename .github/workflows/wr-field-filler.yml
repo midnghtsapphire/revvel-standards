@@ -212,7 +212,7 @@ jobs:
 
       - name: Upload filled body as artifact
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: wr-fill-${{ matrix.issue }}-${{ github.run_id }}
           path: |

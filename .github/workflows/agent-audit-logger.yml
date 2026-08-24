@@ -167,7 +167,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload audit entry artifact
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: agent-audit-${{ github.run_id }}
           path: logs/agent-audit/audit.jsonl

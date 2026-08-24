@@ -285,7 +285,7 @@ jobs:
           done
 
           echo "count=$FOUND" >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: pdfs-${{ github.run_id }}
           path: dist/pdf/*.pdf
@@ -518,7 +518,7 @@ jobs:
           else
             echo "recorded=false" >> $GITHUB_OUTPUT
           fi
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.1
         if: steps.record.outputs.recorded == 'true'
         with:
           name: video-${{ github.run_id }}
@@ -826,7 +826,7 @@ jobs:
           else
             echo "result=Spec found: $SPEC_FILE (install @redocly/cli for validation)" >> $GITHUB_OUTPUT
           fi
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.1
         if: steps.openapi.outputs.result != '' && !contains(steps.openapi.outputs.result, 'SKIPPED')
         with:
           name: openapi-spec-${{ github.run_id }}
@@ -936,7 +936,7 @@ jobs:
           *Auto-generated draft — human review required before submitting to store.*
           EOF
           echo "result=Listing draft generated in dist/marketplace/listing-draft.md" >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: marketplace-listing-${{ github.run_id }}
           path: dist/marketplace/

@@ -57,7 +57,7 @@ jobs:
             --out "${{ inputs.output_name }}"
 
       - name: Upload PDF + manifest artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: gumloop-pdf-product
           path: |

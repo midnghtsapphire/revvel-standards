@@ -22,7 +22,7 @@ jobs:
           sha256sum "revvel-standards-${ts}.tar.gz" > mirror-checksum.txt
           ls -lah "revvel-standards-${ts}.tar.gz" mirror-checksum.txt
       - name: Upload workflow artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: durability-mirror
           path: |
