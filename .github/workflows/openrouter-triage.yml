@@ -48,7 +48,7 @@ jobs:
         # Pin + persist-credentials: false so this new job does not add a
         # zizmor finding the sibling route-new/sweep steps already carry
         # unpinned (those are pre-existing; ratchet only flags the diff).
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Resolve target issue metadata
@@ -107,7 +107,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Apply triage labels (best effort)
         id: labels
         uses: actions/github-script@v9.0.0
@@ -285,7 +285,7 @@ jobs:
       matrix: ${{ fromJson(needs.sweep-discover.outputs.matrix) }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Run cost-governed triage for each queued item
         # Fail-soft, same rationale as route-new: a per-item triage failure
         # already self-reports (comment + needs-human) and must not dead-end or

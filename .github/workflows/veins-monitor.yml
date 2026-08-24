@@ -52,7 +52,7 @@ jobs:
       GH_REPO: ${{ github.repository }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Scan for stuck issues and diagnose
         uses: actions/github-script@v9.0.0
