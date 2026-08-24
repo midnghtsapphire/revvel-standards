@@ -11,18 +11,6 @@ This document provides guidance for AI agents (Cursor, Claude, GPT, etc.) workin
 > short guest contract: where you may write, where setup/API info lives, and how not to
 > scaffold over the repo.
 >
-> **Every agent (fleet or visiting) — three mandatory standards, load these before any write:**
->
-> 1. [`standards/VISITING_AGENT_SANDBOX_STANDARD.md`](./standards/VISITING_AGENT_SANDBOX_STANDARD.md)
->    — save every thought / script / API call / decision to `.sandbox/<your-name>/` as
->    you work so a credit blackout does not lose the session's data.
-> 2. [`standards/OUT_OF_SCOPE_AUTO_WR_STANDARD.md`](./standards/OUT_OF_SCOPE_AUTO_WR_STANDARD.md)
->    — when you find a bug you did not introduce or feel is out of scope, immediately
->    file a Triage-role WR before continuing. "Not my bug" without a filed WR is banned.
-> 3. [`standards/TRIAGE_ROLE_STANDARD.md`](./standards/TRIAGE_ROLE_STANDARD.md)
->    — the override authority every agent has, at all times, to file the out-of-scope
->    WR the above standard requires.
->
 > Every error is a training module. Append lessons to [`learnings.md`](./learnings.md)
 > using the TM-NNNN format at the bottom of that file — future agents (and future
 > auto-fix scripts) read those modules as their curriculum.
