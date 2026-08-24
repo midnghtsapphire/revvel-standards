@@ -1,0 +1,8 @@
+# Dependencies for scripts/spike/run_spike.py
+# ACE-Step itself is installed separately: https://github.com/ace-step/ACE-Step
+librosa>=0.10
+numpy>=1.24
+pytest>=8.0
+# Required for voice-drift measurement. Without it the spike reports
+# INCONCLUSIVE rather than PASS -- see docs/repaint/CONSISTENCY.md
+resemblyzer>=0.1.4
