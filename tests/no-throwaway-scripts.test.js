@@ -31,7 +31,6 @@ test('No throwaway scripts in repo root', () => {
   // Do NOT add scripts here unless they fundamentally must live at the root
   // (e.g., specific entry points). Tooling goes in `scripts/`.
   const allowlist = new Set([
-    'update_uv_lock.py',
     'fix-zizmor.js',
     'fix-semgrep.js',
     'hub-registry.js',
