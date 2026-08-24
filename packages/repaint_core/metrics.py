@@ -80,7 +80,7 @@ def seam_discontinuity(
 
     mask = np.ones(flux.size, dtype=bool)
     for idx in (i_start, i_end):
-        mask[max(0, idx - pad):min(flux.size, idx + pad + 1)] = False
+        mask[max(0, idx - pad) : min(flux.size, idx + pad + 1)] = False
 
     baseline = flux[mask]
     if baseline.size < 8:

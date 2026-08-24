@@ -137,7 +137,7 @@ test('the known-offender ratchet may only shrink, and only by name', () => {
     '^(update_uv_lock\\.py|fix-semgrep\\.js|fix-zizmor\\.js)$',
   );
 
-  const NAMED = ['fix-semgrep.js', 'fix-zizmor.js'];
+  const NAMED = ['update_uv_lock.py', 'fix-semgrep.js', 'fix-zizmor.js'];
   for (const file of NAMED) {
     assert.equal(runGuard([file]), CLEAN, `${file} is exempt while it still exists`);
   }
@@ -155,6 +155,6 @@ test('the known-offender ratchet may only shrink, and only by name', () => {
 
   // Former ratchet members must fail closed once removed — the allowlist must
   // not keep shielding a path that no longer exists on disk.
-
+  assert.equal(runGuard(['update_uv_lock.py']), FLAGGED, 'update_uv_lock.py left the ratchet');
   assert.equal(runGuard(['patch_ossar.js']), FLAGGED, 'patch_ossar.js left the ratchet');
 });
