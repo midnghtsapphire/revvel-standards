@@ -95,8 +95,9 @@ Excluding the vendored tree is legitimate rather than a dodge: `notebooklm-mcp-c
 ships its own `LICENSE`, `CHANGELOG`, `CONTRIBUTING`, `uv.lock` and its own linter
 config (`[tool.ruff] line-length = 100`), so it is linted by its own toolchain.
 That is the "vendor noise" `.flake8`'s own comment permits, not the "product code"
-it forbids dropping. The 4 findings in `update_uv_lock.py` — this repo's own
-root-level helper — were **fixed**, not excluded.
+it forbids dropping. Findings in this repo's own code (as opposed to the
+vendored tree) were **fixed**, not excluded — the one-shot root helper that
+once carried four of them was later removed entirely (#17788).
 
 `tests/python-flake8-workflow.test.js` now asserts all four lists agree, and
 `.flake8ignore` states in its own header that flake8 does not read it, so the
