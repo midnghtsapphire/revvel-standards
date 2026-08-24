@@ -1,3 +1,10 @@
+name: Prosecute Merge
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
 # Merge Prosecutor (us) via `./products/merge-prosecutor`
 # (composite action: products/merge-prosecutor/action.yml +
 # products/merge-prosecutor/action/run-prosecutor.mjs).
@@ -24,6 +31,18 @@ concurrency:
 jobs:
   prosecute:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: ./products/merge-prosecutor
     timeout-minutes: 15
     steps:
       - name: Checkout PR
@@ -37,5 +56,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           pr-number: ${{ github.event.pull_request.number }}
+          test-command: "npm test"
           test-command: "node --test tests/prosecutor.test.js"
           workspace-dir: ${{ github.workspace }}/products/merge-prosecutor
