@@ -173,7 +173,7 @@ jobs:
     outputs:
       research_ok: ${{ steps.check.outputs.research_ok }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: docs/research-engine
           sparse-checkout-cone-mode: false

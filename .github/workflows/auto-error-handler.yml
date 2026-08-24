@@ -61,7 +61,7 @@ jobs:
       issue_url: ${{ steps.create_issue.outputs.issue_url }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Analyze error
         id: analyze
         run: |
@@ -249,7 +249,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Attempt recovery for OpenRouter errors
         if: inputs.error_type == 'openrouter'
         run: |

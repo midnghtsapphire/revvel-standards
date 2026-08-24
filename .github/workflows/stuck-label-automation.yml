@@ -19,7 +19,7 @@ jobs:
       stuck_issues: ${{ steps.scan.outputs.stuck_issues }}
       stuck_prs: ${{ steps.scan.outputs.stuck_prs }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Scan for stuck labels
         id: scan
         uses: actions/github-script@v9.0.0
@@ -181,7 +181,7 @@ jobs:
             items: ${{ needs.detect-stuck.outputs.stuck_prs }}
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Process stuck items
         uses: actions/github-script@v9.0.0
         env:

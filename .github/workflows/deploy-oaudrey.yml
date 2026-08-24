@@ -34,7 +34,7 @@ jobs:
           fi
         env:
           DO_TOKEN: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         if: steps.check-secret.outputs.skip != 'true'
       - name: Install doctl
         if: steps.check-secret.outputs.skip != 'true'

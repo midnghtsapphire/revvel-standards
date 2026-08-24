@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
 
       - name: Test agent aliases, routing, authorization, and status state
         run: node --test .github/tests/agent-command-router.test.mjs
