@@ -26,7 +26,7 @@ name: oAudrey Git Greetings
 on:
   issues:
     types: [opened]
-  pull_request_target:
+  pull_request:
     types: [opened]
 
 jobs:
