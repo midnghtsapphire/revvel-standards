@@ -6,3 +6,9 @@ pytest>=8.0
 # Required for voice-drift measurement. Without it the spike reports
 # INCONCLUSIVE rather than PASS -- see docs/repaint/CONSISTENCY.md
 resemblyzer>=0.1.4
+
+# Mastering + delivery gate (packages/repaint_core/mastering.py).
+# True-peak measurement is numpy-only by design -- no scipy needed.
+pyloudnorm>=0.1.1
+soundfile>=0.12
+matchering>=2.0
