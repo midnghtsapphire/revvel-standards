@@ -1,0 +1,33 @@
+name: "oAudrey Git Greetings"
+description: "Automatically comments a welcome greeting with extra umph on new issues and pull requests."
+author: "MIDNGHTSAPPHIRE / Revvel"
+
+branding:
+  icon: "message-square"
+  color: "purple"
+
+inputs:
+  github-token:
+    description: "GitHub token with pull-requests:write and issues:write permissions"
+    required: true
+  greeting-message:
+    description: "Custom greeting message to append to the default umph"
+    required: false
+    default: "Welcome to the repository!"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+      with:
+        node-version: "22"
+    - name: Run oAudrey Git Greetings
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        EVENT_PATH: ${{ github.event_path }}
+        GREETING_MESSAGE: ${{ inputs.greeting-message }}
+      run: node index.js
