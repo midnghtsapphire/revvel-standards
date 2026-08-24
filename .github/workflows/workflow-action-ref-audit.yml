@@ -26,7 +26,7 @@ jobs:
       broken_refs: ${{ steps.audit.outputs.broken_refs }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Audit workflow action references
         id: audit
         env:
@@ -165,7 +165,7 @@ jobs:
             printf '  - %s\n' "${UNPINNED[@]}"
             echo ""
             echo "Pin each ref to its full commit SHA and add the tag as a comment, e.g.:"
-            echo "  uses: actions/checkout@v4"
+            echo "  uses: actions/checkout@v7"
           fi
 
           {

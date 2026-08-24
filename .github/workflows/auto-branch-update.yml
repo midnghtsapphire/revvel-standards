@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository (full history)
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7
         with:
           # Full history required for clean merges; write-capable token to push.
           fetch-depth: 0

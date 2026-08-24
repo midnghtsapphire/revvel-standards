@@ -246,7 +246,7 @@ jobs:
       # Checkout is required here (unlike the other jobs) because this job
       # commits wr/memory/healing.jsonl back to the default branch.
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.repository.default_branch }}
 
@@ -476,7 +476,7 @@ jobs:
       issues: write
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.repository.default_branch }}
 

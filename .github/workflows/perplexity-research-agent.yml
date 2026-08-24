@@ -38,7 +38,7 @@ jobs:
        (github.event.label.name == 'wr:research' || github.event.label.name == 'lifecycle:stuck'))
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install no-key Perplexity bridge
         run: |

@@ -17,7 +17,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: PandaOps AI PR Review
         # Spend gate (#17850): this third-party action calls a paid LLM provider
         # with the key handed to it below, so the spend is real even though no

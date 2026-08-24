@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Run Trivy filesystem scan
         # a9c7b0f0 no longer exists in the upstream repo — the ref 404s and the
         # job fails at setup. Re-pinned to the current release (#17832).
