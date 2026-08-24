@@ -22,6 +22,7 @@ You must strictly calculate and report intermediate steps using the following ma
    - O is the final attention output of shape [M, d_v]
 
 When executing:
+
 - Write out the full dot-product multiplication steps.
 - Provide the scaling division explicitly.
 - Show the exponentiation and sum of exponents for the softmax.
