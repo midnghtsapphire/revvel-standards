@@ -5,7 +5,7 @@
   "main": "action/run-prosecutor.mjs",
   "type": "module",
   "scripts": {
-    "test": "node tests/prosecutor.test.js"
+    "test": "node --test tests/prosecutor.test.js"
   },
   "keywords": [
     "github",
