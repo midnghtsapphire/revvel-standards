@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Read the trusted router from the default branch
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
           persist-credentials: false

@@ -42,7 +42,7 @@ jobs:
        github.event.label.name == 'deep-search')
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
         uses: actions/setup-node@v7

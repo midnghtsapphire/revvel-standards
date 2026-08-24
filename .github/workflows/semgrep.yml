@@ -22,7 +22,7 @@ jobs:
     if: (github.actor != 'dependabot[bot]')
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Mark workspace safe (avoid 'dubious ownership' from container UID mismatch)
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Run Semgrep scan (OSS rule packs)
