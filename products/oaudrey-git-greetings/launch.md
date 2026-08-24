@@ -6,7 +6,7 @@ When a developer takes the time to open an issue or submit a pull request, the s
 
 That's why we built **oAudrey Git Greetings** — a lightweight, secure GitHub Action that automatically welcomes contributors when they interact with your repo!
 
-## What it does:
+## What it does
 - Immediately posts a welcoming comment on new issues and PRs.
 - Customizes the greeting if it's the user's very first contribution.
 - Keeps track of returning contributors to welcome them back.

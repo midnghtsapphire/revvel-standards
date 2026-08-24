@@ -6,7 +6,7 @@ First impressions matter. When a developer takes the time to contribute to your 
 
 This lightweight, zero-dependency GitHub Action brings immediate, personalized interaction to your repository. It automatically detects new issues and pull requests and posts a welcoming comment that adds that much-needed "extra umph" to your community building.
 
-## Why oAudrey Git Greetings?
+## Why oAudrey Git Greetings
 
 - **Personalized Touch:** Detects if it's a contributor's very first time interacting with your repo and tailors the welcome message accordingly to celebrate the milestone.
 - **Instant Gratification:** Provides immediate feedback and acknowledgement, keeping contributors engaged.
