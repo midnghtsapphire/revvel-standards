@@ -152,4 +152,9 @@ test('the known-offender ratchet may only shrink, and only by name', () => {
     [],
     'these files are gone — remove their names from RATCHET and from this list',
   );
+
+  // Former ratchet members must fail closed once removed — the allowlist must
+  // not keep shielding a path that no longer exists on disk.
+  assert.equal(runGuard(['update_uv_lock.py']), FLAGGED, 'update_uv_lock.py left the ratchet');
+  assert.equal(runGuard(['patch_ossar.js']), FLAGGED, 'patch_ossar.js left the ratchet');
 });

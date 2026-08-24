@@ -9,12 +9,13 @@ Promhoeador collects; Promptinator files.
 ## Layout
 
 ```text
+```txt
 docs/prompts/
   <type>/
     <prompt-name>.md          # reusable prompt
     <prompt-name>/
       SYSTEM_PROMPT.md        # drop-in system prompt
-```
+```txt
 
 ## Types in use
 
