@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # WR-02 (audit-2026-08-05): default GITHUB_TOKEN cannot push to main under
           # the "main" ruleset (rule type `pull_request` — "Changes must be

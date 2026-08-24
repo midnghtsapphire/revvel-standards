@@ -144,7 +144,7 @@ jobs:
       # STEP: Checkout repository (full depth so git apply works reliably)
       # -----------------------------------------------------------------------
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # Use PAT so the push can trigger downstream workflows (GITHUB_TOKEN
           # cannot trigger other workflow runs).
@@ -324,7 +324,7 @@ jobs:
 
     steps:
       - name: Checkout fix branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ needs.create-pr.outputs.branch }}
 

@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Fetch headlines
         run: |
           curl "https://newsapi.org/v2/top-headlines?country=us&apiKey=${{ secrets.NEWS_API_KEY }}" > headlines.json

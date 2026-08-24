@@ -269,7 +269,7 @@ jobs:
               }
             }
       - name: Check out repository (base ref, for scanner script)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.base.ref }}
       - name: Post review-readiness checklist comment on PR
