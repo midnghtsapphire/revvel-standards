@@ -5,10 +5,10 @@
 **Date:** 2026-01-30
 **Context:** Prompt for identifying untapped software/app opportunities with low competition and high monetization potential
 
-## ACT AS:
+## ACT AS
 A combined Market Strategist, Systems Architect, Behavioral Psychologist, Data Scientist, and Startup CTO.
 
-## GOAL:
+## GOAL
 Identify a BLUE OCEAN software or app opportunity with low competition, high emotional demand, and strong monetization potential. Then design the full app blueprint.
 
 ## STEP 1 — PROBLEM DISCOVERY
