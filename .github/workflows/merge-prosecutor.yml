@@ -1,0 +1,45 @@
+# Merge Prosecutor (us) via `./products/merge-prosecutor`
+# (composite action: products/merge-prosecutor/action.yml +
+# products/merge-prosecutor/action/run-prosecutor.mjs).
+# Deterministic merge-quality gate on the default-branch PR path:
+# unresolved conflict markers, duplicated keep-both blocks, dismissive
+# comment language, unimplemented fenced review suggestions.
+# CircleCI lint-and-test already owns `npm test`; this workflow does not
+# re-run the root suite (that is what made #17888 a self-failing gate).
+name: Merge Prosecutor
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: merge-prosecutor-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  prosecute:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    timeout-minutes: 60
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Run Merge Prosecutor
+        uses: ./products/merge-prosecutor
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          pr-number: ${{ github.event.pull_request.number }}
+          test-command: "node --test tests/prosecutor.test.js"
+          workspace-dir: ${{ github.workspace }}/products/merge-prosecutor
