@@ -60,6 +60,7 @@ jobs:
           # as text before the JS is parsed (#17801).
           STUCK_ISSUES: ${{ steps.find-stuck.outputs.issues }}
         with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const OWNER = context.repo.owner;
             const REPO = context.repo.repo;
@@ -116,7 +117,7 @@ jobs:
                   owner: OWNER,
                   repo: REPO,
                   workflow_id: 'openrouter-assignee.yml',
-                  ref: context.ref,
+                  ref: 'main',
                   inputs: { issue_number: String(issueNumber) }
                 });
                 assigneeDispatched = true;
@@ -130,7 +131,7 @@ jobs:
                   owner: OWNER,
                   repo: REPO,
                   workflow_id: 'openrouter-triage.yml',
-                  ref: context.ref,
+                  ref: 'main',
                   inputs: { issue_number: String(issueNumber) }
                 });
                 triageDispatched = true;
