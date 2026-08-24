@@ -85,6 +85,7 @@ On top of that, every PR is evaluated for **quality (needs enhancement?)**:
 | Check | Tool | Blocks merge? |
 | --- | --- | --- |
 | Tests pass | `node --test` (CircleCI) | yes |
+| Merge quality | Merge Prosecutor (us) via `.github/workflows/merge-prosecutor.yml` → `./products/merge-prosecutor` | yes (job failure) |
 | Coverage (80% lines/functions, 75% branches) | `c8` | aspirational (not yet required) |
 | Security + secrets | Semgrep (ERROR severity, diff-aware) | yes, once marked required |
 | Code analysis | CodeQL (JS + workflows) | surfaced as alerts |
