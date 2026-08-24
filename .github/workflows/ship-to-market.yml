@@ -216,17 +216,13 @@ jobs:
       - name: Deploy to Vercel
         id: vercel
         if: env.VERCEL_TOKEN != ''
-        run: >
-          npm i -g vercel
-
-          URL=$(vercel --prod --yes --token $VERCEL_TOKEN 2>&1 | grep -oP
-          'https://[^\s]+' | tail -1)
-
-          echo "url=$URL" >> $GITHUB_OUTPUT
-        env:
+        uses: hardpixel/deploy-to-vercel-action@v2.0.1
+        with:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       - name: Deploy to Netlify (fallback)
         id: netlify
         if: env.VERCEL_TOKEN == '' && env.NETLIFY_AUTH_TOKEN != ''
@@ -245,7 +241,7 @@ jobs:
         if: always()
         uses: actions/github-script@v9.0.0
         env:
-          VERCEL_URL: ${{ steps.vercel.outputs.url }}
+          VERCEL_URL: ${{ steps.vercel.outputs.PREVIEW_URL }}
           NETLIFY_URL: ${{ steps.netlify.outputs.url }}
         with:
           script: |
