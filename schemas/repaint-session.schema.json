@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/midnghtsapphire/revvel-standards/schemas/repaint-session.schema.json",
+  "title": "Repaint session",
+  "description": "Reproducible edit history for one song. Every edit records the seed and conditioning it ran under, so any state of the track can be rebuilt from the source render plus this file. Undo is replay, not a stored audio stack.",
+  "type": "object",
+  "required": ["version", "edits"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "edits": {
+      "type": "array",
+      "description": "Ordered edit receipts. Index is the edit's position in history.",
+      "items": { "$ref": "#/$defs/receipt" }
+    }
+  },
+  "$defs": {
+    "receipt": {
+      "type": "object",
+      "required": [
+        "task",
+        "src_audio_path",
+        "save_path",
+        "span_s",
+        "repaint_bounds_s",
+        "seed",
+        "conditioning"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "task": {
+          "type": "string",
+          "enum": ["repaint", "edit"],
+          "description": "repaint = artifact removal (lyrics unchanged); edit = word replacement."
+        },
+        "src_audio_path": { "type": "string", "minLength": 1 },
+        "save_path": { "type": "string", "minLength": 1 },
+        "span_s": {
+          "type": "array",
+          "description": "Requested edit span in seconds [start, end], as the user drew it.",
+          "items": { "type": "number", "minimum": 0 },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "repaint_bounds_s": {
+          "type": "array",
+          "description": "Integer-second bounds actually sent to the model, widened outward from span_s. Recorded separately because the widening is lossy and must be auditable.",
+          "items": { "type": "integer", "minimum": 0 },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "seed": {
+          "type": "integer",
+          "description": "Pinned to the source render's seed. A differing seed here means the edit was run off-contract."
+        },
+        "elapsed_s": { "type": "number", "minimum": 0 },
+        "conditioning": { "$ref": "#/$defs/conditioning" }
+      }
+    },
+    "conditioning": {
+      "type": "object",
+      "description": "Locked generation settings. Must be identical across the source render and every edit; see docs/repaint/CONSISTENCY.md.",
+      "required": ["prompt", "audio_duration", "seed"],
+      "properties": {
+        "prompt": { "type": "string", "minLength": 1 },
+        "audio_duration": { "type": "number", "exclusiveMinimum": 0 },
+        "seed": { "type": "integer" },
+        "infer_step": { "type": "integer", "minimum": 1 },
+        "guidance_scale": { "type": "number" },
+        "scheduler_type": { "type": "string" },
+        "cfg_type": { "type": "string" },
+        "omega_scale": { "type": "number" },
+        "guidance_interval": { "type": "number" },
+        "guidance_interval_decay": { "type": "number" },
+        "min_guidance_scale": { "type": "number" },
+        "use_erg_tag": { "type": "boolean" },
+        "use_erg_lyric": { "type": "boolean" },
+        "use_erg_diffusion": { "type": "boolean" },
+        "guidance_scale_text": { "type": "number" },
+        "guidance_scale_lyric": { "type": "number" },
+        "lora_name_or_path": { "type": "string" },
+        "lora_weight": { "type": "number" }
+      }
+    }
+  }
+}
