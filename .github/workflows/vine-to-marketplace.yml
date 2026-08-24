@@ -101,7 +101,7 @@ jobs:
             node index.js post
           fi
       - name: Save inventory artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: vine-inventory-${{ github.run_number }}
           path: reesereviews/vine-marketplace/data/inventory.json
