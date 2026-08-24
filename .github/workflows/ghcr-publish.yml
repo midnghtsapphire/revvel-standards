@@ -57,6 +57,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set lowercase image name
+        env:
+            TAG_SUFFIX: "${{ github.event.inputs.tag_suffix }}"
         id: meta
         run: |
           set -euo pipefail
@@ -74,7 +76,7 @@ jobs:
             SAFE_TAG="$(echo "${RAW_TAG}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g')"
             TAGS="${TAGS}"$'\n'"${IMAGE}:${SAFE_TAG}"
           fi
-          EXTRA="${{ github.event.inputs.tag_suffix }}"
+          EXTRA="$TAG_SUFFIX"
           if [[ -n "${EXTRA}" ]]; then
             SAFE_EXTRA="$(echo "${EXTRA}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g')"
             TAGS="${TAGS}"$'\n'"${IMAGE}:${SAFE_EXTRA}"
