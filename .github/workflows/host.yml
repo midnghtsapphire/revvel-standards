@@ -100,7 +100,7 @@ jobs:
           gh issue comment "$ISSUE_NUMBER" --body-file comment.md
 
       - name: Upload contract as artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: agent-contract-${{ env.ISSUE_NUMBER }}
           path: contract.json

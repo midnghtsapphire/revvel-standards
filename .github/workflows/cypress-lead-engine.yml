@@ -48,7 +48,7 @@ jobs:
           browser: chrome
       - name: Upload Cypress screenshots (failure only)
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: cypress-screenshots
           path: products/life-insurance-lead-engine/build/cypress/screenshots

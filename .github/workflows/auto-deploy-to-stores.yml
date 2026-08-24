@@ -397,7 +397,7 @@ jobs:
           echo "result=SKIPPED — no Android toolchain detected (add eas.json for Expo, Gemfile+Fastfile for Fastlane, manifest.json for TWA, or android/ for Gradle)" >> $GITHUB_OUTPUT
       - name: Upload Android artifact
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: android-build-${{ github.run_id }}
           path: |
@@ -531,7 +531,7 @@ jobs:
           echo "result=SKIPPED — no iOS toolchain detected (add eas.json for Expo, Gemfile+Fastfile for Fastlane, or capacitor.config.ts for Capacitor)" >> $GITHUB_OUTPUT
       - name: Upload iOS artifact
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: ios-build-${{ github.run_id }}
           path: |

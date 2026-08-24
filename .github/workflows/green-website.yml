@@ -121,7 +121,7 @@ jobs:
             core.info(`Cleaner-than score for ${targetUrl}: ${cleanerThan}`);
 
       - name: Upload carbon artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: carbon
           path: carbon
