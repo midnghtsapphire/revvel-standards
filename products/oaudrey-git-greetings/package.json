@@ -1,0 +1,11 @@
+{
+  "name": "oaudrey-git-greetings",
+  "version": "1.0.0",
+  "description": "Automatically comments a welcome greeting with extra umph on new issues and pull requests.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "author": "MIDNGHTSAPPHIRE / Revvel",
+  "license": "MIT"
+}
