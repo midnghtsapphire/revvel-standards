@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Compare 00-work-request.yml files
         run: |
           echo "Comparing .github/ISSUE_TEMPLATE/00-work-request.yml with templates/issue-template/00-work-request.yml..."

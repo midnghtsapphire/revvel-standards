@@ -35,7 +35,7 @@ jobs:
       issues: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Generate GitHub App Token
         id: app-token
         uses: actions/create-github-app-token@v3.2.0

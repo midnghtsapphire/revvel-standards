@@ -65,7 +65,7 @@ jobs:
       - name: Checkout main
         id: checkout_main
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || github.token }}
@@ -75,7 +75,7 @@ jobs:
       - name: Checkout main (fallback)
         if: steps.checkout_main.outcome == 'failure'
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
           token: ${{ github.token }}
@@ -179,7 +179,7 @@ jobs:
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'health_check')
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Analyze agent health
         uses: actions/github-script@v9.0.0
         env:
@@ -351,7 +351,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'token_report'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Analyze OpenRouter usage
         uses: actions/github-script@v9.0.0
         env:
@@ -419,7 +419,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'log_analysis'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Analyze audit logs
         run: |
           echo "📊 Audit Log Analysis"
