@@ -144,9 +144,9 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: npm
@@ -208,7 +208,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: npm
@@ -267,7 +267,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install pandoc + LaTeX
         run: sudo apt-get update -qq && sudo apt-get install -y pandoc texlive-xetex
           texlive-fonts-recommended
@@ -285,7 +285,7 @@ jobs:
           done
 
           echo "count=$FOUND" >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: pdfs-${{ github.run_id }}
           path: dist/pdf/*.pdf
@@ -318,7 +318,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
           registry-url: https://registry.npmjs.org
@@ -360,7 +360,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: docker/login-action@v4.4.0
         with:
           registry: ghcr.io
@@ -393,7 +393,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - run: npm ci --if-present && (npm run build:mcp --if-present || npm run build
@@ -459,7 +459,7 @@ jobs:
       contents: write
       pages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Detect framework and build
         id: build_docs
         run: >
@@ -504,7 +504,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - run: npm ci --if-present && npx playwright install --with-deps chromium
@@ -518,7 +518,7 @@ jobs:
           else
             echo "recorded=false" >> $GITHUB_OUTPUT
           fi
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.1
         if: steps.record.outputs.recorded == 'true'
         with:
           name: video-${{ github.run_id }}
@@ -629,7 +629,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
           registry-url: https://registry.npmjs.org
@@ -688,7 +688,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - run: npm ci --if-present && npm run build --if-present
@@ -772,7 +772,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Validate action.yml
         id: validate
         run: |
@@ -805,7 +805,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - run: npm ci --if-present
@@ -826,7 +826,7 @@ jobs:
           else
             echo "result=Spec found: $SPEC_FILE (install @redocly/cli for validation)" >> $GITHUB_OUTPUT
           fi
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.1
         if: steps.openapi.outputs.result != '' && !contains(steps.openapi.outputs.result, 'SKIPPED')
         with:
           name: openapi-spec-${{ github.run_id }}
@@ -860,7 +860,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - run: npm ci --if-present
@@ -910,7 +910,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Generate marketplace listing draft
         id: listing
         run: |
@@ -936,7 +936,7 @@ jobs:
           *Auto-generated draft — human review required before submitting to store.*
           EOF
           echo "result=Listing draft generated in dist/marketplace/listing-draft.md" >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: marketplace-listing-${{ github.run_id }}
           path: dist/marketplace/

@@ -173,7 +173,7 @@ jobs:
     outputs:
       research_ok: ${{ steps.check.outputs.research_ok }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: docs/research-engine
           sparse-checkout-cone-mode: false
@@ -315,7 +315,7 @@ jobs:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: npm
@@ -397,7 +397,7 @@ jobs:
           echo "result=SKIPPED — no Android toolchain detected (add eas.json for Expo, Gemfile+Fastfile for Fastlane, manifest.json for TWA, or android/ for Gradle)" >> $GITHUB_OUTPUT
       - name: Upload Android artifact
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: android-build-${{ github.run_id }}
           path: |
@@ -459,7 +459,7 @@ jobs:
       MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Install dependencies
@@ -531,7 +531,7 @@ jobs:
           echo "result=SKIPPED — no iOS toolchain detected (add eas.json for Expo, Gemfile+Fastfile for Fastlane, or capacitor.config.ts for Capacitor)" >> $GITHUB_OUTPUT
       - name: Upload iOS artifact
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: ios-build-${{ github.run_id }}
           path: |

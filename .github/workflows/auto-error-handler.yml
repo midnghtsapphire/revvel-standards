@@ -61,7 +61,7 @@ jobs:
       issue_url: ${{ steps.create_issue.outputs.issue_url }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Analyze error
         id: analyze
         run: |
@@ -249,7 +249,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Attempt recovery for OpenRouter errors
         if: inputs.error_type == 'openrouter'
         run: |
@@ -301,7 +301,7 @@ jobs:
           echo "CI recovery attempts logged" >> recovery_log.txt
       - name: Upload recovery log
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: recovery-log
           path: recovery_log.txt

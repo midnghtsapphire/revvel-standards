@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Morty Post Mortems
         uses: mentimeter/morty@d0db9f4556af12dc142f6af5e2f3d88dbdd3b2a9 # v1.2.1

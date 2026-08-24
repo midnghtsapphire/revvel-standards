@@ -9,15 +9,15 @@ on:
   # FREEZE below already cut this workflow's cron, but `docs/**` is a very wide
   # path filter, so ordinary doc commits kept waking it. Preserved commented,
   # not deleted (RVS-AGENT-001).
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - README.md
-  #     - index.html
-  #     - oaudrey/**
-  #     - docs/**
-  #     - .github/workflows/green-website.yml
+  push:
+    branches:
+      - main
+    paths:
+      - README.md
+      - index.html
+      - oaudrey/**
+      - docs/**
+      - .github/workflows/green-website.yml
   # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
   # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
   # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
@@ -49,7 +49,7 @@ jobs:
     if: "github.event_name != 'push' || !contains(github.event.head_commit.message, 'docs: update green website report')"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -121,7 +121,7 @@ jobs:
             core.info(`Cleaner-than score for ${targetUrl}: ${cleanerThan}`);
 
       - name: Upload carbon artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: carbon
           path: carbon

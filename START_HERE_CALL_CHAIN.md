@@ -71,6 +71,7 @@ YOU open Issue  [WR] …
 CI + review on the PR
         → CircleCI (.circleci/config.yml)  — npm test + md lint
         → wr-lint.yml → wr/scripts/wr-lint.mjs
+        → merge-prosecutor.yml → ./products/merge-prosecutor (conflicts / dupes / dismissive / unimplemented)
         → ship-quality.yml, CodeQL, Semgrep, GitGuardian, …
         → pr-state-orchestrator.yml  — lifecycle labels
         → trusted-bot-auto-approve.yml — trusted bots when green
@@ -200,6 +201,7 @@ If two docs conflict: **`MASTER.md` ordering wins** for process; **this file win
 | `GOAL.md` | Revenue targets |
 | `SYSTEM_STATE.md` | Infra status (update at session end) |
 | `REMINDERS.md` | “If you’re about to do X, read Y” |
+| `standards/PEDAL_TO_THE_METAL_ENTERPRISE.md` | Enterprise oAudrey / near-metal inventory (map only) |
 
 ---
 
@@ -212,7 +214,6 @@ _Last intent: stop hunting folders; one root file for start → next. Detail liv
 **Do not use the hub homepage for uploads.** Use:
 
 - <https://midnghtsapphire.github.io/revvel-standards/docs/vine-orders/>
-- or <https://midnghtsapphire.github.io/revvel-standards/vine-orders.html>
 
 That page accepts your CSV in the browser. The main Vercel site only shows docs/folders.
 
