@@ -33,6 +33,11 @@ The dashboard will be built as a modern web application optimized for desktop us
 1. **Frontend:** Develop a React-based UI featuring chibi-style viking illustrations, custom typography, and a cohesive color palette (e.g., oceanic blues, wood browns, and metallic silver).
 2. **Data Visualization:** Use charting libraries (such as Recharts or Chart.js) to display metrics and confidence scales regarding brand viability and playlist characteristics.
 3. **Deployment:** Deploy the application via Vercel (or a similar hosting provider) to ensure it is live and accessible, fulfilling the "TESTABLE-LIVE" requirement.
+Create a live HTML dashboard for Viking Experimentation Music, including metrics and a confidence scale. It will be served off the `oaudrey/freedomangelcorp` repository for fast implementation and rapid iteration. The dashboard is primarily for internal use but will be evaluated as a potential digital product for sale.
+
+## Approach
+
+Build a single-page HTML dashboard to display the playlist, metrics, and confidence scale. Deploy it directly via GitHub Pages on the `oaudrey/freedomangelcorp` repository to ensure fast delivery. The implementation will prioritize speed and immediate utility over long-term maintainability, acknowledging that the underlying technology will likely change.
 
 ## Acceptance Criteria
 
@@ -49,6 +54,8 @@ The dashboard will be built as a modern web application optimized for desktop us
   - **Mitigation:** Ensure high contrast and clear data visualization hierarchies, using the theme primarily for structural elements and decorative assets rather than obscuring data.
 - **Risk:** Ambiguity in what specific metrics are most valuable for the confidence scale.
   - **Mitigation:** Implement a flexible, configurable metrics model that can be adjusted based on user feedback.
+**Risk:** The technology might become obsolete quickly, requiring rewrites if it becomes a long-term product.
+**Mitigation:** Keep the implementation as a simple, disposable live HTML dashboard. Do not over-engineer. Focus on finding product-market fit first.
 
 ## Competitor & Pricing Intelligence
 
@@ -57,3 +64,4 @@ Pricing data pending — competitive benchmark research required.
 ## Learnings — What & Why
 
 The request highlights a unique intersection of data analytics and highly stylized personal tooling ("viking chibi theme"). Creating personalized data dashboards requires balancing aesthetic requests with functional data visualization. This WR establishes the foundation for building themed, single-purpose analysis tools that remain rigorously testable and deployable within the existing infrastructure.
+The user wants to experiment with rapid deployment of live HTML dashboards for niche use cases (like Viking Experimentation Music) directly on their main repository (`oaudrey/freedomangelcorp`). This approach reduces time-to-market and operational overhead for testing product ideas, emphasizing speed and disposability over over-engineering.
