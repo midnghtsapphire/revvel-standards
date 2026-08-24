@@ -71,6 +71,7 @@ YOU open Issue  [WR] …
 CI + review on the PR
         → CircleCI (.circleci/config.yml)  — npm test + md lint
         → wr-lint.yml → wr/scripts/wr-lint.mjs
+        → merge-prosecutor.yml → ./products/merge-prosecutor (conflicts / dupes / dismissive / unimplemented)
         → ship-quality.yml, CodeQL, Semgrep, GitGuardian, …
         → pr-state-orchestrator.yml  — lifecycle labels
         → trusted-bot-auto-approve.yml — trusted bots when green
