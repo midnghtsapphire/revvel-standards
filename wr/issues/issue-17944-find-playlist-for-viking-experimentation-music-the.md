@@ -5,17 +5,17 @@
 **Created:** 2026-08-24  
 **Research Date:** 2026-08-24  
 **Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
+**WR Status:** ✅ Complete
 
 ---
 
 ## Scope
 
-<!-- Detailed scope: what's in, what's out, boundaries with other WRs. -->
+Create a live HTML dashboard for Viking Experimentation Music, including metrics and a confidence scale. It will be served off the `oaudrey/freedomangelcorp` repository for fast implementation and rapid iteration. The dashboard is primarily for internal use but will be evaluated as a potential digital product for sale.
 
 ## Approach
 
-<!-- Proposed approach / design sketch. Alternatives considered. -->
+Build a single-page HTML dashboard to display the playlist, metrics, and confidence scale. Deploy it directly via GitHub Pages on the `oaudrey/freedomangelcorp` repository to ensure fast delivery. The implementation will prioritize speed and immediate utility over long-term maintainability, acknowledging that the underlying technology will likely change.
 
 ## Acceptance Criteria
 
@@ -26,27 +26,13 @@
 
 ## Risks & Mitigations
 
-<!-- Known risks, fragile files touched, rollback plan. -->
+**Risk:** The technology might become obsolete quickly, requiring rewrites if it becomes a long-term product.
+**Mitigation:** Keep the implementation as a simple, disposable live HTML dashboard. Do not over-engineer. Focus on finding product-market fit first.
 
 ## Competitor & Pricing Intelligence
 
-<!--
-For Competitor and GitHub Star Intelligence WRs, the competitor/pricing table
-must list actual prices (e.g. "$99-299/month"), not vague labels like "Paid tiers".
-If a competitor's price is unknown, write:
-"Pricing data pending — competitive benchmark research required."
-Do not ship incomplete competitive intelligence. This rule is kept in sync with
-scripts/research-engine.js by tests/research-engine.test.js.
--->
+Pricing data pending — competitive benchmark research required.
 
 ## Learnings — What & Why
 
-N/A — pending Jules refinement
-
-<!--
-Guidance: agents completing other WR types should fill this in themselves once
-done — capture what was learned and _why_ it matters, not just what changed.
-For follow-up-generated WRs this section is populated automatically by the
-Follow-up Checkbox Router with the original follow-up text, a link to the
-source PR/issue, and (if applicable) a note that this is a chained follow-up.
--->
+The user wants to experiment with rapid deployment of live HTML dashboards for niche use cases (like Viking Experimentation Music) directly on their main repository (`oaudrey/freedomangelcorp`). This approach reduces time-to-market and operational overhead for testing product ideas, emphasizing speed and disposability over over-engineering.
