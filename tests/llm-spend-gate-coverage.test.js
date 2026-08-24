@@ -252,6 +252,7 @@ const NON_LLM_ACTIONS = [
   'docker/login-action', // registry auth
   'docker/build-push-action', // image build
   'peaceiris/actions-gh-pages', // static publish
+  'hardpixel/deploy-to-vercel-action', // vercel deployment
 ];
 
 /**

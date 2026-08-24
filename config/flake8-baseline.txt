@@ -67,6 +67,7 @@ mcp-servers/social-mcp/social_mcp/server.py::W292 1
 mcp-servers/social-mcp/social_mcp/server.py::W293 4
 mcp-servers/social-mcp/tests/verify_server.py::E302 1
 mcp-servers/social-mcp/tests/verify_server.py::E402 1
+packages/repaint_core/metrics.py::E203 1
 penny-sovereign-yield-scout/samples/sample_aave_optimizer.py::E231 1
 penny-sovereign-yield-scout/samples/sample_aave_optimizer.py::E241 25
 penny-sovereign-yield-scout/samples/sample_pendle_locker_cli.py::F401 1
@@ -153,7 +154,3 @@ templates/mcp/custom-server/mcp_server/server.py::W293 4
 templates/mcp/custom-server/tests/test_server.py::E302 1
 tools/harvest.py::F401 1
 tools/harvest.py::W504 1
-update_uv_lock.py::E302 1
-update_uv_lock.py::E305 1
-update_uv_lock.py::E501 2
-update_uv_lock.py::F401 1
