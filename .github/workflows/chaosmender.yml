@@ -48,7 +48,7 @@ jobs:
           # Full history so the PR-scope step can diff against the base commit.
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
 
