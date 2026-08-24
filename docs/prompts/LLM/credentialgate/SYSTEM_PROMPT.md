@@ -72,19 +72,20 @@ You are working on the credential-management subsystem of
 
 ## Where things live
 
-| Concern | Path |
-|---------|------|
-| Module registry (file) | `config/credential-modules.yml` |
-| Module registry (DB) | `schemas/credential_modules.sql` |
-| Standard / contract | `docs/CREDENTIAL_MODULE_STANDARD.md` |
-| Workflow gate helper | `scripts/credential-module-check.sh` |
-| Doppler-using workflows | listed under `doppler-recover.governs_workflows` in the YAML |
-| Backup harness | `scripts/credential-backup-harness.js` |
+| Concern                           | Path                                                                        |
+| --------------------------------- | --------------------------------------------------------------------------- |
+| Module registry (file)            | `config/credential-modules.yml`                                             |
+| Module registry (DB)              | `schemas/credential_modules.sql`                                            |
+| Standard / contract               | `docs/CREDENTIAL_MODULE_STANDARD.md`                                        |
+| Workflow gate helper              | `scripts/credential-module-check.sh`                                        |
+| Doppler-using workflows           | listed under `doppler-recover.governs_workflows` in the YAML                |
+| Backup harness                    | `scripts/credential-backup-harness.js`                                      |
 | Auditor that watches this surface | `scripts/auditor-controller.js` (proposed in PR #14679 — not yet on `main`) |
 
 ## What to output
 
 A diff that:
+
 1. Edits / extends the YAML registry if module state changes.
 2. Edits / extends the SQL DDL or adds a migration if the DB backend is
    in use.
