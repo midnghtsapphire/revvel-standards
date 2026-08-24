@@ -3,6 +3,7 @@
 The **SCALE Prompt Template** is a standardized, five-layer runtime specification designed to guide AI agents toward producing highly detailed, production-ready system architectures. By structuring prompts with this acronym, developers and architects eliminate ambiguity and prevent "drift" or over-generalized, hand-wavy solutions.
 
 ## The SCALE Acronym Breakdown
+
 1. **S**ystem: Defines the name, core identity, and primary high-level purpose of the system.
 2. **C**onstraints: Specifies quantitative performance metrics (DAU, P99 latency, consistency models, and regulatory compliance).
 3. **A**PIs: Outlines key endpoints, payload schemas, and request/response shapes.
@@ -13,8 +14,9 @@ The **SCALE Prompt Template** is a standardized, five-layer runtime specificatio
 
 ## Reusable Markdown Template
 
-```markdown
+````markdown
 # ROLE: Senior AI Systems Architect & Advisor
+
 # CONTEXT: You are designing a production-grade, highly available, cost-effective system.
 
 ## 1. SYSTEM
@@ -54,7 +56,7 @@ The **SCALE Prompt Template** is a standardized, five-layer runtime specificatio
 - **Hotspots**: [How do we handle disproportionate traffic to specific resources/shards?]
 - **Failure Modes**: [Circuit breakers, fallback databases, retry queues with exponential backoff]
 - **Race Conditions**: [Distributed locking mechanisms, optimistic concurrency control]
-```
+````
 
 ---
 
@@ -62,7 +64,7 @@ The **SCALE Prompt Template** is a standardized, five-layer runtime specificatio
 
 Below is a system prompt formatted using the **SCALE** template to generate a secure, high-performance RAG pipeline:
 
-```markdown
+````markdown
 ## 1. SYSTEM
 
 - **Name**: GenRead-Enterprise
@@ -115,4 +117,4 @@ Below is a system prompt formatted using the **SCALE** template to generate a se
 - **Hotspots (Hot Tenant Shards)**: Implemented physical multi-tenant isolation inside Weaviate per corporate tenant to prevent a noisy neighbor from consuming shared cache.
 - **Failure Modes**: If Triton Inference Server times out or fails, gracefully fall back to a lightweight, locally deployed Llama-3-8B model on a secondary cluster, flagging the degradation in the response.
 - **Race Conditions**: Two admins uploading the same document simultaneously is mitigated using distributed locking with Redis (Redlock) on the document hash before starting the pipeline.
-```
+````
