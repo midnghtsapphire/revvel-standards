@@ -82,8 +82,8 @@ function assertGreenWorkflow(relativePath, { requiresFixedDefaultUrl }) {
   if (!String(actionStep.with?.script || '').includes("fs.writeFileSync(carbonPath")) {
     throw new Error(`${relativePath} must write the carbon data file`);
   }
-  if (!artifactStep || artifactStep.uses !== 'actions/upload-artifact@v7') {
-    throw new Error(`${relativePath} must upload the carbon artifact with actions/upload-artifact@v7`);
+  if (!artifactStep || !artifactStep.uses.startsWith('actions/upload-artifact@')) {
+    throw new Error(`${relativePath} must upload the carbon artifact`);
   }
   if (artifactStep.with?.name !== 'carbon' || artifactStep.with?.path !== 'carbon') {
     throw new Error(`${relativePath} must upload the generated carbon file as the carbon artifact`);

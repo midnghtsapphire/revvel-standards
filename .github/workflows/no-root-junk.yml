@@ -69,7 +69,7 @@ jobs:
           # happened: patch_ossar.js was removed by #17769 and its name came out
           # of this list. Three remain.
           ALLOWED='^(agent-creator-data|hub-registry)\.js$'
-          RATCHET='^(update_uv_lock\.py|fix-semgrep\.js|fix-zizmor\.js)$'
+          RATCHET='^(fix-semgrep\.js|fix-zizmor\.js)$'
           JUNK_BY_KIND="$(printf '%s\n' "$CHANGED" \
             | grep -E '\.(js|mjs|cjs|ts|py|sh|bash|rb|pl)$' \
             | grep -Ev "$ALLOWED" \
