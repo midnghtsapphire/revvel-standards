@@ -148,7 +148,7 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Create Devin session (slash command)
         if: env.DEVIN_SKIP == 'false' && github.event_name == 'issue_comment'
-        uses: aaronsteers/devin-action@6836af14bc904e8eff8e4f2b35eac4c428fc5f34 # v1
+        uses: aaronsteers/devin-action@dc48056e7241ee93597e1302935309ab183f8c21 # v1
         with:
           comment-id: ${{ github.event.comment.id }}
           issue-number: ${{ github.event.issue.number }}
@@ -174,7 +174,7 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Create Devin session (label / manual dispatch)
         if: env.DEVIN_SKIP == 'false' && github.event_name != 'issue_comment'
-        uses: aaronsteers/devin-action@6836af14bc904e8eff8e4f2b35eac4c428fc5f34 # v1
+        uses: aaronsteers/devin-action@dc48056e7241ee93597e1302935309ab183f8c21 # v1
         with:
           issue-number: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
           prompt-text: >-

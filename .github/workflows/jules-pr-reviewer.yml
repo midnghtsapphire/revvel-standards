@@ -1,6 +1,6 @@
 name: Jules PR Reviewer
 
-# ── SILENCED 2026-05-28 — sanjay3290/jules-pr-reviewer@v1.0.0 action is broken ────
+# ── SILENCED 2026-05-28 — sanjay3290/jules-pr-reviewer@v1.0.2 action is broken ────
 # JULES_API_KEY is set correctly (has been since Jules came to be), but this
 # workflow keeps failing because it invokes `sanjay3290/jules-pr-reviewer@v1.0.0`
 # — a single-author community action that appears broken or unmaintained. The
@@ -50,7 +50,7 @@ jobs:
           fi
       - name: Jules PR Review
         if: ${{ env.JULES_API_KEY != '' && env.JULES_API_KEY != null }}
-        uses: sanjay3290/jules-pr-reviewer@v1.0.0
+        uses: sanjay3290/jules-pr-reviewer@v1.0.2
         with:
           jules_api_key: ${{ secrets.JULES_API_KEY }}
           github_token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
