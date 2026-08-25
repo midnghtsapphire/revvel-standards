@@ -5,6 +5,7 @@ import {
   detectUnresolvedConflicts,
   detectUnimplementedSuggestions,
   isHumanReviewer,
+  isAiReviewerComment,
   extractCodeBlocks,
   suggestionLineMatches,
   isDismissiveComment,
@@ -321,4 +322,32 @@ test('resolveDiff uses provided DIFF_CONTENT without calling fetch', async () =>
   });
   assert.match(text, /diff --git/);
   assert.equal(called, 0);
+});
+
+test('AI reviewers posting through a human PAT are not human reviewers', () => {
+  const aiComment = {
+    user: { login: 'midnghtsapphire', type: 'User' },
+    body: '<!-- ai-pr-reviewer -->\nAI Code Review\n```yaml\nenv:\n  WR_MODEL: example\n```'
+  };
+  const summaryComment = {
+    user: { login: 'midnghtsapphire', type: 'User' },
+    body: 'Looks fine to me.\n\n#ai-review-summary'
+  };
+  const humanComment = {
+    user: { login: 'midnghtsapphire', type: 'User' },
+    body: 'Please rename this variable.\n```yaml\nenv:\n  WR_MODEL: example\n```'
+  };
+
+  assert.equal(isAiReviewerComment(aiComment), true);
+  assert.equal(isAiReviewerComment(summaryComment), true);
+  assert.equal(isAiReviewerComment(humanComment), false);
+
+  assert.equal(isHumanReviewer(aiComment), false);
+  assert.equal(isHumanReviewer(summaryComment), false);
+  assert.equal(isHumanReviewer(humanComment), true);
+
+  // An AI snippet must not block the merge; a human one still must.
+  const diffText = 'diff --git a/x.yml b/x.yml\n+          nothing: related\n';
+  assert.equal(detectUnimplementedSuggestions(diffText, [aiComment]).length, 0);
+  assert.equal(detectUnimplementedSuggestions(diffText, [humanComment]).length, 1);
 });

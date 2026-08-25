@@ -285,11 +285,31 @@ export function suggestionLineMatches(suggestionLine, addedLine) {
   return distance < maxLen * 0.10;
 }
 
+/**
+ * Markers the in-repo AI reviewers stamp onto their own comments.
+ *
+ * These reviewers post through a human PAT, so `user.type` is `User` and the
+ * `[bot]` suffix never appears — they are indistinguishable from a person by
+ * account alone. Without this check the prosecutor treats an AI's illustrative
+ * snippet as a binding human review suggestion and blocks the merge.
+ */
+export const AI_REVIEWER_MARKERS = [
+  '<!-- ai-pr-reviewer -->',
+  '#ai-review-summary'
+];
+
+export function isAiReviewerComment(comment) {
+  const body = comment && comment.body ? String(comment.body) : '';
+  if (!body) return false;
+  return AI_REVIEWER_MARKERS.some(marker => body.includes(marker));
+}
+
 export function isHumanReviewer(comment) {
   const login = comment && comment.user && comment.user.login ? String(comment.user.login) : '';
   if (!login) return false;
   if (comment.user && comment.user.type === 'Bot') return false;
   if (/\[bot\]$/i.test(login)) return false;
+  if (isAiReviewerComment(comment)) return false;
   return true;
 }
 
