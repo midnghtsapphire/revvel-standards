@@ -87,8 +87,13 @@ jobs:
           pip install requests pyyaml
 
       - name: Run OpenRouter coder
-        if: steps.ctx.outputs.skip != 'true'
+        # Spend gate (#17850): this step bills OpenRouter. It runs only when the
+        # repository variable REVVEL_LLM_ALLOW_CLOUD is set to "1". Unset = skip,
+        # so an idle repo cannot spend. See docs/LOCAL_LLM_SETUP.md.
+        if: steps.ctx.outputs.skip != 'true' && vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         env:
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
+          WR_MODEL: ${{ vars.WR_MODEL || 'anthropic/claude-opus-4.7' }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
