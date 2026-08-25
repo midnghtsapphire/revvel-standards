@@ -35,6 +35,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          # create-pull-request supplies its own Authorization header; leaving the
+          # checkout credential in http.extraheader sends two and git 400s.
+          persist-credentials: false
           fetch-depth: 0
 
       - name: Resolve issue context
