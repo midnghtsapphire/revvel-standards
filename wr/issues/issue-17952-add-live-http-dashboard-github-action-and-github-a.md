@@ -1,21 +1,31 @@
-# WR: [WR] add live http dashboard, github action and github app  to list of artifacts that can be  requested on a WR
+# WR: [WR] add `live-http-dashboard`, `github-action` and `github-app` to list of artifacts that can be requested on a WR
 
 **Issue:** #17952  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Created:** 2026-08-25  
 **Research Date:** 2026-08-25  
 **Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
+**WR Status:** ✅ Complete
 
 ---
 
 ## Scope
 
-<!-- Detailed scope: what's in, what's out, boundaries with other WRs. -->
+This WR defines the requirement to expand the list of requestable artifacts in the `00-work-request.yml` issue template. Specifically, we will add three new options to the `Output Type` dropdown:
+
+- `live-http-dashboard`
+- `github-action`
+- `github-app`
+
+The scope is limited to updating the issue template definition. It does not include modifying downstream workflows (e.g., specific build or deployment pipelines) that might act on these new types, other than ensuring they gracefully handle or ignore unrecognized artifact types.
 
 ## Approach
 
-<!-- Proposed approach / design sketch. Alternatives considered. -->
+1. **Locate Template:** Open `.github/ISSUE_TEMPLATE/00-work-request.yml`.
+2. **Update `Output Type` Dropdown:**
+   - Find the `id: output_type` section.
+   - Append the three new options (`live-http-dashboard`, `github-action`, `github-app`) to the existing list of options.
+3. **Review Other Templates:** Briefly check if other templates or schema files hardcode the previous list of artifact types and update them if necessary to remain consistent.
 
 ## Acceptance Criteria
 
@@ -26,27 +36,14 @@
 
 ## Risks & Mitigations
 
-<!-- Known risks, fragile files touched, rollback plan. -->
+**Risk:** Downstream parsers or automated workflows that strictly validate against the old list of `Output Type` values might break when encountering the new values.
+**Mitigation:** Verify that any JSON schema validation or workflow logic consuming the issue body does not strictly reject these new types, or update the schemas accordingly.
 
 ## Competitor & Pricing Intelligence
 
-<!--
-For Competitor and GitHub Star Intelligence WRs, the competitor/pricing table
-must list actual prices (e.g. "$99-299/month"), not vague labels like "Paid tiers".
-If a competitor's price is unknown, write:
-"Pricing data pending — competitive benchmark research required."
-Do not ship incomplete competitive intelligence. This rule is kept in sync with
-scripts/research-engine.js by tests/research-engine.test.js.
--->
+N/A — This is an internal technical fix to improve our own issue tracking capabilities.
 
 ## Learnings — What & Why
 
-N/A — pending Jules refinement
-
-<!--
-Guidance: agents completing other WR types should fill this in themselves once
-done — capture what was learned and _why_ it matters, not just what changed.
-For follow-up-generated WRs this section is populated automatically by the
-Follow-up Checkbox Router with the original follow-up text, a link to the
-source PR/issue, and (if applicable) a note that this is a chained follow-up.
--->
+- Expanding the `Output Type` dropdown directly addresses user friction. As the repository handles more varied tasks (like deploying live dashboards via GitHub Pages or managing GitHub Actions/Apps), having explicit categories ensures that automated routing and context-gathering tools can appropriately handle these specific artifact requests.
+- Modifying GitHub Issue Templates (`.yml`) is a quick, high-leverage change because it instantly standardizes the inbound data format for future issues, enabling better programmatic parsing by GitHub Actions later in the pipeline.
