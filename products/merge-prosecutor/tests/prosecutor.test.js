@@ -325,18 +325,14 @@ test('resolveDiff uses provided DIFF_CONTENT without calling fetch', async () =>
 });
 
 test('AI reviewers posting through a human PAT are not human reviewers', () => {
-  const aiComment = {
-    user: { login: 'midnghtsapphire', type: 'User' },
-    body: '<!-- ai-pr-reviewer -->\nAI Code Review\n```yaml\nenv:\n  WR_MODEL: example\n```'
-  };
-  const summaryComment = {
-    user: { login: 'midnghtsapphire', type: 'User' },
-    body: 'Looks fine to me.\n\n#ai-review-summary'
-  };
-  const humanComment = {
-    user: { login: 'midnghtsapphire', type: 'User' },
-    body: 'Please rename this variable.\n```yaml\nenv:\n  WR_MODEL: example\n```'
-  };
+  // Same PAT-backed account for all three — the account is what makes these
+  // indistinguishable, so the marker in the body has to be the discriminator.
+  const from = body => ({ user: { login: 'midnghtsapphire', type: 'User' }, body });
+  const snippet = '```yaml\nenv:\n  WR_MODEL: example\n```';
+
+  const aiComment = from(`<!-- ai-pr-reviewer -->\nAI Code Review\n${snippet}`);
+  const summaryComment = from('Looks fine to me.\n\n#ai-review-summary');
+  const humanComment = from(`Please rename this variable.\n${snippet}`);
 
   assert.equal(isAiReviewerComment(aiComment), true);
   assert.equal(isAiReviewerComment(summaryComment), true);
