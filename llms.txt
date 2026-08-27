@@ -1,0 +1,275 @@
+# llms.txt
+
+# The Asset & Artifact Synthesis Pipeline (Revvel / oAudrey)
+
+> BLUF: This is the live synthesis contract for visiting models and OpenRouter
+> callers. Scan chatter, score it with CS = (U * V * F) / D, and only then
+> compile a sellable asset (PDF, MCP, Action, CLI, app, script). Do not call
+> Claude Sonnet or `openrouter/auto` — both are denylisted. Route Layer 0
+> first (LM Studio → Ollama) and bill OpenRouter only when
+> `REVVEL_LLM_ALLOW_CLOUD=1`. Operating rules live in `AGENTS.md`. Model
+> IDs live in `.github/agent-models.yml`. This file does not replace either.
+
+A single enterprise-grade system is **composable**, not a “generative vs
+agentic” choice. Every asset this pipeline emits must pass through three
+loops before it is published:
+
+| Loop | Job | House lane |
+| --- | --- | --- |
+| **Generative** | Creative output and possibility | `orchestrator` / `code_patch` (Opus twins) |
+| **Agentic** | Goal-seeking, tool use, WR/PR execution | `orchestrator` then specialist profiles |
+| **Deterministic** | Rule execution, verification, bitwise GRC | Formal Logic Orchestrator + tests / CI |
+
+If a step cannot name which loop it is in, it is not ready to ship.
+
+---
+
+## What this file is / is not
+
+**Is:** the llmstxt.org entry point for this repository *and* the Asset
+Synthesis Engine directive (opportunity scoring → asset class → build).
+
+**Is not:**
+
+- The agent operating contract. That is [`AGENTS.md`](./AGENTS.md)
+  (Prime Directive, spend gate, conventional commits, guest rules).
+- The model registry. That is [`.github/agent-models.yml`](./.github/agent-models.yml)
+  and [`MODEL_CONFIG.md`](./MODEL_CONFIG.md). When they disagree, YAML wins.
+- The V.E.I.N.S. product crawler file. That stays at
+  `midnghtsapphire/veinsloop` → `public/llms.txt`. Do not overwrite it.
+
+Incoming drafts are archived, never deleted. The unmodified source of this
+revision is [`llms.txt.incoming.bak`](./llms.txt.incoming.bak). Evaluation:
+[`docs/llms-txt-eval-2026-08-27.md`](./docs/llms-txt-eval-2026-08-27.md).
+
+---
+
+## Prime Directive
+
+**$10k/month → $10M in 3 years.**
+
+Prefer work that (1) ships a revenue-generating product, (2) reduces friction
+in the automated product pipeline, (3) improves Polar.sh / GitHub funding,
+or (4) strengthens monetizable OSINT tooling. A WR that serves none of those
+gets reshaped or rejected.
+
+Focus areas: Polar.sh, OSINT tools, automated product pipeline.
+
+---
+
+## Platform & codebase capabilities
+
+The system is configured to generate, compile, and publish:
+
+- **Written assets:** technical PDFs, textbooks, manuscripts, formatted books.
+- **Developer assets:** GitHub Actions, Docker packages, CLI tools, MCP servers.
+- **Web & mobile:** single-page React/HTML5 apps, Node backends, responsive layouts.
+- **Media:** audio scripts, short-form video edit blueprints, infographics.
+- **Integrations:** API connections, database schemas, Python / Bash / n8n / Make.
+
+Map the pain to the *smallest* asset class that a visiting agent can actually
+finish in one WR. An MCP server or pinned Action scores Feasibility 8–10. A
+greenfield SaaS scores Feasibility 2 — reshape until CS clears 7.5.
+
+---
+
+## Model routing (SSOT — do not invent IDs)
+
+Walk `.github/agent-models.yml` `routing_tree` top-down; first match wins.
+
+| Job | Profile | Primary | Fallback |
+| --- | --- | --- | --- |
+| Reasoning / math / architecture | `reasoning` | `anthropic/claude-fable-5` | `anthropic/claude-opus-5` |
+| Code / file edit / implement | `code_patch` | `anthropic/claude-opus-5` | `anthropic/claude-opus-4.8` |
+| Synthesis / docs / compilation | `orchestrator` | `anthropic/claude-opus-5` | `anthropic/claude-opus-4.8` |
+| Review | `review` | `anthropic/claude-opus-4.8` | `deepseek/deepseek-r1` |
+| Vision / OCR / PDF pages | `vision` | `google/gemini-2.5-pro` | `google/gemini-2.5-flash` |
+| Image generation | `image_gen` | `google/gemini-2.5-flash-image` | `openai/gpt-image-1` |
+| Cited research | `research` | `sonar-pro` | `sonar-deep-research` |
+| Triage / classify | `triage` | `openai/gpt-4o-mini` | `anthropic/claude-haiku-4.5` |
+| Cheap summary | `cheap_summary` | `deepseek/deepseek-chat` | `openai/gpt-4o-mini` |
+
+### Denylist (hard)
+
+- `anthropic/*sonnet*` — refused / violated operating rules in fleet tests.
+- `openrouter/auto` and `openrouter/fusion` — Opus twins beat them. A
+  “rotating agent” that feels like auto-routing is this denylist firing, not
+  an empty credit balance.
+
+Incoming draft IDs that must never be restored: `anthropic/claude-3.5-sonnet:beta`,
+`Claude 3.7 Thinking`, `GPT-o1` as a primary. DeepSeek R1 remains the
+*review* fallback only.
+
+### Reasoning vs synthesis behavior
+
+**Reasoning lane (`reasoning`):** Understand → Analyze → Reason → Synthesize
+→ Conclude. Do not rush to code. Check license, legal, and architectural
+constraints first. Prefer deterministic boundaries over probabilistic guessing.
+
+**Synthesis lane (`orchestrator` / `code_patch`):** BLUF in the first 100
+words of generated documents. Body paragraphs 150–300 words. Code includes
+error boundaries, append-only checkpoint logging, and comments that explain
+*why* (see `standards/CODE_COMMENTING_STANDARD.md`).
+
+---
+
+## Opportunity Finder — Factual Monetization Confidence Score
+
+Process incoming chatter (Reddit, GitHub issues, product forums) and score:
+
+```text
+CS = ( U * V * F ) / D
+```
+
+| Factor | Scale | Meaning |
+| --- | --- | --- |
+| **U** Urgency | 1–10 | “is there a tool for”, “how do I fix”, “workaround”, “impossible to solve” |
+| **V** Viability | 1–10 | Willingness to pay (B2B developers high; free-tool hunters low) |
+| **F** Feasibility | 1–10 | Can *this* stack compile it autonomously? |
+| **D** Difficulty / competition | 1–10 | 1 = blue ocean, 10 = crowded |
+
+**Threshold:** if `CS >= 7.5`, emit production-ready source or manuscript.
+If `CS < 7.5`, reshape (raise F or lower D) until it passes. Always publish
+the four-factor breakdown with a one-line justification each.
+
+Worked example (this file): U=9, V=9, F=10, D=2 → CS = 405 → **build**.
+
+---
+
+## Cognitive processing loop
+
+1. **Ingest chatter** — raw threads / issues, not a summary of a summary.
+2. **Isolate the root pain** — separate emotion from the technical bottleneck.
+3. **Score** — transparent U, V, F, D.
+4. **Select the asset class** — sync pain → MCP; local setup pain → Docker /
+   Bash; compliance pain → bitwise GRC gate + Action; narrative pain → PDF.
+5. **Compose all three loops** — generate, act, verify. A generative dump
+   with no deterministic check is not an asset.
+6. **Output** — if CS passes, ship the artifact in the WR/PR. If not, ship
+   the reshaped variant, not a plan.
+
+Provenance is the product: who proposed, who executed, which profile/model,
+duration, CS. Append to `logs/agent-audit/` and `wr/memory/decisions.jsonl`.
+Orchestrators delegate; they do not “just do it” (see AGENTS.md).
+
+---
+
+## Layer 0, spend gate, and OpenRouter
+
+Never call a provider SDK from new code. Use the existing cascade:
+
+```text
+LM Studio (local) → Ollama (local) → OpenRouter (paid, gated)
+```
+
+- Python: `scripts/local_llm.py`
+- JavaScript: `scripts/llm-spend-gate.js` → `assertCloudAllowed('caller')`
+- Cloud is refused unless `REVVEL_LLM_ALLOW_CLOUD` is exactly `"1"`.
+  `true` / `yes` / `TRUE` fail closed.
+
+### OpenRouter “I have credits but it is not working”
+
+Check in this order before assuming a code bug:
+
+1. **Denylist** — is the request going to Sonnet or `openrouter/auto`?
+   The incoming draft did. That looks like a “rotating agent” failure.
+2. **Spend gate** — is `REVVEL_LLM_ALLOW_CLOUD` exactly `1` in the
+   environment / repo variable that the caller actually sees?
+3. **HTTP status** — `401` key, `402` billing/limit, `403` permission,
+   `429` rate. Credits on the dashboard do not override a 402 spend cap
+   on that key, a wrong org, or a key Doppler just rotated.
+4. **Headers** — OpenRouter wants `HTTP-Referer` and `X-Title`. Use
+   `https://oaudrey.com` and `Revvel Asset Synthesis Engine`.
+5. **Opus 5 thinking** — thinking is on by default; `max_tokens` caps
+   thinking + output. Truncation looks like a hung agent. Raise
+   `max_tokens` before swapping models.
+6. **Layer 0** — `python3 scripts/local_llm.py doctor`. If LM Studio is
+   up, the paid lane should not have been hit.
+
+Raw example (only after the gate opens; prefer `local_llm.complete`):
+
+```python
+import os
+import json
+import urllib.request
+
+def query_openrouter(prompt, model="anthropic/claude-opus-5"):
+    """Paid lane. Caller must already have passed the spend gate."""
+    key = os.environ["OPENROUTER_API_KEY"]
+    body = json.dumps({
+        "model": model,
+        "temperature": 0.3,
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "You are the Asset Synthesis Engine. Follow llms.txt "
+                    "and AGENTS.md. Never route to Claude Sonnet or openrouter/auto."
+                ),
+            },
+            {"role": "user", "content": prompt},
+        ],
+    }).encode()
+    req = urllib.request.Request(
+        "https://openrouter.ai/api/v1/chat/completions",
+        data=body,
+        headers={
+            "Authorization": f"Bearer {key}",
+            "HTTP-Referer": "https://oaudrey.com",
+            "X-Title": "Revvel Asset Synthesis Engine",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        return json.loads(resp.read().decode())
+```
+
+Local (preferred):
+
+```python
+import sys
+sys.path.insert(0, "scripts")
+import local_llm
+
+r = local_llm.complete(
+    "Score this chatter and propose an asset class.",
+    allow_cloud=False,
+)
+print(r.lane, r.is_local)
+```
+
+LM Studio default remains `http://localhost:1234/v1`. Do not commit API keys.
+
+---
+
+## Deterministic loop — Formal Logic Orchestrator (pointer)
+
+Natural language is high-entropy. High-assurance steps (supply chain,
+HIPAA/SOC2-shaped GRC, four-eyes) convert principles to proofs:
+
+- Identities as bitwise flags, not persona prose
+  (`VAR_ROLE_DEV=0x01`, `MAINTAINER=0x02`, `APPROVER=0x04`, `ARCHITECT=0x08`).
+- Four-eyes: `Identity_Author != Identity_Approver`.
+- Every generated algorithm includes a verification subroutine (hash +
+  signature / in-toto-style attestation) before execution.
+- Self-healing patches are search/replace, not full-file rewrites, then a
+  bitwise OR into the GRC register.
+
+Do not dump Merkle-tree theatre into a README. Put the proof next to the
+code that enforces it. See the oAudrey autonomic patcher and CNCF TAG-Security
+(TUF, in-toto, SPIRE, SBOM) notes in `compliance/` and `standards/`.
+
+---
+
+## Output contract for visiting models
+
+1. Score first. Publish U/V/F/D. Then build or reshape.
+2. Conventional commits and PR titles (`feat:`, `fix:`, `docs:`, `chore:`).
+3. `Closes #N` on the PR body. No marker without a consumer.
+4. No secrets in git, argv, or this file.
+5. One fix per PR. Found a second defect? Open a second PR.
+6. Append a TM-NNNN lesson to `learnings.md` when something actually bit.
+
+Visiting / transient agents: read [`VISITING_AGENTS.md`](./VISITING_AGENTS.md)
+before writing anything.
