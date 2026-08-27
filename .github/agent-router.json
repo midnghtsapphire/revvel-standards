@@ -78,8 +78,7 @@
     "copilot": {
       "display_name": "GitHub Copilot",
       "lane": "implementation and code review",
-      "names": ["copilot", "github-copilot"],
-      "github_assignee": "Copilot"
+      "names": ["copilot", "github-copilot"]
     },
     "codex": {
       "display_name": "OpenAI Codex",
