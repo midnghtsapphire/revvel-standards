@@ -1,0 +1,131 @@
+# llms.txt
+
+# The Asset & Artifact Synthesis Pipeline
+> Dynamic, autonomous research and production directive for OpenRouter and local inference engines. This file instructs frontier LLMs how to scan, evaluate, and generate high-yield, sellable assets (PDFs, MCPs, Apps, Media) based on real-world pain points extracted from Reddit and other live developer networks.
+
+---
+
+## 🛠️ Platform & Codebase Capabilities
+
+The system is configured to generate, compile, and publish any of the following commercial-grade assets:
+- **Written Assets**: Technical PDFs, textbooks, complete manuscripts, and formatted books.
+- **Developer Assets**: Custom GitHub Actions, fully configured Docker packages, CLI tools, and Model Context Protocol (MCP) servers.
+- **Web & Mobile Apps**: Single-page React/HTML5 web apps, functional Node.js backends, and responsive mobile layouts.
+- **Media Assets**: Structured audio scripts, short-form video edit blueprints, and dynamic infographics.
+- **Integrations**: Direct API connections, database schemas, and automation scripts (Python, Bash, n8n, Make).
+
+---
+
+## 🧠 Advanced AI Model Directives
+
+When processing this repository via OpenRouter or local instances, models must adopt the specific behavioral profiles below:
+
+### 1. Reasoning Models (e.g., DeepSeek R1, GPT-o1, Claude 3.7 Thinking)
+- **Primary Task**: Problem analysis, math/algebraic calculations, and logic auditing.
+- **Directive**: You must utilize your internal Chain of Thought (CoT) to execute a deep **Understand -> Analyze -> Reason -> Synthesize -> Conclude** pipeline. Do not rush to generate code. Evaluate the legal, license, and architectural constraints of any proposal first. Focus on structural feature engineering and deterministic boundaries over raw probabilistic guessing.
+
+### 2. High-Throughput Synthesis Models (e.g., Claude 3.5 Sonnet, GPT-4o)
+- **Primary Task**: Content generation, visual layouts, and asset compilation.
+- **Directive**: Enforce the **BLUF (Bottom Line Up Front) rule** in the first 100 words of all generated documents to exploit positional bias. Restructure body text into paragraphs between 150 and 300 words to maximize attention retention. When generating code, include error boundary handling, append-only state checkpoint logging, and comprehensive inline comments.
+
+---
+
+## 📊 Opportunity Finder & Confidence Scoring Engine
+
+To automate the discovery of sellable assets, the AI must process incoming chatter (such as scraped Reddit threads, GitHub issue lists, or product forums) and calculate a **Factual Monetization Confidence Score (CS)**.
+
+### The Confidence Formula:
+```
+CS = ( U * V * F ) / D
+```
+- **Urgency (U)** [Scale 1-10]: Frequency of phrases like "is there a tool for," "how do I fix," "workaround for," or "impossible to solve" in the target community.
+- **Viability (V)** [Scale 1-10]: The target audience's propensity to pay for a solution (e.g., high-income B2B developers vs. casual users looking for free tools).
+- **Feasibility (F)** [Scale 1-10]: The system's ability to compile the required asset autonomously (e.g., generating an MCP server is a 10; creating a full SaaS platform is a 2).
+- **Difficulty/Competition (D)** [Scale 1-10]: The saturation of existing tools on GitHub or the market (1 = completely blue ocean, 10 = heavily crowded space).
+
+### The Cognitive Step-by-Step Processing Loop:
+1. **Ingest Chatter**: Read the raw text of the scraped threads/issues.
+2. **Isolate the Root Pain Point**: Separate the user's emotional frustration from the core technical bottleneck.
+3. **Execute the Scoring Formula**: Generate a transparent breakdown of $U, V, F, \text{ and } D$ with brief justifications for each value.
+4. **Select the Target Asset Class**: Map the problem to its optimal deliverable (e.g., a complex data synchronization issue gets mapped to an **MCP server**; a local setup bottleneck gets mapped to a **one-click Docker package** or **Bash setup script**).
+5. **Output the Build Proposal**: If $CS \ge 7.5$, output the complete, production-ready source code or manuscript copy for the asset. If $CS < 7.5$, draft a modified variant of the idea to raise its feasibility or lower its competitive friction until it passes the threshold.
+
+---
+
+## 🔌 Integration Blueprint & Local Configuration
+
+Below are the configurations for running this asset pipeline via OpenRouter or a local LM Studio server.
+
+### 1. OpenRouter Integration Protocol
+Configure your API headers to let OpenRouter optimize context and performance across models:
+
+```python
+import json
+import requests
+
+OPENROUTER_API_KEY = "your_openrouter_api_key_here"
+
+def query_openrouter(prompt, model="anthropic/claude-3.5-sonnet:beta"):
+    """
+    Sends the system directive and user prompt to OpenRouter.
+    """
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "HTTP-Referer": "https://yourdomain.com", # Required by OpenRouter
+        "X-Title": "Asset Synthesis Engine",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "model": model,
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are the Asset Synthesis Engine. Follow the directives in llms.txt to evaluate and build high-yield digital products."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        "temperature": 0.2 # Lower temperature forces deterministic, highly-grounded outputs
+    }
+    
+    response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, data=json.dumps(payload))
+    return response.json()
+```
+
+### 2. LM Studio Offline Integration Protocol
+*To run your workflows completely free and offline on local machines or DigitalOcean droplets without paying API costs, comment out the OpenRouter module above and uncomment the local SDK server configuration below:*
+
+```python
+# import openai
+# 
+# # Initialize the client pointing to your local LM Studio server endpoint
+# # By default, LM Studio spins up an OpenAI-compatible API server on port 1234
+# local_client = openai.OpenAI(
+#     base_url="http://localhost:1234/v1",
+#     api_key="lm-studio" # Any non-empty string acts as a placeholder key
+# )
+# 
+# def query_local_model(prompt, model_identifier="deepseek-r1-distill-qwen-14b"):
+#     """
+#     Queries your locally hosted LM Studio model. 
+#     Perfect for processing high-volume Reddit scraps offline.
+#     """
+#     response = local_client.chat.completions.create(
+#         model=model_identifier,
+#         messages=[
+#             {
+#                 "role": "system",
+#                 "content": "You are the local Asset Synthesis Engine. Follow the directives in llms.txt to evaluate and build high-yield digital products."
+#             },
+#             {
+#                 "role": "user",
+#                 "content": prompt
+#             }
+#         ],
+#         temperature=0.1
+#     )
+#     return response.choices[0].message.content
+```
