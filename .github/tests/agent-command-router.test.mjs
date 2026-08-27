@@ -6,6 +6,7 @@ import {
   applyRequestsToState,
   buildDispatchPayload,
   isAuthorized,
+  nativeAssignee,
   parseCommands,
   parseWindowState,
   renderWindow,
@@ -59,6 +60,17 @@ test("agents command opens the window without dispatching", () => {
   const parsed = parseCommands("/agents", config);
   assert.equal(parsed.showWindow, true);
   assert.equal(parsed.requests.length, 0);
+});
+
+test("codex mentions start the GitHub coding agent; copilot does not", () => {
+  const parsed = parseCommands("@copilot ignore this\n@codex take the WR", config);
+  assert.deepEqual(
+    parsed.requests.map((request) => request.agent),
+    ["copilot", "codex"]
+  );
+  assert.equal(nativeAssignee(config, "codex"), "codex");
+  assert.equal(nativeAssignee(config, "copilot"), "");
+  assert.equal(nativeAssignee(config, "dragnet"), "");
 });
 
 test("only trusted humans can summon agents", () => {

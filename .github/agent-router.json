@@ -79,6 +79,12 @@
       "display_name": "GitHub Copilot",
       "lane": "implementation and code review",
       "names": ["copilot", "github-copilot"]
+    },
+    "codex": {
+      "display_name": "OpenAI Codex",
+      "lane": "implementation when OpenRouter is down",
+      "names": ["codex", "openai-codex"],
+      "github_assignee": "codex"
     }
   }
 }
