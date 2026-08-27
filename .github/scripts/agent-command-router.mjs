@@ -255,6 +255,11 @@ export function renderWindow(config, state) {
   ].join("\n");
 }
 
+export function nativeAssignee(config, agent) {
+  const login = config.agents?.[agent]?.github_assignee;
+  return login ? String(login) : "";
+}
+
 export function buildDispatchPayload({ event, request, repository }) {
   const issue = event.issue;
   const requestId = `${event.comment.id}:${request.agent}`;
@@ -334,6 +339,14 @@ class GitHubApi {
       client_payload: clientPayload
     });
   }
+
+  async addAssignees(number, assignees) {
+    const names = assignees.filter(Boolean);
+    if (names.length === 0) return null;
+    return this.request("POST", `/repos/${this.repository}/issues/${number}/assignees`, {
+      assignees: names
+    });
+  }
 }
 
 async function handleComment({ event, config, api, repository }) {
@@ -367,6 +380,10 @@ async function handleComment({ event, config, api, repository }) {
   for (const request of parsed.requests) {
     const payload = buildDispatchPayload({ event, request, repository });
     try {
+      const assignee = nativeAssignee(config, request.agent);
+      if (assignee) {
+        await api.addAssignees(event.issue.number, [assignee]);
+      }
       await api.dispatch(config.dispatch_event ?? "agent_requested", payload);
     } catch (error) {
       failed = true;
