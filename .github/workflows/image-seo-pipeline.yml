@@ -89,7 +89,7 @@ jobs:
 
       - name: Open draft PR with pack
         id: cpr
-        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.0.5
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v6.0.5
         with:
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           commit-message: "chore(image-seo): automated image_creation/v1 pack"
