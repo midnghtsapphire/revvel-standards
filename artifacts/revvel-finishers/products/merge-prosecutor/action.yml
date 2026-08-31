@@ -1,0 +1,50 @@
+name: "Merge Prosecutor"
+description: "Mathematically checks for bad merges, duplicate lines, unresolved conflicts, and dismissive comments."
+author: "MIDNGHTSAPPHIRE / Revvel"
+
+branding:
+  icon: "check-square"
+  color: "red"
+
+inputs:
+  github-token:
+    description: "GitHub token with pull-requests:write and issues:write"
+    required: true
+  repository:
+    description: "owner/repo"
+    required: true
+  pr-number:
+    description: "Pull request number"
+    required: true
+  test-command:
+    description: "Command to run to ensure the code works after merge (e.g., 'npm test')"
+    required: false
+    default: ""
+  workspace-dir:
+    description: "Workspace directory"
+    required: false
+    default: "${{ github.workspace }}"
+  diff-content:
+    description: "Raw diff content if available, fallback to PR API if empty"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+      with:
+        node-version: "22"
+
+    - name: Run Merge Prosecutor
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        GITHUB_REPOSITORY: ${{ inputs.repository }}
+        PR_NUMBER: ${{ inputs.pr-number }}
+        TEST_COMMAND: ${{ inputs.test-command }}
+        WORKSPACE_DIR: ${{ inputs.workspace-dir }}
+        DIFF_CONTENT: ${{ inputs.diff-content }}
+      run: node action/run-prosecutor.mjs
