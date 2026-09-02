@@ -1,3 +1,11 @@
+# Merge Prosecutor (us) via `./products/merge-prosecutor`
+# (composite action: products/merge-prosecutor/action.yml +
+# products/merge-prosecutor/action/run-prosecutor.mjs).
+# Deterministic merge-quality gate on the default-branch PR path:
+# unresolved conflict markers, duplicated keep-both blocks, dismissive
+# comment language, unimplemented fenced review suggestions.
+# CircleCI lint-and-test already owns `npm test`; this workflow does not
+# re-run the root suite (that is what made #17888 a self-failing gate).
 name: Merge Prosecutor
 
 on:
@@ -34,3 +42,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           pr-number: ${{ github.event.pull_request.number }}
+          test-command: "node --test tests/prosecutor.test.js"
+          workspace-dir: ${{ github.workspace }}/products/merge-prosecutor
