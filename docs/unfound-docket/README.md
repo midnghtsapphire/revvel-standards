@@ -47,3 +47,9 @@ A declaration exhibit. The posterior is a fraction you can recompute. A chat ran
 - `SIGNAL.md` — SEO and SEM, evasion keywords excluded
 - `SOURCES.md` — open web only
 - `src/lib` — the functions the proof runs
+
+## Repos
+
+- [unfound-docket](https://github.com/midnghtsapphire/unfound-docket) — the app. No accounts.
+- [Affidavit-Grade-Search](https://github.com/midnghtsapphire/Affidavit-Grade-Search) — the proof.
+- [Unfound Hour](https://github.com/midnghtsapphire/unfound-hour-unidentified-missing-and-human-remains) — the three-hour manuscript.
