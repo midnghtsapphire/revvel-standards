@@ -1,3 +1,9 @@
+# Who this is for
+
+A Colorado lawyer, judge, or licensed legal paraprofessional. CLJE Regulation 103.1(1)(f) (amended 18 June 2025, effective 1 January 2026) requires that design. Regulation 103.1(3)(d) will not accredit non-legal skills, marketing, social-media networking, or office-management training.
+
+Counted minutes are only what that professional uses in a representation. A receptionist script, a secretary’s intake form, a field grid, and the Signal pages are not part of this syllabus.
+
 # Syllabus
 
 ## Hour 1 — The report and the remains
