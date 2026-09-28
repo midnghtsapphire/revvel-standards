@@ -82,7 +82,7 @@ jobs:
 
       - name: Validate Renovate Configuration
         # v2.1.0 — https://github.com/suzuki-shunsuke/github-action-renovate-config-validator/releases/tag/v2.1.0
-        uses: suzuki-shunsuke/github-action-renovate-config-validator@ee9f69e1f683ed0d08225086482b34fc9abe9300 # v2.1.0
+        uses: suzuki-shunsuke/github-action-renovate-config-validator@b850926b611b1f3d3fe3729776339c217834bf2c # v2.2.0
         with:
           # Explicit path: this repo's SSOT is .github/renovate.json5 (JSON5).
           # Passing it avoids relying on the action's multi-path default scan.
