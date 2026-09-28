@@ -28,7 +28,7 @@ jobs:
           path: .
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5.0.0
+        uses: actions/deploy-pages@v5.0.1
     timeout-minutes: 30
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
