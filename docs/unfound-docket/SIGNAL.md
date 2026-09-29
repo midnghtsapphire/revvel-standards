@@ -12,13 +12,13 @@ Pre-2021 training shorthand. Caniglia is the correction; emergency aid is a diff
 
 Own “caniglia missing person warrant colorado” before true-crime channels do.
 
-## Story rank versus posterior rank
+## Story rank versus posterior rank.
 
 Comment sections rank the most cinematic place. The Exhibit’s canonical case ranks the road after a miss on the lot.
 
 Own “probability of detection affidavit” with a calculator that shows the fraction.
 
-## Indigenous cases treated as ordinary delay
+## Indigenous cases treated as ordinary delay.
 
 Public MMIP reporting and § 24-33.5-431. National SEO still collapses this into generic true crime.
 

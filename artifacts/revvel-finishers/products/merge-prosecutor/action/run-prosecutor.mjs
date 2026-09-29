@@ -404,7 +404,6 @@ ${learnings}
 `;
   writeFileSync(wrPath, templateContent);
   log(`Created WR: ${wrPath}`);
-
   if (process.env.GITHUB_TOKEN && process.env.GITHUB_REPOSITORY) {
     try {
       log(`Attempting to create GitHub issue for WR: ${title}`);
@@ -431,6 +430,7 @@ ${learnings}
       log(`Failed to create GitHub issue: ${e.message}`);
     }
   }
+
 }
 
 export async function main(env = process.env, fetchImpl = fetch) {
@@ -473,12 +473,7 @@ export async function main(env = process.env, fetchImpl = fetch) {
           log(`Running: ${testCmd}`);
           const sanitizedEnv = { ...process.env };
           delete sanitizedEnv.GITHUB_TOKEN;
-
-          execSync(testCmd, {
-              cwd: workspaceDir,
-              stdio: 'inherit',
-              env: sanitizedEnv
-          });
+          execSync(testCmd, { cwd: workspaceDir, stdio: 'inherit', env: sanitizedEnv });
           log("Tests passed!");
       } catch (e) {
           log("Tests failed! The merge broke the system.");
