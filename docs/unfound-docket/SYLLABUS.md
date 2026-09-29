@@ -63,4 +63,3 @@ YouTube working title: Probability of area for lawyers, after a negative search
 | 27:00–40:00 | Who is told to wait | edi |
 | 40:00–52:00 | The wrong behavioral model is a bias error | edi |
 | 52:00–60:00 | Application lab — not counted | none |
-
