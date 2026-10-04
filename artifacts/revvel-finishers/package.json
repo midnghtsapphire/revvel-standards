@@ -1,0 +1,11 @@
+{
+  "name": "revvel-finishers",
+  "version": "1.0.0",
+  "description": "Revvel Finishers Repository",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test products/merge-prosecutor/tests/prosecutor.test.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
