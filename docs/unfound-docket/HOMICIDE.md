@@ -6,7 +6,7 @@ Ages 15–17 in the same table: family 4%, stranger 11%, offender unknown 58%. T
 
 FBI Supplementary Homicide Reports, 2011–2020, as published by OJJDP on 9 December 2021
 
-Source: https://www.ojjdp.gov/ojstatbb/victims/qa02302.asp?qaDate=2020
+Source: <https://www.ojjdp.gov/ojstatbb/victims/qa02302.asp?qaDate=2020>
 
 ## Victims ages 0–5
 

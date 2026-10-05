@@ -8,7 +8,7 @@
 6. Blue ocean we took: professional queries (waiting period, Caniglia, indigenous alert, affidavit POD), not “missing body” gore. SAREnv is the outlier repo worth learning from. SORAL remains the better optimizer, and we say so.
 7. Blue ocean we refused: evasion technique, private-chat infiltration, face cloning, self-awarded CLE credit.
 
-# Playbook
+## Playbook
 
 ## 1 · Pin
 
