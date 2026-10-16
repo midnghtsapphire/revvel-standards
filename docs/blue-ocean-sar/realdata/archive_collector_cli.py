@@ -6,7 +6,7 @@ A unified CLI tool and Python module for harvesting, normalizing, deduplicating,
 and ingesting historical data from:
   1. Wayback Machine CDX API (Web Archives)
   2. USENET Newsgroups via NNTP (Network News Transfer Protocol)
-  3. Local Archival Files (MBOX, EML, JSONL)
+  3. Local Archival Files (JSON documents and JSONL; MBOX/EML are not parsed yet)
 
 Outputs normalized JSON records complying with Stage 0 Ingestion Schema and
 stores them in SQLite with automated SHA-256 deduplication.
@@ -14,6 +14,7 @@ stores them in SQLite with automated SHA-256 deduplication.
 
 import argparse
 import datetime
+import email.utils
 import hashlib
 import json
 import logging
@@ -194,13 +195,16 @@ class WaybackCDXCollector:
     BASE_URL = "https://web.archive.org/cdx/search/cdx"
 
     @staticmethod
-    def parse_wayback_timestamp(ts: str) -> str:
-        """Convert YYYYMMDDhhmmss to ISO-8601 UTC."""
+    def parse_wayback_timestamp(ts: str) -> Optional[str]:
+        """Convert YYYYMMDDhhmmss to ISO-8601 UTC; None if it is missing or malformed."""
         try:
             dt = datetime.datetime.strptime(ts[:14], "%Y%m%d%H%M%S")
             return dt.replace(tzinfo=datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        except Exception:
-            return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        # Original: a bad timestamp became "now", i.e. a made-up historical date.
+        # except Exception:
+        #     return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        except (TypeError, ValueError):
+            return None
 
     def fetch_cdx_index(
         self, target_url: str, from_date: str = "", to_date: str = "", limit: int = 100
@@ -233,6 +237,9 @@ class WaybackCDXCollector:
                 for row in data[1:]:
                     entry = dict(zip(headers, row))
                     ts_iso = self.parse_wayback_timestamp(entry.get("timestamp", ""))
+                    if ts_iso is None:
+                        logger.warning(f"Skipping CDX row with bad timestamp: {entry.get('timestamp')!r}")
+                        continue
                     archive_url = f"https://web.archive.org/web/{entry.get('timestamp')}/{entry.get('original')}"
 
                     results.append(
@@ -252,6 +259,23 @@ class WaybackCDXCollector:
 # =====================================================================
 # 2. USENET NNTP Collector
 # =====================================================================
+
+
+def article_timestamp(lines: List[str]) -> Optional[str]:
+    """ISO-8601 UTC from an article's Date header (headers end at the first
+    blank line); None if there is no parseable Date."""
+    for line in lines:
+        if not line.strip():
+            break
+        if line.lower().startswith("date:"):
+            try:
+                dt = email.utils.parsedate_to_datetime(line.split(":", 1)[1].strip())
+            except (TypeError, ValueError):
+                return None
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=datetime.timezone.utc)
+            return dt.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return None
 
 
 class UsenetNNTPCollector:
@@ -284,13 +308,19 @@ class UsenetNNTPCollector:
                     full_text = "\n".join(lines)
 
                     msg_id = info.message_id if hasattr(info, "message_id") else f"<{newsgroup}.{art_num}@{self.host}>"
+                    posted = article_timestamp(lines)
+                    if posted is None:
+                        logger.warning(f"Skipping article {art_num}: no parseable Date header")
+                        continue
 
                     results.append(
                         {
                             "source_origin": "usenet_nntp",
-                            "archive_timestamp": datetime.datetime.now(datetime.timezone.utc).strftime(
-                                "%Y-%m-%dT%H:%M:%SZ"
-                            ),
+                            # Original: every article was stamped with the fetch time.
+                            # "archive_timestamp": datetime.datetime.now(datetime.timezone.utc).strftime(
+                            #     "%Y-%m-%dT%H:%M:%SZ"
+                            # ),
+                            "archive_timestamp": posted,
                             "source_identifier": msg_id,
                             "raw_content": full_text,
                         }
@@ -303,6 +333,60 @@ class UsenetNNTPCollector:
             logger.error(f"NNTP Connection failed or host unreachable: {e}")
 
         return results
+
+
+def read_archive_file(path: str) -> List[Any]:
+    """Records from a JSON document (an object, or an array of objects) or,
+    failing that, from JSONL. Blank JSONL lines are skipped; a bad line raises."""
+    with open(path, "r", encoding="utf-8") as f:
+        text = f.read()
+    try:
+        doc = json.loads(text)
+    except json.JSONDecodeError:
+        doc = None
+    if isinstance(doc, list):
+        return doc
+    if isinstance(doc, dict):
+        return [doc]
+    items = []
+    for n, line in enumerate(text.splitlines(), start=1):
+        if line.strip():
+            try:
+                items.append(json.loads(line))
+            except json.JSONDecodeError as e:
+                raise ValueError(f"{path}:{n}: not JSON: {e}") from None
+    return items
+
+
+def ingest_file(conn: sqlite3.Connection, path: str, origin: str) -> Dict[str, int]:
+    """Ingest a JSON/JSONL file. Returns saved / duplicate / failed counts;
+    failures are logged per record, not hidden."""
+    counts = {"saved": 0, "duplicate": 0, "failed": 0}
+    try:
+        items = read_archive_file(path)
+    except ValueError as e:
+        logger.error(str(e))
+        counts["failed"] += 1
+        return counts
+    for i, data in enumerate(items):
+        try:
+            if not isinstance(data, dict):
+                raise ValueError(f"record is a {type(data).__name__}, not an object")
+            rec = normalize_record(
+                source_origin=data.get("source_origin", origin),
+                archive_timestamp=data.get(
+                    "archive_timestamp",
+                    datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                ),
+                source_identifier=data.get("source_identifier", path),
+                raw_content=data.get("raw_content", str(data)),
+                author_handle=data.get("author_handle"),
+            )
+            counts["saved" if save_record_to_db(conn, rec) else "duplicate"] += 1
+        except (ValueError, TypeError, AttributeError, sqlite3.Error) as e:
+            logger.error(f"Record {i} in {path} not ingested: {e}")
+            counts["failed"] += 1
+    return counts
 
 
 # =====================================================================
@@ -387,29 +471,36 @@ def main():
         logger.info(f"NNTP Processed: {len(items)} fetched, {saved_count} new records ingested.")
 
     elif args.command == "ingest-file":
-        saved_count = 0
-        with open(args.file, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    data = json.loads(line)
-                    rec = normalize_record(
-                        source_origin=data.get("source_origin", args.origin),
-                        archive_timestamp=data.get(
-                            "archive_timestamp",
-                            datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                        ),
-                        source_identifier=data.get("source_identifier", args.file),
-                        raw_content=data.get("raw_content", str(data)),
-                        author_handle=data.get("author_handle"),
-                    )
-                    if save_record_to_db(db_conn, rec):
-                        saved_count += 1
-                except Exception as e:
-                    logger.error(f"Error parsing file line: {e}")
-        logger.info(f"File Ingestion Complete: {saved_count} records saved.")
+        # Original: read the file one physical line at a time (so pretty-printed
+        # JSON and arrays were skipped) and logged every failure but still exited 0.
+        # saved_count = 0
+        # with open(args.file, "r", encoding="utf-8") as f:
+        #     for line in f:
+        #         line = line.strip()
+        #         if not line:
+        #             continue
+        #         try:
+        #             data = json.loads(line)
+        #             rec = normalize_record(
+        #                 source_origin=data.get("source_origin", args.origin),
+        #                 archive_timestamp=data.get(
+        #                     "archive_timestamp",
+        #                     datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        #                 ),
+        #                 source_identifier=data.get("source_identifier", args.file),
+        #                 raw_content=data.get("raw_content", str(data)),
+        #                 author_handle=data.get("author_handle"),
+        #             )
+        #             if save_record_to_db(db_conn, rec):
+        #                 saved_count += 1
+        #         except Exception as e:
+        #             logger.error(f"Error parsing file line: {e}")
+        # logger.info(f"File Ingestion Complete: {saved_count} records saved.")
+        counts = ingest_file(db_conn, args.file, args.origin)
+        logger.info(f"File Ingestion Complete: {counts['saved']} saved, {counts['duplicate']} duplicate, "
+                    f"{counts['failed']} failed.")
+        if counts["failed"]:
+            sys.exit(1)
 
     elif args.command == "stats":
         cursor = db_conn.cursor()

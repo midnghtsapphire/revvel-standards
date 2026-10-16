@@ -506,6 +506,91 @@ class ServiceUnit(unittest.TestCase):
         self.assertTrue(db.startswith(f"/var/lib/{unit['StateDirectory']}/"), db)
 
 
+class ArchiveCollector(unittest.TestCase):
+    def setUp(self):
+        import archive_collector_cli as ac
+        self.ac = ac
+        self.tmp = tempfile.TemporaryDirectory()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_cdx_row_with_bad_timestamp_skipped_not_stamped_now(self):
+        import io
+        import json
+        from unittest import mock
+        rows = [["timestamp", "original", "mimetype", "statuscode", "digest"],
+                ["20060402031500", "http://a/", "text/html", "200", "D1"],
+                ["garbage", "http://b/", "text/html", "200", "D2"],
+                ["", "http://c/", "text/html", "200", "D3"]]
+        resp = mock.MagicMock()
+        resp.__enter__.return_value = io.BytesIO(json.dumps(rows).encode())
+        with mock.patch.object(self.ac.urllib.request, "urlopen", return_value=resp):
+            got = self.ac.WaybackCDXCollector().fetch_cdx_index("a/*")
+        self.assertEqual([g["archive_timestamp"] for g in got], ["2006-04-02T03:15:00Z"])
+        self.assertIsNone(self.ac.WaybackCDXCollector.parse_wayback_timestamp("garbage"))
+
+    def test_nntp_uses_article_date_and_skips_undated(self):
+        from types import SimpleNamespace
+        from unittest import mock
+        arts = {
+            "1": [b"From: a@b", b"Date: Sun, 02 Apr 2006 03:15:00 -0400", b"", b"body one"],
+            "2": [b"From: a@b", b"", b"Date: in the body only"],
+        }
+
+        class FakeNNTP:
+            def __init__(self, *a, **k):
+                pass
+
+            def group(self, name):
+                return "211", 2, 1, 2, name
+
+            def article(self, n):
+                return "220", SimpleNamespace(lines=arts[n], message_id=f"<{n}@x>")
+
+            def quit(self):
+                pass
+
+        with mock.patch.object(self.ac, "nntplib", SimpleNamespace(NNTP=FakeNNTP)):
+            got = self.ac.UsenetNNTPCollector("news.example").fetch_articles("alt.test", 2)
+        self.assertEqual([(g["source_identifier"], g["archive_timestamp"]) for g in got],
+                         [("<1@x>", "2006-04-02T07:15:00Z")])
+
+    def _db(self):
+        return self.ac.init_database(os.path.join(self.tmp.name, "a.db"))
+
+    def _file(self, name, text):
+        p = os.path.join(self.tmp.name, name)
+        with open(p, "w") as f:
+            f.write(text)
+        return p
+
+    def test_ingest_file_reads_pretty_json_array_and_jsonl(self):
+        conn = self._db()
+        arr = self._file("a.json", '[\n  {"raw_content": "one", "archive_timestamp": "2006-04-02T00:00:00Z"},\n'
+                                   '  {"raw_content": "two", "archive_timestamp": "2006-04-03T00:00:00Z"}\n]\n')
+        obj = self._file("b.json", '{\n  "raw_content": "three",\n  "archive_timestamp": "2006-04-04T00:00:00Z"\n}\n')
+        jl = self._file("c.jsonl", '{"raw_content": "four", "archive_timestamp": "2006-04-05T00:00:00Z"}\n\n'
+                                   '{"raw_content": "five", "archive_timestamp": "2006-04-06T00:00:00Z"}\n')
+        self.assertEqual(self.ac.ingest_file(conn, arr, "forum_archive")["saved"], 2)
+        self.assertEqual(self.ac.ingest_file(conn, obj, "forum_archive")["saved"], 1)
+        self.assertEqual(self.ac.ingest_file(conn, jl, "forum_archive")["saved"], 2)
+        conn.close()
+
+    def test_ingest_file_failures_counted_and_exit_nonzero(self):
+        from unittest import mock
+        conn = self._db()
+        p = self._file("bad.jsonl", '{"raw_content": "ok", "archive_timestamp": "2006-04-02T00:00:00Z"}\n'
+                                    '{"raw_content": "x", "source_origin": "not_a_source"}\n')
+        counts = self.ac.ingest_file(conn, p, "forum_archive")
+        conn.close()
+        self.assertEqual((counts["saved"], counts["failed"]), (1, 1))
+        argv = ["archive_collector_cli.py", "ingest-file", "--file", p, "--db", os.path.join(self.tmp.name, "m.db")]
+        with mock.patch.object(sys, "argv", argv), self.assertRaises(SystemExit) as cm:
+            self.ac.main()
+        self.assertEqual(cm.exception.code, 1)
+
+
 class Stage2Gate(unittest.TestCase):
     def setUp(self):
         import archive_collector_cli as ac
