@@ -90,8 +90,33 @@ function parseSteps(block) {
   const lines = block.split('\n');
   const steps = [];
   let current = null;
+  let inJobs = false;
+  let job = '(top-level)';
+
+  const close = () => {
+    if (current) steps.push(current);
+    current = null;
+  };
 
   for (const line of lines) {
+    // Job boundaries. A workflow may legitimately run the same action once
+    // per job (two jobs that each check out), so the duplicate rule has to be
+    // scoped to a job rather than to the whole fenced block.
+    if (/^jobs:\s*$/.test(line)) {
+      close();
+      inJobs = true;
+      job = '(top-level)';
+      continue;
+    }
+    if (inJobs) {
+      const jobKey = line.match(/^ {2}([A-Za-z0-9_-]+):\s*$/);
+      if (jobKey) {
+        close();
+        job = jobKey[1];
+        continue;
+      }
+    }
+
     const item = line.match(/^(\s*)- (\S.*)$/);
     if (item) {
       const [, indent, rest] = item;
@@ -102,7 +127,7 @@ function parseSteps(block) {
         current = null;
       }
       if (!current) {
-        current = { indent: indent.length, uses: null, withKeys: [], inWith: false };
+        current = { job, indent: indent.length, uses: null, withKeys: [], inWith: false };
         const uses = rest.match(/^uses:\s*(\S+)/);
         if (uses) current.uses = uses[1];
         continue;
@@ -206,19 +231,25 @@ test('product README examples do not use the same action twice in one job', () =
   for (const product of productActions()) {
     const markdown = fs.readFileSync(product.readme, 'utf8');
     for (const block of yamlBlocks(markdown)) {
-      const seen = new Map();
+      const seen = new Set();
       for (const step of parseSteps(block.body)) {
         if (!step.uses) continue;
         // Compare on the action identity, not the pinned ref: the same action
         // at two different SHAs is the same keep-both mistake.
+        //
+        // Scoped per job, not per fenced block: a two-job example where each
+        // job checks out is correct YAML, and keying on the block alone
+        // reported it as a duplicate. The contract this asserts — and its
+        // name — is "twice in one job".
         const action = step.uses.split('@')[0];
-        if (seen.has(action)) {
+        const key = `${step.job}\n${action}`;
+        if (seen.has(key)) {
           offences.push(
             `${path.relative(ROOT, product.readme)}:${block.startLine} uses ${action} twice ` +
-            `— a keep-both merge of two examples leaves a duplicate step`
+            `in job "${step.job}" — a keep-both merge of two examples leaves a duplicate step`
           );
         }
-        seen.set(action, true);
+        seen.add(key);
       }
     }
   }

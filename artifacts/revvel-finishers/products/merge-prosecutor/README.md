@@ -41,7 +41,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: midnghtsapphire/revvel-standards/products/merge-prosecutor@main
+      - uses: midnghtsapphire/revvel-standards/products/merge-prosecutor@f9e3dc367d82e7d1dab3c9484f563c2dee65107d  # main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
