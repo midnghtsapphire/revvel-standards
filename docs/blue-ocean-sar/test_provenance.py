@@ -16,6 +16,52 @@ from provenance import (  # noqa: E402
     provenance_block,
     require_provenance,
 )
+import provenance  # noqa: E402
+
+_STRICT_BEFORE = provenance.STRICT
+
+
+def setUpModule():
+    # The refusal tests below cover strict mode (provenance.STRICT = True).
+    provenance.STRICT = True
+
+
+def tearDownModule():
+    provenance.STRICT = _STRICT_BEFORE
+
+
+class DefaultModeTests(unittest.TestCase):
+    """Default (STRICT = False): run without sources, but label the output."""
+
+    def setUp(self):
+        provenance.STRICT = False
+
+    def tearDown(self):
+        provenance.STRICT = True
+
+    def test_no_sources_runs_and_is_labelled(self):
+        for empty in (None, [], ()):
+            block = provenance_block(empty)
+            self.assertEqual(block["status"], provenance.LABEL_UNSOURCED)
+            self.assertFalse(block["ground_verified"])
+            self.assertEqual(block["sources"], [])
+
+    def test_measured_without_reference_allowed(self):
+        block = provenance_block([DataSource("Sentinel-1 scene", "measured")])
+        self.assertEqual(block["status"], LABEL_MEASURED)
+
+    def test_exporter_accepts_record_without_provenance(self):
+        self.assertEqual(require_provenance({"latitude": 1.0})["status"], provenance.LABEL_UNSOURCED)
+
+    def test_master_script_runs_without_sources(self):
+        out = MultiBandWaveEngineV2().evaluate_multi_band_node(0, 0, 1.0, 3.1)
+        # Defaults filled in but no source named: unsourced, inputs still listed.
+        self.assertEqual(out["provenance"]["status"], provenance.LABEL_UNSOURCED)
+        self.assertIn("sif_stress", out["assumed_inputs"])
+
+    def test_unknown_kind_still_rejected(self):
+        with self.assertRaises(MissingSourceError):
+            provenance_block([DataSource("x", "vibes")])
 
 
 class ProvenanceTests(unittest.TestCase):

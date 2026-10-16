@@ -25,6 +25,11 @@ NEEDS_REFERENCE = ("measured", "public_record")
 LABEL_SYNTHETIC = "SYNTHETIC DEMO - NOT A REAL LOCATION"
 LABEL_ESTIMATE = "UNVERIFIED - BUILT PARTLY ON ESTIMATES, NOT MEASUREMENTS"
 LABEL_MEASURED = "UNVERIFIED CANDIDATE - FROM MEASURED DATA, NOT CONFIRMED ON THE GROUND"
+LABEL_UNSOURCED = "UNSOURCED - NO INPUT SOURCE NAMED"
+
+# Off by default (owner's decision): tools run and label their output instead
+# of refusing. Set provenance.STRICT = True for the refuse-to-run behaviour.
+STRICT = False
 
 
 class MissingSourceError(ValueError):
@@ -55,6 +60,8 @@ def require_sources(sources):
         sources = [sources] if sources is not None else []
     sources = list(sources)
     if not sources:
+        if not STRICT:
+            return []
         raise MissingSourceError(
             "refusing to produce a location: no input data source was named. "
             "Pass sources=[DataSource(...)] describing what the input data is."
@@ -62,11 +69,19 @@ def require_sources(sources):
     for s in sources:
         if not isinstance(s, DataSource):
             raise MissingSourceError(f"expected DataSource, got {type(s).__name__}")
-        s.validate()
+        # Original: every source was always validated (refused without a reference).
+        # s.validate()
+        if STRICT:
+            s.validate()
+        elif s.kind not in SOURCE_KINDS:
+            # A mistyped kind would otherwise be labelled as measured data.
+            raise MissingSourceError(f"source kind {s.kind!r} is not one of {SOURCE_KINDS}")
     return sources
 
 
 def status_label(sources):
+    if not sources:
+        return LABEL_UNSOURCED
     kinds = {s.kind for s in sources}
     if "synthetic" in kinds:
         return LABEL_SYNTHETIC
@@ -89,6 +104,13 @@ def require_provenance(record):
     """Consumer-side check: exporters call this so a location that lost its
     provenance on the way cannot be written out as if it were clean."""
     prov = record.get("provenance") if isinstance(record, dict) else None
-    if not prov or not prov.get("status") or not prov.get("sources"):
+    # Original: refused any location without a status and a non-empty source list.
+    # if not prov or not prov.get("status") or not prov.get("sources"):
+    #     raise MissingSourceError("refusing to export a location with no provenance attached")
+    if not prov or not prov.get("status"):
+        if not STRICT:
+            return {"status": LABEL_UNSOURCED, "ground_verified": False, "sources": []}
+        raise MissingSourceError("refusing to export a location with no provenance attached")
+    if STRICT and not prov.get("sources"):
         raise MissingSourceError("refusing to export a location with no provenance attached")
     return prov

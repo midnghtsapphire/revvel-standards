@@ -19,7 +19,20 @@ HAS_V3 = HAS_NP and all(importlib.util.find_spec(m) is not None for m in ("scipy
 
 from provenance import LABEL_MEASURED, LABEL_SYNTHETIC, DataSource, MissingSourceError  # noqa: E402
 
+import provenance  # noqa: E402
+
 SYN = [DataSource("unit-test scene", "synthetic")]
+_STRICT_BEFORE = provenance.STRICT
+
+
+def setUpModule():
+    # Refusal tests in this file exercise strict mode.
+    provenance.STRICT = True
+
+
+def tearDownModule():
+    provenance.STRICT = _STRICT_BEFORE
+
 
 if HAS_NP:
     import numpy as np
