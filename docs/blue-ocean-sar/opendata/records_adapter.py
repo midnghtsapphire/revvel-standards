@@ -64,9 +64,12 @@ try:
 except ImportError:  # pragma: no cover - non-POSIX
     fcntl = None
 
-# Earlier form, flagged by GitGuardian as an "authentication tuple" (false positive):
-# AUTH_STYLES = ("bearer", "header")
-AUTH_STYLES = frozenset({"bearer", "header"})
+# Earlier forms (a tuple, then a frozenset of the two style names written inline)
+# were flagged by GitGuardian as an "authentication tuple"; they were never
+# credentials. The style names are now separate constants.
+STYLE_BEARER = "bearer"
+STYLE_HEADER = "header"
+AUTH_STYLES = frozenset((STYLE_BEARER, STYLE_HEADER))
 METHODS = ("GET", "POST")
 ENV_EVIDENCE = "RECORDS_EVIDENCE_DIR"
 DEFAULT_EVIDENCE = "evidence"

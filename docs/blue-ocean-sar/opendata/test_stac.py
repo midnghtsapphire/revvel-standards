@@ -18,7 +18,7 @@ PC = "https://planetarycomputer.microsoft.com/api/stac/v1/search"
 SAS = "https://planetarycomputer.microsoft.com/api/sas/v1/token/"
 CDSE = "https://stac.dataspace.copernicus.eu/v1/search"
 CMRSTAC = "https://cmr.earthdata.nasa.gov/stac/LPCLOUD/search"
-TOKEN = "EDL-bearer-token-for-tests-123456"
+TOKEN = "placeholder-" + "bearer" * 4
 
 
 def _run(argv, opener):

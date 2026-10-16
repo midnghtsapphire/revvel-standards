@@ -11,7 +11,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fetch as F  # noqa: E402
 from _fakenet import FakeOpener, FakeResponse, read_bytes, read_json  # noqa: E402
 
-SECRET = "s3cr3t-T0KEN-value-9f8e7d"
+# Low-entropy placeholder: a random-looking value here trips secret scanners.
+SECRET = "placeholder-" + "secret" * 3
 
 
 def _fetch(url, opener, **kw):

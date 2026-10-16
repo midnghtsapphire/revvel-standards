@@ -20,7 +20,7 @@ import records_adapter as R
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 EXAMPLE = os.path.join(HERE, "providers.example.json")
-SECRET = "sk-TEST-SECRET-0123456789"
+SECRET = "placeholder-" + "vendorkey" * 3
 ENV = {"EXAMPLE_VENDOR_API_KEY": SECRET}
 CASE = "MP-2026-014"
 PURPOSE = "GLBA:6802(e)(8)"

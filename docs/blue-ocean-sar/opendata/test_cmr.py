@@ -15,7 +15,7 @@ from _fakenet import FakeOpener, FakeResponse, fixture_json, read_bytes  # noqa:
 
 CMR = "https://cmr.earthdata.nasa.gov/search/granules.json"
 DATA_HOST = "https://data.lpdaac.earthdatacloud.nasa.gov/"
-TOKEN = "EDL-token-value-abcdef-0123456789"
+TOKEN = "placeholder-" + "edltoken" * 3
 
 
 def _run(argv, opener):
