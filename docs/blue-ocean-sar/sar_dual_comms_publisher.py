@@ -7,10 +7,12 @@ Secondary Channel: UDP Multicast / Tactical RF Mesh (239.2.3.1:6969 / Meshtastic
 NOT VALIDATED against a live OpenTAKServer or ATAK device. See README.md.
 
 Security note: the secondary UDP multicast channel is UNENCRYPTED. Anyone on
-the same network segment can read every position sent over it. Use it only
-for data you would be comfortable broadcasting, or pass multicast=False.
+the same network segment can read every position sent over it. It is off by
+default; turn it on with multicast=True (CLI: --multicast) only for data you
+would be comfortable broadcasting.
 The primary channel can use TLS (OpenTAKServer's streaming port is usually
-8089 with client certificates); plain TCP 8087 is unencrypted too.
+8089 with client certificates); plain TCP 8087 is unencrypted too. When no
+port is given, TLS uses 8089 and plain TCP 8087.
 """
 
 import argparse
@@ -20,6 +22,14 @@ import ssl
 import warnings
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
+
+
+TCP_PORT = 8087
+TLS_PORT = 8089
+
+
+def default_port(use_tls):
+    return TLS_PORT if use_tls else TCP_PORT
 
 
 def _cot_time(t):
@@ -42,21 +52,26 @@ def build_sample_cot(now=None, stale_hours=24.0):
 
 
 class DualCommsTAKPublisher:
+    # Original defaults: primary_port=8087 even with use_tls=True (a TLS handshake
+    # sent to the plain-TCP port), and multicast=True (positions broadcast in clear).
+    # primary_port=8087,
+    # multicast=True,
     def __init__(
         self,
         primary_host="127.0.0.1",
-        primary_port=8087,
+        primary_port=None,
         secondary_mcast_group="239.2.3.1",
         secondary_mcast_port=6969,
         use_tls=False,
         tls_ca_file=None,
         tls_cert_file=None,
         tls_key_file=None,
-        multicast=True,
+        multicast=False,
         timeout=3.0,
     ):
         self.primary_host = primary_host
-        self.primary_port = primary_port
+        # self.primary_port = primary_port
+        self.primary_port = default_port(use_tls) if primary_port is None else primary_port
         self.mcast_group = secondary_mcast_group
         self.mcast_port = secondary_mcast_port
         self.use_tls = use_tls
@@ -127,16 +142,38 @@ class DualCommsTAKPublisher:
         return results
 
 
-if __name__ == "__main__":
+def parse_args(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[1])
     ap.add_argument("--host", default="127.0.0.1")
-    ap.add_argument("--port", type=int, default=8087)
-    ap.add_argument("--tls", action="store_true", help="TLS to the TAK server (usually port 8089)")
+    ap.add_argument("--port", type=int, default=None, help=f"default {TLS_PORT} with --tls, else {TCP_PORT}")
+    ap.add_argument("--tls", action="store_true", help=f"TLS to the TAK server (port {TLS_PORT} unless --port)")
     ap.add_argument("--ca-file")
     ap.add_argument("--cert-file")
     ap.add_argument("--key-file")
-    ap.add_argument("--no-multicast", action="store_true", help="do not send the unencrypted multicast copy")
-    args = ap.parse_args()
+    ap.add_argument("--multicast", action="store_true",
+                    help="also send an UNENCRYPTED copy over UDP multicast (off by default)")
+    ap.add_argument("--no-multicast", action="store_true", help="kept for old scripts; multicast is off by default")
+    args = ap.parse_args(argv)
+    if args.port is None:
+        args.port = default_port(args.tls)
+    if args.no_multicast:
+        args.multicast = False
+    return args
+
+
+if __name__ == "__main__":
+    # Original parser (moved into parse_args() so the TLS port default can be
+    # resolved after parsing and tested):
+    # ap = argparse.ArgumentParser(description=__doc__.splitlines()[1])
+    # ap.add_argument("--host", default="127.0.0.1")
+    # ap.add_argument("--port", type=int, default=8087)
+    # ap.add_argument("--tls", action="store_true", help="TLS to the TAK server (usually port 8089)")
+    # ap.add_argument("--ca-file")
+    # ap.add_argument("--cert-file")
+    # ap.add_argument("--key-file")
+    # ap.add_argument("--no-multicast", action="store_true", help="do not send the unencrypted multicast copy")
+    # args = ap.parse_args()
+    args = parse_args()
 
     print("Initializing Blue Ocean SAR Dual Comms TAK Publisher...")
     publisher = DualCommsTAKPublisher(
@@ -146,7 +183,8 @@ if __name__ == "__main__":
         tls_ca_file=args.ca_file,
         tls_cert_file=args.cert_file,
         tls_key_file=args.key_file,
-        multicast=not args.no_multicast,
+        # multicast=not args.no_multicast,
+        multicast=args.multicast,
     )
 
     # Example CoT payload broadcast

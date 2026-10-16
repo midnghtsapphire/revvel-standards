@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from sar_dual_comms_publisher import DualCommsTAKPublisher, build_sample_cot  # noqa: E402
+from sar_dual_comms_publisher import DualCommsTAKPublisher, build_sample_cot, parse_args  # noqa: E402
 
 
 def _free_port():
@@ -122,12 +122,32 @@ class PublisherTests(unittest.TestCase):
             pub.publish_cot_event("<events><event/></events>")
 
     def test_multicast_warns_unencrypted(self):
-        pub = DualCommsTAKPublisher(primary_port=_free_port(), timeout=1)
+        # Multicast is opt-in now; the original constructed with the default:
+        # pub = DualCommsTAKPublisher(primary_port=_free_port(), timeout=1)
+        pub = DualCommsTAKPublisher(primary_port=_free_port(), timeout=1, multicast=True)
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             res = pub.publish_cot_event(build_sample_cot())
         self.assertTrue(any("unencrypted" in str(x.message) for x in w))
         self.assertIsNotNone(res["secondary_status"])
+
+    def test_multicast_off_by_default(self):
+        pub = DualCommsTAKPublisher(primary_port=_free_port(), timeout=1)
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            res = pub.publish_cot_event(build_sample_cot())
+        self.assertEqual(res["secondary_status"], "DISABLED")
+        self.assertFalse(any("unencrypted" in str(x.message) for x in w))
+        self.assertFalse(parse_args([]).multicast)
+        self.assertTrue(parse_args(["--multicast"]).multicast)
+        self.assertFalse(parse_args(["--multicast", "--no-multicast"]).multicast)
+
+    def test_tls_defaults_to_tls_port_unless_port_given(self):
+        self.assertEqual(parse_args(["--tls"]).port, 8089)
+        self.assertEqual(parse_args([]).port, 8087)
+        self.assertEqual(parse_args(["--tls", "--port", "9000"]).port, 9000)
+        self.assertEqual(DualCommsTAKPublisher(use_tls=True).primary_port, 8089)
+        self.assertEqual(DualCommsTAKPublisher().primary_port, 8087)
 
     def test_sample_cot_uses_current_time(self):
         now = datetime(2030, 1, 2, 3, 4, 5, tzinfo=timezone.utc)
