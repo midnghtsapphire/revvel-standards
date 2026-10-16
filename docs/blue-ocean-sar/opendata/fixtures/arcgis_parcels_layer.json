@@ -1,0 +1,25 @@
+{
+ "currentVersion": 10.81,
+ "id": 3,
+ "name": "Drainage Areas",
+ "type": "Feature Layer",
+ "geometryType": "esriGeometryPolygon",
+ "objectIdField": "FID",
+ "maxRecordCount": 1000,
+ "supportedQueryFormats": "JSON, AMF",
+ "advancedQueryCapabilities": {
+  "supportsPagination": true
+ },
+ "fields": [
+  {
+   "name": "FID",
+   "type": "esriFieldTypeOID",
+   "alias": "FID"
+  },
+  {
+   "name": "NAME",
+   "type": "esriFieldTypeString",
+   "alias": "Name"
+  }
+ ]
+}
