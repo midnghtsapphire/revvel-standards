@@ -9,10 +9,17 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 from datetime import datetime, timezone
+from .safe_redirect import checked_urlopen
 
 LAYER = "https://arc.columbus.gov/arcgis/rest/services/Schemas/BuildingZoning/MapServer/5"
 PORTAL = "https://portal.columbus.gov/Permits/Cap/CapHome.aspx?TabName=Building&module=Building"
 ALLOWED_HOSTS = {"arc.columbus.gov"}
+
+
+def _check_redirect(url):
+    dest = urllib.parse.urlsplit(url)
+    if dest.scheme != "https" or dest.hostname not in ALLOWED_HOSTS:
+        raise ValueError("Redirect rejected")
 
 
 def _request(url, opener=None, timeout=20):
@@ -20,7 +27,9 @@ def _request(url, opener=None, timeout=20):
     if p.scheme != "https" or p.hostname not in ALLOWED_HOSTS:
         raise ValueError("Host not approved")
     req = urllib.request.Request(url, headers={"User-Agent": "ForensicFinders-ArchiveResearch/0.8"})
-    response = (opener or urllib.request.urlopen)(req, timeout=timeout)
+    # Original: response = (opener or urllib.request.urlopen)(req, timeout=timeout)
+    #   urlopen followed redirects to unapproved hosts before the check below ran.
+    response = (opener or checked_urlopen(_check_redirect))(req, timeout=timeout)
     with response as r:
         dest = urllib.parse.urlsplit(r.url)
         if dest.scheme != "https" or dest.hostname not in ALLOWED_HOSTS:

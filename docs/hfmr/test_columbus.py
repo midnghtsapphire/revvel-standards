@@ -1,7 +1,9 @@
 import json
 import tempfile
 import unittest
+import urllib.request
 from pathlib import Path
+from unittest import mock
 
 # star import replaced with explicit names (flake8 F403/F405): from .columbus import *
 from .columbus import export_csv, metadata, query_by_parcel, save, verify
@@ -58,6 +60,28 @@ class ColumbusTests(unittest.TestCase):
             save({"records": []}, p)
             with self.assertRaises(FileExistsError):
                 save({"records": []}, p)
+
+    def test_default_opener_checks_redirects_before_following(self):
+        handlers = []
+
+        class FakeOpener:
+            def open(self, req, timeout=None):
+                return Response(req.full_url, {"fields": []})
+
+        def fake_build_opener(*args):
+            handlers.extend(args)
+            return FakeOpener()
+
+        with mock.patch("urllib.request.build_opener", fake_build_opener):
+            metadata()
+        redirect = [h for h in handlers if isinstance(h, urllib.request.HTTPRedirectHandler)]
+        self.assertEqual(len(redirect), 1)
+        req = urllib.request.Request("https://arc.columbus.gov/arcgis")
+        with self.assertRaises(ValueError):
+            redirect[0].redirect_request(req, None, 302, "Found", {}, "https://10.0.0.1/internal")
+        with self.assertRaises(ValueError):
+            redirect[0].redirect_request(req, None, 302, "Found", {}, "http://arc.columbus.gov/arcgis")
+        self.assertIsNotNone(redirect[0].redirect_request(req, None, 302, "Found", {}, "https://arc.columbus.gov/b"))
 
     def test_host(self):
         with self.assertRaises(ValueError):

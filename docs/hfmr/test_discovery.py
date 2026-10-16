@@ -2,7 +2,9 @@
 import json
 import tempfile
 import unittest
+import urllib.request
 from pathlib import Path
+from unittest import mock
 
 # star import replaced with explicit names (flake8 F403/F405): from .discovery import *
 from .discovery import arcgis_catalog, inventory, match_identity, stac_search, verify_inventory
@@ -76,6 +78,27 @@ class DiscoveryTests(unittest.TestCase):
             }
         ]
         self.assertEqual(len(match_identity(rows, address="1546 N HIGH ST", alias_rows=aliases)), 1)
+
+    def test_default_opener_checks_redirects_before_following(self):
+        handlers = []
+
+        class FakeOpener:
+            def open(self, req, timeout=None):
+                return FakeResponse(req.full_url, {"services": []})
+
+        def fake_build_opener(*args):
+            handlers.extend(args)
+            return FakeOpener()
+
+        with mock.patch("urllib.request.build_opener", fake_build_opener):
+            arcgis_catalog("https://example.gov/arcgis/rest/services")
+        redirect = [h for h in handlers if isinstance(h, urllib.request.HTTPRedirectHandler)]
+        self.assertEqual(len(redirect), 1)
+        req = urllib.request.Request("https://example.gov/arcgis/rest/services")
+        for bad in ("https://evil.example/a", "http://example.gov/a"):
+            with self.assertRaises(ValueError):
+                redirect[0].redirect_request(req, None, 302, "Found", {}, bad)
+        self.assertIsNotNone(redirect[0].redirect_request(req, None, 302, "Found", {}, "https://example.gov/b"))
 
     def test_inventory_tamper(self):
         with tempfile.TemporaryDirectory() as t:

@@ -9,6 +9,13 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from .construction import normalized_address, date_value
+from .safe_redirect import checked_urlopen
+
+
+def _check_same_host(url, host):
+    final = urllib.parse.urlsplit(url)
+    if final.scheme != "https" or final.hostname != host:
+        raise ValueError("Cross-host redirect blocked")
 
 
 def _get_json(url, *, opener=None, allowed_host=None, timeout=20):
@@ -19,7 +26,9 @@ def _get_json(url, *, opener=None, allowed_host=None, timeout=20):
         raise ValueError("Unapproved host")
     req = urllib.request.Request(url, headers={"User-Agent": "HFMR-PublicArchiveResearch/0.5"})
     if opener is None:
-        opener = urllib.request.urlopen
+        # Original: opener = urllib.request.urlopen
+        #   urlopen followed cross-host or downgrade redirects before the check below ran.
+        opener = checked_urlopen(lambda target: _check_same_host(target, p.hostname))
     with opener(req, timeout=timeout) as response:
         final = urllib.parse.urlsplit(response.url)
         if final.scheme != "https" or final.hostname != p.hostname:

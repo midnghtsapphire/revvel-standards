@@ -10,7 +10,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
 # unused (flake8 F401), kept for reference: from urllib.parse import urljoin
-from urllib.request import Request, urlopen
+# Original: from urllib.request import Request, urlopen
+#   urlopen is no longer the default opener (it followed redirects before they were checked).
+from urllib.request import Request
+from .safe_redirect import checked_urlopen
 
 MAX_BYTES = 100 * 1024 * 1024
 
@@ -28,9 +31,14 @@ def utcnow():
     return datetime.now(timezone.utc).isoformat()
 
 
-def fetch(url, destination, allowed_hosts, max_bytes=MAX_BYTES, opener=urlopen):
+# Original: def fetch(url, destination, allowed_hosts, max_bytes=MAX_BYTES, opener=urlopen):
+#   plain urlopen followed redirects to any host before the final URL was validated (SSRF).
+def fetch(url, destination, allowed_hosts, max_bytes=MAX_BYTES, opener=None):
     """Download into new file; never overwrite. Redirect target is checked before reading response."""
     validate_url(url, allowed_hosts)
+    if opener is None:
+        # Every redirect Location is validated before urllib follows it.
+        opener = checked_urlopen(lambda target: validate_url(target, allowed_hosts))
     if not 0 < max_bytes <= 2 * 1024 * 1024 * 1024:
         raise ValueError("Invalid maximum download size")
     out = Path(destination)

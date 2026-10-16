@@ -2,7 +2,9 @@
 # unused (flake8 F401), kept for reference: import json
 import tempfile
 import unittest
+import urllib.request
 from pathlib import Path
+from unittest import mock
 from .acquire import validate_url, fetch, save_manifest, verify_manifest, timeline
 
 
@@ -77,6 +79,28 @@ class TestAcquire(unittest.TestCase):
                     ["example.org"],
                     opener=lambda req, timeout: FakeResponse("https://evil.org/a"),
                 )
+
+    def test_default_opener_checks_redirects_before_following(self):
+        # urlopen follows redirects before returning, so the target must be checked in the
+        # redirect handler, not afterwards from response.geturl().
+        handlers = []
+
+        class FakeOpener:
+            def open(self, req, timeout=None):
+                return FakeResponse(req.full_url)
+
+        def fake_build_opener(*args):
+            handlers.extend(args)
+            return FakeOpener()
+
+        with tempfile.TemporaryDirectory() as t, mock.patch("urllib.request.build_opener", fake_build_opener):
+            fetch("https://example.org/file", Path(t) / "a.bin", ["example.org"])
+        redirect = [h for h in handlers if isinstance(h, urllib.request.HTTPRedirectHandler)]
+        self.assertEqual(len(redirect), 1)
+        req = urllib.request.Request("https://example.org/file")
+        with self.assertRaises(ValueError):
+            redirect[0].redirect_request(req, None, 302, "Found", {}, "https://169.254.169.254/latest")
+        self.assertIsNotNone(redirect[0].redirect_request(req, None, 302, "Found", {}, "https://example.org/b"))
 
     def test_timeline(self):
         with tempfile.TemporaryDirectory() as t:
