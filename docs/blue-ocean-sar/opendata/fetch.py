@@ -372,8 +372,15 @@ def save_evidence(evidence_dir, *, url, final_url, method, status, headers, body
     """
     os.makedirs(evidence_dir, exist_ok=True)
     stamp = fetched_at.replace(":", "").replace("-", "")
-    # Lesson: a time stamp is not an identifier. This name collides within a second; kept only for compatibility.
-    base = os.path.join(evidence_dir, f"{stamp}_{sha256[:16]}")
+    # Lesson: a time stamp is not an identifier. This name collided within a second (SYSTEM_REVIEW C5).
+    # base = os.path.join(evidence_dir, f"{stamp}_{sha256[:16]}")
+    # Now a numeric suffix is added and files are opened with "x", so a repeat never overwrites.
+    n = 0
+    while True:
+        base = os.path.join(evidence_dir, f"{stamp}_{sha256[:16]}" + (f"_{n}" if n else ""))
+        if not (os.path.exists(base + ".json") or os.path.exists(base + ".bin")):
+            break
+        n += 1
     meta = {
         "url": redact_url(url, secrets),
         "final_url": redact_url(final_url, secrets),
@@ -395,10 +402,10 @@ def save_evidence(evidence_dir, *, url, final_url, method, status, headers, body
     elif body is not None and _contains_secret(body, secrets):
         meta["body_withheld"] = "response body contains a secret value; only its sha256 is recorded"
     elif body is not None:
-        with open(base + ".bin", "wb") as f:
+        with open(base + ".bin", "xb") as f:
             f.write(body)
         meta["body_file"] = os.path.basename(base + ".bin")
-    with open(base + ".json", "w", encoding="utf-8") as f:
+    with open(base + ".json", "x", encoding="utf-8") as f:
         json.dump(meta, f, indent=1, sort_keys=True)
         f.write("\n")
     return base + ".json"

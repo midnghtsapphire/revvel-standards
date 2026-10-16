@@ -74,11 +74,16 @@ class FetchSidecars(Base):
     def test_same_second_capture_overwrites_and_is_flagged(self):
         d = self.sub("fetch")
         self.save(d, b"same", url="https://example.org/first")
-        self.save(d, b"same", url="https://example.org/second")  # same second, same body: same name
+        self.save(d, b"same", url="https://example.org/second")  # same second, same body
         rep = importers.import_fetch_sidecars(d)
         self.assertTrue(rep["verified"], rep["problems"])
-        self.assertEqual(rep["count"], 1, "two captures, one survives: the C5 collision")
-        self.assertEqual(rep["records"][0]["source"], "https://example.org/second")
+        # Replaced: fetch.py's legacy sidecars used to overwrite each other within a second
+        # (the C5 collision); they now get a numeric suffix, so both captures survive.
+        # self.assertEqual(rep["count"], 1, "two captures, one survives: the C5 collision")
+        # self.assertEqual(rep["records"][0]["source"], "https://example.org/second")
+        self.assertEqual(rep["count"], 2, "both same-second captures are kept")
+        self.assertEqual(sorted(r["source"] for r in rep["records"]),
+                         ["https://example.org/first", "https://example.org/second"])
         self.assertTrue({"unique_files", "chained", "metadata_hashed", "signed", "trusted_time", "operator",
                          "server_date", "tls_fingerprint"} <= lacks(rep))
 
