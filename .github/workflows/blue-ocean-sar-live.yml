@@ -3,6 +3,13 @@ name: Blue Ocean SAR live run
 # Manual only. Runs the real-data tools against live public sources for one
 # case area. The build sandbox blocks these hosts; GitHub runners do not.
 # Outputs, evidence logs and hashes are uploaded as a run artifact.
+# Signing: set the repository secret EVIDENCE_SIGNING_KEY (an Ed25519
+# private key PEM from `python3 -m evidence keygen`, and EVIDENCE_KEY_PASSPHRASE
+# if it is encrypted) and every evidence entry is signed. Set the repository
+# variable EVIDENCE_PUBLIC_KEY to the matching public key PEM and the log is
+# verified against it. Without the secret the log is hash-chained but
+# unsigned, and the run summary says so.
+# The run goes red if any data step failed; the artifact is uploaded anyway.
 # The repository is public, so artifacts are visible to anyone who can see
 # the repo. Do not add private records (Ring footage, licensed or
 # legal-process data) to this workflow.
@@ -75,6 +82,7 @@ jobs:
       # Optional repository secrets. Search works without them.
       EARTHDATA_TOKEN: ${{ secrets.EARTHDATA_TOKEN }}
       CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
+      EVIDENCE_KEY_PASSPHRASE: ${{ secrets.EVIDENCE_KEY_PASSPHRASE }}
       OUT: ${{ github.workspace }}/live-out
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -110,6 +118,19 @@ jobs:
           (cd opendata && python -m unittest discover)
           (cd evidence && python -m unittest discover)
 
+      - name: Optional evidence signing key
+        env:
+          EVIDENCE_SIGNING_KEY: ${{ secrets.EVIDENCE_SIGNING_KEY }}
+        run: |
+          if [ -n "$EVIDENCE_SIGNING_KEY" ]; then
+            umask 077
+            printf '%s\n' "$EVIDENCE_SIGNING_KEY" > "$RUNNER_TEMP/evidence_key.pem"
+            echo "EVIDENCE_KEY_PATH=$RUNNER_TEMP/evidence_key.pem" >> "$GITHUB_ENV"
+            echo "Evidence log: signed (Ed25519 key from EVIDENCE_SIGNING_KEY)." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Evidence log: UNSIGNED (hash-chained only; set the EVIDENCE_SIGNING_KEY secret to sign)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Prepare output folder and bounding box
         run: |
           mkdir -p "$OUT/evidence"
@@ -143,35 +164,40 @@ jobs:
           PYEOF
 
       - name: Sentinel-2 scenes (STAC mirror chosen above)
+        id: stac
         continue-on-error: true
         working-directory: docs/blue-ocean-sar/opendata
         run: |
           read -r B0 B1 <<< "$BEFORE"; read -r A0 A1 <<< "$AFTER"
           python stac.py --catalog "$STAC_CATALOG" --timeout "$STAC_TIMEOUT" --collections sentinel-2-l2a --bbox "$BBOX" \
             --datetime "$B0/$A1" --max-cloud 30 --limit 50 \
-            --evidence-log "$OUT/evidence" --operator "$EVIDENCE_OPERATOR" > "$OUT/stac_sentinel2.json"
+            --evidence-log "$OUT/evidence" --operator "$EVIDENCE_OPERATOR" ${EVIDENCE_KEY_PATH:+--evidence-key "$EVIDENCE_KEY_PATH"} > "$OUT/stac_sentinel2.json"
 
       - name: GEDI canopy granules (NASA CMR)
+        id: cmr
         continue-on-error: true
         working-directory: docs/blue-ocean-sar/opendata
         run: |
           python cmr.py --short-name GEDI02_A --bbox "$BBOX" \
-            --evidence-log "$OUT/evidence" --operator "$EVIDENCE_OPERATOR" > "$OUT/cmr_gedi.json"
+            --evidence-log "$OUT/evidence" --operator "$EVIDENCE_OPERATOR" ${EVIDENCE_KEY_PATH:+--evidence-key "$EVIDENCE_KEY_PATH"} > "$OUT/cmr_gedi.json"
 
       - name: USGS 3DEP elevation (US only)
+        id: dep3
         continue-on-error: true
         working-directory: docs/blue-ocean-sar/opendata
         run: |
           python usgs_3dep.py export --bbox "$BBOX" --resolution-m 1 --out-tif "$OUT/dem_3dep.tif" \
-            --evidence-log "$OUT/evidence" --operator "$EVIDENCE_OPERATOR"
+            --evidence-log "$OUT/evidence" --operator "$EVIDENCE_OPERATOR" ${EVIDENCE_KEY_PATH:+--evidence-key "$EVIDENCE_KEY_PATH"}
 
       - name: Terrain analysis (Copernicus GLO-30)
+        id: terrain
         continue-on-error: true
         working-directory: docs/blue-ocean-sar/realdata
         run: |
           python dem_terrain.py --lat "$LAT" --lon "$LON" --radius-m "$RADIUS_M" --out-prefix "$OUT/terrain"
 
       - name: Sentinel-2 vegetation change (NDVI and red-edge)
+        id: s2change
         continue-on-error: true
         working-directory: docs/blue-ocean-sar/realdata
         run: |
@@ -180,13 +206,15 @@ jobs:
             --before "$B0" "$B1" --after "$A0" "$A1" --index ndre --out-dir "$OUT/s2_change"
 
       - name: OpenStreetMap drainage and access features
+        id: osm
         continue-on-error: true
         working-directory: docs/blue-ocean-sar/opendata
         run: |
           python osm.py overpass --lat "$LAT" --lon "$LON" --radius "$RADIUS_M" \
-            --evidence-log "$OUT/evidence" --operator "$EVIDENCE_OPERATOR" > "$OUT/osm_features.geojson"
+            --evidence-log "$OUT/evidence" --operator "$EVIDENCE_OPERATOR" ${EVIDENCE_KEY_PATH:+--evidence-key "$EVIDENCE_KEY_PATH"} > "$OUT/osm_features.geojson"
 
       - name: USGS gauges
+        id: gauges
         if: ${{ inputs.usgs_sites != '' }}
         continue-on-error: true
         working-directory: docs/blue-ocean-sar/realdata
@@ -196,14 +224,16 @@ jobs:
             --params 00060,00065,00010 --out-csv "$OUT/usgs_iv.csv" --out-json "$OUT/usgs_iv.json"
 
       - name: Public traffic cameras nearby
+        id: cams
         if: ${{ inputs.cams_country != '' }}
         continue-on-error: true
         working-directory: docs/blue-ocean-sar/opendata
         run: |
           python traffic_cams.py --country "$CAMS_COUNTRY" --lat "$LAT" --lon "$LON" --radius-km 10 --limit 25 \
-            --evidence-log "$OUT/evidence" --operator "$EVIDENCE_OPERATOR" > "$OUT/traffic_cams.json"
+            --evidence-log "$OUT/evidence" --operator "$EVIDENCE_OPERATOR" ${EVIDENCE_KEY_PATH:+--evidence-key "$EVIDENCE_KEY_PATH"} > "$OUT/traffic_cams.json"
 
       - name: Lost-person simulation on the 3DEP surface
+        id: lps
         if: ${{ inputs.lpb_category != '' }}
         continue-on-error: true
         working-directory: docs/blue-ocean-sar/realdata
@@ -212,12 +242,40 @@ jobs:
           python lost_person_sim.py simulate --lat "$LAT" --lon "$LON" --category "$LPB_CATEGORY" \
             --hours "$LPB_HOURS" --dem "$OUT/dem_3dep.tif" --out "$OUT/lost_person_sim"
 
-      - name: Verify evidence log and record its head
+      # The realdata tools read their inputs directly (GDAL / urllib), not
+      # through the evidence-capturing fetch helper, so their source bytes are
+      # not in the log. Their outputs are captured here, so the files in the
+      # artifact are at least bound to this chain; the inputs are named inside
+      # each output (scene URLs, tile names, site numbers).
+      - name: Capture derived outputs into the evidence log
         if: always()
         working-directory: docs/blue-ocean-sar
         run: |
+          find "$OUT" -type f \( -path "$OUT/evidence/*" -o -name SHA256SUMS -o -name 'stac_*' -o -name 'cmr_*' \
+            -o -name 'osm_*' -o -name 'traffic_cams*' -o -name 'source_health.json' -o -name 'download_config.json' \
+            -o -name 'dem_3dep.tif*' \) -prune -o -type f -print0 | sort -z |
+            while IFS= read -r -d '' f; do
+              python -m evidence capture --log "$OUT/evidence" --operator "$EVIDENCE_OPERATOR" \
+                ${EVIDENCE_KEY_PATH:+--key "$EVIDENCE_KEY_PATH"} --file "$f" --kind derived-output \
+                --source "${f#"$OUT"/}" --tool-name blue-ocean-sar-live --tool-path . > /dev/null
+            done
+
+      - name: Verify evidence log and record its head
+        if: always()
+        working-directory: docs/blue-ocean-sar
+        env:
+          EVIDENCE_PUBLIC_KEY: ${{ vars.EVIDENCE_PUBLIC_KEY }}
+        run: |
           if [ -f "$OUT/evidence/evidence.jsonl" ]; then
-            python -m evidence verify --log "$OUT/evidence" --json > "$OUT/evidence_verify.json"
+            # python -m evidence verify --log "$OUT/evidence" --json > "$OUT/evidence_verify.json"
+            # Replaced (review 2026-10-16): verify against the published public key when one is set.
+            if [ -n "$EVIDENCE_PUBLIC_KEY" ]; then
+              printf '%s\n' "$EVIDENCE_PUBLIC_KEY" > "$RUNNER_TEMP/evidence_pub.pem"
+              python -m evidence verify --log "$OUT/evidence" --public-key "$RUNNER_TEMP/evidence_pub.pem" \
+                --json > "$OUT/evidence_verify.json"
+            else
+              python -m evidence verify --log "$OUT/evidence" --json > "$OUT/evidence_verify.json"
+            fi
             python -m evidence head --log "$OUT/evidence" | tee "$OUT/evidence_head.txt"
             echo "Evidence head: $(cat "$OUT/evidence_head.txt")" >> "$GITHUB_STEP_SUMMARY"
           else
@@ -232,3 +290,35 @@ jobs:
           name: blue-ocean-sar-live-${{ inputs.case_id }}-${{ github.run_id }}
           path: live-out
           retention-days: 30
+
+      # Every data step above uses continue-on-error so one dead source does
+      # not stop the rest. This step makes the run's colour tell the truth:
+      # it lists each step's outcome and fails the job if any of them failed.
+      - name: Run status
+        if: always()
+        env:
+          OUTCOMES: >-
+            stac=${{ steps.stac.outcome }}
+            cmr=${{ steps.cmr.outcome }}
+            3dep=${{ steps.dep3.outcome }}
+            terrain=${{ steps.terrain.outcome }}
+            s2_change=${{ steps.s2change.outcome }}
+            osm=${{ steps.osm.outcome }}
+            gauges=${{ steps.gauges.outcome }}
+            cams=${{ steps.cams.outcome }}
+            lost_person_sim=${{ steps.lps.outcome }}
+        run: |
+          failed=""
+          { echo ""; echo "| Step | Outcome |"; echo "| --- | --- |"; } >> "$GITHUB_STEP_SUMMARY"
+          read -r -a pairs <<< "$OUTCOMES"
+          for kv in "${pairs[@]}"; do
+            echo "| ${kv%%=*} | ${kv#*=} |" >> "$GITHUB_STEP_SUMMARY"
+            if [ "${kv#*=}" = "failure" ]; then
+              failed="$failed ${kv%%=*}"
+            fi
+          done
+          if [ -n "$failed" ]; then
+            echo "PARTIAL RUN: failed steps:$failed (artifact still uploaded)" | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "All data steps succeeded or were skipped." >> "$GITHUB_STEP_SUMMARY"

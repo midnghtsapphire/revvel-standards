@@ -10,7 +10,25 @@ Two passes were made independently:
 - **Technology scout.** It researched 2023-2026 methods and sources: blue
   ocean (emerging) and red ocean (proven) upgrades.
 
-## Bottom line
+## Status at the latest update (2026-10-16)
+
+The findings below are recorded as they were found, before any fix. They
+are history, not the current state of the code.
+
+- **Fixed:** C1-C5, H1-H6, M3 (search-theory ROW crash) and M5
+  (`datetime.utcnow()`). The shared
+  evidence library from C5 is adopted by `fetch.py`, `columbus_records.py`,
+  `ring_export.py` and `records_adapter.py`.
+- **Still open:**
+  - The Rust crate keeps its own evidence manifest; it is not on the shared
+    format (part of M1).
+  - The remaining medium findings: "probability" meaning different things
+    across tools, `fusion.py` site dependence, the broad Columbus `LIKE`
+    match and the "1%" parse in `build_case_registry.py`.
+  - Cross-cutting weaknesses 3-5.
+  - Field calibration of sweep widths and likelihood ratios.
+
+## Bottom line (as found, before the fixes)
 
 All 820 tests pass, but tests are not the same as being right.
 
@@ -33,7 +51,7 @@ All 820 tests pass, but tests are not the same as being right.
 - **Evidence logs:** six formats, all rewritable without detection, with no
   trusted time, no signature and no operator identity.
 
-## Critical and high findings, with fixes
+## Critical and high findings, with fixes (as found; all fixed since)
 
 | ID | Tool | Problem (observed) | Fix |
 | --- | --- | --- | --- |
