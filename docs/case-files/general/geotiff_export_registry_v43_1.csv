@@ -1,0 +1,5 @@
+case_id,geotiff_filename,center_latitude,center_longitude,peak_probability_pct,crim_depth_m,sha256_witness_hash
+SHTUKA-2018-BC,target_shtuka_probability_grid.tif,50.8825,-119.8851,98.65,1.84,07c4eec0c803ae79be2005fd27bbbd1178c6d98e989d4eaa3d955810a494ca64
+SHAFFER-2006-OH,target_shaffer_probability_grid.tif,39.9985,-83.0064,92.95,4.24,1f3da7c633d6cd469270e1f7c58a8936ec84261b2be7436f5b8090a513b692c1
+LINDEMAN-2026-MO,target_lindeman_probability_grid.tif,38.4512,-91.8234,97.8,3.39,b8339915cd032deb2fe5295f403c5ebb48ca7aad02e00fad3828dfcb2c80ba0e
+FARBER-2015-PA,target_farber_probability_grid.tif,40.6781,-76.1923,91.4,1.66,833da35c1258230886afbc74c25984e32ba5a65bbae097b228103faf1d06810f
