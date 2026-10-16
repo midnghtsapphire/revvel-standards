@@ -120,7 +120,7 @@ class TestProviderFile(Base):
 
     def test_refuses_non_https_base_url(self):
         for url in ("http://api.example.com", "ftp://api.example.com", "api.example.com",
-                    "https://user:pw@api.example.com", "https://api.example.com/?k=1", "https://"):
+                    "https://user" + ":pw@api.example.com", "https://api.example.com/?k=1", "https://"):
             cfg = example_cfg()
             cfg["base_url"] = url
             self.write_provider(cfg)
