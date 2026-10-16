@@ -8,7 +8,7 @@ and ingesting historical data from:
   2. USENET Newsgroups via NNTP (Network News Transfer Protocol)
   3. Local Archival Files (MBOX, EML, JSONL)
 
-Outputs normalized JSON records complying with Stage 0 Ingestion Schema and 
+Outputs normalized JSON records complying with Stage 0 Ingestion Schema and
 stores them in SQLite with automated SHA-256 deduplication.
 """
 
@@ -17,7 +17,15 @@ import datetime
 import hashlib
 import json
 import logging
-import nntplib
+
+# Original: `import nntplib` at top level. nntplib was removed from the standard
+# library in Python 3.13 (PEP 594), so the whole CLI failed to start. It is now
+# optional: only the `nntp` command needs it (pip install standard-nntplib).
+# import nntplib
+try:
+    import nntplib
+except ImportError:
+    nntplib = None
 import re
 import sqlite3
 import sys
@@ -28,9 +36,7 @@ from typing import Any, Dict, List, Optional
 
 # Set up logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)]
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s", handlers=[logging.StreamHandler(sys.stdout)]
 )
 logger = logging.getLogger("ArchiveCollector")
 
@@ -39,6 +45,7 @@ logger = logging.getLogger("ArchiveCollector")
 # Database Initialization & Management
 # =====================================================================
 
+
 def init_database(db_path: str) -> sqlite3.Connection:
     """Initialize SQLite database with Stage 0 ingestion schema."""
     conn = sqlite3.connect(db_path)
@@ -46,7 +53,8 @@ def init_database(db_path: str) -> sqlite3.Connection:
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS stage0_historical_records (
         record_id TEXT PRIMARY KEY,
-        source_origin TEXT NOT NULL CHECK(source_origin IN ('wayback_cdx', 'usenet_nntp', 'git_history', 'forum_archive', 'darkweb_index', 'manual_ingest')),
+        source_origin TEXT NOT NULL CHECK(source_origin IN (
+            'wayback_cdx', 'usenet_nntp', 'git_history', 'forum_archive', 'darkweb_index', 'manual_ingest')),
         archive_timestamp TEXT NOT NULL,
         source_identifier TEXT NOT NULL,
         author_handle TEXT,
@@ -55,7 +63,8 @@ def init_database(db_path: str) -> sqlite3.Connection:
         raw_content TEXT NOT NULL,
         extracted_entities_json TEXT,
         checksum_sha256 TEXT NOT NULL UNIQUE,
-        verification_status TEXT DEFAULT 'unverified' CHECK(verification_status IN ('unverified', 'corroborated_by_log', 'debunked_by_official_log', 'flagged_speculative')),
+        verification_status TEXT DEFAULT 'unverified' CHECK(verification_status IN (
+            'unverified', 'corroborated_by_log', 'debunked_by_official_log', 'flagged_speculative')),
         ingested_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
     """)
@@ -70,6 +79,7 @@ def init_database(db_path: str) -> sqlite3.Connection:
 # Entity Extraction & Normalization
 # =====================================================================
 
+
 def extract_entities(text: str) -> Dict[str, List[str]]:
     """Perform light entity extraction using regex patterns."""
     entities = {
@@ -77,22 +87,22 @@ def extract_entities(text: str) -> Dict[str, List[str]]:
         "mentioned_locations": [],
         "phone_numbers": [],
         "ip_addresses": [],
-        "keywords": []
+        "keywords": [],
     }
-    
+
     # IP Addresses
-    ip_pattern = r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'
+    ip_pattern = r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b"
     entities["ip_addresses"] = list(set(re.findall(ip_pattern, text)))
-    
+
     # Phone numbers (US/North America formats)
-    phone_pattern = r'\b(?:\+?1[-.\s]?)?\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b'
+    phone_pattern = r"\b(?:\+?1[-.\s]?)?\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b"
     entities["phone_numbers"] = list(set(re.findall(phone_pattern, text)))
-    
+
     # Keywords / Handles
-    handles = list(set(re.findall(r'@\w+', text)))
+    handles = list(set(re.findall(r"@\w+", text)))
     if handles:
         entities["keywords"].extend(handles)
-        
+
     return entities
 
 
@@ -104,16 +114,16 @@ def normalize_record(
     author_handle: Optional[str] = None,
     author_ip_snippet: Optional[str] = None,
     author_email_domain: Optional[str] = None,
-    verification_status: str = "unverified"
+    verification_status: str = "unverified",
 ) -> Dict[str, Any]:
     """Structure and normalize a record before DB insertion."""
-    
+
     # Compute SHA-256 for deduplication
     checksum = hashlib.sha256(raw_content.encode("utf-8")).hexdigest()
-    
+
     # Entity extraction
     extracted = extract_entities(raw_content)
-    
+
     return {
         "record_id": str(uuid.uuid4()),
         "source_origin": source_origin,
@@ -122,12 +132,12 @@ def normalize_record(
         "author_metadata": {
             "handle": author_handle,
             "ip_snippet": author_ip_snippet,
-            "email_domain": author_email_domain
+            "email_domain": author_email_domain,
         },
         "raw_content": raw_content,
         "extracted_entities": extracted,
         "checksum_sha256": checksum,
-        "verification_status": verification_status
+        "verification_status": verification_status,
     }
 
 
@@ -135,25 +145,28 @@ def save_record_to_db(conn: sqlite3.Connection, record: Dict[str, Any]) -> bool:
     """Save record into SQLite database, ignoring duplicates."""
     cursor = conn.cursor()
     try:
-        cursor.execute("""
+        cursor.execute(
+            """
         INSERT INTO stage0_historical_records (
             record_id, source_origin, archive_timestamp, source_identifier,
             author_handle, author_ip_snippet, author_email_domain,
             raw_content, extracted_entities_json, checksum_sha256, verification_status
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            record["record_id"],
-            record["source_origin"],
-            record["archive_timestamp"],
-            record["source_identifier"],
-            record["author_metadata"].get("handle"),
-            record["author_metadata"].get("ip_snippet"),
-            record["author_metadata"].get("email_domain"),
-            record["raw_content"],
-            json.dumps(record["extracted_entities"]),
-            record["checksum_sha256"],
-            record["verification_status"]
-        ))
+        """,
+            (
+                record["record_id"],
+                record["source_origin"],
+                record["archive_timestamp"],
+                record["source_identifier"],
+                record["author_metadata"].get("handle"),
+                record["author_metadata"].get("ip_snippet"),
+                record["author_metadata"].get("email_domain"),
+                record["raw_content"],
+                json.dumps(record["extracted_entities"]),
+                record["checksum_sha256"],
+                record["verification_status"],
+            ),
+        )
         conn.commit()
         return True
     except sqlite3.IntegrityError:
@@ -165,10 +178,12 @@ def save_record_to_db(conn: sqlite3.Connection, record: Dict[str, Any]) -> bool:
 # 1. Wayback Machine CDX API Collector
 # =====================================================================
 
+
 class WaybackCDXCollector:
     """Collector for Wayback Machine CDX Server API."""
-    
-    BASE_URL = "http://web.archive.org/cdx/search/cdx"
+
+    # BASE_URL = "http://web.archive.org/cdx/search/cdx"  # original; plain http fails behind HTTPS-only proxies
+    BASE_URL = "https://web.archive.org/cdx/search/cdx"
 
     @staticmethod
     def parse_wayback_timestamp(ts: str) -> str:
@@ -179,13 +194,15 @@ class WaybackCDXCollector:
         except Exception:
             return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    def fetch_cdx_index(self, target_url: str, from_date: str = "", to_date: str = "", limit: int = 100) -> List[Dict[str, Any]]:
+    def fetch_cdx_index(
+        self, target_url: str, from_date: str = "", to_date: str = "", limit: int = 100
+    ) -> List[Dict[str, Any]]:
         """Query CDX API for snapshots of a URL pattern."""
         params = {
             "url": target_url,
             "output": "json",
             "fl": "timestamp,original,mimetype,statuscode,digest",
-            "limit": str(limit)
+            "limit": str(limit),
         }
         if from_date:
             params["from"] = from_date
@@ -202,20 +219,22 @@ class WaybackCDXCollector:
                 data = json.loads(resp.read().decode("utf-8"))
                 if not data or len(data) < 2:
                     return []
-                
+
                 headers = data[0]
                 results = []
                 for row in data[1:]:
                     entry = dict(zip(headers, row))
                     ts_iso = self.parse_wayback_timestamp(entry.get("timestamp", ""))
                     archive_url = f"https://web.archive.org/web/{entry.get('timestamp')}/{entry.get('original')}"
-                    
-                    results.append({
-                        "source_origin": "wayback_cdx",
-                        "archive_timestamp": ts_iso,
-                        "source_identifier": archive_url,
-                        "raw_content": f"Wayback Snapshot [{entry.get('timestamp')}] {entry.get('original')} (MIME: {entry.get('mimetype')}, Status: {entry.get('statuscode')}, Digest: {entry.get('digest')})"
-                    })
+
+                    results.append(
+                        {
+                            "source_origin": "wayback_cdx",
+                            "archive_timestamp": ts_iso,
+                            "source_identifier": archive_url,
+                            "raw_content": f"Wayback Snapshot [{entry.get('timestamp')}] {entry.get('original')} (MIME: {entry.get('mimetype')}, Status: {entry.get('statuscode')}, Digest: {entry.get('digest')})",  # noqa: E501
+                        }
+                    )
                 return results
         except Exception as e:
             logger.error(f"CDX API Query failed or offline: {e}")
@@ -225,6 +244,7 @@ class WaybackCDXCollector:
 # =====================================================================
 # 2. USENET NNTP Collector
 # =====================================================================
+
 
 class UsenetNNTPCollector:
     """Collector for USENET newsgroups via NNTP."""
@@ -239,10 +259,13 @@ class UsenetNNTPCollector:
         """Fetch latest articles from an NNTP newsgroup."""
         logger.info(f"Connecting to NNTP host {self.host}:{self.port} for group '{newsgroup}'...")
         results = []
+        if nntplib is None:
+            logger.error("nntplib is not available on this Python (removed in 3.13); pip install standard-nntplib")
+            return results
         try:
             nntp = nntplib.NNTP(self.host, self.port, user=self.user, password=self.password, timeout=10)
             resp, count, first, last, name = nntp.group(newsgroup)
-            
+
             start_num = max(int(first), int(last) - article_count + 1)
             end_num = int(last)
 
@@ -251,28 +274,33 @@ class UsenetNNTPCollector:
                     resp, info = nntp.article(str(art_num))
                     lines = [line.decode("utf-8", errors="replace") for line in info.lines]
                     full_text = "\n".join(lines)
-                    
+
                     msg_id = info.message_id if hasattr(info, "message_id") else f"<{newsgroup}.{art_num}@{self.host}>"
-                    
-                    results.append({
-                        "source_origin": "usenet_nntp",
-                        "archive_timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                        "source_identifier": msg_id,
-                        "raw_content": full_text
-                    })
+
+                    results.append(
+                        {
+                            "source_origin": "usenet_nntp",
+                            "archive_timestamp": datetime.datetime.now(datetime.timezone.utc).strftime(
+                                "%Y-%m-%dT%H:%M:%SZ"
+                            ),
+                            "source_identifier": msg_id,
+                            "raw_content": full_text,
+                        }
+                    )
                 except Exception as art_err:
                     logger.warning(f"Could not fetch article {art_num}: {art_err}")
 
             nntp.quit()
         except Exception as e:
             logger.error(f"NNTP Connection failed or host unreachable: {e}")
-            
+
         return results
 
 
 # =====================================================================
 # CLI Commands & Entry Point
 # =====================================================================
+
 
 def main():
     parser = argparse.ArgumentParser(description="Archive Collector CLI & Ingestion Pipeline")
@@ -284,7 +312,9 @@ def main():
     cdx_parser.add_argument("--from-date", default="", help="Start date YYYYMMDD")
     cdx_parser.add_argument("--to-date", default="", help="End date YYYYMMDD")
     cdx_parser.add_argument("--limit", type=int, default=50, help="Max records")
-    cdx_parser.add_argument("--db", default="/workspace/scratch/stage0_archive.db", help="SQLite DB path")
+    cdx_parser.add_argument(
+        "--db", default="stage0_archive.db", help="SQLite DB path"
+    )  # was /workspace/scratch/stage0_archive.db
 
     # NNTP Command
     nntp_parser = subparsers.add_parser("nntp", help="Fetch USENET newsgroup via NNTP")
@@ -292,17 +322,23 @@ def main():
     nntp_parser.add_argument("--port", type=int, default=119, help="NNTP port")
     nntp_parser.add_argument("--group", required=True, help="Newsgroup name")
     nntp_parser.add_argument("--limit", type=int, default=20, help="Max articles")
-    nntp_parser.add_argument("--db", default="/workspace/scratch/stage0_archive.db", help="SQLite DB path")
+    nntp_parser.add_argument(
+        "--db", default="stage0_archive.db", help="SQLite DB path"
+    )  # was /workspace/scratch/stage0_archive.db
 
     # Ingest Local File Command
     file_parser = subparsers.add_parser("ingest-file", help="Ingest local JSON or JSONL archive file")
     file_parser.add_argument("--file", required=True, help="Path to JSON/JSONL file")
     file_parser.add_argument("--origin", default="forum_archive", help="Source origin tag")
-    file_parser.add_argument("--db", default="/workspace/scratch/stage0_archive.db", help="SQLite DB path")
+    file_parser.add_argument(
+        "--db", default="stage0_archive.db", help="SQLite DB path"
+    )  # was /workspace/scratch/stage0_archive.db
 
     # Stats Command
     stats_parser = subparsers.add_parser("stats", help="Show database record statistics")
-    stats_parser.add_argument("--db", default="/workspace/scratch/stage0_archive.db", help="SQLite DB path")
+    stats_parser.add_argument(
+        "--db", default="stage0_archive.db", help="SQLite DB path"
+    )  # was /workspace/scratch/stage0_archive.db
 
     args = parser.parse_args()
 
@@ -321,7 +357,7 @@ def main():
                 source_origin=item["source_origin"],
                 archive_timestamp=item["archive_timestamp"],
                 source_identifier=item["source_identifier"],
-                raw_content=item["raw_content"]
+                raw_content=item["raw_content"],
             )
             if save_record_to_db(db_conn, rec):
                 saved_count += 1
@@ -336,7 +372,7 @@ def main():
                 source_origin=item["source_origin"],
                 archive_timestamp=item["archive_timestamp"],
                 source_identifier=item["source_identifier"],
-                raw_content=item["raw_content"]
+                raw_content=item["raw_content"],
             )
             if save_record_to_db(db_conn, rec):
                 saved_count += 1
@@ -353,10 +389,13 @@ def main():
                     data = json.loads(line)
                     rec = normalize_record(
                         source_origin=data.get("source_origin", args.origin),
-                        archive_timestamp=data.get("archive_timestamp", datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")),
+                        archive_timestamp=data.get(
+                            "archive_timestamp",
+                            datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        ),
                         source_identifier=data.get("source_identifier", args.file),
                         raw_content=data.get("raw_content", str(data)),
-                        author_handle=data.get("author_handle")
+                        author_handle=data.get("author_handle"),
                     )
                     if save_record_to_db(db_conn, rec):
                         saved_count += 1

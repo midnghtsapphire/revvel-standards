@@ -1,0 +1,309 @@
+"""Offline tests: synthetic rasters with known answers. Live data runs are
+separate (see README).
+
+Raster tests need numpy, scipy and rasterio; image tests also need Pillow.
+They are skipped when those are missing. The qPCR, weather and registry
+tests need only the standard library."""
+
+import importlib.util
+import math
+import os
+import sys
+import tempfile
+import unittest
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+HAS_GEO = all(importlib.util.find_spec(m) is not None for m in ("numpy", "scipy", "rasterio"))
+HAS_PIL = HAS_GEO and importlib.util.find_spec("PIL") is not None
+
+if HAS_GEO:
+    import numpy as np
+    import rasterio
+    import rasterio.warp
+    from rasterio.transform import from_origin
+
+    import dem_terrain as dt
+    import s2_ndvi as s2
+
+
+def _write(path, z, crs="EPSG:32611", x0=500000.0, y0=5640000.0, res=1.0):
+    with rasterio.open(path, "w", driver="GTiff", height=z.shape[0], width=z.shape[1], count=1,
+                       dtype="float32", crs=crs, transform=from_origin(x0, y0, res, res), nodata=-9999) as d:
+        d.write(z.astype("float32"), 1)
+
+
+@unittest.skipUnless(HAS_GEO, "numpy/scipy/rasterio not installed")
+class Terrain(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        n = 201
+        yy, xx = np.mgrid[0:n, 0:n].astype(float)
+        self.plane = 100.0 + 0.10 * xx  # rises to the east, so downhill is west
+        z = self.plane.copy()
+        z[90:111, 140:161] -= 2.0  # 21x21 m pit, 2 m deep, east of centre
+        self.path = os.path.join(self.tmp.name, "dem.tif")
+        _write(self.path, z)
+        with rasterio.open(self.path) as s:
+            cx, cy = s.xy(100, 100)
+        (self.lon,), (self.lat,) = rasterio.warp.transform("EPSG:32611", "EPSG:4326", [cx], [cy])
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_pit_found_with_right_depth_and_area(self):
+        r = dt.analyse_point(self.lat, self.lon, 100, 1.0, [self.path], min_depth_m=0.5)
+        d = r["depressions"][0]
+        # On a 10 % slope the pit only fills to its lowest (west) rim:
+        # rim 100+0.1*139 = 113.9, deepest floor 98+... = 112.0 -> 1.9 m; cells
+        # deeper than 0.5 m are x = 140..153 -> 14 x 21 = 294 m^2.
+        self.assertAlmostEqual(d["max_depth_m"], 1.9, delta=0.1)
+        self.assertAlmostEqual(d["area_m2"], 14 * 21, delta=25)
+
+    def test_slope_of_plane(self):
+        r = dt.analyse_point(self.lat, self.lon, 50, 1.0, [self.path])
+        self.assertAlmostEqual(r["point"]["slope_deg"], math.degrees(math.atan(0.10)), delta=0.3)
+
+    def test_downhill_path_goes_west_and_leaves_grid(self):
+        r = dt.analyse_point(self.lat, self.lon, 60, 1.0, [self.path])
+        c = r["downhill_path"]["coords_lon_lat_z"]
+        self.assertEqual(r["downhill_path"]["end"], "left_grid")
+        self.assertLess(c[-1][0], c[0][0])
+        self.assertGreater(r["downhill_path"]["drop_m"], 5.0)
+
+    def test_path_crosses_a_pit_instead_of_stopping(self):
+        z = self.plane.copy()
+        z[95:106, 60:80] -= 1.5  # pit directly downhill (west) of the centre
+        p = os.path.join(self.tmp.name, "pit_west.tif")
+        _write(p, z)
+        r = dt.analyse_point(self.lat, self.lon, 90, 1.0, [p])
+        self.assertEqual(r["downhill_path"]["end"], "left_grid")
+
+    def test_dem_change_finds_only_real_change(self):
+        n = 101
+        before = np.full((n, n), 50.0) + np.random.default_rng(1).normal(0, 0.02, (n, n))
+        after = before + np.random.default_rng(2).normal(0, 0.02, (n, n))
+        after[40:46, 40:46] -= 0.4
+        pb, pa = (os.path.join(self.tmp.name, f) for f in ("b.tif", "a.tif"))
+        _write(pb, before)
+        _write(pa, after)
+        res = dt.dem_change(pb, pa, lod_m=0.10)
+        self.assertEqual(len(res["patches"]), 1)
+        self.assertAlmostEqual(res["patches"][0]["mean_change_m"], -0.4, delta=0.05)
+        self.assertAlmostEqual(res["patches"][0]["area_m2"], 36, delta=4)
+
+    def test_no_change_no_patches(self):
+        n = 51
+        z = np.full((n, n), 10.0)
+        pb, pa = (os.path.join(self.tmp.name, f) for f in ("b2.tif", "a2.tif"))
+        _write(pb, z)
+        _write(pa, z + 0.05)
+        self.assertEqual(dt.dem_change(pb, pa, lod_m=0.10)["patches"], [])
+
+    def test_cop30_tile_names(self):
+        self.assertTrue(dt.cop30_url(50, -120).endswith(
+            "Copernicus_DSM_COG_10_N50_00_W120_00_DEM/Copernicus_DSM_COG_10_N50_00_W120_00_DEM.tif"))
+        self.assertIn("S34_00_E018_00", dt.cop30_url(-34, 18))
+
+
+@unittest.skipUnless(HAS_GEO, "numpy/scipy/rasterio not installed")
+class Sentinel2Helpers(unittest.TestCase):
+    def test_mgrs_matches_reference_library(self):
+        try:
+            import mgrs
+        except ImportError:
+            self.skipTest("mgrs not installed")
+        m = mgrs.MGRS()
+        for lat, lon in [(50.8782, -119.9075), (36.62, -94.41), (39.9985, -83.0064), (-33.9, 18.4), (46.2, -74.6)]:
+            zone = int((lon + 180) // 6) + 1
+            self.assertEqual(s2.mgrs_tile(lat, lon, zone), m.toMGRS(lat, lon, MGRSPrecision=0))
+
+    def test_sun_peaks_neighbour_zone_tile(self):
+        # The native tile 11UKS is not in the archive; the zone-10 overlap tile is.
+        self.assertIn("10UGB", s2.candidate_tiles(50.8782, -119.9075))
+
+    def test_circle_masks_disjoint(self):
+        inner, ring = s2._circle_masks((41, 41), (20, 20), 10.0, 20.0, 150.0)
+        self.assertFalse((inner & ring).any())
+        self.assertEqual(int(inner.sum()), 13)
+
+    def test_scene_url(self):
+        self.assertEqual(
+            s2.scene_url("15SUA", "S2B_15SUA_20260912_0_L2A"),
+            "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/15/S/UA/2026/9/"
+            "S2B_15SUA_20260912_0_L2A")
+
+
+import csv as _csv  # noqa: E402
+
+import qpcr_interpret as qi  # noqa: E402
+import weather_history as wh  # noqa: E402
+
+if HAS_PIL:
+    from PIL import Image
+
+    import image_phash as ih
+
+
+@unittest.skipUnless(HAS_PIL, "Pillow/numpy/scipy not installed")
+class Phash(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        rng = np.random.default_rng(0)
+        base = (rng.random((240, 320, 3)) * 255).astype("uint8")
+        base[60:180, 80:240] = [128, 0, 32]  # a burgundy block
+        self.a = os.path.join(self.tmp.name, "a.png")
+        Image.fromarray(base).save(self.a)
+        self.a_small = os.path.join(self.tmp.name, "a_small.jpg")
+        Image.fromarray(base).resize((160, 120)).save(self.a_small, quality=70)
+        other = (np.random.default_rng(9).random((240, 320, 3)) * 255).astype("uint8")
+        self.b = os.path.join(self.tmp.name, "b.png")
+        Image.fromarray(other).save(self.b)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_resized_copy_is_close_different_image_is_far(self):
+        a, s, b = (ih.describe(p) for p in (self.a, self.a_small, self.b))
+        self.assertLessEqual(ih.hamming(a["_ph"], s["_ph"]), 8)
+        self.assertGreater(ih.hamming(a["_ph"], b["_ph"]), 14)
+        self.assertEqual(ih.verdict(ih.hamming(a["_ph"], b["_ph"])), "different_images")
+
+    def test_hash_is_of_the_file_contents(self):
+        a1, a2 = ih.describe(self.a), ih.describe(self.a)
+        self.assertEqual(a1["sha256"], a2["sha256"])
+        self.assertEqual(len(a1["phash"]), 16)
+
+
+class Qpcr(unittest.TestCase):
+    def plate(self, extra=(), ntc_human="Undetermined", pos=24.0):
+        rows = [
+            ("NTC1", "ntc", "human", ntc_human), ("NTC1", "ntc", "ipc", 28.0),
+            ("POS1", "positive", "human", pos), ("POS1", "positive", "ipc", 28.1),
+            ("S1", "unknown", "human", 33.1), ("S1", "unknown", "human", 33.6), ("S1", "unknown", "human", 33.4),
+            ("S1", "unknown", "ipc", 28.3),
+            ("S2", "unknown", "human", "Undetermined"), ("S2", "unknown", "human", "Undetermined"),
+            ("S2", "unknown", "ipc", 28.2),
+            ("S3", "unknown", "human", 34.0), ("S3", "unknown", "ipc", 31.5),
+            ("S4", "unknown", "human", 35.9), ("S4", "unknown", "human", "Undetermined"),
+            ("S4", "unknown", "ipc", 28.0),
+        ] + list(extra)
+        return [{"sample_id": s, "role": r, "target": t, "ct": qi._ct(c)} for s, r, t, c in rows]
+
+    def calls(self, rows):
+        res = qi.interpret(rows, lod95_ct=36.0, loq_ct=33.0, pos_min=22.0, pos_max=26.0)
+        return res, {s["sample_id"]: s["call"] for s in res["samples"]}
+
+    def test_calls(self):
+        res, c = self.calls(self.plate())
+        self.assertTrue(res["run_valid"])
+        self.assertEqual(c["S1"], "DETECTED_BELOW_LOQ")
+        self.assertEqual(c["S2"], "NOT_DETECTED")
+        self.assertEqual(c["S3"], "INHIBITED")
+        self.assertEqual(c["S4"], "INCONCLUSIVE")
+
+    def test_contaminated_ntc_invalidates_run(self):
+        res, c = self.calls(self.plate(ntc_human=30.0))
+        self.assertFalse(res["run_valid"])
+        self.assertEqual(set(c.values()), {"RUN_INVALID"})
+
+    def test_failed_positive_invalidates_run(self):
+        res, _ = self.calls(self.plate(pos=31.0))
+        self.assertFalse(res["run_valid"])
+
+    def test_csv_loader(self):
+        with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False) as f:
+            w = _csv.writer(f)
+            w.writerow(["sample_id", "role", "target", "ct"])
+            w.writerow(["S1", "Unknown", "HUMAN", "Undetermined"])
+        rows = qi.load(f.name)
+        os.unlink(f.name)
+        self.assertEqual(rows[0]["role"], "unknown")
+        self.assertIsNone(rows[0]["ct"])
+
+
+class Weather(unittest.TestCase):
+    def test_summary_from_saved_response(self):
+        data = {"latitude": 50.9, "longitude": -119.9, "elevation": 1250.0, "timezone": "America/Vancouver",
+                "hourly": {"time": ["2018-02-17T00:00", "2018-02-17T01:00", "2018-02-17T02:00"],
+                           "temperature_2m": [-9.5, -11.2, -10.1], "snowfall": [0.7, 1.4, 0.0],
+                           "snow_depth": [1.1, 1.12, 1.12]}}
+        rows, s = wh.summarise(data)
+        self.assertEqual(len(rows), 3)
+        self.assertEqual(s["min_temp_c"], -11.2)
+        self.assertEqual(s["min_temp_time"], "2018-02-17T01:00")
+        self.assertEqual(s["total_snowfall_cm"], 2.1)
+
+
+@unittest.skipUnless(HAS_GEO, "numpy/scipy/rasterio not installed")
+class SlideRunout(unittest.TestCase):
+    def profile(self, slope_len=140.0, angle=35.0, flat=200.0, step=1.0, lat=40.78):
+        kx = 111_320 * math.cos(math.radians(lat))
+        pts, x, z = [], 0.0, 1000.0
+        dx = step * math.cos(math.radians(angle))
+        dz = step * math.sin(math.radians(angle))
+        for _ in range(int(slope_len / step) + 1):
+            pts.append([-76.0 + x / kx, lat, z])
+            x += dx
+            z -= dz
+        z += dz
+        for _ in range(int(flat / step)):
+            x += step
+            pts.append([-76.0 + x / kx, lat, z])
+        return pts
+
+    def test_matches_closed_form_speed_at_slope_foot(self):
+        a = 9.81 * (math.sin(math.radians(35)) - 0.45 * math.cos(math.radians(35)))
+        r = dt.slide_runout(self.profile(flat=0.0), mu=0.45)
+        self.assertAlmostEqual(r["max_speed_m_s"], math.sqrt(2 * a * 140.0), delta=0.3)  # ~23.7 m/s
+
+    def test_stops_on_flat_where_energy_runs_out(self):
+        a = 9.81 * (math.sin(math.radians(35)) - 0.45 * math.cos(math.radians(35)))
+        v2 = 2 * a * 140.0
+        expected_flat = v2 / (2 * 9.81 * 0.45)  # ~63.6 m of flat after the slope
+        r = dt.slide_runout(self.profile(flat=200.0), mu=0.45)
+        self.assertAlmostEqual(r["stopped_after_m"], 140.0 + expected_flat, delta=3.0)
+
+    def test_high_friction_never_starts(self):
+        r = dt.slide_runout(self.profile(), mu=0.8)  # tan 35 = 0.70 < 0.8
+        self.assertEqual(r["stopped_after_m"], 0.0)
+
+
+import build_case_registry as reg  # noqa: E402
+
+
+class Registry(unittest.TestCase):
+    def test_parse_gps_forms(self):
+        self.assertEqual(reg.parse_gps("50.8782° N, 119.9075° W"), (50.8782, -119.9075))
+        self.assertEqual(reg.parse_gps("39.9985° N, -83.0064° W"), (39.9985, -83.0064))  # sign not doubled
+        self.assertEqual(reg.parse_gps("50.8831, -119.8842"), (50.8831, -119.8842))
+        self.assertEqual(reg.parse_gps((40.7915, -75.9752)), (40.7915, -75.9752))
+        self.assertEqual(reg.parse_gps({"lat": 1.5, "lon": 2.5}), (1.5, 2.5))
+        self.assertIsNone(reg.parse_gps("no numbers"))
+
+    def test_case_resolution(self):
+        self.assertEqual(reg.norm_case("Target Delta near Sun Peaks"), "SHTUKA-2018-BC")
+        self.assertEqual(reg.norm_case("x", "tamaqua_sharp_mountain_target_analysis.csv"), "FARBER-2015-PA")
+        self.assertEqual(reg.norm_case("see LINDEMAN-2026-MO"), "LINDEMAN-2026-MO")
+        self.assertIsNone(reg.norm_case("Shaffer and Shtuka compared"))  # ambiguous: not guessed
+
+    def test_ingest_keeps_conflicting_versions(self):
+        d = tempfile.mkdtemp()
+        with open(os.path.join(d, "a.csv"), "w") as f:
+            f.write("case_id,latitude,longitude,confidence_score_pct\nX-2020-AA,10.0,20.0,93\n")
+        with open(os.path.join(d, "b.json"), "w") as f:
+            f.write('{"cases":[{"case_id":"X-2020-AA","gps":"10.5, 20.0","confidence_score":0.5}]}')
+        with open(os.path.join(d, "c.py"), "w") as f:
+            f.write("R = {'X-2020-AA': {'gps': (10.0, 20.0005), 'depth_m': 1.2}}\nraise SystemExit('never run')\n")
+        out = os.path.join(d, "out")
+        claims, coords, summary, _ = reg.build([d], out)
+        s = summary["X-2020-AA"]
+        self.assertEqual(s["coordinate_groups"], 2)  # 10.0 and 10.5 kept apart; c.py joins the first
+        self.assertAlmostEqual(s["max_distance_between_groups_km"], 55.6, delta=0.5)
+        self.assertEqual(s["confidence_pct_values"], [50.0, 93.0])
+        self.assertEqual(s["depth_m_values"], [1.2])
+        self.assertTrue(os.path.exists(os.path.join(out, "case_registry.sqlite")))
+
+
+if __name__ == "__main__":
+    unittest.main()
