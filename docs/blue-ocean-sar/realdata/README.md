@@ -636,3 +636,45 @@ python -m unittest test_sweep_width
 
 Exit codes: 3 means some segments still have no W (pass `--allow-missing`
 to accept that); 2 means bad input.
+
+## Evidence fusion with likelihood ratios (`evidence_fusion.py`)
+
+This replaces hand-weighted scores, such as the 0.45 / 0.25 / 0.20 / 0.10
+weights in the uploaded scripts. Those weights came from AI-generated
+material and had no measured basis. Here, each evidence layer gives a
+likelihood ratio (LR):
+
+LR = P(observation | person in cell) / P(observation | not in cell).
+
+Every LR comes with a 90% interval and a cited source. A layer without a
+source is refused. There are four kinds of layer:
+
+- a lookup table by bins;
+- a logistic model;
+- a detector (a hit gives sensitivity / false-positive rate; a miss gives
+  (1 - sensitivity) / (1 - false-positive rate));
+- a completed search (LR = 1 - POD, the same as `search_theory.bayes_update`).
+
+Posterior odds = prior odds x the product of the LRs. The prior is a
+segments CSV, a `lost_person_sim` raster or a SAREnv scenario. A
+Rest-of-World term is kept. A seeded Monte Carlo over the LR intervals gives
+each cell or segment a median and a 90% interval.
+
+Layers that share a dependency group are never multiplied together as if
+they were independent. Admiralty grades can shrink an LR toward 1, but only
+under a rule you choose; the report flags that rule as a policy choice.
+
+`score_map` benchmarks a fused map against known find locations. It reports
+the rank of the true cell, the probability searched before the find, and
+the log score.
+
+```sh
+python evidence_fusion.py fuse --config fusion.json --out fused.json --csv fused.csv
+python evidence_fusion.py score --map fused.csv --found found.csv --baseline segments.csv
+python optimal_search.py fused.csv --effort-km 40
+python -m unittest test_evidence_fusion
+```
+
+The module ships no LR values. Every number must come from a measured study
+or your own field trials. The SAREnv loader follows that project's own code
+but has not been run on real SAREnv files.
