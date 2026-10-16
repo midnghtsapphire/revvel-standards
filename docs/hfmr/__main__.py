@@ -3,7 +3,9 @@ import json
 from .acquire import fetch, save_manifest, verify_manifest, timeline
 from .pipeline import analyze, verify_run
 from .archive import inspect_file, register, verify as archive_verify, sources
-from .historical import run as historical_run, inspect as historical_inspect, verify as historical_verify
+# Original: from .historical import run as historical_run, inspect as historical_inspect, verify as historical_verify
+#   importing it here made every command (CSV, archive, download) require NumPy; it is now
+#   imported only in the branches that use the GeoTIFF pipeline.
 
 p = argparse.ArgumentParser(prog="python -m hfmr")
 s = p.add_subparsers(dest="cmd", required=True)
@@ -106,6 +108,8 @@ elif args.cmd == "analyze":
     )
     print(json.dumps({"candidates": r["result"]["candidate_count"], "output": args.output}))
 elif args.cmd == "historical":
+    from .historical import run as historical_run
+
     r = historical_run(
         args.case, args.before, args.after, args.output, args.threshold, args.min_pixels, args.band, args.resampling
     )
@@ -119,13 +123,30 @@ elif args.cmd == "historical":
         )
     )
 elif args.cmd == "inspect":
+    from .historical import inspect as historical_inspect
+
     print(json.dumps(historical_inspect(args.input), indent=2))
 else:
-    ok = (
-        historical_verify(args.output)
-        if (__import__("pathlib").Path(args.output) / "difference.tif").exists()
-        else verify_run(args.output)
-    )
+    # Original:
+    # ok = (
+    #     historical_verify(args.output)
+    #     if (__import__("pathlib").Path(args.output) / "difference.tif").exists()
+    #     else verify_run(args.output)
+    # )
+    #   it inferred the run type from difference.tif existing, so deleting that raster sent a
+    #   historical run to the generic verifier (which passed) and a stale difference.tif in a
+    #   scalar run crashed. The verifier is now chosen from the manifest schema.
+    try:
+        schema = json.loads((__import__("pathlib").Path(args.output) / "manifest.json").read_text()).get("schema")
+        if schema == "hfmr.historical.v1":
+            from .historical import verify as historical_verify
+
+            ok = historical_verify(args.output)
+        else:
+            ok = verify_run(args.output)
+    except (OSError, ValueError, KeyError, AttributeError):
+        # Missing or unreadable manifest, ledger or output artifact: not verified.
+        ok = False
     print("VERIFIED" if ok else "FAILED")
     raise SystemExit(0 if ok else 1)
 
