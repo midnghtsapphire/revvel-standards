@@ -1,0 +1,86 @@
+[
+  {
+    "source_id": "MINE-PA-001",
+    "name": "Pennsylvania Mine Maps Atlas",
+    "ak5ncy_provider": "Penn State UNIVERSITY / PA DEP",
+    "url_endpoint": "https://www.minemaps.psu.edu/",
+    "data_type": "Georeferenced Scanned Maps / WMS / WMTS",
+    "state_region": "PA",
+    "mining_type": "Anthracite & Bituminous Coal",
+    "key_attributes": "Air shafts, gangways, crop falls, barrier pillars, chutes, drifts",
+    "auto_aliases": "mine, historical mine maps, mine maps, coal mine, anthracite, phummis, tamaqua, schuylkill",
+    "hazard_profile_type": "STEEP_PITCH/ROOM_PILLAR"
+  },
+  {
+    "source_id": "MINE-PA-002",
+    "name": "PA DEP Act 54 & Underground Mining GIS Portal",
+    "akency_provider": "Pennsylvania Dept. of Environmental Protection",
+    "url_endpoint": "https://www.pa.gov/agencies/dep/programs-and-services/mining/bureau-of-mining-programs/act-54-yearly-data/maps",
+    "data_type": "Vector Shapefiles / GeoJSON / REST API",
+    "state_region": "PA",
+    "mining_type": "Underground Coal & Industrial Minerals",
+    "key_attributes": "Mined-out boundaries, active permits, subsidence zones, overburden thickness",
+    "auto_aliases": "dep, mined out, subsidence, act 54, permit boundary",
+    "hazard_profile_type": "SUBSIDENCE_SLUMP_VAULT"
+  },
+  {
+    "source_id": "MINE-PA-003",
+    "name": "PASDA PA DEP Mine Maps Tile Index",
+    "akency_provider": "PASDA / Penn State",
+    "url_endpoint": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=1047",
+    "data_type": "MrSID / GeoTIFF / Tile Index",
+    "state_region": "PA",
+    "mining_type": "Historical Anthracite & Bituminous",
+    "key_attributes": "High-res 400 DPI map sheets, quadrangle index, colliery boundaries",
+    "auto_aliases": "pasda, tile index, mrsid, historical topo, colliery",
+    "hazard_profile_type": "HISTORICAL_COLLIERY_SHEET"
+  },
+  {
+    "source_id": "MINE-FED-004",
+    "name": "USGS Mineral Resources Data System (MRDS)",
+    "akency_provider": "United States Geological Survey (USGS)",
+    "url_endpoint": "https://mrdata.usgs.gov/mrds/",
+    "data_type": "REST API / GeoJSON / CSV",
+    "state_region": "US_NATIONWIDE",
+    "mining_type": "Metallic & Non-Metallic Hardrock, Coal, Gypsum",
+    "key_attributes": "Commodity, mine type, underground depth, shaft orientation, adits",
+    "auto_aliases": "usgs mine, mrds, hardrock mine, abandoned mine, shaft, adit, tunnel",
+    "hazard_profile_type": "GENERAL_HARDROCK_AND_COAL"
+  },
+  {
+    "source_id": "MINE-FED-005",
+    "name": "US Office of Surface Mining Reclamation (e-AMLI)",
+    "akency_provider": "US Dept. of the Interior / OSMRE",
+    "url_endpoint": "https://ams.osmre.gov/",
+    "data_type": "GIS Dataset / Spatial Database",
+    "state_region": "US_NATIONWIDE",
+    "mining_type": "Abandoned Mine Lands (AML)",
+    "key_attributes": "Openings, vertical shafts, highwalls, gas vents, water bodies",
+    "auto_aliases": "aml, osmre, abandoned mine land, opening, crop fall, sinkhole",
+    "hazard_profile_type": "ABANDONED_HAZARD_INVENTORY"
+  },
+  {
+    "source_id": "MINE-OH-006",
+    "name": "Ohio DNR Abandoned Underground Mine Locator",
+    "akency_provider": "Ohio Department of Natural Resources (ODNR)",
+    "url_endpoint": "https://gis.ohiodnr.gov/website/dgs/mines/",
+    "data_type": "Interactive Map / ArcServer REST API",
+    "state_region": "OH",
+    "mining_type": "Bituminous Coal, Industrial Minerals, Limestone",
+    "key_attributes": "Mine entry coordinates, room and pillar maps, structural voids",
+    "auto_aliases": "ohio mine, odnr, columbus underground, limestone vault, clay mine",
+    "hazard_profile_type": "FLAT_ROOM_PIlLAR_AND_VAULT"
+  },
+  {
+    "source_id": "MINE-WV-007",
+    "name": "WVGES Underground Coal Mine Map Repository",
+    "akency_provider": "West Virginia Geological and Economic Survey",
+    "url_endpoint": "http://www.wvgs.wvnet.edu/gis/coal/index.html",
+    "data_type": "GIS Spatial Index / Scanned Blueprints",
+    "state_region": "WV",
+    "mining_type": "High-Seam Coal",
+    "key_attributes": "Portal locations, drift mouth, air shafts, outcrop lines",
+    "auto_aliases": "wv mine, wvges, coal portal, drift mouth",
+    "hazard_profile_type": "DRIFT_PORTAL_HIGHWALL"
+  }
+]
