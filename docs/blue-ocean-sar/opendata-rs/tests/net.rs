@@ -186,3 +186,88 @@ async fn times_out_and_retries_a_hung_server() {
         other => panic!("expected Transport timeout, got {other:?}"),
     }
 }
+
+// Added (review 2026-10-16): bodies over the configured cap are refused.
+#[tokio::test]
+async fn body_over_cap_is_rejected() {
+    let s = MockServer::start().await;
+    Mock::given(path("/big"))
+        .respond_with(ResponseTemplate::new(200).set_body_string("x".repeat(100)))
+        .expect(1)
+        .mount(&s)
+        .await;
+    Mock::given(path("/small"))
+        .respond_with(ResponseTemplate::new(200).set_body_string("x".repeat(10)))
+        .mount(&s)
+        .await;
+    let host = url::Url::parse(&s.uri())
+        .unwrap()
+        .host_str()
+        .unwrap()
+        .to_string();
+    let mut cfg = opendata::net::FetcherConfig::new(
+        opendata::net::HostPolicy::new([host]).allow_loopback_http_for_tests(),
+    );
+    cfg.retry = common::fast_retry();
+    cfg.max_body_bytes = 10;
+    let f = opendata::net::Fetcher::new(cfg).unwrap();
+    match f.send(&Request::get(url(&s, "/big"))).await {
+        Err(NetError::TooLarge { limit, .. }) => assert_eq!(limit, 10),
+        other => panic!("expected TooLarge, got {other:?}"),
+    }
+    let r = f.send(&Request::get(url(&s, "/small"))).await.unwrap();
+    assert_eq!(r.body.len(), 10);
+}
+
+// Added (review 2026-10-16): error messages never echo credential-like
+// query parameters.
+#[tokio::test]
+async fn errors_redact_credential_like_query_parameters() {
+    let s = MockServer::start().await;
+    Mock::given(path("/missing"))
+        .respond_with(ResponseTemplate::new(404))
+        .mount(&s)
+        .await;
+    let f = fetcher_for(&s, None);
+    let err = f
+        .send(&Request::get(url(
+            &s,
+            "/missing?token=fake-token-value&q=1",
+        )))
+        .await
+        .unwrap_err();
+    let msg = err.to_string();
+    assert!(!msg.contains("fake-token-value"), "{msg}");
+    assert!(msg.contains("q=1"), "{msg}");
+
+    let port = url::Url::parse(&s.uri()).unwrap().port().unwrap();
+    let evil = format!("http://localhost:{port}/x?sig=fake-sig-value");
+    Mock::given(path("/start"))
+        .respond_with(ResponseTemplate::new(302).insert_header("Location", evil.as_str()))
+        .mount(&s)
+        .await;
+    let err = f.send(&Request::get(url(&s, "/start"))).await.unwrap_err();
+    let msg = err.to_string();
+    assert!(matches!(err, NetError::RedirectRejected(_)), "{msg}");
+    assert!(!msg.contains("fake-sig-value"), "{msg}");
+
+    // Transport error: nothing listens on a just-released ephemeral port.
+    let port = std::net::TcpListener::bind("127.0.0.1:0")
+        .unwrap()
+        .local_addr()
+        .unwrap()
+        .port();
+    let dead_url =
+        url::Url::parse(&format!("http://127.0.0.1:{port}/x?api_key=fake-key-value")).unwrap();
+    let host = dead_url.host_str().unwrap().to_string();
+    let mut cfg = opendata::net::FetcherConfig::new(
+        opendata::net::HostPolicy::new([host]).allow_loopback_http_for_tests(),
+    );
+    cfg.retry = common::fast_retry();
+    cfg.retry.max_retries = 0;
+    let f = opendata::net::Fetcher::new(cfg).unwrap();
+    let err = f.send(&Request::get(dead_url)).await.unwrap_err();
+    let msg = err.to_string();
+    assert!(matches!(err, NetError::Transport { .. }), "{msg}");
+    assert!(!msg.contains("fake-key-value"), "{msg}");
+}

@@ -118,3 +118,16 @@ fn feature_conversion_keeps_attributes_and_id() {
     assert_eq!(nogeom["geometry"], Value::Null);
     assert!(nogeom.get("id").is_none());
 }
+
+// Added (review 2026-10-16): a malformed part makes the whole geometry null
+// rather than a silently partial one.
+#[test]
+fn malformed_hole_or_path_yields_null_not_partial_geometry() {
+    let esri = json!({"rings": [
+        [[0, 0], [0, 10], [10, 10], [10, 0], [0, 0]],
+        [[2, 2], ["bad", 2], [4, 4], [2, 4], [2, 2]]
+    ]});
+    assert_eq!(geometry_to_geojson(&esri), Value::Null);
+    let esri = json!({"paths": [[[0, 0], [1, 1]], [[5, 5], [null, 6]]]});
+    assert_eq!(geometry_to_geojson(&esri), Value::Null);
+}

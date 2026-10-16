@@ -178,3 +178,37 @@ async fn concurrent_captures_keep_a_linear_chain() {
     let r = verify_manifest(d.path(), true).unwrap();
     assert_eq!(r.entries, 20);
 }
+
+// Added (review 2026-10-16): an existing object whose bytes were altered is
+// refused before a new entry is chained onto it.
+#[tokio::test]
+async fn tampered_existing_object_is_refused_before_append() {
+    let d = tempfile::tempdir().unwrap();
+    let s = MockServer::start().await;
+    Mock::given(path("/a"))
+        .respond_with(ResponseTemplate::new(200).set_body_string("alpha"))
+        .mount(&s)
+        .await;
+    let obj = d
+        .path()
+        .join(format!("objects/{}.bin", sha256_hex(b"alpha")));
+    std::fs::create_dir_all(obj.parent().unwrap()).unwrap();
+    std::fs::write(&obj, b"ALPHA").unwrap();
+    let log = Arc::new(EvidenceLog::open(d.path()).await.unwrap());
+    let f = fetcher_for(&s, Some(log));
+    let err = f.send(&Request::get(url(&s, "/a"))).await.unwrap_err();
+    assert!(format!("{err}").contains("does not match"), "{err}");
+    assert!(!d.path().join(MANIFEST_FILE).exists());
+}
+
+// Added (review 2026-10-16): a second writer on the same evidence dir is
+// refused; the lock is released when the first log is dropped.
+#[tokio::test]
+async fn second_concurrent_writer_is_refused() {
+    let d = tempfile::tempdir().unwrap();
+    let first = EvidenceLog::open(d.path()).await.unwrap();
+    let err = EvidenceLog::open(d.path()).await.unwrap_err();
+    assert!(format!("{err:#}").contains("already open"), "{err:#}");
+    drop(first);
+    EvidenceLog::open(d.path()).await.unwrap();
+}

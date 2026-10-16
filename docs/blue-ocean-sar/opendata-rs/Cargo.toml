@@ -2,7 +2,9 @@
 name = "opendata-rs"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.80"
+# rust-version = "1.80"
+# Replaced (review 2026-10-16): the evidence writer lock uses std::fs::File::try_lock (stable in 1.89).
+rust-version = "1.89"
 description = "Evidence-grade open-data fetcher (STAC, ArcGIS REST, NASA CMR, OpenTrafficCamMap) for blue-ocean-sar"
 license = "MIT"
 publish = false

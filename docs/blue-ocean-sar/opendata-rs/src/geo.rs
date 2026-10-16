@@ -2,7 +2,9 @@
 //! normalisation of date / datetime ranges into RFC 3339.
 
 use anyhow::{bail, Context, Result};
-use chrono::{DateTime, NaiveDate};
+// use chrono::{DateTime, NaiveDate};
+// Replaced (review 2026-10-16): SecondsFormat is needed to keep fractional seconds.
+use chrono::{DateTime, NaiveDate, SecondsFormat};
 
 /// Mean Earth radius in kilometres (IUGG).
 pub const EARTH_RADIUS_KM: f64 = 6371.0088;
@@ -104,7 +106,11 @@ fn normalise_instant(s: &str, end_of_day: bool) -> Result<Option<String>> {
     }
     let dt = DateTime::parse_from_rfc3339(s)
         .with_context(|| format!("{s:?} is neither YYYY-MM-DD nor RFC 3339"))?;
-    Ok(Some(dt.to_utc().format("%Y-%m-%dT%H:%M:%SZ").to_string()))
+    // Ok(Some(dt.to_utc().format("%Y-%m-%dT%H:%M:%SZ").to_string()))
+    // Replaced (review 2026-10-16): keep fractional seconds so a bound like `...00.500Z` is not moved 500 ms.
+    Ok(Some(
+        dt.to_utc().to_rfc3339_opts(SecondsFormat::AutoSi, true),
+    ))
 }
 
 /// A closed or half-open time range. `sep` is the input separator
@@ -128,8 +134,18 @@ impl TimeRange {
         if r.start.is_none() && r.end.is_none() {
             bail!("time range {s:?} is fully open");
         }
+        // if let (Some(a), Some(b)) = (&r.start, &r.end) {
+        //     if a > b {
+        //         bail!("time range start {a} is after end {b}");
+        //     }
+        // }
+        // Replaced (review 2026-10-16): with fractional seconds the strings no longer sort chronologically ("00Z" > "00.5Z"); compare instants.
         if let (Some(a), Some(b)) = (&r.start, &r.end) {
-            if a > b {
+            let (ta, tb) = (
+                DateTime::parse_from_rfc3339(a).context("normalised start")?,
+                DateTime::parse_from_rfc3339(b).context("normalised end")?,
+            );
+            if ta > tb {
                 bail!("time range start {a} is after end {b}");
             }
         }
@@ -187,5 +203,14 @@ mod tests {
         assert!(TimeRange::parse("2026-10-15/2026-01-01", '/').is_err());
         assert!(TimeRange::parse("yesterday/today", '/').is_err());
         assert!(TimeRange::parse("../..", '/').is_err());
+    }
+
+    #[test]
+    fn fractional_seconds_are_preserved() {
+        let r = TimeRange::parse("2026-01-01T00:00:00Z/2026-01-01T00:00:00.500Z", '/').unwrap();
+        assert_eq!(r.to_stac(), "2026-01-01T00:00:00Z/2026-01-01T00:00:00.500Z");
+        let r = TimeRange::parse("2026-01-01T00:00:00.25+01:00,..", ',').unwrap();
+        assert_eq!(r.to_cmr(), "2025-12-31T23:00:00.250Z,");
+        assert!(TimeRange::parse("2026-01-01T00:00:00.5Z/2026-01-01T00:00:00Z", '/').is_err());
     }
 }

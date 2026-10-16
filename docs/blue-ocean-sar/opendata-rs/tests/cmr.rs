@@ -146,3 +146,17 @@ fn short_name_validation() {
     assert!(cmr::validate_short_name("").is_err());
     assert!(cmr::validate_short_name("a&provider=x").is_err());
 }
+
+// Added (review 2026-10-16): collection-level links CMR copies into a granule
+// are marked `"inherited": true` and must not be reported as granule data.
+#[test]
+fn inherited_collection_data_links_are_excluded() {
+    let mut e = entry("G1");
+    e["links"].as_array_mut().unwrap().push(json!({
+        "rel": "http://esipfed.org/ns/fedsearch/1.1/data#",
+        "href": "https://collection.example/whole-dataset/",
+        "inherited": true
+    }));
+    let g = cmr::summarise(&e).unwrap();
+    assert_eq!(g.data_links, ["https://data.example/G1.h5"]);
+}
