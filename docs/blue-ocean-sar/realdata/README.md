@@ -174,3 +174,47 @@ Outputs: `rings.geojson`, `rings.kml` and `summary.json` (citation, pages,
 sample size and notes), plus `grid.geojson` with `--grid`. The tool exits 2
 for an unknown category. It exits 3 when the handbook has no distance table
 for the category; `summary.json` is still written in that case.
+
+## Riverine recovery tools
+
+Built from `riverine_recovery_method.md`, `drift_modeling_note.md` and
+`sar_repository_schema.json` in `docs/case-files/general/`.
+
+| Script | What it does | Data source | Runs here? |
+| --- | --- | --- | --- |
+| `evidence_scoring.py` | Admiralty A-F / 1-6 codes, ranked clue table, geography gate, case-record validation | Case JSON or clue CSV | Yes (offline) |
+| `usgs_gauges.py` | NWIS IV discharge, gauge height and water temperature; gauge-mismatch flag | `waterservices.usgs.gov/nwis/iv/` or a saved response | Parsing yes; live host blocked here |
+| `drift_envelope.py` | Probability-weighted envelope downstream of the LKP, snag spikes, refloat note | Your inputs; optional centreline GeoJSON | Yes (offline) |
+
+- **Sort order.** Source first, then credibility, then physical anchors
+  within a tie. So `A3` ranks above `B1`.
+- **Geography gate.** E/F sources and credibility 5/6 never set search
+  geography. Only an A-tier physical anchor with credibility 1-3 may.
+  Everything else informs the model but does not place the search.
+- **Which gauge governs.** `usgs_gauges.py` flags gauges that differ by more
+  than 3x. It cannot tell which gauge governs the reach. You say so with
+  `--governing`, after placing the incident relative to confluences and dams.
+- **Envelope, not a distance.** Cells (100 m) carry probability, cumulative
+  mass and a search rank. Accessibility changes the rank only. Cleared cells
+  go to 0 and the rest is renormalised.
+- **The naive estimate is rejected.** The velocity x time figure appears in
+  `summary.json` marked `REJECTED`, with the reasons, and is never used.
+- **What is assumed.** The decay median (0.5 mi), the snag multipliers and
+  the refloat band edges are assumptions. Change them for the case.
+- **What is measured.** Only what you pass in: the LKP, gauge readings and
+  water temperature.
+
+```sh
+python evidence_scoring.py validate ../../case-files/general/sar_case_records.json
+python evidence_scoring.py rank --case ../../case-files/general/sar_case_records.json --out ranked.csv
+python usgs_gauges.py --sites 12439500,12442500 --start 2026-05-27T00:00-07:00 --end 2026-05-28T23:59-07:00 \
+    --governing 12442500 --obvious 12439500 --out-csv iv.csv --out-json compare.json
+python usgs_gauges.py --from-file saved_iv.json --governing 12442500 --obvious 12439500
+python drift_envelope.py --case ../../case-files/general/sar_case_records.json --case-id OKANOGAN-2026-05-27 \
+    --elapsed-hours 25 --feature strainer_logjam:650:Logjam-1 --centreline reach.geojson --out-dir out/okanogan
+python -m unittest test_evidence_scoring test_usgs_gauges test_drift_envelope
+```
+
+`fixtures/nwis_iv_synthetic_okanogan.json` has the layout of an NWIS IV
+response, but its numbers are made up for the tests. They are not gauge
+readings.
