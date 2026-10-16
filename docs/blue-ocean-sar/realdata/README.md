@@ -26,8 +26,13 @@ Fixes made to your scripts (the original lines are kept as comments):
   - `nntplib` was removed from Python 3.13, so the whole CLI crashed at import. It is now optional.
   - Wayback URL changed to `https`.
   - The default database path is no longer `/workspace`.
-- **`stage2_validation_gate.py`**: unchanged apart from formatting and an
-  unused import.
+<!-- Original entry: "`stage2_validation_gate.py`: unchanged apart from
+formatting and an unused import." -->
+- **`stage2_validation_gate.py`**: it no longer judges every record against
+  the Shaffer (Columbus 2006) logs by default. Without `--ground-truth FILE`
+  or `--use-shaffer-default` it leaves records `unverified`. Keywords in
+  negated or search-report sentences are kept speculative, and gaps match
+  their own keywords. `realtime_validation_listener.py` takes the same flags.
 - **`run_county.py`** (not in this folder): its `print("\n…")` lines were
   broken across two lines, so it would not start. Its terrain sweep also uses
   random noise when no tile is given; `dem_terrain.py --before/--after` does
