@@ -72,6 +72,17 @@ class Tests(unittest.TestCase):
             self.assertEqual(len(errors), 1)
             self.assertIn("manifest invalid", errors[0])
 
+    def test_verify_reports_deeply_nested_manifest_instead_of_crashing(self):
+        import hashlib
+
+        with tempfile.TemporaryDirectory() as d:
+            m = Path(d) / "x_manifest.json"
+            m.write_text("[" * 200000 + "]" * 200000)
+            m.with_suffix(".sha256").write_text(hashlib.sha256(m.read_bytes()).hexdigest() + "  " + m.name + "\n")
+            errors = verify(d)
+            self.assertEqual(len(errors), 1)
+            self.assertIn("RecursionError", errors[0])
+
     def test_failure_explicit(self):
         with tempfile.TemporaryDirectory() as d:
             m = acquire(d, fetcher=lambda url: (_ for _ in ()).throw(ConnectionError("offline")))

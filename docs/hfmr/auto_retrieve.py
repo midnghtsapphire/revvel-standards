@@ -212,7 +212,9 @@ def verify(output):
                 p = out / item["file"]
                 if not p.exists() or hashlib.sha256(p.read_bytes()).hexdigest() != item["sha256"]:
                     errors.append(str(p) + ": data invalid")
-        except (OSError, ValueError, IndexError, KeyError, TypeError, AttributeError) as exc:
+        # Original: except (OSError, ValueError, IndexError, KeyError, TypeError, AttributeError) as exc:
+        #   a deeply nested manifest made json.loads raise RecursionError, which crashed verify.
+        except (OSError, ValueError, IndexError, KeyError, TypeError, AttributeError, RecursionError) as exc:
             errors.append(f"{m}: manifest invalid ({type(exc).__name__})")
     return errors
 
