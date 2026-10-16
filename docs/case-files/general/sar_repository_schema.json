@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SAR Case Repository Schema",
+  "description": "Structured schema for search-and-recovery method cases. Supports multiple case classes (wilderness, riverine, etc.) and Admiralty-Code-style evidence scoring.",
+  "version": "0.1.0",
+
+  "evidence_scoring_system": {
+    "name": "Adapted Admiralty Code (NATO System)",
+    "also_known_as": [
+      "Admiralty Grading System",
+      "NATO System",
+      "source reliability / information credibility scoring",
+      "evidence weighting",
+      "probative value (legal/forensic term)"
+    ],
+    "principle": "Score every clue on TWO independent axes: how reliable the SOURCE is, and how well the INFORMATION is corroborated. Keep them separate — a reliable source can still give uncorroborated info, and a shaky source can occasionally give confirmable info.",
+    "source_reliability": {
+      "A": "Completely reliable — physical evidence on scene, instrumented data (e.g., USGS gauge), or authenticated record",
+      "B": "Usually reliable — known credible witness, official agency statement",
+      "C": "Fairly reliable — identified witness, secondhand but traceable",
+      "D": "Not usually reliable — uncertain provenance, partial identification",
+      "E": "Unreliable — anonymous, hearsay, social media comment",
+      "F": "Reliability cannot be judged"
+    },
+    "information_credibility": {
+      "1": "Confirmed — corroborated by independent sources or physical match",
+      "2": "Probably true — consistent with other known facts",
+      "3": "Possibly true — plausible, partially consistent",
+      "4": "Doubtful — not consistent with known facts",
+      "5": "Improbable — contradicted by known facts",
+      "6": "Truth cannot be judged"
+    },
+    "combined_priority": "Sort search actions by combined score. A1 = act on immediately (e.g., ID found on bank, matched). E5/E6 = verify before any use, never set geography. Physical/instrumented evidence (A-tier) outranks all witness/OSINT.",
+    "worked_examples": [
+      {"item": "ID found on riverbank, matches missing person", "source": "A", "cred": "1", "code": "A1", "action": "Primary anchor — drive search from here"},
+      {"item": "Firearm recovered at last-seen point", "source": "A", "cred": "2", "code": "A2", "action": "Strong location anchor"},
+      {"item": "USGS gauge discharge for the reach", "source": "A", "cred": "1", "code": "A1", "action": "Authoritative hydrology input"},
+      {"item": "Named 911 caller eyewitness account", "source": "B", "cred": "2", "code": "B2", "action": "Sets initial scenario"},
+      {"item": "'Matt brown said he was going to Omak' (YouTube comment)", "source": "E", "cred": "5", "code": "E5", "action": "Route to investigators to verify; do NOT set search geography"}
+    ]
+  },
+
+  "case_classes": {
+    "riverine_recovery": {
+      "domain": "moving freshwater",
+      "primary_variables": ["governing_reach_discharge_cfs", "current_velocity", "last_known_point", "channel_morphology", "water_temp_c", "snag_features", "refloat_window"],
+      "low_relevance_variables": ["tides", "wind", "terrain_lidar"],
+      "authoritative_sources": ["USGS NWIS IV API", "USGS National Water Dashboard", "USGS NHD", "NOAA/NWS archive", "FEMA flood maps", "county GIS"]
+    },
+    "wilderness_missing_person": {
+      "domain": "terrain / exposure",
+      "primary_variables": ["last_known_point", "intended_route", "terrain_slope", "exposure_weather", "mobility_state", "lost_person_behavior_profile"],
+      "low_relevance_variables": ["tides", "river_discharge"],
+      "authoritative_sources": ["USGS 3DEP/National Map", "Lost Person Behavior databases (ISRID)", "NOAA/NWS", "trail/route GIS", "cell-tower / device ping records"]
+    }
+  },
+
+  "case_record": {
+    "type": "object",
+    "required": ["case_id", "case_class", "incident", "evidence", "analysis", "ethics_gates"],
+    "properties": {
+      "case_id": {"type": "string"},
+      "case_class": {"type": "string", "enum": ["riverine_recovery", "wilderness_missing_person"]},
+      "incident": {
+        "type": "object",
+        "properties": {
+          "location_text": {"type": "string"},
+          "lat": {"type": "number"},
+          "lon": {"type": "number"},
+          "reach_relative_to_confluence_dam": {"type": "string"},
+          "datetime_report": {"type": "string", "format": "date-time"},
+          "last_known_point": {"type": "string"}
+        }
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["description", "source_reliability", "information_credibility"],
+          "properties": {
+            "description": {"type": "string"},
+            "source_reliability": {"type": "string", "enum": ["A","B","C","D","E","F"]},
+            "information_credibility": {"type": "string", "enum": ["1","2","3","4","5","6"]},
+            "code": {"type": "string", "description": "auto-concat, e.g. A1"},
+            "is_physical_anchor": {"type": "boolean"},
+            "action": {"type": "string"},
+            "verification_status": {"type": "string", "enum": ["confirmed","pending","unverifiable"]}
+          }
+        }
+      },
+      "analysis": {
+        "type": "object",
+        "properties": {
+          "governing_gauge": {"type": "string"},
+          "obvious_but_wrong_gauge": {"type": "string"},
+          "discharge_cfs": {"type": "number"},
+          "water_temp_c": {"type": "number"},
+          "drift_envelope": {"type": "string", "description": "probability-weighted, NOT a single distance"},
+          "snag_zones_ranked": {"type": "array", "items": {"type": "string"}},
+          "key_lesson": {"type": "string"}
+        }
+      },
+      "ethics_gates": {
+        "type": "object",
+        "required": ["coordinate_with_agency", "no_untrained_water_entry", "decedent_privacy"],
+        "properties": {
+          "coordinate_with_agency": {"type": "boolean"},
+          "lead_agency": {"type": "string"},
+          "search_status": {"type": "string", "enum": ["active","suspended","closed"]},
+          "no_untrained_water_entry": {"type": "boolean"},
+          "decedent_privacy": {"type": "boolean", "description": "no naming/speculation while ID unconfirmed"}
+        }
+      }
+    }
+  }
+}

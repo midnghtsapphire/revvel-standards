@@ -1,0 +1,32 @@
+{
+ "samples": [
+  {
+   "location": {
+    "x": -83.01,
+    "y": 39.96,
+    "spatialReference": {
+     "wkid": 4326,
+     "latestWkid": 4326
+    }
+   },
+   "locationId": 0,
+   "value": "222.548279",
+   "rasterId": 1408,
+   "resolution": 1
+  },
+  {
+   "location": {
+    "x": -83.005,
+    "y": 39.955,
+    "spatialReference": {
+     "wkid": 4326,
+     "latestWkid": 4326
+    }
+   },
+   "locationId": 1,
+   "value": "NoData",
+   "rasterId": 1408,
+   "resolution": 1
+  }
+ ]
+}
