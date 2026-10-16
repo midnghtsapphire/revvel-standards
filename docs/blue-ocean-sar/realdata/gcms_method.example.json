@@ -1,0 +1,13 @@
+{
+  "example": true,
+  "_readme": "EXAMPLE ONLY - REPLACE BEFORE USE. The retention times below are placeholders, not values from any column or method. Retention times depend on the column phase and dimensions, oven programme, carrier gas and flow, and derivatisation (biogenic amines such as putrescine and cadaverine are usually derivatised). Run reference standards on your own method, put the measured retention times here, set a tolerance that fits your run-to-run drift, and delete the \"example\" key. lab_readers.py refuses this file unless --allow-example-method is passed.",
+  "method_name": "EXAMPLE - replace with your lab's method ID",
+  "rt_tolerance_min": 0.1,
+  "targets": [
+    {"name": "putrescine", "expected_rt_min": 4.2},
+    {"name": "cadaverine", "expected_rt_min": 5.8},
+    {"name": "indole", "expected_rt_min": 9.4},
+    {"name": "skatole", "expected_rt_min": 10.1},
+    {"name": "dimethyl disulfide", "expected_rt_min": 2.1}
+  ]
+}
