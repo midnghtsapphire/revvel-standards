@@ -799,16 +799,20 @@ open in the right place. The output is a Cloud-Optimized GeoTIFF by default.
   default. The image is resampled bilinearly onto a north-up grid, and NaN
   input cells stay empty rather than bleeding into neighbours.
   - The run refuses fewer GCPs than the fit has unknowns.
-  - It warns when the fit passes exactly through every point, because the
-    RMSE is then 0 and means nothing.
-  - `--max-rmse` exits 1 when the leave-one-out error is too large.
+  - It warns when there are exactly as many GCPs as the fit has unknowns.
+    The fit then passes through every point, so the RMSE is 0 by
+    construction and means nothing.
+  - `--max-rmse` exits 1 when the leave-one-out error exceeds the limit, or
+    when it is undefined because there are exactly the minimum number of
+    GCPs.
 - `verify`: re-opens a file and checks each band against the SHA-256
   recorded inside it at write time. It can also check the expected CRS and
   transform. A file without the hash tags fails, because it cannot be
   verified.
 
-Each band carries its name, units and SHA-256. Each input file is hashed into
-the file's tags (`gdalinfo` shows them). The file is written under a
+Each band carries its name and SHA-256, plus its units when `--units` is
+given. Each input file is hashed into the file's tags (`gdalinfo` shows
+them). The file is written under a
 temporary name and then renamed.
 
 ```bash
@@ -818,6 +822,11 @@ python geotiff_export.py georef photo_1965.npy --gcps gcps.csv --crs EPSG:27700 
     --order 1 --pixel-size 0.5 --max-rmse 2 --report photo_1965_gcps.json --out photo_1965.tif
 python geotiff_export.py verify ndmi.tif --crs EPSG:32615
 ```
+
+Integer output types refuse any value that would change in the cast
+(out of range, fractional, NaN or infinite). The control points are kept in
+the `revvel_gcps_json` tag, not as native GeoTIFF GCPs, because a GeoTIFF
+holds either GCPs or a geotransform and the output is already warped.
 
 Exit codes: 0 means written and verified. 1 means verification failed or the
 GCP fit failed `--max-rmse`. 2 means bad input.

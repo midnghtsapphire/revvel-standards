@@ -98,6 +98,27 @@ class WriteAndVerify(unittest.TestCase):
             ge.transform_from_bounds(10, 0, 0, 10, 5, 5)
         self.assertFalse(os.path.exists(p))
 
+    def test_lossy_integer_casts_and_bad_nodata_are_refused(self):
+        xform = ge.transform_from_origin(0, 10, 1)
+        p = os.path.join(self.d, "c.tif")
+        for arr, dtype in ((np.array([[300.0, 1.0]]), "uint8"), (np.array([[1.5, 2.0]]), "int16"),
+                           (np.array([[np.inf, 1.0]]), "int16"), (np.array([[70000, 1]]), "int16")):
+            with self.subTest(arr=arr, dtype=dtype), self.assertRaises(ge.InputError):
+                ge.write_geotiff(p, arr, crs="EPSG:32615", transform=xform, dtype=dtype)
+        ge.write_geotiff(p, np.array([[3.0, 250.0]]), crs="EPSG:32615", transform=xform, dtype="uint8", cog=False)
+        for nd in ("nope", "inf", "1e9"):
+            with self.subTest(nd=nd), self.assertRaises(ge.InputError):
+                ge.parse_nodata(nd, "int16")
+        npy = os.path.join(self.d, "a.npy")
+        np.save(npy, np.zeros((4, 4)))
+        code, _, se = _run(["write", npy, "--crs", "EPSG:32615", "--origin", "0", "4", "--pixel-size", "1", "1", "1",
+                            "--out", p])
+        self.assertEqual(code, 2)
+        self.assertIn("--pixel-size", se)
+        code, _, _ = _run(["write", npy, "--crs", "EPSG:32615", "--origin", "0", "4", "--pixel-size", "1",
+                           "--nodata", "nope", "--out", p])
+        self.assertEqual(code, 2)
+
     def test_no_temp_files_left_behind(self):
         p = os.path.join(self.d, "t.tif")
         ge.write_geotiff(p, np.ones((600, 600), "float32"), crs="EPSG:32615",
@@ -128,6 +149,30 @@ class WriteAndVerify(unittest.TestCase):
 
 
 class GcpFit(unittest.TestCase):
+    def test_order3_envelope_covers_every_input_pixel(self):
+        # A strongly curved order-3 map: every image pixel must land inside the output grid.
+        rng = np.random.default_rng(5)
+        c = rng.uniform(0, 199, 30)
+        r = rng.uniform(0, 149, 30)
+        x = 1000 + c + 0.004 * (c - 100) ** 2 * (r / 150.0) ** 3 * 50
+        y = 5000 - r + 0.00002 * (c - 100) ** 3
+        gcps = [(c[i], r[i], x[i], y[i], str(i)) for i in range(30)]
+        img = np.ones((150, 200))
+        out, xform, _ = ge.georeference(img, gcps, 3, pixel_size=1.0)
+        fwd, _, _ = ge.fit_gcps(gcps, 3)
+        cc, rr = np.meshgrid(np.arange(200.0), np.arange(150.0))
+        gx, gy = fwd(cc.ravel(), rr.ravel())
+        west, north = xform.c, xform.f
+        self.assertTrue((gx >= west).all() and (gx <= west + out.shape[2] * xform.a).all())
+        self.assertTrue((gy <= north).all() and (gy >= north + out.shape[1] * xform.e).all())
+
+    def test_report_has_no_nan(self):
+        # Dropping "d" leaves three collinear points, so that leave-one-out fold is degenerate.
+        gcps = [(0, 0, 0, 0, "a"), (10, 0, 10, 0, "b"), (20, 0, 20, 0, "c"), (0, 10, 0, -10, "d")]
+        _, _, rep = ge.fit_gcps(gcps, 1)
+        self.assertIsNone(rep["points"][3]["loo_residual"])
+        json.dumps(rep, allow_nan=False)
+
     def affine_gcps(self, n=8, noise=0.0, seed=0):
         rng = np.random.default_rng(seed)
         c = rng.uniform(0, 99, n)
@@ -185,6 +230,7 @@ class GcpFit(unittest.TestCase):
         img[:, :50] = np.nan
         out, _, _ = ge.georeference(img, gcps, 1, pixel_size=0.5)
         finite = out[0][np.isfinite(out[0])]
+        self.assertGreater(finite.size, 0)
         np.testing.assert_allclose(finite, 1.0)
 
 

@@ -205,8 +205,8 @@ result goes to `--config-out`.
   them, and disables them after 60 days with no repository activity.
 
 ```bash
-python source_health.py --out health.json --config-out download_config.json
-python source_health.py --only sentinel2-cog,copernicus-dem --samples 3 --state state.json
+python3 source_health.py --out health.json --config-out download_config.json
+python3 source_health.py --only sentinel2-cog,copernicus-dem --samples 3 --state state.json
 ```
 
 ## Tests

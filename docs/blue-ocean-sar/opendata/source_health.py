@@ -141,6 +141,14 @@ class ProbeFailed(Exception):
     """The source answered, but the answer is not what a working source returns."""
 
 
+def _json_object(r):
+    """The response body as a JSON object, or ProbeFailed (a list or scalar is not a working answer)."""
+    d = r.json()
+    if not isinstance(d, dict):
+        raise ProbeFailed(f"expected a JSON object, got {type(d).__name__}")
+    return d
+
+
 def _iso(d):
     return d.strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -150,7 +158,9 @@ def probe_stac(m, svc, now, kw):
             "datetime": f"{_iso(now - _dt.timedelta(days=90))}/{_iso(now)}"}
     r = F.fetch(m["root"] + "/search", allowed_hosts=m["hosts"], method="POST", json_body=body,
                 headers={"Accept": "application/geo+json, application/json"}, **kw)
-    page = r.json()
+    # page = r.json()
+    # Replaced (review 2026-10-16): a JSON list or scalar crashed the run at .get() instead of failing over.
+    page = _json_object(r)
     feats = page.get("features")
     if not isinstance(feats, list):
         raise ProbeFailed("search response has no features list")
@@ -198,7 +208,8 @@ def probe_s3_cog(m, svc, now, kw):
 
 
 def probe_arcgis_json(m, svc, now, kw):
-    d = F.fetch(m["root"], allowed_hosts=m["hosts"], params={"f": "json"}, **kw).json()
+    # d = F.fetch(m["root"], allowed_hosts=m["hosts"], params={"f": "json"}, **kw).json()
+    d = _json_object(F.fetch(m["root"], allowed_hosts=m["hosts"], params={"f": "json"}, **kw))
     if "error" in d:
         raise ProbeFailed(f"service error: {d['error']}")
     if m.get("expect_key") and m["expect_key"] not in d:
@@ -207,9 +218,14 @@ def probe_arcgis_json(m, svc, now, kw):
 
 
 def probe_cmr(m, svc, now, kw):
-    d = F.fetch(m["root"], allowed_hosts=m["hosts"], params={"short_name": m["short_name"], "page_size": "1"},
-                **kw).json()
-    entries = (d.get("feed") or {}).get("entry") or []
+    # d = F.fetch(m["root"], allowed_hosts=m["hosts"], params={"short_name": m["short_name"], "page_size": "1"},
+    #             **kw).json()
+    d = _json_object(F.fetch(m["root"], allowed_hosts=m["hosts"],
+                             params={"short_name": m["short_name"], "page_size": "1"}, **kw))
+    feed = d.get("feed")
+    entries = (feed.get("entry") if isinstance(feed, dict) else None) or []
+    if not isinstance(entries, list) or not all(isinstance(e, dict) for e in entries):
+        raise ProbeFailed("feed.entry is not a list of objects")
     if not entries:
         raise ProbeFailed(f"no collection for short_name {m['short_name']}")
     return entries[0].get("id", "collection ok")
@@ -217,8 +233,12 @@ def probe_cmr(m, svc, now, kw):
 
 def probe_nwis(m, svc, now, kw):
     params = {"format": "json", "sites": m["site"], "parameterCd": "00060,00065", "period": "P2D"}
-    d = F.fetch(m["root"], allowed_hosts=m["hosts"], params=params, **kw).json()
-    series = ((d.get("value") or {}).get("timeSeries")) or []
+    # d = F.fetch(m["root"], allowed_hosts=m["hosts"], params=params, **kw).json()
+    d = _json_object(F.fetch(m["root"], allowed_hosts=m["hosts"], params=params, **kw))
+    value = d.get("value")
+    series = (value.get("timeSeries") if isinstance(value, dict) else None) or []
+    if not isinstance(series, list):
+        raise ProbeFailed("value.timeSeries is not a list")
     if not series:
         raise ProbeFailed(f"no time series for site {m['site']}")
     return f"{len(series)} series"
@@ -282,7 +302,14 @@ def select(svc, mirror_results, state=None):
     if not healthy:
         return None, "no healthy mirror"
     # Skip mirrors that failed most recent runs while another is healthy now.
-    steady = [r for r in healthy if (history_success(state, svc["name"], r["name"]) or 1.0) >= 0.5]
+    # steady = [r for r in healthy if (history_success(state, svc["name"], r["name"]) or 1.0) >= 0.5]
+    # Replaced (review 2026-10-16): `0.0 or 1.0` is 1.0, so a mirror that failed every recorded run was
+    # treated as having no history and never skipped. None (too little history) is the only pass-through.
+    steady = []
+    for r in healthy:
+        rate = history_success(state, svc["name"], r["name"])
+        if rate is None or rate >= 0.5:
+            steady.append(r)
     pool = steady or healthy
     why = "" if steady else "every healthy mirror has a poor recent record; using one anyway"
     if svc.get("selection") == "fastest-healthy":
@@ -337,26 +364,71 @@ def run(services, *, samples=2, timeout=20.0, state=None, now=None, opener=None,
     return report, cfg
 
 
+# Fields each mirror kind reads, and their types (review 2026-10-16: malformed but valid JSON
+# used to crash with a traceback instead of exit 2).
+KIND_FIELDS = {"stac": {}, "s3-cog": {"prefix": str}, "arcgis-json": {}, "cmr": {"short_name": str},
+               "nwis": {"site": str}}
+
+
+def validate_services(services, path):
+    if not isinstance(services, list) or not services:
+        raise ValueError(f"{path}: expected a non-empty JSON list of services")
+    names = set()
+    for s in services:
+        if not isinstance(s, dict) or not isinstance(s.get("name"), str) or not s["name"]:
+            raise ValueError(f"{path}: every service must be an object with a name")
+        if s["name"] in names:
+            raise ValueError(f"{path}: duplicate service {s['name']}")
+        names.add(s["name"])
+        if s.get("selection", "first-healthy") not in ("first-healthy", "fastest-healthy"):
+            raise ValueError(f"{path}: {s['name']}: selection must be first-healthy or fastest-healthy")
+        if not isinstance(s.get("mirrors"), list) or not s["mirrors"]:
+            raise ValueError(f"{path}: {s['name']}: mirrors must be a non-empty list")
+        for m in s["mirrors"]:
+            if not isinstance(m, dict) or not isinstance(m.get("name"), str) or not m["name"]:
+                raise ValueError(f"{path}: {s['name']}: every mirror must be an object with a name")
+            if m.get("kind") not in PROBES:
+                raise ValueError(f"{path}: mirror {m['name']}: kind must be one of {sorted(PROBES)}")
+            if not isinstance(m.get("root"), str):
+                raise ValueError(f"{path}: mirror {m['name']}: root must be a URL string")
+            hosts = m.get("hosts")
+            if not isinstance(hosts, list) or not hosts:
+                raise ValueError(f"{path}: mirror {m['name']}: hosts must be a non-empty list")
+            for h in hosts:
+                if not isinstance(h, str) or not h or "/" in h:
+                    raise ValueError(f"{path}: bad host {h!r}")
+            for field, typ in KIND_FIELDS[m["kind"]].items():
+                if not isinstance(m.get(field), typ) or not m[field]:
+                    raise ValueError(f"{path}: mirror {m['name']}: {m['kind']} needs a {field}")
+            try:
+                F.check_url(m["root"], hosts)
+            except F.PolicyError as e:
+                raise ValueError(f"{path}: mirror {m['name']}: {e}") from e
+
+
 def load_services(path=None, only=None):
     services = default_services()
     if path:
         with open(path, encoding="utf-8") as f:
             services = json.load(f)
-        if not isinstance(services, list):
-            raise ValueError(f"{path}: expected a JSON list of services")
-        for s in services:
-            if not s.get("name") or not s.get("mirrors"):
-                raise ValueError(f"{path}: every service needs a name and mirrors")
-            for m in s["mirrors"]:
-                if m.get("kind") not in PROBES:
-                    raise ValueError(f"{path}: mirror {m.get('name')}: kind must be one of {sorted(PROBES)}")
-                for h in m.get("hosts") or []:
-                    if not isinstance(h, str) or "/" in h:
-                        raise ValueError(f"{path}: bad host {h!r}")
-                try:
-                    F.check_url(m["root"], m["hosts"])
-                except F.PolicyError as e:
-                    raise ValueError(f"{path}: mirror {m.get('name')}: {e}") from e
+        # if not isinstance(services, list):
+        #     raise ValueError(f"{path}: expected a JSON list of services")
+        # for s in services:
+        #     if not s.get("name") or not s.get("mirrors"):
+        #         raise ValueError(f"{path}: every service needs a name and mirrors")
+        #     for m in s["mirrors"]:
+        #         if m.get("kind") not in PROBES:
+        #             raise ValueError(f"{path}: mirror {m.get('name')}: kind must be one of {sorted(PROBES)}")
+        #         for h in m.get("hosts") or []:
+        #             if not isinstance(h, str) or "/" in h:
+        #                 raise ValueError(f"{path}: bad host {h!r}")
+        #         try:
+        #             F.check_url(m["root"], m["hosts"])
+        #         except F.PolicyError as e:
+        #             raise ValueError(f"{path}: mirror {m.get('name')}: {e}") from e
+        # Replaced (review 2026-10-16): a service or mirror that was not an object, or lacked root,
+        # hosts or its kind's fields, crashed with a traceback. validate_services checks every shape.
+        validate_services(services, path)
     if only:
         want = {x.strip() for x in only.split(",") if x.strip()}
         unknown = want - {s["name"] for s in services}
@@ -406,6 +478,11 @@ def main(argv=None, opener=None, now=None, sleep=time.sleep):
         if a.state and os.path.exists(a.state):
             with open(a.state, encoding="utf-8") as f:
                 state = json.load(f)
+            # Review 2026-10-16: a non-object state file used to crash in history_success().
+            if not isinstance(state, dict) or not isinstance(state.get("history", {}), dict) or not all(
+                    isinstance(v, dict) and all(isinstance(x, list) for x in v.values())
+                    for v in state.get("history", {}).values()):
+                raise ValueError(f"{a.state}: not a source_health state file")
         report, cfg = run(services, samples=a.samples, timeout=a.timeout, state=state, now=now,
                           opener=opener, sleep=sleep)
         if a.out:

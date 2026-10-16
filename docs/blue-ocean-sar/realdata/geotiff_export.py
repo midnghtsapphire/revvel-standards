@@ -168,13 +168,36 @@ def output_dtype(stack, dtype=None):
     return stack.dtype
 
 
+def check_lossless_cast(stack, odt):
+    """Raise InputError if writing `stack` as integer type `odt` would change any value."""
+    if odt.kind not in "iu" or stack.size == 0:
+        return
+    if stack.dtype.kind == "f":
+        if not np.isfinite(stack).all():
+            raise InputError("array has NaN or infinity but the output type is integer; "
+                             "pick a float type or fill those cells first")
+        if not np.array_equal(stack, np.round(stack)):
+            raise InputError(f"array has fractional values; writing {odt.name} would truncate them")
+    info = np.iinfo(odt)
+    lo, hi = stack.min(), stack.max()
+    if lo < info.min or hi > info.max:
+        raise InputError(f"values {lo}..{hi} do not fit {odt.name} ({info.min}..{info.max})")
+
+
 def parse_nodata(text, dtype):
     if text is None or text == "":
         return None
-    v = float(text)
+    # v = float(text)
+    # Replaced (review 2026-10-16): a non-number or an infinite integer nodata escaped as ValueError/OverflowError.
+    try:
+        v = float(text)
+    except (TypeError, ValueError) as e:
+        raise InputError(f"nodata {text!r} is not a number") from e
     if math.isnan(v) and np.dtype(dtype).kind != "f":
         raise InputError("nodata NaN needs a float output type")
     if np.dtype(dtype).kind in "iu":
+        if not math.isfinite(v):
+            raise InputError(f"nodata {text} does not fit {np.dtype(dtype).name}")
         info = np.iinfo(dtype)
         if v != int(v) or not info.min <= v <= info.max:
             raise InputError(f"nodata {text} does not fit {np.dtype(dtype).name}")
@@ -226,7 +249,8 @@ def write_geotiff(path, arrays, *, crs, transform, nodata=None, band_names=None,
     nodata: number or NaN; masked/NaN cells keep their value as written.
     units: one string for every band, or a list with one per band.
     sources: input file paths; each is hashed into a revvel_source_<n> tag.
-    gcps: optional list of (col, row, x, y, id) also stored as GeoTIFF GCPs.
+    gcps: optional list of (col, row, x, y, id) recorded in the revvel_gcps_json
+      tag (not as native GeoTIFF GCPs: a file holds those or a geotransform).
     The file is written to a temporary name in the same folder and renamed,
     so a crash never leaves a half-written GeoTIFF under the final name.
     """
@@ -240,6 +264,10 @@ def write_geotiff(path, arrays, *, crs, transform, nodata=None, band_names=None,
     odt = output_dtype(stack, dtype)
     if odt.kind in "iu" and stack.dtype.kind == "f" and np.isnan(stack).any():
         raise InputError("array has NaN but the output type is integer; pick a float type or fill NaN first")
+    # data = stack.astype(odt, copy=False)
+    # Replaced (review 2026-10-16): astype wraps out-of-range integers and truncates floats silently,
+    # and the band hash would then bless the corrupted values. Refuse any lossy integer cast.
+    check_lossless_cast(stack, odt)
     data = stack.astype(odt, copy=False)
     nd = parse_nodata(nodata, odt) if isinstance(nodata, str) else nodata
     if isinstance(units, str) or units is None:
@@ -294,6 +322,10 @@ def write_geotiff(path, arrays, *, crs, transform, nodata=None, band_names=None,
             if gcps:
                 # GCPs are stored for reference alongside the fitted transform.
                 # GDAL/QGIS then show them, but use the geotransform for display.
+                # Correction (review 2026-10-16): the line above was wrong. A GeoTIFF
+                # holds either a geotransform or native GCPs, not both, and GDAL
+                # drops one. The output is already warped onto a north-up grid, so
+                # the geotransform is kept and the GCPs go in this JSON tag only.
                 dst.update_tags(**{f"{TAG_PREFIX}gcps_json": json.dumps(
                     [{"id": g[4], "col": g[0], "row": g[1], "x": g[2], "y": g[3]} for g in gcps])})
             if cog and min(data.shape[1:]) >= 512:
@@ -454,8 +486,10 @@ def fit_gcps(gcps, order):
         "rmse_map_units": float(np.sqrt(np.mean(res ** 2))),
         "loo_rmse_map_units": (float(np.sqrt(np.nanmean(loo_arr ** 2)))
                                if loo and np.isfinite(loo_arr).any() else None),
+        # NaN (a degenerate leave-one-out fold) becomes null so the report stays standard JSON.
         "points": [{"id": g[4], "col": g[0], "row": g[1], "x": g[2], "y": g[3],
-                    "residual": float(res[i]), "loo_residual": (loo[i] if loo else None)}
+                    "residual": float(res[i]),
+                    "loo_residual": (loo[i] if loo and math.isfinite(loo[i]) else None)}
                    for i, g in enumerate(gcps)],
         "warnings": [],
     }
@@ -487,8 +521,13 @@ def georeference(arr, gcps, order, *, pixel_size=None, nodata=np.nan):
     _, h, w = stack.shape
     fwd, inv, report = fit_gcps(gcps, order)
     # Edge of the image (pixel edges at -0.5 and n-0.5) mapped to the ground.
-    t = np.linspace(-0.5, w - 0.5, 64)
-    s = np.linspace(-0.5, h - 0.5, 64)
+    # t = np.linspace(-0.5, w - 0.5, 64)
+    # s = np.linspace(-0.5, h - 0.5, 64)
+    # Replaced (review 2026-10-16): 64 samples per edge can miss where an order-2/3
+    # polynomial bulges between samples, cropping the output. Sample every half pixel
+    # (capped) and pad by one output pixel below.
+    t = np.linspace(-0.5, w - 0.5, min(2 * w + 1, 20001))
+    s = np.linspace(-0.5, h - 0.5, min(2 * h + 1, 20001))
     ec = np.concatenate([t, t, np.full_like(s, -0.5), np.full_like(s, w - 0.5)])
     er = np.concatenate([np.full_like(t, -0.5), np.full_like(t, h - 0.5), s, s])
     ex, ey = fwd(ec, er)
@@ -499,7 +538,9 @@ def georeference(arr, gcps, order, *, pixel_size=None, nodata=np.nan):
         report["warnings"].append(f"--pixel-size not given; using the fitted ground size {pixel_size:.4g}")
     if not pixel_size or pixel_size <= 0 or not math.isfinite(pixel_size):
         raise InputError("pixel size must be positive")
-    west, east, south, north = ex.min(), ex.max(), ey.min(), ey.max()
+    # west, east, south, north = ex.min(), ex.max(), ey.min(), ey.max()
+    west, east = ex.min() - pixel_size, ex.max() + pixel_size
+    south, north = ey.min() - pixel_size, ey.max() + pixel_size
     ncols = int(math.ceil((east - west) / pixel_size))
     nrows = int(math.ceil((north - south) / pixel_size))
     if ncols * nrows > 400_000_000:
@@ -552,6 +593,8 @@ def _parse_transform_args(a, shape):
     if a.origin:
         if not a.pixel_size:
             raise InputError("--origin needs --pixel-size")
+        if len(a.pixel_size) not in (1, 2):
+            raise InputError("--pixel-size takes DX or DX DY")
         return transform_from_origin(a.origin[0], a.origin[1], *a.pixel_size)
     raise InputError("the grid is undefined: give --bounds W S E N or --origin X Y --pixel-size DX [DY]")
 

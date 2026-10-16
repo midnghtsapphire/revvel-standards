@@ -114,6 +114,19 @@ class Probing(unittest.TestCase):
         self.assertTrue(m["healthy"])
         self.assertEqual(cfg["services"]["sentinel2-search"]["retries"], 3)
 
+    def test_history_demotes_a_mirror_that_failed_every_run(self):
+        # Regression: a 0.0 success rate was read as "no history" (0.0 or 1.0 == 1.0).
+        state = {"history": {"sentinel2-search": {"earth-search": [False] * 4}}}
+        rep, _ = run(healthy_opener(), sh.default_services()[:1], state=state)
+        self.assertEqual(rep["services"][0]["selected"], "planetary-computer")
+
+    def test_non_object_json_fails_over_instead_of_crashing(self):
+        rep, _ = run(healthy_opener(es=(200, [1, 2])), sh.default_services()[:1])
+        self.assertEqual(rep["services"][0]["selected"], "planetary-computer")
+        self.assertIn("JSON object", rep["services"][0]["mirrors"][0]["samples"][0]["error"])
+        rep, _ = run(healthy_opener(tps=(200, ["x"]), nwis=(200, {"value": []})))
+        self.assertEqual(sorted(rep["down_optional"]), ["usgs-3dep", "usgs-water"])
+
     def test_history_demotes_a_mirror_that_keeps_failing(self):
         state = {"history": {"sentinel2-search": {"earth-search": [False, False, False, True]}}}
         rep, _ = run(healthy_opener(), sh.default_services()[:1], state=state)
@@ -168,6 +181,23 @@ class Cli(unittest.TestCase):
                 json.dump([{"name": "x", "mirrors": [{"name": "m", "kind": "shell", "root": "https://a.example",
                                                       "hosts": ["a.example"]}]}], f)
             self.assertEqual(self._main(["--services", p], healthy_opener())[0], 2)
+            for bad in ([1], [{"name": "x", "mirrors": [7]}], {"name": "x"},
+                        [{"name": "x", "mirrors": [{"name": "m", "kind": "stac", "root": "https://a.example"}]}],
+                        [{"name": "x", "mirrors": [{"name": "m", "kind": "cmr", "root": "https://a.example",
+                                                    "hosts": ["a.example"]}]}]):
+                with self.subTest(bad=bad):
+                    with open(p, "w", encoding="utf-8") as f:
+                        json.dump(bad, f)
+                    self.assertEqual(self._main(["--services", p], healthy_opener())[0], 2)
+
+    def test_bad_state_file_is_exit_2(self):
+        with tempfile.TemporaryDirectory() as d:
+            st = os.path.join(d, "s.json")
+            for bad in ([1, 2], {"history": []}, {"history": {"svc": 3}}):
+                with self.subTest(bad=bad):
+                    with open(st, "w", encoding="utf-8") as f:
+                        json.dump(bad, f)
+                    self.assertEqual(self._main(["--state", st], healthy_opener())[0], 2)
 
 
 if __name__ == "__main__":

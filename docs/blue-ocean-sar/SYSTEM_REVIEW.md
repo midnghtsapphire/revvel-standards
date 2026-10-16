@@ -188,5 +188,5 @@ the clock.
 | Synthetic GPR radargram | Fine as a teaching picture. Useless as evidence or for training. |
 | "Fall vs malfeasance proof" and "courtroom proof" | Skeletal dispersal patterns are not proof of either. Scavenging, water and time produce both. |
 | Fixed 0.91 confidence | A constant is not a confidence. |
-| KML output | The pasted namespaces were wrong. `caltopo_io.py` and the existing GeoJSON exports cover this. |
+| The paste's own KML writer | Its namespaces were wrong. The repository already writes valid KML (`lost_person_behavior.py`, `drift_envelope.py`, `burial_signature.py` via `microtopo.py`) and GeoJSON (`caltopo_io.py`), so it was not copied. |
 | "Drone made of math" adjoint inversion | No observation model linked it to any real measurement. |
