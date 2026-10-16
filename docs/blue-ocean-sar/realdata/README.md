@@ -23,6 +23,7 @@ registry, logs) are not committed; the scripts regenerate them.
 | `field_log.py` | `taphos_serial_parser.py` ("VALIDATED" for any value present, always ONLINE) | Your Taphos-Stick field log CSV | Yes (offline) |
 | `lab_readers.py` | GC-MS and 16S tabs of `ryverly_recon_app-v6.py` (typed-in peaks and abundances) | A lab's TIC export (CSV/mzML) and 16S feature table | Yes (offline) |
 | `fusion.py` | The "SFAI probability" and PMI decay curves in `ryverly_recon_app-v6.py` | Outputs of the tools above, with your weights | Yes (offline) |
+| `ryverly_app.py` | The rest of `ryverly_recon_app-v6.py` (fake alert logs, street-address default) | Files you upload | Needs streamlit |
 
 Fixes made to your scripts (the original lines are kept as comments):
 
@@ -196,6 +197,23 @@ the weight in your config file.
 python fusion.py --config fusion_config.json --out ranked_sites.json --csv ranked_sites.csv
 ```
 
+### `ryverly_app.py`
+
+An optional Streamlit viewer (`streamlit run ryverly_app.py`). It shows a
+`fusion.py` output, a GC-MS sample/control pair and a 16S table that you
+upload. With nothing uploaded it shows empty tabs. It has no sample data and
+no alerting, and it has no default location; a search centre appears only
+if you type coordinates.
+
+Tests (offline, synthetic data with known answers):
+
+```sh
+python -m unittest test_field_log test_lab_readers test_fusion
+```
+
+The field-log, 16S and table-fusion tests need only the standard library.
+The GC-MS tests need numpy, and the raster-layer test needs rasterio.
+
 ## Limits that come with the data
 
 - **Sentinel-2 pixels are 10 m.** It can show a change in vegetation over a
@@ -210,6 +228,10 @@ python fusion.py --config fusion_config.json --out ranked_sites.json --csv ranke
   animal or person in two different photos.
 - **qPCR "DETECTED" is the lab's call about DNA in the tube.** Identifying a
   person needs the lab's profile comparison.
+- **A GC-MS peak at the expected retention time is a candidate.** Naming the
+  compound needs its mass spectrum and a reference standard.
+- **A `fusion.py` score is a ranking.** It is only as good as the layers and
+  weights you give it.
 
 ## Lost-person-behaviour rings
 
