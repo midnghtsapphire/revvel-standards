@@ -1,0 +1,139 @@
+{
+  "type": "FeatureCollection",
+  "name": "Drone_UAV_Thermal_Flight_Plan",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -122.9421,
+            49.3812,
+            120.0
+          ],
+          [
+            -122.94255,
+            49.381825,
+            115.0
+          ],
+          [
+            -122.943,
+            49.38245,
+            110.0
+          ],
+          [
+            -122.94345,
+            49.383075,
+            105.0
+          ],
+          [
+            -122.9439,
+            49.3837,
+            100.0
+          ]
+        ]
+      },
+      "properties": {
+        "callsign": "DRONE-RECON-ONE",
+        "sensor_payload": "FLIR Boson 640 Thermal IR",
+        "target_id": "RESCUE-TARGET-#1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.9421,
+          49.3812,
+          120.0
+        ]
+      },
+      "properties": {
+        "step": 1,
+        "latitude": 49.3812,
+        "longitude": -122.9421,
+        "altitude_agl_m": 120.0,
+        "thermal_ir_temp_c": 14.2,
+        "status": "EN_ROUTE_WAYPOINT"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.94255,
+          49.381825,
+          115.0
+        ]
+      },
+      "properties": {
+        "step": 2,
+        "latitude": 49.381825,
+        "longitude": -122.94255,
+        "altitude_agl_m": 115.0,
+        "thermal_ir_temp_c": 14.7,
+        "status": "EN_ROUTE_WAYPOINT"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.943,
+          49.38245,
+          110.0
+        ]
+      },
+      "properties": {
+        "step": 3,
+        "latitude": 49.38245,
+        "longitude": -122.943,
+        "altitude_agl_m": 110.0,
+        "thermal_ir_temp_c": 15.2,
+        "status": "EN_ROUTE_WAYPOINT"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.94345,
+          49.383075,
+          105.0
+        ]
+      },
+      "properties": {
+        "step": 4,
+        "latitude": 49.383075,
+        "longitude": -122.94345,
+        "altitude_agl_m": 105.0,
+        "thermal_ir_temp_c": 15.7,
+        "status": "EN_ROUTE_WAYPOINT"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.9439,
+          49.3837,
+          100.0
+        ]
+      },
+      "properties": {
+        "step": 5,
+        "latitude": 49.3837,
+        "longitude": -122.9439,
+        "altitude_agl_m": 100.0,
+        "thermal_ir_temp_c": 37.2,
+        "status": "TARGET_LOCKED_THERMAL_HOTSPOT"
+      }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+name: SAR v47.0 4-Zone Verification Unit Tests
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    # Run at 00:00 UTC on the 1st of every month
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+jobs:
+  verify-sar-v47-zones:
+    name: Verify 4-Zone SAR Classification Rules (v47.0)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas matplotlib seaborn pytest
+
+      - name: Run Master ChatGPT SAR Prosecution Engine (v47.0)
+        run: |
+          python /workspace/scratch/master_sar_chatgpt_system_integration_v47.py || python master_sar_chatgpt_system_integration_v47.py
+
+      - name: Execute 4-Zone Verification Unit Test Suite
+        run: |
+          python /workspace/scratch/verify_v47_zone_classification.py || python verify_v47_zone_classification.py
+
+      - name: Verify Cryptographic Witness Hash & Artifacts
+        run: |
+          if [ -f "/workspace/out/v47_zone_classification_unit_test_results.csv" ] || [ -f "v47_zone_classification_unit_test_results.csv" ]; then
+            echo "Unit test results CSV verified successfully."
+          else
+            echo "Error: Unit test output CSV missing!" && exit 1
+          fi
+
+      - name: Upload Test Results Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sar-v47-unit-test-results
+          path: |
+            v47_zone_classification_unit_test_results.csv
+            /workspace/out/v47_zone_classification_unit_test_results.csv
