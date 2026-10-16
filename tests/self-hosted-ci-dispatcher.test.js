@@ -169,6 +169,24 @@ test('loadConfig requires the security-critical settings', () => {
   assert.equal(cfg.allowForkPrs, false);
 });
 
+test('materializeEnvSecrets moves SHCI_* secrets into mode-600 files and out of env', (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'shci-sec-'));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const env = { SHCI_GITHUB_TOKEN: 'ghp_x', SHCI_SECRETS: 'A=1\\nB=2', SHCI_ADMIN_TOKEN: 'adm', ADMIN_TOKEN_FILE: '/keep' };
+  d.materializeEnvSecrets(env, dir);
+  assert.equal(env.SHCI_GITHUB_TOKEN, undefined);
+  assert.equal(fs.readFileSync(env.GITHUB_TOKEN_FILE, 'utf8'), 'ghp_x\n');
+  assert.equal(fs.statSync(env.GITHUB_TOKEN_FILE).mode & 0o777, 0o600);
+  assert.equal(fs.readFileSync(env.SECRETS_FILE, 'utf8'), 'A=1\nB=2\n');
+  assert.equal(env.ADMIN_TOKEN_FILE, '/keep', 'an explicit *_FILE wins');
+  assert.equal(env.SHCI_ADMIN_TOKEN, 'adm');
+});
+
+test('actEnv strips stray GitHub tokens that would break act downloads', () => {
+  const env = d.actEnv({ GITHUB_TOKEN: 'x', GH_TOKEN: 'y', PATH: '/bin' });
+  assert.deepEqual(env, { PATH: '/bin' });
+});
+
 test('webhook server verifies signatures, dedupes and queues matching workflows', async (t) => {
   const repoDir = fs.mkdtempSync(path.join(os.tmpdir(), 'shci-'));
   t.after(() => fs.rmSync(repoDir, { recursive: true, force: true }));
