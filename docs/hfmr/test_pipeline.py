@@ -141,6 +141,16 @@ class TestPipeline(unittest.TestCase):
             geo_path.unlink()
             self.assertFalse(verify_run(out))
 
+    def test_stale_geojson_from_reused_output_fails_verification(self):
+        with tempfile.TemporaryDirectory() as t:
+            p = Path(t) / "input.csv"
+            write_grid(p)
+            out = Path(t) / "run"
+            analyze("TEST-001", p, out, cell_size_m=1.0, origin_xy=[500000.0, 4400000.0], crs="EPSG:32613")
+            analyze("TEST-001", p, out)  # same directory, no georeferencing this time
+            self.assertTrue((out / "candidate_points.geojson").exists())
+            self.assertFalse(verify_run(out))
+
     def test_alignment_error(self):
         with self.assertRaises(ValueError):
             compare([[1]], [[1, 2]])

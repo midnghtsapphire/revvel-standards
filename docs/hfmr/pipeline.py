@@ -226,7 +226,11 @@ def verify_run(out):
     if event["manifest_sha256"] != digest_file(out / "manifest.json"):
         return False
     geojson_sha256 = event.get("candidate_points_sha256")
+    geo_path = out / "candidate_points.geojson"
     if geojson_sha256 is not None:
-        geo_path = out / "candidate_points.geojson"
+        # Original: geo_path = out / "candidate_points.geojson" (assigned here; now hoisted above)
         return geo_path.is_file() and digest_file(geo_path) == geojson_sha256
-    return True
+    # Original: return True
+    #   a reused output dir could keep an earlier run's candidate_points.geojson beside a new
+    #   non-georeferenced run; an unchained GeoJSON is not this run's output, so fail.
+    return not geo_path.exists()
