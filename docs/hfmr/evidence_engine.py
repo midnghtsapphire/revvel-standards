@@ -121,6 +121,7 @@ def cross_reference(findings, records):
     # Original: ids = {re.sub(r"[^A-Z0-9]", "", str(x.get("permit_id", "")).upper()): x for x in records if x.get("permit_id")}  # noqa: E501
     #   municipal.ingest_permits records carry `record_id`, not `permit_id`, so they never matched.
     ids = {}
+    ambiguous = set()
     for x in records:
         # Original:
         # record_key = x.get("permit_id") or x.get("record_id")
@@ -131,7 +132,16 @@ def cross_reference(findings, records):
         for field in ("permit_id", "record_id"):
             record_key = x.get(field)
             if record_key:
-                ids[re.sub(r"[^A-Z0-9]", "", str(record_key).upper())] = x
+                # Original: ids[re.sub(r"[^A-Z0-9]", "", str(record_key).upper())] = x
+                #   a later record whose identifier normalized to the same key silently replaced the
+                #   earlier one, so a mention could link to the wrong record. A key shared by two
+                #   different records is now ambiguous and links to neither.
+                key = re.sub(r"[^A-Z0-9]", "", str(record_key).upper())
+                if key in ids and ids[key] is not x:
+                    ambiguous.add(key)
+                ids[key] = x
+    for key in ambiguous:
+        del ids[key]
     out = []
     for item in findings:
         if item.get("kind") != "permit_mention":

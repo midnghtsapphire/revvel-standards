@@ -74,6 +74,14 @@ class EvidenceTests(unittest.TestCase):
             self.assertEqual(len(out), 1, value)
             self.assertEqual(out[0]["permit_id"], "P-77")
 
+    def test_crossref_leaves_colliding_identifier_unmatched(self):
+        # Two different records whose identifiers normalize to the same key: neither may win silently.
+        records = [{"permit_id": "BLD-200601"}, {"record_id": "BLD200601", "permit_id": "P-9"}]
+        out = cross_reference([{"kind": "permit_mention", "value": "BLD200601", "line": 1}], records)
+        self.assertEqual(out, [])
+        out = cross_reference([{"kind": "permit_mention", "value": "P-9", "line": 2}], records)
+        self.assertEqual([o["permit_id"] for o in out], ["P-9"])
+
     def test_capability_gates(self):
         self.assertFalse(
             sensor_compatibility({"sensor": "sar", "complex_slc": False, "independent_baselines": 7})["tomo_sar"]
