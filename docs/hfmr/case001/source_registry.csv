@@ -1,0 +1,5 @@
+source_id,modality,acquisition_window,source_url,access,validation_needed
+CLIF-2006,Aerial image sequence,April 2006; exact day unverified,https://www.sdms.afrl.af.mil/index.php?collection=clif2006,sample available; full dataset large,Camera raw frames and auxiliary metadata; verify coverage and acquisition timestamps
+FRANKLIN-GIS,Historical parcels,Archive reported back to 2002,https://auditor.franklincountyohio.gov/Auditor/FTP,public archive,Obtain 2005/2006/2007 parcel snapshots and metadata
+OHIO-LIDAR,LiDAR tiles,acquisition year unverified,https://gis1.oit.ohio.gov/ZIPARCHIVES/ELEVATION/LIDAR/Franklin/,public directory,Do not interpret file listing date as acquisition date
+OSU-HIST,OSU historic imagery,1953-1985 services listed,https://gissvc.osu.edu/arcgis/rest/services/Imagery,public map service,"Historical baseline, not immediate 2006 comparison"
