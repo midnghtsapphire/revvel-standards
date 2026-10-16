@@ -8,6 +8,16 @@ import os
 from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
 
 
+def _find_layer(project, data_file, title):
+    """The project layer loaded from data_file (matched on the file name of its
+    source, ignoring any "|layername=..." suffix) or named exactly title."""
+    for lyr in project.mapLayers().values():
+        src = os.path.basename(lyr.source().split("|")[0])
+        if src.lower() == data_file.lower() or lyr.name() == title:
+            return lyr
+    return None
+
+
 def auto_style_on_startup():
     print("==========================================================")
     print("      PyQGIS AUTOMATED WAVE SEARCH LAYER STYLER           ")
@@ -33,11 +43,15 @@ def auto_style_on_startup():
         qml_path = os.path.join(data_dir, qml_file) if qml_file else None
 
         # Locate layer
-        layer = None
-        for l in project.mapLayers().values():  # noqa: E741 (original name kept)
-            if key.lower() in l.name().lower():
-                layer = l
-                break
+        # Original: substring match on the key, so "subsurface" also matched the
+        # "Subsurface Target Points" vector layer and the probability raster was
+        # never loaded (and its raster style went onto the points layer).
+        # layer = None
+        # for l in project.mapLayers().values():  # noqa: E741 (original name kept)
+        #     if key.lower() in l.name().lower():
+        #         layer = l
+        #         break
+        layer = _find_layer(project, data_file, title)
 
         if not layer and os.path.exists(data_path):
             if data_file.endswith(".tif"):
