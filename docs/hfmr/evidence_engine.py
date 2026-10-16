@@ -15,8 +15,20 @@ from pathlib import Path
 DATE_RE = re.compile(
     r"\b(?:19|20)\d{2}[-/](?:0?[1-9]|1[0-2])[-/](?:0?[1-9]|[12]\d|3[01])\b|\b(?:0?[1-9]|1[0-2])/(?:0?[1-9]|[12]\d|3[01])/(?:19|20)\d{2}\b"  # noqa: E501
 )
+# Original:
+# PERMIT_RE = re.compile(
+#     r"\b(?:permit|application|case)\s*(?:no\.?|number|#|id)?\s*[:#-]?\s*([A-Z]{1,5}[- ]?\d{4,12}(?:[- ]?[A-Z0-9]{1,5})?)",  # noqa: E501
+#     re.I,
+# )
+#   it required 1-5 letters plus 4+ digits (missing "P-7", "Permit No. 123456" and "#123456"),
+#   backtracked to capture the qualifier ("ID 123456"), and its suffix could swallow the
+#   next word ("ABC-123456 issu"). Letters are now optional, a bare "#NNN" is accepted, the
+#   qualifier words cannot start the ID, a space-separated suffix must contain a digit, and
+#   the ID must end on a word boundary (not inside a date).
 PERMIT_RE = re.compile(
-    r"\b(?:permit|application|case)\s*(?:no\.?|number|#|id)?\s*[:#-]?\s*([A-Z]{1,5}[- ]?\d{4,12}(?:[- ]?[A-Z0-9]{1,5})?)",  # noqa: E501
+    r"(?:\b(?:permit|application|case)\s*(?:no\.?|number|#|id)?\s*[:#-]?\s*|#\s*)"
+    r"(?!(?:no|number|id)\b)((?:[A-Z]{1,5}[- ]?)?\d{1,12}(?:-[A-Z0-9]{1,5}|[A-Z0-9]{1,5}|\s(?=[A-Z]*\d)[A-Z0-9]{1,5})?)"
+    r"\b(?!/\d)",
     re.I,
 )
 EVENTS = {
@@ -95,7 +107,13 @@ def document_intelligence(path):
 
 def cross_reference(findings, records):
     """Exact permit-ID linkage; avoid weak fuzzy associations."""
-    ids = {re.sub(r"[^A-Z0-9]", "", str(x.get("permit_id", "")).upper()): x for x in records if x.get("permit_id")}
+    # Original: ids = {re.sub(r"[^A-Z0-9]", "", str(x.get("permit_id", "")).upper()): x for x in records if x.get("permit_id")}  # noqa: E501
+    #   municipal.ingest_permits records carry `record_id`, not `permit_id`, so they never matched.
+    ids = {}
+    for x in records:
+        record_key = x.get("permit_id") or x.get("record_id")
+        if record_key:
+            ids[re.sub(r"[^A-Z0-9]", "", str(record_key).upper())] = x
     out = []
     for item in findings:
         if item.get("kind") != "permit_mention":
@@ -104,7 +122,8 @@ def cross_reference(findings, records):
         if key in ids:
             out.append(
                 {
-                    "permit_id": ids[key]["permit_id"],
+                    # Original: "permit_id": ids[key]["permit_id"],  (KeyError for record_id-only rows)
+                    "permit_id": ids[key].get("permit_id") or ids[key].get("record_id"),
                     "source_line": item["line"],
                     "match": "exact_normalized_id",
                     "verification": "identifier_only_not_event_confirmation",
@@ -174,7 +193,14 @@ def verify_bundle(root):
             checked += 1
         except Exception:
             problems.append(str(m))
-    return {"checked": checked, "valid": not problems, "failed_manifests": problems}
+    # Original: return {"checked": checked, "valid": not problems, "failed_manifests": problems}
+    #   a missing root or a tree with no *.sha256 manifests reported valid without checking anything.
+    result = {"checked": checked, "valid": root.is_dir() and checked > 0 and not problems, "failed_manifests": problems}
+    if not root.is_dir():
+        result["error"] = "root is not a directory"
+    elif not checked:
+        result["error"] = "no *.sha256 manifests found; nothing was verified"
+    return result
 
 
 def main():
@@ -216,6 +242,9 @@ def main():
         )
         save_json(v.output, result)
     print(json.dumps(result, indent=2))
+    # The verify command's exit status must reflect the result, not just that it ran.
+    if v.cmd == "verify" and not result["valid"]:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

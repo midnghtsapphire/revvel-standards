@@ -13,8 +13,14 @@ python -m unittest discover -s hfmr -t . -p 'test_*.py' -q
 python -m hfmr.evidence_engine extract --input records.txt --output output/extracted.json
 python -m hfmr.evidence_engine compatibility --metadata sensor.json --output output/feasibility.json
 python -m hfmr.evidence_engine quality --inventory sources.json --output output/readiness.json
-python -m hfmr.evidence_engine verify --root case001
+# Original: python -m hfmr.evidence_engine verify --root case001
+#   case001 holds no *.sha256 manifests, so that run checked nothing. Verify a bundle that
+#   has them, e.g. a Module 9 acquisition output (it writes a .sha256 beside every file):
+python -m hfmr.case001_cli --output case001_evidence
+python -m hfmr.evidence_engine verify --root case001_evidence
 ```
+
+`verify` exits 1 (and reports `"valid": false`) when the root is missing, contains no `*.sha256` manifests, or any manifest fails.
 
 ## Remaining engineering work (NOT claimed complete)
 1. Run live Columbus acquisition and obtain genuine records (not accomplished here).
