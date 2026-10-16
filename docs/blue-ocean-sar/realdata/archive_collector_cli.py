@@ -364,7 +364,9 @@ def ingest_file(conn: sqlite3.Connection, path: str, origin: str) -> Dict[str, i
     counts = {"saved": 0, "duplicate": 0, "failed": 0}
     try:
         items = read_archive_file(path)
-    except ValueError as e:
+    # Original let OSError (missing or unreadable path) escape as a traceback:
+    # except ValueError as e:
+    except (OSError, ValueError) as e:
         logger.error(str(e))
         counts["failed"] += 1
         return counts

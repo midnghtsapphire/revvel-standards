@@ -688,6 +688,19 @@ class ArchiveCollector(unittest.TestCase):
             self.ac.main()
         self.assertEqual(cm.exception.code, 1)
 
+    def test_ingest_file_missing_path_counted_as_failed(self):
+        from unittest import mock
+        conn = self._db()
+        missing = os.path.join(self.tmp.name, "nope.jsonl")
+        self.assertEqual(self.ac.ingest_file(conn, missing, "forum_archive"),
+                         {"saved": 0, "duplicate": 0, "failed": 1})
+        conn.close()
+        argv = ["archive_collector_cli.py", "ingest-file", "--file", missing,
+                "--db", os.path.join(self.tmp.name, "m.db")]
+        with mock.patch.object(sys, "argv", argv), self.assertRaises(SystemExit) as cm:
+            self.ac.main()
+        self.assertEqual(cm.exception.code, 1)
+
     def test_ingest_file_rejects_records_without_source_timestamp(self):
         conn = self._db()
         p = self._file("undated.jsonl", '{"raw_content": "dated", "archive_timestamp": "2006-04-02T00:00:00Z"}\n'
