@@ -688,6 +688,17 @@ class ArchiveCollector(unittest.TestCase):
             self.ac.main()
         self.assertEqual(cm.exception.code, 1)
 
+    def test_ingest_file_rejects_records_without_source_timestamp(self):
+        conn = self._db()
+        p = self._file("undated.jsonl", '{"raw_content": "dated", "archive_timestamp": "2006-04-02T00:00:00Z"}\n'
+                                        '{"raw_content": "undated"}\n'
+                                        '{"raw_content": "blank", "archive_timestamp": "  "}\n')
+        counts = self.ac.ingest_file(conn, p, "forum_archive")
+        self.assertEqual((counts["saved"], counts["failed"]), (1, 2))
+        stored = [r[0] for r in conn.execute("SELECT raw_content FROM stage0_historical_records")]
+        conn.close()
+        self.assertEqual(stored, ["dated"])
+
 
 class Stage2Gate(unittest.TestCase):
     def setUp(self):

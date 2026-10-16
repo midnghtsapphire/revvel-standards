@@ -372,12 +372,18 @@ def ingest_file(conn: sqlite3.Connection, path: str, origin: str) -> Dict[str, i
         try:
             if not isinstance(data, dict):
                 raise ValueError(f"record is a {type(data).__name__}, not an object")
+            # Original stamped a record with no source timestamp as "now", so it
+            # looked like a dated archive record from the day of ingestion:
+            # archive_timestamp=data.get(
+            #     "archive_timestamp",
+            #     datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            # ),
+            ts = data.get("archive_timestamp")
+            if not isinstance(ts, str) or not ts.strip():
+                raise ValueError("record has no archive_timestamp from its source")
             rec = normalize_record(
                 source_origin=data.get("source_origin", origin),
-                archive_timestamp=data.get(
-                    "archive_timestamp",
-                    datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                ),
+                archive_timestamp=ts,
                 source_identifier=data.get("source_identifier", path),
                 raw_content=data.get("raw_content", str(data)),
                 author_handle=data.get("author_handle"),
