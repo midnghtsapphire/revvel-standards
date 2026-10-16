@@ -50,6 +50,9 @@ def normalized_address(value):
 def date_value(value):
     if not value:
         return ""
+    # CSV imports deliver ArcGIS/Unix epoch milliseconds as digit strings; treat them like numbers.
+    if isinstance(value, str) and re.fullmatch(r"\d{12,14}", value.strip()):
+        value = int(value.strip())
     if isinstance(value, (int, float)) and value > 10**11:
         return datetime.fromtimestamp(value / 1000, timezone.utc).date().isoformat()
     for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%Y/%m/%d"):
@@ -106,6 +109,11 @@ def import_csv(input_file, output_file, mapping=None, source_url=""):
     return manifest
 
 
+def _parcel_key(value):
+    """Exact parcel key: separators removed, letters and digits kept (as in discovery.match_identity)."""
+    return re.sub(r"[^A-Z0-9]", "", str(value or "").upper())
+
+
 def timeline(input_file, address=None, parcel=None):
     with open(input_file, newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
@@ -113,7 +121,11 @@ def timeline(input_file, address=None, parcel=None):
         query = normalized_address(address)
         rows = [r for r in rows if normalized_address(r.get("address", "")) == query]
     if parcel:
-        rows = [r for r in rows if re.sub(r"\D", "", r.get("parcel", "")) == re.sub(r"\D", "", parcel)]
+        # Original: rows = [r for r in rows if re.sub(r"\D", "", r.get("parcel", "")) == re.sub(r"\D", "", parcel)]
+        #   dropping every non-digit merged parcels that differ only by letters, and a
+        #   non-numeric query normalised to "" and matched every blank parcel.
+        query_parcel = _parcel_key(parcel)
+        rows = [r for r in rows if query_parcel and _parcel_key(r.get("parcel", "")) == query_parcel]
     events = []
     for r in rows:
         for field, typ in (

@@ -57,6 +57,31 @@ class TestConstruction(unittest.TestCase):
             out.write_text("changed")
             self.assertEqual(run_cli("hfmr.construction_cli", ["verify", "--manifest", manifest]), 1)
 
+    def test_epoch_millisecond_strings_parse(self):
+        self.assertEqual(date_value("1143850000000"), "2006-04-01")
+        self.assertEqual(date_value(1143850000000), "2006-04-01")
+        with tempfile.TemporaryDirectory() as t:
+            inp = Path(t) / "in.csv"
+            out = Path(t) / "out.csv"
+            inp.write_text("ID,ADDR,ISSUED\n7,1546 N. High St,1143850000000\n")
+            import_csv(inp, out, {"record_id": "ID", "address": "ADDR", "issue_date": "ISSUED"})
+            self.assertEqual(timeline(out)[0]["date"], "2006-04-01")
+
+    def test_parcel_filter_keeps_letters_and_ignores_blanks(self):
+        with tempfile.TemporaryDirectory() as t:
+            inp = Path(t) / "in.csv"
+            out = Path(t) / "out.csv"
+            inp.write_text(
+                "ID,ADDR,PARCEL,ISSUED\n"
+                "1,1 A St,010-ABC123,03/12/2006\n"
+                "2,2 B St,010-XYZ123,03/12/2006\n"
+                "3,3 C St,,03/12/2006\n"
+            )
+            import_csv(inp, out, {"record_id": "ID", "address": "ADDR", "parcel": "PARCEL", "issue_date": "ISSUED"})
+            self.assertEqual([e["record_id"] for e in timeline(out, parcel="010ABC123")], ["1"])
+            self.assertEqual(timeline(out, parcel="ABC"), [])
+            self.assertEqual(timeline(out, parcel="--"), [])
+
     def test_links(self):
         with tempfile.TemporaryDirectory() as t:
             p = Path(t) / "page.html"
