@@ -730,6 +730,18 @@ class Stage2Gate(unittest.TestCase):
         self.assertEqual(got[neg], "flagged_speculative")
         self.assertEqual(got[pos], "debunked_by_official_log")
 
+    def test_negation_is_scoped_to_the_claim_not_the_whole_sentence(self):
+        gt = self.sg.DEFAULT_VERIFIED_GROUND_TRUTH
+        near = self._add("He is buried not far from the dirt pile.")
+        contrast = self._add("The police searched the bar but he is buried in dirt by the gateway.")
+        searched = self._add("Police searched the dirt pile and found nothing.")
+        comma = self._add("He was not, they say, buried in dirt.")
+        got, _ = self._run(gt)
+        self.assertEqual(got[near], "debunked_by_official_log")
+        self.assertEqual(got[contrast], "debunked_by_official_log")
+        self.assertEqual(got[searched], "flagged_speculative")
+        self.assertEqual(got[comma], "flagged_speculative")
+
     def test_gap_uses_its_own_keywords_and_needs_affirmative_claim(self):
         gt = self.sg.DEFAULT_VERIFIED_GROUND_TRUTH
         exit_claim = self._add("He walked out the service exit toward the construction area.")

@@ -12,8 +12,8 @@ archive that holds only Brian Shaffer / Columbus 2006 records). With none, it
 abstains: records stay 'unverified' with a reason saying why, so they can be
 judged later against the right case.
 
-A keyword only counts as a claim when its sentence is affirmative. Mentions in
-negated or search-report sentences ("searched the dirt pile and found
+A keyword only counts as a claim when its clause is affirmative. Mentions in
+negated or search-report clauses ("searched the dirt pile and found
 nothing") are kept as speculative rather than debunked or corroborated.
 """
 
@@ -77,6 +77,15 @@ ABSTAIN_REASON = (
 # A keyword in a sentence with one of these is not an affirmative claim about the place.
 NEGATION_RE = re.compile(r"\b(no|not|never|nothing|none|nobody|neither|nor|cannot|ruled out|searched|cleared)\b|n't\b")
 SENTENCE_RE = re.compile(r"[.!?;\n]+")
+# Negation is judged per clause, so a cue in a contrasting clause ("the police
+# searched the bar but he is in the dirt pile") does not cancel a claim. Only
+# contrastive words split: a comma alone ("he was not, they say, in the dirt
+# pile") keeps the cue in scope.
+CLAUSE_RE = re.compile(r"\b(?:but|although|though|whereas)\b")
+# Phrases that contain a cue word but describe distance or amount, not a denial.
+NOT_A_NEGATION_RE = re.compile(
+    r"\bnot (?:too |so |very )?far (?:away )?from\b|\bno (?:more|further|farther) than\b|\bnot long (?:after|before)\b"
+)
 
 
 class Stage2ValidationGate:
@@ -172,12 +181,21 @@ class Stage2ValidationGate:
         sentence with no negation/search-report cue, and the first phrase seen
         at all. Either may be None."""
         mentioned = None
+        # Original: a cue anywhere in the sentence (even "not far from the dirt
+        # pile") made every keyword in it a non-claim.
+        # for sentence in SENTENCE_RE.split(content):
+        #     for kw in phrases:
+        #         if kw.lower() in sentence:
+        #             if not NEGATION_RE.search(sentence):
+        #                 return kw, kw
+        #             mentioned = mentioned or kw
         for sentence in SENTENCE_RE.split(content):
-            for kw in phrases:
-                if kw.lower() in sentence:
-                    if not NEGATION_RE.search(sentence):
-                        return kw, kw
-                    mentioned = mentioned or kw
+            for clause in CLAUSE_RE.split(sentence):
+                for kw in phrases:
+                    if kw.lower() in clause:
+                        if not NEGATION_RE.search(NOT_A_NEGATION_RE.sub(" ", clause)):
+                            return kw, kw
+                        mentioned = mentioned or kw
         return None, mentioned
 
     def _examine_content(self, content: str) -> Tuple[str, str]:
