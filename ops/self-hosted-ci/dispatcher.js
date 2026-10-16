@@ -355,7 +355,9 @@ async function runJob(cfg, gh, token, job, log = console) {
       );
     } finally {
       fs.closeSync(out);
-      fs.rmSync(secretFile, { force: true });
+      // Disabled at the owner's request: keep the per-job secrets file instead of deleting it
+      // (no-delete rule). Note it still goes away with the job checkout when that is removed.
+      // fs.rmSync(secretFile, { force: true });
     }
   } catch (err) {
     fs.appendFileSync(logFile, `\n[dispatcher] ${err.message}\n`);
