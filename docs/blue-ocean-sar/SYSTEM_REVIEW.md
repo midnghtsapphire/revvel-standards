@@ -140,3 +140,53 @@ Key sources:
    `records_adapter.py`, the Rust crate and HFMR.
 5. H6: rename the burial field, and add tiling.
 6. Upgrades in the ranked order above.
+
+## The pipeline paste of 2026-10-16: what was built and what was not
+
+The paste was AI-generated code and prose:
+
+- the "drone made of math" adjoint inversion;
+- regional profiles, `ingest.py` and `solver.py`;
+- the Farber skeletal-dispersal "fall vs malfeasance proof";
+- Moors Murders weighted overlay and viewshed analysis;
+- a synthetic GPR radargram and a Random Forest;
+- an ODK form;
+- a 1965 lens LUT with CLAHE and polynomial georeferencing;
+- NDMI, peat erosion reversal, bilinear resampling and era weights.
+
+It ended by asking for GeoTIFF export and for downloads that self-heal around
+the clock.
+
+**Built:**
+
+- `realdata/geotiff_export.py` writes GeoTIFFs with CRS, geotransform, band
+  names, units, provenance hashes and a read-back check. It also does
+  polynomial GCP georeferencing with per-point and leave-one-out residuals,
+  and bilinear resampling.
+- `opendata/source_health.py` and a six-hourly workflow probe each source's
+  content, select mirrors, derive timeouts, and go red when a required
+  source is down.
+
+**Sound ideas worth building next, from published sources:**
+
+- NDMI from Sentinel-2 B8A and B11 (Gao 1996 form). It needs B11 added to
+  `s2_change.py`, and test fixtures updated.
+- Viewshed-weighted overlay, as published for the Saddleworth Moor search
+  (Lockwood & Masters 2021). The weights must come from the case, not a
+  template.
+- Contrast enhancement (CLAHE) on scanned photos before GCP picking. It is a
+  display aid; it adds no information.
+
+**Not built, and why:**
+
+| Pasted item | Problem |
+| --- | --- |
+| Regional diffusion constants, "D" values per region | Invented. No source; the numbers changed between paragraphs. |
+| 2.5 mm/yr peat erosion "reversal" | Invented constant. Real peat loss varies by orders of magnitude with slope, cover and drainage. |
+| Era-based overlay weights | Invented. Weights in a weighted overlay are the analysis; made-up weights make the map. |
+| Random Forest on synthetic features | A model trained on made-up data learns the generator, not the ground. |
+| Synthetic GPR radargram | Fine as a teaching picture. Useless as evidence or for training. |
+| "Fall vs malfeasance proof" and "courtroom proof" | Skeletal dispersal patterns are not proof of either. Scavenging, water and time produce both. |
+| Fixed 0.91 confidence | A constant is not a confidence. |
+| KML output | The pasted namespaces were wrong. `caltopo_io.py` and the existing GeoJSON exports cover this. |
+| "Drone made of math" adjoint inversion | No observation model linked it to any real measurement. |

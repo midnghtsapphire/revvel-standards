@@ -121,12 +121,33 @@ jobs:
           print(f"BBOX={lon - dlon:.6f},{lat - dlat:.6f},{lon + dlon:.6f},{lat + dlat:.6f}")
           EOF
 
-      - name: Sentinel-2 scenes (Earth Search STAC)
+      # Probe every source first and use whichever STAC mirror and timeout
+      # passed (opendata/source_health.py). If the probe itself fails, the
+      # defaults below (earth-search, 30 s) are kept.
+      - name: Source health and mirror selection
+        continue-on-error: true
+        working-directory: docs/blue-ocean-sar/opendata
+        run: |
+          echo "STAC_CATALOG=earth-search" >> "$GITHUB_ENV"
+          echo "STAC_TIMEOUT=30" >> "$GITHUB_ENV"
+          python source_health.py --samples 2 --out "$OUT/source_health.json" \
+            --config-out "$OUT/download_config.json" --summary-md "$GITHUB_STEP_SUMMARY" || true
+          python3 - "$OUT/download_config.json" >> "$GITHUB_ENV" <<'PYEOF'
+          import json, sys
+          try:
+              cfg = json.load(open(sys.argv[1]))["services"]["sentinel2-search"]
+          except (OSError, KeyError, ValueError):
+              sys.exit(0)
+          print(f"STAC_CATALOG={cfg['mirror']}")
+          print(f"STAC_TIMEOUT={int(cfg['timeout_s'])}")
+          PYEOF
+
+      - name: Sentinel-2 scenes (STAC mirror chosen above)
         continue-on-error: true
         working-directory: docs/blue-ocean-sar/opendata
         run: |
           read -r B0 B1 <<< "$BEFORE"; read -r A0 A1 <<< "$AFTER"
-          python stac.py --catalog earth-search --collections sentinel-2-l2a --bbox "$BBOX" \
+          python stac.py --catalog "$STAC_CATALOG" --timeout "$STAC_TIMEOUT" --collections sentinel-2-l2a --bbox "$BBOX" \
             --datetime "$B0/$A1" --max-cloud 30 --limit 50 \
             --evidence-log "$OUT/evidence" --operator "$EVIDENCE_OPERATOR" > "$OUT/stac_sentinel2.json"
 

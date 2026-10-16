@@ -167,6 +167,48 @@ any command to keep the raw responses in the shared evidence log, and `-v` to
 log the requests (with secrets redacted) to stderr. The older
 `--evidence-dir DIR` still works but is deprecated.
 
+## Source health and mirror selection (`source_health.py`)
+
+This tool probes every satellite and terrain source the tools depend on, and
+checks what each one returns:
+
+- **STAC search:** must return features.
+- **COG:** must start with the TIFF magic bytes and honour an HTTP Range
+  request.
+- **CMR:** must return the collection.
+- **NWIS:** must return a time series.
+
+For each service it then picks the first healthy mirror. It skips a mirror
+that failed most of its recent runs (`--state`) while another is healthy.
+Timeouts are 4 × the slowest successful probe, between 10 and 120 s. The
+result goes to `--config-out`.
+
+**Exit codes:**
+
+- 1 when a required service (Sentinel-2 search, Sentinel-2 COGs or the
+  Copernicus DEM) has no healthy mirror.
+- 2 on bad input.
+- Optional services that are down are reported but do not fail the run.
+
+**Workflows:**
+
+- `.github/workflows/blue-ocean-sar-source-health.yml` runs it every six
+  hours. A red run means a required source is down, and GitHub emails the
+  repository owner.
+- The live-run workflow runs it first and uses the chosen STAC mirror and
+  timeout.
+
+**What it does not do:**
+
+- It does not fix a provider outage, rotate credentials or edit code.
+- GitHub only runs scheduled workflows from the default branch, can delay
+  them, and disables them after 60 days with no repository activity.
+
+```bash
+python source_health.py --out health.json --config-out download_config.json
+python source_health.py --only sentinel2-cog,copernicus-dem --samples 3 --state state.json
+```
+
 ## Tests
 
 ```sh

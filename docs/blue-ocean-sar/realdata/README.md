@@ -784,3 +784,40 @@ python refloat_timing.py --csv water_temp.csv --incident 2026-05-27 --preset egu
     --add-iqr Q1 Q3 --out-dir out/refloat   # Q1 Q3: your own spread, in degree-days
 python -m unittest test_refloat_timing
 ```
+
+## GeoTIFF export and GCP georeferencing (`geotiff_export.py`)
+
+Turns numpy arrays into GeoTIFFs that QGIS, ArcGIS Pro, GDAL and Earth Engine
+open in the right place. The output is a Cloud-Optimized GeoTIFF by default.
+
+- `write`: an array already on a map grid (`.npy`, or `.npz` with named
+  layers) plus `--crs` and either `--bounds` or `--origin` and
+  `--pixel-size`. Nothing is guessed. A missing CRS or grid is an error.
+- `georef`: an image-space array (for example a corrected 1965 aerial photo)
+  plus a GCP CSV (`id,col,row,x,y`). It fits a polynomial of order 1, 2 or 3
+  and reports each point's residual and a leave-one-out error. Order 1 is the
+  default. The image is resampled bilinearly onto a north-up grid, and NaN
+  input cells stay empty rather than bleeding into neighbours.
+  - The run refuses fewer GCPs than the fit has unknowns.
+  - It warns when the fit passes exactly through every point, because the
+    RMSE is then 0 and means nothing.
+  - `--max-rmse` exits 1 when the leave-one-out error is too large.
+- `verify`: re-opens a file and checks each band against the SHA-256
+  recorded inside it at write time. It can also check the expected CRS and
+  transform. A file without the hash tags fails, because it cannot be
+  verified.
+
+Each band carries its name, units and SHA-256. Each input file is hashed into
+the file's tags (`gdalinfo` shows them). The file is written under a
+temporary name and then renamed.
+
+```bash
+python geotiff_export.py write ndmi.npy --crs EPSG:32615 \
+    --bounds 412000 4101000 413000 4102000 --band-name ndmi --units 1 --nodata nan --out ndmi.tif
+python geotiff_export.py georef photo_1965.npy --gcps gcps.csv --crs EPSG:27700 \
+    --order 1 --pixel-size 0.5 --max-rmse 2 --report photo_1965_gcps.json --out photo_1965.tif
+python geotiff_export.py verify ndmi.tif --crs EPSG:32615
+```
+
+Exit codes: 0 means written and verified. 1 means verification failed or the
+GCP fit failed `--max-rmse`. 2 means bad input.
