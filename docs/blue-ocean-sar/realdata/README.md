@@ -34,8 +34,13 @@ Fixes made to your scripts (the original lines are kept as comments):
 <!-- Original entry: "`stage2_validation_gate.py`: unchanged apart from
 formatting and an unused import." -->
 - **`stage2_validation_gate.py`**: it no longer judges every record against
-  the Shaffer (Columbus 2006) logs by default. Without `--ground-truth FILE`
-  or `--use-shaffer-default` it leaves records `unverified`. Keywords in
+  the Shaffer (Columbus 2006) logs by default. The built-in Shaffer "facts"
+  came from AI-generated material, named real people and cited no document,
+  so they are commented out and `--use-shaffer-default` now exits 2. Ground
+  truth must come from a file in which every sector cites a source document
+  and a clearance date. A keyword match gives "needs review", never
+  "debunked", and tips about changes after the clearance date are outside
+  the clearance window. `--recheck` re-examines old verdicts. Keywords in
   negated or search-report sentences are kept speculative, and gaps match
   their own keywords. `realtime_validation_listener.py` takes the same flags.
 - **`run_county.py`** (not in this folder): its `print("\n…")` lines were
@@ -288,8 +293,12 @@ Built from `riverine_recovery_method.md`, `drift_modeling_note.md` and
   than 3x. It cannot tell which gauge governs the reach. You say so with
   `--governing`, after placing the incident relative to confluences and dams.
 - **Envelope, not a distance.** Cells (100 m) carry probability, cumulative
-  mass and a search rank. Accessibility changes the rank only. Cleared cells
-  go to 0 and the rest is renormalised.
+  mass and a search rank. Accessibility changes the rank only. A cleared
+  reach applies a stated POD (default 0.8, an assumption) through
+  `search_theory.bayes_update`; it is never treated as certain. Mass beyond
+  the modelled reach is kept in a `beyond_reach` row. The median distance
+  grows with elapsed time (or a stated velocity model); an earlier version
+  ignored elapsed time entirely.
 - **The naive estimate is rejected.** The velocity x time figure appears in
   `summary.json` marked `REJECTED`, with the reasons, and is never used.
 - **What is assumed.** The decay median (0.5 mi), the snag multipliers and
@@ -427,8 +436,10 @@ using `microtopo.py`'s readers. Each survey can come with an uncertainty, as a
 single sigma in metres or as a raster. Then it works through these steps:
 
 1. **Per-pair change.** It computes the change between each pair of surveys
-   and its propagated uncertainty. It then gives the probability that the
-   change is real: P = 1 - 2(1 - Phi(|dZ| / sigma)).
+   and its propagated uncertainty. It then gives the change significance,
+   1 - p = 1 - 2(1 - Phi(|dZ| / sigma)). That is a significance level, not
+   the probability that a change (or a grave) is real; an earlier version
+   called it "P(real change)".
 2. **Burial timeline.** It looks for an earlier mound followed by later
    subsidence in the same grave-sized neighbourhood. Only (mound, sink)
    pairs whose timing fits the sink window are tried.

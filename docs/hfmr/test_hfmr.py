@@ -30,6 +30,30 @@ class TestHFMR(unittest.TestCase):
         with self.assertRaises(ValueError):
             infer([o, o], self.model())
 
+    def test_same_reading_under_two_groups_not_counted_twice(self):
+        # SYSTEM_REVIEW H5: one reading filed under two dependency-group labels.
+        model = self.model()
+        digest = hashlib.sha256(b"one physical reading").hexdigest()
+        once = Observation("demo", 0.0, 1.0, "group-a", digest)
+        twice = Observation("demo", 0.0, 1.0, "group-b", digest)
+        single = infer([once], model)["posterior"]["background"]
+        self.assertAlmostEqual(single, 0.526, places=3)
+        # The symptom: before the fix the duplicate was accepted and inflated 0.526 to 0.671.
+        other = Observation("demo", 0.0, 1.0, "group-b", "b" * 64)
+        self.assertAlmostEqual(infer([once, other], model)["posterior"]["background"], 0.671, places=3)
+        # The fix: refused by default ...
+        with self.assertRaisesRegex(ValueError, "repeated source_sha256"):
+            infer([once, twice], model)
+        # ... or deduplicated on request, with the drop recorded in the output.
+        r = infer([once, twice], model, duplicate_sources="dedupe")
+        self.assertAlmostEqual(r["posterior"]["background"], single, places=12)
+        self.assertEqual(r["input_hashes"], [digest])
+        self.assertEqual(len(r["dedupe_warnings"]), 1)
+        self.assertIn("group-b", r["dedupe_warnings"][0])
+        self.assertEqual(infer([once], model)["dedupe_warnings"], [])
+        with self.assertRaisesRegex(ValueError, "duplicate_sources"):
+            infer([once], model, duplicate_sources="ignore")
+
     def test_ledger_tamper(self):
         with tempfile.TemporaryDirectory() as d:
             f = Path(d) / "ledger.jsonl"

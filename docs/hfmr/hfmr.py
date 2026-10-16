@@ -79,10 +79,41 @@ class CalibratedModel:
             raise ValueError(f"sensor {sensor!r} has no calibration for hypotheses: {missing}")
 
 
-def infer(observations: list[Observation], model: CalibratedModel, ood_z_limit: float = OOD_Z_LIMIT):
+DUPLICATE_SOURCE_POLICIES = ("refuse", "dedupe")
+
+
+def drop_repeated_sources(observations: list[Observation]):
+    """Keep the first observation for each source_sha256; return (kept, warnings).
+
+    The same reading filed under two dependency-group labels is still one reading
+    (SYSTEM_REVIEW H5: 0.526 became 0.671 when it was counted twice).
+    """
+    kept, seen, warnings = [], {}, []
+    for i, o in enumerate(observations):
+        if o.source_sha256 in seen:
+            first = observations[seen[o.source_sha256]]
+            warnings.append(
+                f"observation {i} (sensor {o.sensor!r}, group {o.dependency_group!r}) repeats source_sha256 "
+                f"{o.source_sha256} of observation {seen[o.source_sha256]} (group {first.dependency_group!r}); "
+                "dropped so one reading is counted once"
+            )
+            continue
+        seen[o.source_sha256] = i
+        kept.append(o)
+    return kept, warnings
+
+
+def infer(observations: list[Observation], model: CalibratedModel, ood_z_limit: float = OOD_Z_LIMIT,
+          duplicate_sources: str = "refuse"):
     """Gaussian feature likelihoods; at most one observation per dependency group.
     This conservative policy prevents naïve double counting. Correlated multivariate
     fusion requires a separately validated joint covariance model.
+
+    A source_sha256 may appear only once in the input, whatever dependency group it
+    is filed under: two labels on one reading are not two readings (SYSTEM_REVIEW H5).
+    duplicate_sources="refuse" (default) raises ValueError; "dedupe" keeps the first
+    observation for each digest and lists every dropped one under "dedupe_warnings"
+    in the result.
 
     Returns decision "abstain" with posterior None when no hypothesis explains the
     observations within ood_z_limit standard deviations: normalising likelihoods that
@@ -93,11 +124,22 @@ def infer(observations: list[Observation], model: CalibratedModel, ood_z_limit: 
     # zero limit forces abstention for every input. Neither is a usable calibration limit.
     if not math.isfinite(ood_z_limit) or ood_z_limit <= 0:
         raise ValueError("ood_z_limit must be a finite positive number")
+    if duplicate_sources not in DUPLICATE_SOURCE_POLICIES:
+        raise ValueError(f"duplicate_sources must be one of {DUPLICATE_SOURCE_POLICIES}")
     if not observations:
         raise ValueError("no observations: posterior would just restate the priors")
-    groups = set()
     for o in observations:
         o.validate()
+    kept, dedupe_warnings = drop_repeated_sources(list(observations))
+    if dedupe_warnings and duplicate_sources == "refuse":
+        raise ValueError("repeated source_sha256: the same reading cannot be counted twice "
+                         "(pass duplicate_sources='dedupe' to keep the first): " + "; ".join(dedupe_warnings))
+    observations = kept
+    groups = set()
+    for o in observations:
+        # o.validate()  # validated above, before the repeated-source check (SYSTEM_REVIEW H5)
+        # Lesson: the old loop only checked dependency_group, a label the caller chooses. One reading filed under
+        # two labels counted twice (0.526 -> 0.671). Deduplicate on what the data is (its digest), not its label.
         model.check_sensor(o.sensor)
         if o.dependency_group in groups:
             raise ValueError("dependent observations: use joint covariance model or select one")
@@ -122,6 +164,7 @@ def infer(observations: list[Observation], model: CalibratedModel, ood_z_limit: 
             "ood_z_limit": ood_z_limit,
             "calibration_id": model.calibration_id,
             "input_hashes": [o.source_sha256 for o in observations],
+            "dedupe_warnings": dedupe_warnings,
             "warning": "Observations fall outside every calibrated hypothesis; no posterior is reported.",
         }
     z = max(logp.values())
@@ -133,6 +176,7 @@ def infer(observations: list[Observation], model: CalibratedModel, ood_z_limit: 
         "posterior": {h: w[h] / total for h in HYPOTHESES},
         "calibration_id": model.calibration_id,
         "input_hashes": [o.source_sha256 for o in observations],
+        "dedupe_warnings": dedupe_warnings,
         "warning": "Model probabilities are not human-remains probabilities.",
     }
 

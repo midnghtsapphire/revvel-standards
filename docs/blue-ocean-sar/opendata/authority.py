@@ -9,12 +9,20 @@ different on file before a connector may query it:
   LICENSED       paid data released under a permissible purpose (for example a
                  GLBA or DPPA purpose, or an FCRA purpose where the product is a
                  consumer report). Needs a recorded authority for the case that
-                 names the permissible purpose(s) the call is made under.
+                 names the permissible purpose(s) the call is made under, the
+                 subjects/identifiers in scope and an expiry date.
   LEGAL_PROCESS  data that needs a search warrant, court order, subpoena or the
                  subject's written consent. Needs a recorded authority with the
                  reference number, issuing court/agency, issue date, expiry,
                  scope text, the subjects/identifiers in scope, the requesting
                  officer and agency, and the sha256 of the scanned document.
+                 Optionally countersigned by a second named person (--countersign);
+                 --require-countersign (env AUTHORITY_REQUIRE_COUNTERSIGN=1) makes
+                 the countersignature mandatory when recording and when gating.
+
+Every authority records who entered it (--recorded-by, or --actor / env
+AUTHORITY_ACTOR), and every gate call records who made it (Gate(actor=...),
+--actor or AUTHORITY_ACTOR); a gate with no actor refuses every call.
 
 Connectors call require(source_class, case_id, subject, purpose). It returns the
 covering authority, or raises AuthorityError (CLI exit 3) unless a current,
@@ -30,14 +38,16 @@ entries were cut off, so `verify` prints each file's head hash and entry count:
 record those somewhere outside this machine (case notes, an email to the
 agency) and pass them back with --expect-ledger-head / --expect-audit-head.
 
+  export AUTHORITY_ACTOR="Analyst B. Example"
   python authority.py add-authority --class LICENSED --case MP-2026-014 \\
       --purpose "GLBA:6802(e)(8)" --agency "Example County Sheriff" \\
-      --officer "Det. A. Example"
+      --officer "Det. A. Example" --subject "Jane Q Example" --expires 2026-12-31
   python authority.py add-authority --class LEGAL_PROCESS --case MP-2026-014 \\
       --process-type warrant --reference SW-2026-0193 --issuer "Example County Court" \\
       --issued 2026-10-01 --expires 2026-10-31 --scope "Subscriber records ..." \\
       --subject "Jane Q Example" --officer "Det. A. Example" \\
-      --agency "Example County Sheriff" --document scans/SW-2026-0193.pdf
+      --agency "Example County Sheriff" --document scans/SW-2026-0193.pdf \\
+      --countersign "Sgt. C. Example"
   python authority.py list --case MP-2026-014
   python authority.py check --source LEGAL_PROCESS --case MP-2026-014 --subject "Jane Q Example"
   python authority.py revoke --id AUTH-... --reason "warrant returned" --by "owner"
@@ -45,9 +55,12 @@ agency) and pass them back with --expect-ledger-head / --expect-audit-head.
 
 Paths: --ledger (env AUTHORITY_LEDGER, default authority_ledger.jsonl) and
 --audit-log (env AUTHORITY_AUDIT_LOG, default authority_audit.jsonl). Files are
-created with mode 0600. Subjects are written to the audit log as a hash by
-default (HMAC-SHA256 keyed by env AUTHORITY_SUBJECT_SALT when it is set, plain
-SHA-256 otherwise); --subject-mode plain records the identifier itself.
+created with mode 0600. Subjects are written to the audit log as an
+HMAC-SHA256 keyed by env AUTHORITY_SUBJECT_SALT (at least 16 characters, kept
+off this machine's logs and out of the case file). A gate in the default hash
+mode refuses to start without it: a plain SHA-256 of a name or phone number is
+reversible by guessing. Callers that want the identifier itself in the log must
+say so with subject_mode="plain" (--subject-mode plain in records_adapter.py).
 
 Exit codes: 0 ok / covered, 1 integrity check failed, 2 bad input,
 3 refused / not covered.
@@ -93,6 +106,10 @@ GENESIS = "0" * 64
 ENV_LEDGER = "AUTHORITY_LEDGER"
 ENV_AUDIT = "AUTHORITY_AUDIT_LOG"
 ENV_SALT = "AUTHORITY_SUBJECT_SALT"
+ENV_ACTOR = "AUTHORITY_ACTOR"
+ENV_REQUIRE_COUNTERSIGN = "AUTHORITY_REQUIRE_COUNTERSIGN"
+MIN_SALT_CHARS = 16
+EMPTY_SHA256 = hashlib.sha256(b"").hexdigest()
 DEFAULT_LEDGER = "authority_ledger.jsonl"
 DEFAULT_AUDIT = "authority_audit.jsonl"
 SUBJECT_MODES = ("hash", "plain")
@@ -148,6 +165,16 @@ def normalize_subject(s):
     if not out:
         raise ValueError("empty subject")
     return out
+
+
+def _norm_person(p):
+    return " ".join(str(p or "").split()).casefold()
+
+
+def env_flag(name, environ=None):
+    """True when env var name is set to 1/true/yes/on (case-insensitive)."""
+    return str((environ if environ is not None else os.environ).get(name, "")).strip().lower() in (
+        "1", "true", "yes", "on")
 
 
 def _norm_purpose(p):
@@ -284,8 +311,16 @@ def _clean_list(values):
 def build_authority(source_class, case_id, *, purposes=(), subjects=(), sources=(), process_type=None,
                     reference=None, issuer=None, issued=None, expires=None, scope=None,
                     requesting_officer=None, agency=None, document_sha256=None, document_name=None,
-                    notes=None, recorded_by=None):
-    """Validate the fields for one authority and return the record to store (without id)."""
+                    notes=None, recorded_by=None, countersigned_by=None, require_countersign=None):
+    """Validate the fields for one authority and return the record to store (without id).
+
+    recorded_by is required for every class. LICENSED also needs subjects and an
+    expiry (SYSTEM_REVIEW H2). countersigned_by, when given, must name a second
+    person; require_countersign (default: env AUTHORITY_REQUIRE_COUNTERSIGN) makes
+    it mandatory for LEGAL_PROCESS.
+    """
+    if require_countersign is None:
+        require_countersign = env_flag(ENV_REQUIRE_COUNTERSIGN)
     sc = (source_class or "").strip().upper()
     if sc not in SOURCE_CLASSES:
         raise ValueError(f"source class must be one of {', '.join(SOURCE_CLASSES)}")
@@ -304,7 +339,13 @@ def build_authority(source_class, case_id, *, purposes=(), subjects=(), sources=
         "agency": (agency or "").strip() or None,
         "notes": (notes or "").strip() or None,
         "recorded_by": (recorded_by or "").strip() or None,
+        "countersigned_by": " ".join(str(countersigned_by or "").split()) or None,
     }
+    if not rec["recorded_by"]:
+        raise ValueError("recorded_by is required: name who is entering this authority "
+                         "(--recorded-by, --actor or env AUTHORITY_ACTOR)")
+    if rec["countersigned_by"] and _norm_person(rec["countersigned_by"]) == _norm_person(rec["recorded_by"]):
+        raise ValueError("the countersignature must come from a second person, not the one recording it")
     for s in rec["subjects"]:
         normalize_subject(s)
     t_issued = parse_when(issued) if issued else None
@@ -317,6 +358,11 @@ def build_authority(source_class, case_id, *, purposes=(), subjects=(), sources=
     if sc == LICENSED:
         if not rec["purposes"]:
             raise ValueError("LICENSED authority needs at least one permissible purpose (--purpose)")
+        # SYSTEM_REVIEW H2: a LICENSED authority with no subjects covered anyone, and with no expiry, forever.
+        missing = [n for n, ok in (("--subject", rec["subjects"]), ("--expires", rec["expires"])) if not ok]
+        if missing:
+            raise ValueError("LICENSED authority is missing " + ", ".join(missing)
+                             + " (it must name who it covers and when it ends)")
         return rec
 
     missing = [name for name, v in (("--process-type", process_type), ("--reference", reference),
@@ -326,6 +372,8 @@ def build_authority(source_class, case_id, *, purposes=(), subjects=(), sources=
                if not (v or "").strip()]
     if not rec["subjects"]:
         missing.append("--subject")
+    if require_countersign and not rec["countersigned_by"]:
+        missing.append("--countersign (required by --require-countersign / AUTHORITY_REQUIRE_COUNTERSIGN)")
     if missing:
         raise ValueError("LEGAL_PROCESS authority is missing " + ", ".join(missing))
     pt = process_type.strip().lower().replace("-", "_").replace(" ", "_")
@@ -334,6 +382,8 @@ def build_authority(source_class, case_id, *, purposes=(), subjects=(), sources=
     digest = document_sha256.strip().lower()
     if not _HEX64.match(digest):
         raise ValueError("document sha256 must be 64 hex characters")
+    if digest == EMPTY_SHA256:
+        raise ValueError("the document is empty; record the scanned order itself")
     rec.update(process_type=pt, reference=reference.strip(), issuer=issuer.strip(), scope=scope.strip(),
                document_sha256=digest, document_name=document_name)
     return rec
@@ -370,6 +420,8 @@ class Ledger:
         reason = (reason or "").strip()
         if not reason:
             raise ValueError("a revocation needs a reason")
+        if not (by or "").strip():
+            raise ValueError("a revocation needs the name of who revoked it (--by, --actor or AUTHORITY_ACTOR)")
         auths = self.authorities()
         if authority_id not in auths:
             raise ValueError(f"no authority with id {authority_id!r}")
@@ -395,8 +447,13 @@ class Ledger:
                 out[e["authority_id"]]["revoked"] = {"at": e["ts"], "reason": e.get("reason"), "by": e.get("by")}
         return out
 
-    def find(self, source_class, case_id, subject, purpose, *, source_name=None, now=None):
-        """Return (covering authority or None, list of reasons nothing else covered it)."""
+    def find(self, source_class, case_id, subject, purpose, *, source_name=None, now=None,
+             require_countersign=False):
+        """Return (covering authority or None, list of reasons nothing else covered it).
+
+        Records written before SYSTEM_REVIEW H2 (no subjects, a LICENSED one with no
+        expiry, no recorded_by) never cover a call; re-record them.
+        """
         now = now or utc_now()
         subj = normalize_subject(subject)
         purp = _norm_purpose(purpose)
@@ -412,8 +469,19 @@ class Ledger:
             st = authority_status(a, now)
             if st != "current":
                 why.append(st.replace("_", " "))
-            if a["subjects"] and subj not in {normalize_subject(s) for s in a["subjects"]}:
+            # if a["subjects"] and subj not in {normalize_subject(s) for s in a["subjects"]}:  # SYSTEM_REVIEW H2: an empty list covered everyone  # noqa: E501
+            # Lesson: "no subject list" was treated as "no restriction", so the least specific record granted the
+            # most. An empty scope field must mean "covers nothing"; a gate fails closed on missing data.
+            if not a.get("subjects"):
+                why.append("authority lists no subjects (recorded before subjects were required); re-record it")
+            elif subj not in {normalize_subject(s) for s in a["subjects"]}:
                 why.append("subject is not in the authority's scope")
+            if not a.get("expires"):
+                why.append("authority has no expiry (recorded before expiry was required); re-record it")
+            if not a.get("recorded_by"):
+                why.append("authority does not record who entered it; re-record it")
+            if require_countersign and a["source_class"] == LEGAL_PROCESS and not a.get("countersigned_by"):
+                why.append("not countersigned by a second person, and a countersignature is required")
             if a["purposes"] and purp not in {_norm_purpose(p) for p in a["purposes"]}:
                 why.append(f"purpose {purpose!r} is not one it records ({', '.join(a['purposes'])})")
             if not source_in_scope(source_name, a["sources"]):
@@ -437,14 +505,24 @@ def _ref(a):
 class Gate:
     """require() for connectors, writing every decision to a hash-chained audit log."""
 
-    def __init__(self, ledger_path=None, audit_path=None, subject_mode="hash", salt=None, actor=None, clock=None):
+    def __init__(self, ledger_path=None, audit_path=None, subject_mode="hash", salt=None, actor=None, clock=None,
+                 require_countersign=None):
         if subject_mode not in SUBJECT_MODES:
             raise ValueError(f"subject mode must be one of {', '.join(SUBJECT_MODES)}")
         self.ledger = Ledger(ledger_path or os.environ.get(ENV_LEDGER) or DEFAULT_LEDGER)
         self.audit = ChainLog(audit_path or os.environ.get(ENV_AUDIT) or DEFAULT_AUDIT)
         self.subject_mode = subject_mode
         self.salt = salt if salt is not None else os.environ.get(ENV_SALT)
-        self.actor = actor
+        # SYSTEM_REVIEW H2: an unsalted SHA-256 of a name or phone number is reversible by guessing.
+        if subject_mode == "hash" and len(self.salt or "") < MIN_SALT_CHARS:
+            raise ValueError(f"subject hashing needs a secret salt of at least {MIN_SALT_CHARS} characters in "
+                             f"env {ENV_SALT}; refusing to start (or choose subject mode 'plain' explicitly)")
+        # self.actor = actor  # SYSTEM_REVIEW H2: the actor was optional; now taken from env when not given
+        # Lesson: an audit log with actor=None records that access happened but not who did it, which is the
+        # question a reviewer asks first. A field the log cannot answer without is required, not optional.
+        self.actor = " ".join(str(actor or os.environ.get(ENV_ACTOR) or "").split()) or None
+        self.require_countersign = (env_flag(ENV_REQUIRE_COUNTERSIGN) if require_countersign is None
+                                    else bool(require_countersign))
         self.clock = clock or utc_now
 
     def subject_fields(self, subject):
@@ -453,9 +531,11 @@ class Gate:
         if self.subject_mode == "plain":
             return {"subject": str(subject)}
         norm = normalize_subject(subject).encode("utf-8")
-        if self.salt:
-            return {"subject_hmac_sha256": hmac.new(self.salt.encode("utf-8"), norm, hashlib.sha256).hexdigest()}
-        return {"subject_sha256": sha256_bytes(norm)}
+        # if self.salt:  # SYSTEM_REVIEW H2: hash mode now always has a salt (checked in __init__)
+        # Lesson: the unsalted fallback below looked like privacy but was not: names and phone numbers are a small,
+        # guessable space, so SHA-256 of one is reversed by hashing candidates. Hashing is not anonymisation.
+        return {"subject_hmac_sha256": hmac.new(self.salt.encode("utf-8"), norm, hashlib.sha256).hexdigest()}
+        # return {"subject_sha256": sha256_bytes(norm)}  # SYSTEM_REVIEW H2: unsalted hash was reversible
 
     def log(self, event, **fields):
         """Append one audit entry. Raises OSError / ValueError if it cannot be written."""
@@ -489,6 +569,9 @@ class Gate:
         case_id = (case_id or "").strip()
         purpose = (purpose or "").strip()
         args = (sc or source_class, case_id, subject, purpose)
+        if not self.actor:
+            self.refuse(*args, f"no actor: name who is making this call (Gate(actor=...), --actor or env "
+                        f"{ENV_ACTOR})", source_name)
         if sc not in SOURCE_CLASSES:
             self.refuse(*args, f"unknown source class {source_class!r}", source_name)
         if sc == PUBLIC:
@@ -504,7 +587,8 @@ class Gate:
             self.refuse(*args, f"purpose {purpose!r} is not permitted for this source "
                         f"(allowed: {', '.join(allowed_purposes) or 'none'})", source_name)
         try:
-            auth, reasons = self.ledger.find(sc, case_id, subject, purpose, source_name=source_name, now=self.clock())
+            auth, reasons = self.ledger.find(sc, case_id, subject, purpose, source_name=source_name, now=self.clock(),
+                                             require_countersign=self.require_countersign)
         except (LedgerIntegrityError, ValueError, KeyError) as e:
             self.refuse(*args, f"ledger unusable: {e}", source_name)
         if auth is None:
@@ -515,7 +599,8 @@ class Gate:
 
 def require(source_class, case_id, subject, purpose, **kw):
     """Module-level gate using the env/default ledger and audit paths. See Gate.require."""
-    gate_kw = {k: kw.pop(k) for k in ("ledger_path", "audit_path", "subject_mode", "salt", "actor") if k in kw}
+    gate_kw = {k: kw.pop(k) for k in ("ledger_path", "audit_path", "subject_mode", "salt", "actor",
+                                      "require_countersign") if k in kw}
     return Gate(**gate_kw).require(source_class, case_id, subject, purpose, **kw)
 
 
@@ -535,7 +620,8 @@ def _cmd_add(a):
                           process_type=a.process_type, reference=a.reference, issuer=a.issuer, issued=a.issued,
                           expires=a.expires, scope=a.scope, requesting_officer=a.officer, agency=a.agency,
                           document_sha256=doc_sha, document_name=doc_name, notes=a.notes,
-                          recorded_by=a.recorded_by)
+                          recorded_by=a.recorded_by or a.actor, countersigned_by=a.countersign,
+                          require_countersign=a.require_countersign or env_flag(ENV_REQUIRE_COUNTERSIGN))
     if rec.get("expires") and parse_when(rec["expires"]) < utc_now():
         raise ValueError("expiry is already in the past")
     _print(Ledger(a.ledger).add(rec))
@@ -556,7 +642,7 @@ def _cmd_list(a):
 
 
 def _cmd_revoke(a):
-    _print(Ledger(a.ledger).revoke(a.id, a.reason, a.by))
+    _print(Ledger(a.ledger).revoke(a.id, a.reason, a.by or a.actor))
     return 0
 
 
@@ -570,7 +656,9 @@ def _cmd_check(a):
     if not a.case:
         raise ValueError("--case is required for LICENSED and LEGAL_PROCESS")
     purpose = a.purpose or ""
-    auth, reasons = Ledger(a.ledger).find(sc, a.case.strip(), a.subject, purpose, source_name=a.source_name)
+    auth, reasons = Ledger(a.ledger).find(sc, a.case.strip(), a.subject, purpose, source_name=a.source_name,
+                                          require_countersign=a.require_countersign
+                                          or env_flag(ENV_REQUIRE_COUNTERSIGN))
     if sc == LICENSED and not purpose.strip():
         auth, reasons = None, ["a permissible purpose (--purpose) is required for LICENSED sources"]
     _print({"covered": auth is not None, "source_class": sc, "case_id": a.case, "authority": auth,
@@ -609,6 +697,8 @@ def build_parser():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--ledger", default=os.environ.get(ENV_LEDGER) or DEFAULT_LEDGER)
     ap.add_argument("--audit-log", default=os.environ.get(ENV_AUDIT) or DEFAULT_AUDIT)
+    ap.add_argument("--actor", default=os.environ.get(ENV_ACTOR),
+                    help=f"who is running this command (env {ENV_ACTOR}); used for --recorded-by and --by")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("add-authority", help="record one authority")
@@ -628,7 +718,10 @@ def build_parser():
     p.add_argument("--agency", help="requesting agency")
     p.add_argument("--document", help="scanned document file; its sha256 is recorded")
     p.add_argument("--notes")
-    p.add_argument("--recorded-by")
+    p.add_argument("--recorded-by", help="who is entering this authority (default: --actor / AUTHORITY_ACTOR)")
+    p.add_argument("--countersign", metavar="NAME", help="a second named person who checked the document")
+    p.add_argument("--require-countersign", action="store_true",
+                   help=f"refuse LEGAL_PROCESS without --countersign (also env {ENV_REQUIRE_COUNTERSIGN}=1)")
     p.set_defaults(fn=_cmd_add)
 
     p = sub.add_parser("list", help="list authorities (current only unless --all)")
@@ -639,7 +732,7 @@ def build_parser():
     p = sub.add_parser("revoke", help="revoke one authority")
     p.add_argument("--id", required=True)
     p.add_argument("--reason", required=True)
-    p.add_argument("--by")
+    p.add_argument("--by", help="who revoked it (default: --actor / AUTHORITY_ACTOR)")
     p.set_defaults(fn=_cmd_revoke)
 
     p = sub.add_parser("check", help="does a current authority cover this? (exit 0 yes, 3 no)")
@@ -648,6 +741,8 @@ def build_parser():
     p.add_argument("--case")
     p.add_argument("--purpose")
     p.add_argument("--source-name")
+    p.add_argument("--require-countersign", action="store_true",
+                   help=f"LEGAL_PROCESS must be countersigned (also env {ENV_REQUIRE_COUNTERSIGN}=1)")
     p.set_defaults(fn=_cmd_check)
 
     p = sub.add_parser("verify", help="verify both hash chains (exit 1 on any problem)")

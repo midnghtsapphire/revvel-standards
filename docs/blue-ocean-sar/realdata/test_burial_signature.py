@@ -14,6 +14,7 @@ import math
 import os
 import sys
 import tempfile
+import tracemalloc
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from unittest import mock
@@ -172,8 +173,14 @@ class PlantedStack(unittest.TestCase):
         self.assertEqual(len(hits), 1, self.burials)
         g = hits[0]
         self.assertLessEqual(float(g["min_q"]), 0.05)
-        self.assertGreaterEqual(float(g["p_mound"]), 0.95)
-        self.assertGreaterEqual(float(g["p_sink"]), 0.95)
+        # self.assertGreaterEqual(float(g["p_mound"]), 0.95)  # replaced, SYSTEM_REVIEW H6
+        # self.assertGreaterEqual(float(g["p_sink"]), 0.95)
+        # Lesson: the test repeated the misleading name, so it checked the number but never questioned the label.
+        self.assertGreaterEqual(float(g["mound_significance"]), 0.95)
+        self.assertGreaterEqual(float(g["sink_significance"]), 0.95)
+        # Deprecated aliases (SYSTEM_REVIEW H6) still carry the same values for older readers.
+        self.assertEqual(g["p_mound"], g["mound_significance"])
+        self.assertEqual(g["p_sink"], g["sink_significance"])
         self.assertEqual(g["mound_interval"], "2012-2015")
         self.assertEqual(g["sink_interval"], "2015-2018")
         self.assertEqual(g["type"], "burial_compact")
@@ -315,6 +322,19 @@ class Voids(unittest.TestCase):
 
 @unittest.skipUnless(HAS_GEO, "numpy/scipy/rasterio not installed")
 class Statistics(unittest.TestCase):
+    def test_change_significance_is_one_minus_p_and_old_name_is_an_alias(self):
+        # SYSTEM_REVIEW H6: the quantity is 1 - (two-sided p-value of "no change"), not P(real change).
+        for k in (0.0, 0.5, 1.0, 1.96, 3.0):
+            p_two_sided = 2 * (1 - 0.5 * (1 + math.erf(k / math.sqrt(2))))
+            self.assertAlmostEqual(float(bs.change_significance(k * 0.1, 0.1)), 1 - p_two_sided, places=12)
+        x = np.array([-0.3, 0.0, 0.05, np.nan])
+        np.testing.assert_array_equal(bs.change_probability(x, 0.1), bs.change_significance(x, 0.1))
+        a = bs.params(min_change_prob=0.9)
+        self.assertEqual(a.min_change_significance, 0.9)
+        self.assertFalse(hasattr(a, "min_change_prob"))
+        with self.assertRaises(TypeError):
+            bs.params(min_change_prob=0.9, min_change_significance=0.8)
+
     def test_change_probability(self):
         self.assertAlmostEqual(float(bs.change_probability(1.96 * 0.1, 0.1)), 0.95, places=3)
         self.assertEqual(float(bs.change_probability(0.0, 0.1)), 0.0)
@@ -518,8 +538,135 @@ class CliErrors(unittest.TestCase):
             man = json.load(f)
         self.assertEqual(man["status"], "timeline_not_evaluable")
         self.assertEqual(man["results"]["n_candidates"], 0)
-        for name in ("dod_2012_2015.tif", "pchange_2012_2015.tif", "ledger.csv", "anomalies.kml"):
+        # for name in ("dod_2012_2015.tif", "pchange_2012_2015.tif", "ledger.csv", "anomalies.kml"):  # SYSTEM_REVIEW H6
+        for name in ("dod_2012_2015.tif", "significance_2012_2015.tif", "pchange_2012_2015.tif", "ledger.csv",
+                     "anomalies.kml"):
             self.assertIn(name, man["outputs_sha256"])
+        # pchange_*.tif is the deprecated name of the same raster (SYSTEM_REVIEW H6).
+        with rasterio.open(os.path.join(self.out, "significance_2012_2015.tif")) as d:
+            new = d.read(1)
+        with rasterio.open(os.path.join(self.out, "pchange_2012_2015.tif")) as d:
+            old = d.read(1)
+        np.testing.assert_array_equal(new, old)
+        params = man["parameters"]
+        self.assertEqual(params["min_change_prob"], params["min_change_significance"])
+        self.assertIn("not a probability", params["change_significance_formula"])
+
+    def test_deprecated_min_change_prob_flag_still_accepted(self):
+        argv = ["--epoch", self.p[0], "2012", "--epoch", self.p[1], "2015", "--epoch", self.p[2], "2018"]
+        self.assertEqual(self._rc(*argv, "--min-change-prob", "0.9"), 0)
+        with open(os.path.join(self.out, "manifest.json")) as f:
+            self.assertEqual(json.load(f)["parameters"]["min_change_significance"], 0.9)
+
+    def test_halo_smaller_than_required_exit_2(self):
+        argv = ["--epoch", self.p[0], "2012", "--epoch", self.p[1], "2015", "--epoch", self.p[2], "2018"]
+        need = bs.required_halo(bs.params(), 1.0)
+        with self.assertRaises(SystemExit) as cm, redirect_stderr(io.StringIO()):
+            bs.main(argv + ["--tile-cells", "16", "--halo-cells", str(need - 1), "--out-dir", self.out])
+        self.assertEqual(cm.exception.code, 2)
+        with self.assertRaises(SystemExit), redirect_stderr(io.StringIO()):
+            bs.main(argv + ["--tile-cells", "-1", "--out-dir", self.out])
+        self.assertEqual(self._rc(*argv, "--tile-cells", "16", "--halo-cells", str(need)), 0)
+
+
+def _assert_same_map(tc, a, b, rtol=1e-9, atol=1e-9):
+    tc.assertEqual(a.shape, b.shape)
+    np.testing.assert_array_equal(np.isnan(a), np.isnan(b))
+    ok = np.isfinite(a)
+    np.testing.assert_allclose(a[ok], b[ok], rtol=rtol, atol=atol)
+
+
+@unittest.skipUnless(HAS_GEO, "numpy/scipy/rasterio not installed")
+class Tiling(unittest.TestCase):
+    """SYSTEM_REVIEW H6: overlapping tiles give the whole-grid answer with bounded working memory."""
+
+    def setUp(self):
+        self.zs = [z - b for z, b in zip(make_stack(seed=1), BIASES)]
+        self.sig = [np.full((N, N), NOISE) for _ in YEARS]
+        self.sig[2][FOG] = 0.8
+
+    def test_tiled_matches_untiled_on_a_small_stack(self):
+        whole = _arrays_analyse(self.zs, self.sig, bs.params(tile_cells=0))
+        self.assertEqual(whole["tiling"]["n_tiles"], 1)
+        self.assertEqual(len(_near(whole["candidates"], *GRAVE)), 1)
+        need = bs.required_halo(bs.params(), 1.0)
+        # Tile edges at 37 and 40 cells cut through the planted grave (row 35, col 85) and the fog patch.
+        for tile, halo in ((37, None), (40, need), (25, need + 5)):
+            with self.subTest(tile=tile, halo=halo):
+                tiled = _arrays_analyse(self.zs, self.sig, bs.params(tile_cells=tile, halo_cells=halo))
+                self.assertGreater(tiled["tiling"]["n_tiles"], 1)
+                self.assertEqual(tiled["candidates"], whole["candidates"])
+                self.assertEqual(tiled["voids"], whole["voids"])
+                self.assertEqual(tiled["tested_cells"], whole["tested_cells"])
+                for k in ("score", "qvalue", "mound_significance", "sink_significance", "p_mound"):
+                    _assert_same_map(self, tiled["_arrays"][k], whole["_arrays"][k])
+                # timeline_z = -ndtri(p) magnifies last-bit differences in tiny p-values.
+                _assert_same_map(self, tiled["_arrays"]["timeline_z"], whole["_arrays"]["timeline_z"], rtol=1e-6)
+                for g_t, g_w in zip(tiled["_timeline"]["gi_z"], whole["_timeline"]["gi_z"]):
+                    _assert_same_map(self, g_t, g_w)
+                np.testing.assert_array_equal(tiled["_timeline"]["combo"], whole["_timeline"]["combo"])
+
+    def test_halo_below_neighbourhood_plus_bandwidth_refused(self):
+        a = bs.params(neighbourhood_m=2.0, gi_bandwidth_m=3.0)
+        self.assertGreaterEqual(bs.required_halo(a, 1.0), 5)
+        pairs = bs.pair_changes(self.zs, self.sig, YEARS)
+        combos = bs.timeline_combos([p["years"] for p in pairs], a.sink_window_years)
+        strata = bs.slope_strata(bs.slope_degrees(self.zs[-1], 1.0), a.slope_edges)
+        with self.assertRaises(bs.InputError):
+            bs.burial_timeline_tiled(pairs, combos, strata, 1.0, a, 30, halo=4)
+
+    def test_cli_tiled_and_untiled_ledgers_identical(self):
+        with tempfile.TemporaryDirectory() as d:
+            argv = []
+            for year, z in zip(YEARS, make_stack(seed=1)):
+                path = os.path.join(d, f"e{year}.tif")
+                _write(path, z)
+                argv += ["--epoch", path, str(year), str(NOISE)]
+            ledgers = {}
+            for tile in ("0", "33"):
+                out = os.path.join(d, f"t{tile}")
+                self.assertEqual(_quiet(bs.main, argv + ["--tile-cells", tile, "--out-dir", out]), 0)
+                with open(os.path.join(out, "ledger.csv")) as f:
+                    ledgers[tile] = f.read()
+                with open(os.path.join(out, "manifest.json")) as f:
+                    man = json.load(f)
+                self.assertEqual(man["results"]["tiling"]["n_tiles"], 1 if tile == "0" else 16)
+            self.assertEqual(ledgers["0"], ledgers["33"])
+            self.assertIn("mound_significance", ledgers["0"].splitlines()[0])
+
+    def test_working_memory_bounded_by_tile_not_grid(self):
+        """Peak memory above the returned layers stays flat as the grid grows 4x when tiled;
+        the whole-grid computation grows with the grid times the number of combinations."""
+        years = [2000 + 2 * k for k in range(7)]  # 6 pairs, 15 (mound, sink) combinations
+        a = bs.params(sink_window_years=(0.0, 100.0))
+
+        def workspace(n, tiled):
+            rng = np.random.default_rng(0)
+            rr, cc = np.indices((n, n), dtype=float)
+            zs = [100 + 0.002 * cc + 0.01 * rr + rng.normal(0, 0.03, (n, n)) for _ in years]
+            pairs = bs.pair_changes(zs, [np.full((n, n), 0.03) for _ in years], years)
+            combos = bs.timeline_combos([p["years"] for p in pairs], a.sink_window_years)
+            self.assertEqual(len(combos), 15)
+            strata = bs.slope_strata(bs.slope_degrees(zs[-1], 1.0), a.slope_edges)
+            tracemalloc.start()
+            try:
+                if tiled:
+                    tl = bs.burial_timeline_tiled(pairs, combos, strata, 1.0, a, 32)
+                else:
+                    tl = bs.burial_timeline(pairs, combos, strata, 1.0, a)
+                retained, peak = tracemalloc.get_traced_memory()
+            finally:
+                tracemalloc.stop()
+            self.assertEqual(tl["score"].shape, (n, n))
+            return peak - retained  # working memory beyond the full-grid result layers
+
+        small_t, big_t = workspace(160, True), workspace(320, True)
+        small_u, big_u = workspace(160, False), workspace(320, False)
+        self.assertGreater(big_u, 3.0 * small_u)  # the measurement does see grid-sized working arrays
+        self.assertLess(big_t, 1.5 * small_t + 256 * 1024, (small_t, big_t))
+        window = (32 + 2 * bs.required_halo(a, 1.0)) ** 2 * 8  # bytes per float64 window layer
+        self.assertLess(big_t, 400 * window, (big_t, window))  # a few layers per combination, of window size
+        self.assertLess(big_t, big_u / 5, (big_t, big_u))
 
 
 if __name__ == "__main__":

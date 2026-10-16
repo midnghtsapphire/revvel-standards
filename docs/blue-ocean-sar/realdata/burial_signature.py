@@ -23,23 +23,28 @@ Method:
      epoch is removed (constant datum / geoid shift between projects).
   2. For each consecutive pair: dZ, propagated sigma = sqrt(s1^2 + s2^2) per cell
      (raised to the robust MAD of dZ when that is larger, unless --no-mad-floor),
-     level of detection LoD = t * sigma and probability of real change
-     P = 1 - 2 * (1 - Phi(|dZ| / sigma)).
+     level of detection LoD = t * sigma and change significance
+     C = 1 - p = 1 - 2 * (1 - Phi(|dZ| / sigma)), where p is the two-sided
+     p-value of "no change" under Gaussian survey error. C is NOT a probability
+     that the change is real (SYSTEM_REVIEW H6; it was mislabelled "P(real
+     change)" before version 1.1.0): it says how unusual |dZ| would be if
+     nothing had changed, and it ignores the prior chance of change.
   3. Timeline. The standardised change u = dZ / sigma is pooled over a disk of
-     --neighbourhood-m (grave scale). Mound probability of pair a, sink
-     probability of a later pair b, both from the pooled change with the formula
-     above; the screening index S is the geometric mean sqrt(P_mound * P_sink),
-     maximised over every (a, b) whose elapsed time can fall in
-     --sink-window-years.
+     --neighbourhood-m (grave scale). Mound significance of pair a, sink
+     significance of a later pair b, both from the pooled change with the
+     formula above (one-sided: only a rise counts for the mound, a drop for the
+     sink); the screening index S is the geometric mean
+     sqrt(C_mound * C_sink), maximised over every (a, b) whose elapsed time can
+     fall in --sink-window-years.
   4. Significance. Getis-Ord Gi* of u is computed per pair inside slope classes
      (--slope-edges, degrees) so steep ground cannot become its own hot spot;
      cells whose window is incomplete (grid border, nodata) are NaN. The mound
      needs an upper-tail and the sink a lower-tail Gi*; the timeline p-value is
-     max(p_mound, p_sink) (intersection-union test: both phases must be real),
+     max(p_mound_Gi*, p_sink_Gi*) (intersection-union test: both phases must be real),
      minimised over (a, b) and multiplied by the number of combinations
      (Bonferroni). Benjamini-Hochberg q-values replace a fixed z threshold.
   5. Candidates: 8-connected cells with q <= --alpha and both phase
-     probabilities >= --min-change-prob, at least --min-area-m2.
+     significances >= --min-change-significance, at least --min-area-m2.
   6. Voids: black top-hat of the latest surface (closing with a disk of
      --void-width-m diameter minus the surface) deeper than --void-depth-m, with
      PCA second moments giving length, width and orientation; linear components
@@ -51,15 +56,30 @@ Method:
      before the first epoch, or whose burial no (mound, sink) pair can observe,
      are censored: neither positives nor negatives.
 
+Tiling. Steps 3 and 4 run in square tiles of --tile-cells with a halo of
+--halo-cells on every side (default: the smallest allowed, the neighbourhood
+radius plus the Gi* bandwidth in cells, plus one). Only each tile's core is kept, so
+the result equals the whole-grid computation, while the per-(mound, sink)
+working arrays, previously one full-grid layer per combination and phase, are
+bounded by the tile size. The Gi* stratum mean, standard deviation and count
+are accumulated over the whole grid first, so they do not change with the
+tiling. Full-grid output layers (one per output raster) are still held in
+memory, and the epochs are read whole.
+
 Every output carries the label "screening index, not a probability of a grave"
 unless a model was calibrated on labelled sites. A terrain change is not
 evidence of a burial; every candidate needs ground verification.
 
 Outputs in --out-dir: ledger.csv, anomalies.geojson, anomalies.kml (written
-through microtopo.write_vectors), dod_Y0_Y1.tif, pchange_Y0_Y1.tif,
-gistar_Y0_Y1.tif per pair, score.tif, timeline_z.tif, qvalue.tif,
+through microtopo.write_vectors), dod_Y0_Y1.tif, significance_Y0_Y1.tif
+(change significance; pchange_Y0_Y1.tif is the same raster under its
+deprecated name), gistar_Y0_Y1.tif per pair, score.tif, timeline_z.tif, qvalue.tif,
 void_tophat.tif, p_grave_calibrated.tif and operating_curve.csv when
 calibrated, and manifest.json with the sha256 of every input and output.
+Deprecated aliases, kept so older readers keep working: ledger and record
+columns p_mound / p_sink (= mound_significance / sink_significance), the
+pchange_*.tif rasters, --min-change-prob (= --min-change-significance) and the
+p_change_formula parameter record.
 
 Exit codes: 0 analysis complete (zero candidates is a valid result); 2 bad
 input (fewer than two epochs, unreadable or non-overlapping rasters, bad year
@@ -89,7 +109,8 @@ from scipy import ndimage, special
 
 import microtopo as mt
 
-VERSION = "1.0.0"
+# VERSION = "1.0.0"  # SYSTEM_REVIEW H6: change_significance rename and tiled processing
+VERSION = "1.1.0"
 LABEL = "screening index, not a probability of a grave"
 NOTE = (
     "The burial-timeline index ranks places where the ground rose and later settled within a grave-sized patch. "
@@ -111,7 +132,9 @@ DEFAULTS = {
     "slope_edges": (10.0, 25.0),
     "min_stratum_cells": 30,
     "alpha": 0.05,
-    "min_change_prob": 0.95,
+    # "min_change_prob": 0.95,  # SYSTEM_REVIEW H6: renamed; still accepted by params() and the CLI
+    # Lesson: a threshold named "prob" invited readers to treat 0.95 as "95% sure"; it is a significance cut-off.
+    "min_change_significance": 0.95,
     "min_area_m2": 2.0,
     "void_width_m": 8.0,
     "void_depth_m": 0.15,
@@ -124,12 +147,22 @@ DEFAULTS = {
     "cv_folds": 5,
     "max_negatives": 20000,
     "hit_radius_m": 3.0,
+    "tile_cells": 1024,
+    "halo_cells": None,
 }
+
+# Old parameter name -> new one (SYSTEM_REVIEW H6).
+DEPRECATED_PARAMS = {"min_change_prob": "min_change_significance"}
 
 
 def params(**overrides):
     """Analysis parameters with the CLI defaults, for calling analyse() directly."""
     p = dict(DEFAULTS)
+    for old, new in DEPRECATED_PARAMS.items():
+        if old in overrides:
+            if new in overrides:
+                raise TypeError(f"give {new} or its deprecated alias {old}, not both")
+            overrides[new] = overrides.pop(old)
     unknown = set(overrides) - set(p)
     if unknown:
         raise TypeError(f"unknown parameter(s): {sorted(unknown)}")
@@ -144,11 +177,27 @@ def _yr(y):
 # ------------------------------------------------------------ statistics
 
 
-def change_probability(dod, sigma):
-    """P(real change) = 1 - 2 * (1 - Phi(|dZ| / sigma)) = erf(|dZ| / (sigma * sqrt 2)).
-    0 for no change, 0.95 at |dZ| = 1.96 sigma. NaN where either input is NaN."""
+def change_significance(dod, sigma):
+    """Change significance 1 - p, where p = 2 * (1 - Phi(|dZ| / sigma)) is the
+    two-sided p-value of "no change" under Gaussian survey error; equal to
+    erf(|dZ| / (sigma * sqrt 2)). 0 for no change, 0.95 at |dZ| = 1.96 sigma.
+    NaN where either input is NaN. Not a probability that the change is real
+    (SYSTEM_REVIEW H6)."""
     with np.errstate(invalid="ignore", divide="ignore"):
         return special.erf(np.abs(dod) / (sigma * SQRT2))
+
+
+def change_probability(dod, sigma):
+    """Deprecated name for change_significance (SYSTEM_REVIEW H6: the value is
+    1 - p, not a probability of real change). Kept so existing callers work."""
+    # Lesson: "P(real change)" read like the probability that a grave or a real change is there. It is 1 - p,
+    # a significance: how unusual |dZ| would be with no change, ignoring how rare change is. Presenting
+    # significance as certainty is the classic mistake in auto-generated reports; name quantities for what they are.
+    # """P(real change) = 1 - 2 * (1 - Phi(|dZ| / sigma)) = erf(|dZ| / (sigma * sqrt 2)).
+    # 0 for no change, 0.95 at |dZ| = 1.96 sigma. NaN where either input is NaN."""
+    # with np.errstate(invalid="ignore", divide="ignore"):
+    #     return special.erf(np.abs(dod) / (sigma * SQRT2))
+    return change_significance(dod, sigma)
 
 
 def bh_qvalues(p):
@@ -203,24 +252,45 @@ def slope_strata(slope, edges):
     return s
 
 
-def gistar_stratified(x, strata, res, bandwidth_m, min_cells=30):
+def gistar_stats(x, strata):
+    """{stratum: (n, mean, population standard deviation)} over the finite cells
+    of x in each stratum (strata < 0 excluded)."""
+    valid = np.isfinite(x) & (strata >= 0)
+    out = {}
+    for cls in np.unique(strata[valid]):
+        vals = x[valid & (strata == cls)]
+        out[int(cls)] = (int(vals.size), float(vals.mean()), float(vals.std()))
+    return out
+
+
+def gistar_stratified(x, strata, res, bandwidth_m, min_cells=30, stats=None, border=(True, True, True, True)):
     """Getis-Ord Gi* z-score with binary disk weights (self included), computed
     separately inside each stratum: neighbours, mean, standard deviation and n
     all come from the cell's own stratum. NaN for strata smaller than
     min_cells, for cells whose window holds nodata, and for the border band
-    whose window leaves the grid."""
+    whose window leaves the grid.
+
+    stats: per-stratum (n, mean, sd) from the whole grid (gistar_stats) when x
+    is one tile of it; computed from x when None. border: (top, bottom, left,
+    right) flags, True where that edge of x is an edge of the whole grid; only
+    those edges get the NaN band (a tile's inner edges lie in its halo)."""
     fp = disk(bandwidth_m / res).astype(float)
     r = fp.shape[0] // 2
     valid = np.isfinite(x) & (strata >= 0)
     z = np.full(x.shape, np.nan)
+    if stats is None:
+        stats = gistar_stats(x, strata)
     for cls in np.unique(strata[valid]):
         m = valid & (strata == cls)
-        n = int(m.sum())
+        # n = int(m.sum())  # SYSTEM_REVIEW H6: n, mean and sd now come from the whole grid when tiled
+        # Lesson: computing the reference statistics from the array in hand tied the answer to whatever extent
+        # was passed in, which blocked tiling. Global parameters must be computed once and passed to local steps.
+        n, xbar, s = stats[int(cls)]
         if n < min_cells:
             continue
-        vals = x[m]
-        xbar = float(vals.mean())
-        s = float(vals.std())
+        # vals = x[m]
+        # xbar = float(vals.mean())
+        # s = float(vals.std())
         if s <= 0:
             z[m] = 0.0
             continue
@@ -232,10 +302,15 @@ def gistar_stratified(x, strata, res, bandwidth_m, min_cells=30):
     holes = ndimage.convolve((~np.isfinite(x)).astype(float), fp, mode="constant", cval=0.0) > 0
     z[holes] = np.nan
     if r:
-        z[:r, :] = np.nan
-        z[-r:, :] = np.nan
-        z[:, :r] = np.nan
-        z[:, -r:] = np.nan
+        top, bottom, left, right = border
+        if top:
+            z[:r, :] = np.nan
+        if bottom:
+            z[-r:, :] = np.nan
+        if left:
+            z[:, :r] = np.nan
+        if right:
+            z[:, -r:] = np.nan
     return z
 
 
@@ -360,7 +435,8 @@ def load_stack(epochs, xform, crs, shape):
 
 def pair_changes(z, sigma, years, t=1.96, mad_floor=True):
     """DEM of difference for each consecutive pair with its propagated sigma,
-    LoD and per-cell change probability."""
+    LoD and per-cell change significance ("significance"; "p" is a deprecated
+    alias of the same array)."""
     out = []
     for i in range(len(z) - 1):
         dod = z[i + 1] - z[i]
@@ -376,12 +452,16 @@ def pair_changes(z, sigma, years, t=1.96, mad_floor=True):
         lod = t * s
         with np.errstate(invalid="ignore"):
             up, down = int((dod > lod).sum()), int((dod < -lod).sum())
+        sig = change_significance(dod, s)
         out.append(
             {
                 "years": (years[i], years[i + 1]),
                 "dod": dod,
                 "sigma": s,
-                "p": change_probability(dod, s),
+                # "p": change_probability(dod, s),  # SYSTEM_REVIEW H6: renamed; "p" kept as an alias
+                # Lesson: a key called "p" holding 1 - p is the opposite of what a statistician would read it as.
+                "significance": sig,
+                "p": sig,
                 "stats": {
                     "pair": f"{_yr(years[i])}-{_yr(years[i + 1])}",
                     "sigma_propagated_median_m": round(float(np.nanmedian(np.where(ok, sp, np.nan))), 4),
@@ -410,9 +490,12 @@ def timeline_combos(pair_years, window):
     return out
 
 
-def burial_timeline(pairs, combos, strata, res, a):
-    """Screening index, phase probabilities, Gi* per pair and the timeline
-    p-value for every cell. See the module docstring, steps 3 and 4."""
+def burial_timeline(pairs, combos, strata, res, a, gi_stats=None, border=(True, True, True, True)):
+    """Screening index, phase significances, Gi* per pair and the timeline
+    p-value for every cell. See the module docstring, steps 3 and 4.
+
+    gi_stats (one gistar_stats dict per pair) and border are passed when pairs
+    and strata are one tile of the grid; see burial_timeline_tiled."""
     bw = a.gi_bandwidth_m or a.neighbourhood_m
     with np.errstate(invalid="ignore", divide="ignore"):
         u = [p["dod"] / p["sigma"] for p in pairs]
@@ -420,7 +503,11 @@ def burial_timeline(pairs, combos, strata, res, a):
     with np.errstate(invalid="ignore"):
         pm = [np.where(np.isfinite(n), np.where(n > 0, special.erf(n / SQRT2), 0.0), np.nan) for n in nz]
         ps = [np.where(np.isfinite(n), np.where(n < 0, special.erf(-n / SQRT2), 0.0), np.nan) for n in nz]
-    gz = [gistar_stratified(x, strata, res, bw, a.min_stratum_cells) for x in u]
+    # gz = [gistar_stratified(x, strata, res, bw, a.min_stratum_cells) for x in u]  # SYSTEM_REVIEW H6: tiles
+    # Lesson: whole-grid only meant one full layer per (mound, sink) combination and phase, about 7.8 GB per km^2.
+    # Tests on 120 x 120 grids never showed it; check memory scaling, not just correctness, on small inputs.
+    gz = [gistar_stratified(x, strata, res, bw, a.min_stratum_cells, None if gi_stats is None else gi_stats[k], border)
+          for k, x in enumerate(u)]
     s_st = np.stack([np.sqrt(pm[i] * ps[j]) for i, j in combos])
     m_st = np.stack([pm[i] for i, _ in combos])
     k_st = np.stack([ps[j] for _, j in combos])
@@ -435,16 +522,121 @@ def burial_timeline(pairs, combos, strata, res, a):
     p_tl = np.clip(p_tl * len(combos), 0.0, 1.0)
     with np.errstate(divide="ignore"):
         z_tl = -special.ndtri(np.clip(p_tl, 1e-300, 1.0))
+    mound_sig = np.where(any_ok, take(m_st), np.nan)
+    sink_sig = np.where(any_ok, take(k_st), np.nan)
     return {
         "score": score,
-        "p_mound": np.where(any_ok, take(m_st), np.nan),
-        "p_sink": np.where(any_ok, take(k_st), np.nan),
+        # "p_mound": np.where(any_ok, take(m_st), np.nan),  # SYSTEM_REVIEW H6: renamed, kept as aliases
+        # Lesson: "p_mound" next to a q-value column looked like a p-value or a probability of a mound; it was neither.
+        # "p_sink": np.where(any_ok, take(k_st), np.nan),
+        "mound_significance": mound_sig,
+        "sink_significance": sink_sig,
+        "p_mound": mound_sig,
+        "p_sink": sink_sig,
         "combo": np.where(any_ok, best, -1),
         "p": p_tl,
         "z": z_tl,
         "gi_z": gz,
         "nb_z": nz,
     }
+
+
+def required_halo(a, res):
+    """Smallest halo, in cells, for which tiled and whole-grid timelines agree:
+    the neighbourhood radius plus the Gi* bandwidth, plus one cell of margin."""
+    bw = a.gi_bandwidth_m or a.neighbourhood_m
+    return int(math.ceil((a.neighbourhood_m + bw) / res - 1e-9)) + 1
+
+
+def tile_windows(shape, tile, halo):
+    """Square tiles covering shape. Each: core (slices into the grid), win (core
+    grown by halo, clipped to the grid), inner (the core as slices into win) and
+    border (top, bottom, left, right: True where win touches the grid edge)."""
+    rows, cols = shape
+    out = []
+    for r0 in range(0, rows, tile):
+        r1 = min(rows, r0 + tile)
+        for c0 in range(0, cols, tile):
+            c1 = min(cols, c0 + tile)
+            wr0, wr1 = max(0, r0 - halo), min(rows, r1 + halo)
+            wc0, wc1 = max(0, c0 - halo), min(cols, c1 + halo)
+            out.append(
+                {
+                    "core": (slice(r0, r1), slice(c0, c1)),
+                    "win": (slice(wr0, wr1), slice(wc0, wc1)),
+                    "inner": (slice(r0 - wr0, r1 - wr0), slice(c0 - wc0, c1 - wc0)),
+                    "border": (wr0 == 0, wr1 == rows, wc0 == 0, wc1 == cols),
+                }
+            )
+    return out
+
+
+def _gistar_stats_tiled(dod, sigma, strata, cores):
+    """gistar_stats of u = dod / sigma accumulated tile by tile (two passes:
+    count and sum, then squared deviations), never holding u for the whole grid."""
+    n, s1, ssd = {}, {}, {}
+
+    def chunks(core):
+        with np.errstate(invalid="ignore", divide="ignore"):
+            x = dod[core] / sigma[core]
+        st = strata[core]
+        valid = np.isfinite(x) & (st >= 0)
+        for cls in np.unique(st[valid]):
+            yield int(cls), x[valid & (st == cls)]
+
+    for core in cores:
+        for cls, v in chunks(core):
+            n[cls] = n.get(cls, 0) + int(v.size)
+            s1[cls] = s1.get(cls, 0.0) + float(v.sum())
+    mean = {c: s1[c] / n[c] for c in n}
+    for core in cores:
+        for cls, v in chunks(core):
+            ssd[cls] = ssd.get(cls, 0.0) + float(((v - mean[cls]) ** 2).sum())
+    return {c: (n[c], mean[c], math.sqrt(ssd[c] / n[c])) for c in n}
+
+
+def burial_timeline_tiled(pairs, combos, strata, res, a, tile, halo=None):
+    """burial_timeline computed in tiles of tile x tile cells with halo cells of
+    overlap (default required_halo). Same result as the whole-grid call; the
+    per-combination working arrays are bounded by (tile + 2 * halo)^2 cells."""
+    need = required_halo(a, res)
+    halo = need if halo is None else int(halo)
+    if halo < need:
+        raise InputError(
+            f"halo of {halo} cells is smaller than the neighbourhood radius plus the Gi* bandwidth "
+            f"({need} cells at {res:g} m); tiles would disagree with the whole-grid result"
+        )
+    if tile < 1:
+        raise InputError(f"tile size must be at least one cell, got {tile}")
+    shape = strata.shape
+    tiles = tile_windows(shape, int(tile), halo)
+    cores = [t["core"] for t in tiles]
+    stats = [_gistar_stats_tiled(p["dod"], p["sigma"], strata, cores) for p in pairs]
+    full = (lambda: np.full(shape, np.nan))
+    out = {
+        "score": full(),
+        "mound_significance": full(),
+        "sink_significance": full(),
+        "combo": np.full(shape, -1, dtype=np.int64),
+        "p": full(),
+        "z": full(),
+        "gi_z": [full() for _ in pairs],
+        "nb_z": [full() for _ in pairs],
+    }
+    for t in tiles:
+        win, inner, core = t["win"], t["inner"], t["core"]
+        sub = [{"dod": p["dod"][win], "sigma": p["sigma"][win]} for p in pairs]
+        tl = burial_timeline(sub, combos, strata[win], res, a, gi_stats=stats, border=t["border"])
+        for key in ("score", "mound_significance", "sink_significance", "combo", "p", "z"):
+            out[key][core] = tl[key][inner]
+        for k in range(len(pairs)):
+            out["gi_z"][k][core] = tl["gi_z"][k][inner]
+            out["nb_z"][k][core] = tl["nb_z"][k][inner]
+        del tl, sub
+    out["p_mound"] = out["mound_significance"]  # deprecated aliases (SYSTEM_REVIEW H6)
+    out["p_sink"] = out["sink_significance"]
+    out["tiling"] = {"tile_cells": int(tile), "halo_cells": halo, "n_tiles": len(tiles)}
+    return out
 
 
 def _xy(xform, col, row):
@@ -473,10 +665,15 @@ def _shape_class(shape, a, prefix):
 
 
 def extract_candidates(tl, q, pairs, combos, res, xform, crs, ref, a):
-    """Connected cells passing FDR and the minimum change probability of both
+    """Connected cells passing FDR and the minimum change significance of both
     phases. Returns (records, masks), records sorted by peak screening index."""
     with np.errstate(invalid="ignore"):
-        ok = (q <= a.alpha) & (np.fmin(tl["p_mound"], tl["p_sink"]) >= a.min_change_prob)
+        # ok = (q <= a.alpha) & (np.fmin(tl["p_mound"], tl["p_sink"]) >= a.min_change_prob)  # SYSTEM_REVIEW H6
+        # Lesson: the logic was right; only the names were misleading. Wrong names spread into every report that
+        # quotes them, so a rename is a correctness fix, not cosmetics.
+        ok = (q <= a.alpha) & (
+            np.fmin(tl["mound_significance"], tl["sink_significance"]) >= a.min_change_significance
+        )
     lab, n = ndimage.label(ok, structure=np.ones((3, 3)))
     min_cells = max(1, int(math.ceil(a.min_area_m2 / (res * res) - 1e-9)))
     recs, masks = [], []
@@ -499,6 +696,9 @@ def extract_candidates(tl, q, pairs, combos, res, xform, crs, ref, a):
             "mean_score": round(float(np.nanmean(sc)), 4),
             "min_q": float(f"{float(np.nanmin(q[m])):.3g}"),
             "timeline_z_max": round(float(np.nanmax(tl["z"][m])), 2),
+            "mound_significance": round(float(tl["mound_significance"][pr, pc]), 4),
+            "sink_significance": round(float(tl["sink_significance"][pr, pc]), 4),
+            # Deprecated aliases of the two above (SYSTEM_REVIEW H6: 1 - p, not a probability); dossier.py reads them.
             "p_mound": round(float(tl["p_mound"][pr, pc]), 4),
             "p_sink": round(float(tl["p_sink"][pr, pc]), 4),
             "gi_z_mound": round(float(tl["gi_z"][ia][pr, pc]), 2),
@@ -574,11 +774,22 @@ def analyse(z, sigma, years, res, xform, crs, a=None, ref=None):
     strata = slope_strata(slope, a.slope_edges)
     arrays = {"slope_deg": slope, "lrm_m": mt.local_relief(z[-1], res, 5.0)}
     cands, cmasks, tl = [], [], None
+    tile = int(getattr(a, "tile_cells", 0) or 0)
+    halo = getattr(a, "halo_cells", None)
+    tiling = {"tile_cells": 0, "halo_cells": 0, "n_tiles": 1}
     if combos:
-        tl = burial_timeline(pairs, combos, strata, res, a)
+        # tl = burial_timeline(pairs, combos, strata, res, a)  # SYSTEM_REVIEW H6: tiled when the grid is larger
+        # Lesson: one call over the whole grid capped the tool at a few hectares; county scale needs bounded memory.
+        if tile and (shape[0] > tile or shape[1] > tile):
+            tl = burial_timeline_tiled(pairs, combos, strata, res, a, tile, halo)
+            tiling = tl["tiling"]
+        else:
+            tl = burial_timeline(pairs, combos, strata, res, a)
         q = bh_qvalues(tl["p"])
         cands, cmasks = extract_candidates(tl, q, pairs, combos, res, xform, crs, ref, a)
-        arrays.update(score=tl["score"], timeline_z=tl["z"], qvalue=q, p_mound=tl["p_mound"], p_sink=tl["p_sink"])
+        # arrays.update(score=tl["score"], timeline_z=tl["z"], qvalue=q, p_mound=tl["p_mound"], p_sink=tl["p_sink"])
+        arrays.update(score=tl["score"], timeline_z=tl["z"], qvalue=q, mound_significance=tl["mound_significance"],
+                      sink_significance=tl["sink_significance"], p_mound=tl["p_mound"], p_sink=tl["p_sink"])
     bth, voids, vmasks = detect_voids(z[-1], res, a, xform, crs, ref)
     arrays["void_tophat"] = bth
     for i, r in enumerate(cands, 1):
@@ -595,6 +806,7 @@ def analyse(z, sigma, years, res, xform, crs, a=None, ref=None):
         "reference_point": {"lat": ref[0], "lon": ref[1]},
         "valid_cells": int(np.isfinite(tl["score"]).sum()) if tl else 0,
         "tested_cells": int(np.isfinite(tl["p"]).sum()) if tl else 0,
+        "tiling": tiling,
         "candidates": cands,
         "voids": voids,
         "_arrays": arrays,
@@ -841,6 +1053,8 @@ LEDGER_COLS = [
     "mean_score",
     "min_q",
     "timeline_z_max",
+    "mound_significance",
+    "sink_significance",
     "p_mound",
     "p_sink",
     "gi_z_mound",
@@ -894,6 +1108,8 @@ def write_outputs(out_dir, res, xform, crs, label, prov):
     for p in res["_pairs"]:
         tag = p["stats"]["pair"].replace("-", "_")
         mt.write_tif(os.path.join(out_dir, f"dod_{tag}.tif"), p["dod"], xform, crs)
+        mt.write_tif(os.path.join(out_dir, f"significance_{tag}.tif"), p["significance"], xform, crs)
+        # Deprecated name of the same raster (SYSTEM_REVIEW H6), kept so existing readers find it.
         mt.write_tif(os.path.join(out_dir, f"pchange_{tag}.tif"), p["p"], xform, crs)
     if res["_timeline"] is not None:
         for p, gz in zip(res["_pairs"], res["_timeline"]["gi_z"]):
@@ -934,7 +1150,17 @@ def _params_record(a):
     rec["sink_window_years"] = list(a.sink_window_years)
     rec["slope_edges"] = list(a.slope_edges)
     rec["sigma_formula"] = "sqrt(s1^2 + s2^2)" + (", floored at 1.4826 * MAD(dZ)" if a.mad_floor else "")
-    rec["p_change_formula"] = "1 - 2 * (1 - Phi(|dZ| / sigma))"
+    rec["change_significance_formula"] = "1 - p, p = 2 * (1 - Phi(|dZ| / sigma)); not a probability of change"
+    rec["p_change_formula"] = "1 - 2 * (1 - Phi(|dZ| / sigma))"  # deprecated key (SYSTEM_REVIEW H6)
+    rec["min_change_prob"] = a.min_change_significance  # deprecated key (SYSTEM_REVIEW H6)
+    rec["halo_cells"] = (a.halo_cells if a.halo_cells is not None else required_halo(a, a.res_m))
+    rec["deprecated_aliases"] = {
+        "p_mound": "mound_significance",
+        "p_sink": "sink_significance",
+        "pchange_*.tif": "significance_*.tif",
+        "min_change_prob": "min_change_significance",
+        "p_change_formula": "change_significance_formula",
+    }
     rec["timeline_p"] = "min over (mound, sink) pairs of max(p_mound_Gi*, p_sink_Gi*) x n_pairs, then BH"
     return rec
 
@@ -957,8 +1183,10 @@ def _calibration_step(a, z, years, res, xform, sites, out_dir, log):
     arr = res["_arrays"]
     feats = {
         "score": arr["score"],
-        "p_mound": arr["p_mound"],
-        "p_sink": arr["p_sink"],
+        # "p_mound": arr["p_mound"],  # SYSTEM_REVIEW H6: renamed
+        # "p_sink": arr["p_sink"],
+        "mound_significance": arr["mound_significance"],
+        "sink_significance": arr["sink_significance"],
         "timeline_z": np.clip(arr["timeline_z"], -10, 40),
         "slope_deg": arr["slope_deg"],
         "lrm_m": arr["lrm_m"],
@@ -1071,7 +1299,16 @@ def build_parser():
     ap.add_argument("--slope-edges", type=float, nargs="+", default=d["slope_edges"], help="slope class edges, deg")
     ap.add_argument("--min-stratum-cells", type=int, default=d["min_stratum_cells"])
     ap.add_argument("--alpha", type=float, default=d["alpha"], help="Benjamini-Hochberg FDR level")
-    ap.add_argument("--min-change-prob", type=float, default=d["min_change_prob"])
+    # ap.add_argument("--min-change-prob", type=float, default=d["min_change_prob"])  # SYSTEM_REVIEW H6
+    # Lesson: the CLI flag repeated the "probability" wording to every user; the old spelling stays as an alias.
+    ap.add_argument(
+        "--min-change-significance",
+        "--min-change-prob",
+        dest="min_change_significance",
+        type=float,
+        default=d["min_change_significance"],
+        help="minimum change significance (1 - p) of both phases; --min-change-prob is a deprecated alias",
+    )
     ap.add_argument("--min-area-m2", type=float, default=d["min_area_m2"])
     ap.add_argument("--void-width-m", type=float, default=d["void_width_m"], help="widest structure the top-hat fills")
     ap.add_argument("--void-depth-m", type=float, default=d["void_depth_m"])
@@ -1086,6 +1323,17 @@ def build_parser():
     ap.add_argument("--cv-folds", type=int, default=d["cv_folds"])
     ap.add_argument("--max-negatives", type=int, default=d["max_negatives"])
     ap.add_argument("--hit-radius-m", type=float, default=d["hit_radius_m"])
+    ap.add_argument(
+        "--tile-cells",
+        type=int,
+        default=d["tile_cells"],
+        help="timeline tile size in cells (bounds memory); 0 processes the grid in one piece",
+    )
+    ap.add_argument(
+        "--halo-cells",
+        type=int,
+        help="tile overlap in cells (default and minimum: neighbourhood radius + Gi* bandwidth, + 1)",
+    )
     ap.add_argument("--out-dir", required=True)
     return ap
 
@@ -1095,8 +1343,14 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if a.res_m <= 0 or a.neighbourhood_m <= 0 or (a.gi_bandwidth_m is not None and a.gi_bandwidth_m <= 0):
         ap.error("--res-m, --neighbourhood-m and --gi-bandwidth-m must be > 0")
-    if not 0 < a.alpha < 1 or not 0 <= a.min_change_prob < 1:
-        ap.error("--alpha must be in (0, 1) and --min-change-prob in [0, 1)")
+    # if not 0 < a.alpha < 1 or not 0 <= a.min_change_prob < 1:  # SYSTEM_REVIEW H6: renamed
+    if not 0 < a.alpha < 1 or not 0 <= a.min_change_significance < 1:
+        ap.error("--alpha must be in (0, 1) and --min-change-significance in [0, 1)")
+    if a.tile_cells < 0:
+        ap.error("--tile-cells must be >= 0 (0 = no tiling)")
+    if a.halo_cells is not None and a.halo_cells < required_halo(a, a.res_m):
+        ap.error(f"--halo-cells must be at least {required_halo(a, a.res_m)} (neighbourhood radius + Gi* bandwidth "
+                 "in cells, + 1) so tiles agree with the whole grid")
     if a.sink_window_years[0] > a.sink_window_years[1]:
         ap.error("--sink-window-years MIN must not exceed MAX")
     if (a.lat is None) != (a.lon is None) or (a.ref_lat is None) != (a.ref_lon is None):

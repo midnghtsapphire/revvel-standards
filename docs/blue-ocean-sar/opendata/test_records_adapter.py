@@ -14,6 +14,7 @@ import shutil
 import tempfile
 import unittest
 import urllib.error
+from unittest import mock
 
 import authority as A
 import records_adapter as R
@@ -25,6 +26,11 @@ ENV = {"EXAMPLE_VENDOR_API_KEY": SECRET}
 CASE = "MP-2026-014"
 PURPOSE = "GLBA:6802(e)(8)"
 NOW = dt.datetime.now(dt.timezone.utc)
+ACTOR = "Analyst B. Example"
+# authority.Gate now refuses hash mode without a salt (SYSTEM_REVIEW H2); built at run time from plain words.
+HASH_SALT = "-".join(("unit", "test", "only", "subject", "salt"))
+# A LICENSED authority must now list its subjects (SYSTEM_REVIEW H2); these are the ones the tests query.
+LICENSED_SUBJECTS = ["Jane Example", "J Example", "../../admin?x=1"]
 
 
 class FakeResponse:
@@ -71,6 +77,11 @@ class Base(unittest.TestCase):
         self.evidence = os.path.join(self.tmp, "evidence")
         self.provider_path = os.path.join(self.tmp, "providers.json")
         self.write_provider(example_cfg())
+        env = mock.patch.dict(os.environ, {A.ENV_SALT: HASH_SALT, A.ENV_ACTOR: ACTOR})
+        env.start()
+        self.addCleanup(env.stop)
+        os.environ.pop(A.ENV_REQUIRE_COUNTERSIGN, None)
+        # Gate(...) used to start with no salt and no actor; it now refuses (SYSTEM_REVIEW H2), so env supplies both.
         self.gate = A.Gate(self.ledger_path, self.audit_path)
 
     def tearDown(self):
@@ -85,6 +96,9 @@ class Base(unittest.TestCase):
                                 environ=ENV, sleep=lambda s: None, **kw)
 
     def add_licensed(self, case=CASE, purposes=(PURPOSE,), **kw):
+        kw.setdefault("subjects", LICENSED_SUBJECTS)
+        kw.setdefault("expires", str((NOW + dt.timedelta(days=30)).date()))
+        kw.setdefault("recorded_by", ACTOR)
         return self.gate.ledger.add(A.build_authority(A.LICENSED, case, purposes=purposes, **kw))
 
     def add_warrant(self, subjects=("+1 555 0100",)):
@@ -93,7 +107,7 @@ class Base(unittest.TestCase):
         return self.gate.ledger.add(A.build_authority(
             A.LEGAL_PROCESS, CASE, process_type="warrant", reference="SW-1", issuer="Example Court",
             issued=issued, expires=expires, scope="subscriber records", subjects=list(subjects),
-            requesting_officer="Det. A", agency="Example SO", document_sha256="cd" * 32))
+            requesting_officer="Det. A", agency="Example SO", document_sha256="cd" * 32, recorded_by=ACTOR))
 
     def all_written_text(self):
         """Everything the adapter and gate wrote to disk, as one string."""
@@ -292,7 +306,7 @@ class TestGatedCalls(Base):
         self.assertEqual(res["authority"]["reference"], "SW-1")
         self.assertEqual(op.requests[0]["method"], "POST")
         self.assertEqual(json.loads(op.requests[0]["body"]), params)
-        self.gate.ledger.revoke(w["id"], "returned to court")
+        self.gate.ledger.revoke(w["id"], "returned to court", ACTOR)
         with self.assertRaises(A.AuthorityError):
             ad.call("subscriber_records", CASE, lp_purpose, params)
 
@@ -378,6 +392,20 @@ class TestCLI(Base):
         self.assertEqual(self.run_cli(*self.call_args(), opener=FakeOpener(FakeResponse(500, b"oops")))[0], 4)
         self.assertNotIn(SECRET, self.all_written_text())
         self.assertTrue(A.ChainLog(self.audit_path).verify()["ok"])
+
+    def test_gate_needs_salt_and_actor(self):
+        self.add_licensed()
+        os.environ.pop(A.ENV_SALT)
+        code, _, err = self.run_cli(*self.call_args())
+        self.assertEqual(code, 2)
+        self.assertIn(A.ENV_SALT, err)
+        os.environ[A.ENV_SALT] = HASH_SALT
+        os.environ.pop(A.ENV_ACTOR)
+        self.assertEqual(self.run_cli(*self.call_args())[0], 3)
+        self.assertEqual(self.audit()[-1]["event"], "refuse")
+        code, _, err = self.run_cli(*self.call_args("--actor", ACTOR))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(self.audit()[-1]["actor"], ACTOR)
 
     def test_bad_provider_file_exit_2(self):
         cfg = copy.deepcopy(example_cfg())
