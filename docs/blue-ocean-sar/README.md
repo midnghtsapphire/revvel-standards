@@ -65,9 +65,10 @@ following conditions apply when they are pointed at real people or places:
   you own, or that the owner or a warrant has authorised. Do not log into, scan
   for, or open cameras that are not yours. That falls under the Computer
   Fraud and Abuse Act and state equivalents, whatever the purpose.
-- **Chain of custody:** anything that may end up as evidence should go
-  through the investigating agency. Keep the HFMR ledger (or equivalent)
-  alongside it.
+- **Personal use:** these tools are for the owner's own research, not for
+  producing court evidence. If something they turn up ever seems worth
+  acting on, hand the reasoning to the investigating agency as a lead and
+  let them gather the evidence themselves.
 
 ## Known gaps
 
