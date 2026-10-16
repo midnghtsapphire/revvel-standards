@@ -148,11 +148,20 @@ pub fn geometry_to_geojson(g: &Value) -> Value {
         return json!({"type": "MultiPoint", "coordinates": line_json(&pts)});
     }
     if let Some(paths) = obj.get("paths").and_then(Value::as_array) {
-        let lines: Vec<Vec<Pos>> = paths
+        // let lines: Vec<Vec<Pos>> = paths
+        //     .iter()
+        //     .filter_map(|p| positions(p, dims))
+        //     .filter(|l| l.len() >= 2)
+        //     .collect();
+        // Replaced (review 2026-10-16): all-or-null; a malformed path makes the geometry null instead of silently partial.
+        let Some(parsed) = paths
             .iter()
-            .filter_map(|p| positions(p, dims))
-            .filter(|l| l.len() >= 2)
-            .collect();
+            .map(|p| positions(p, dims))
+            .collect::<Option<Vec<Vec<Pos>>>>()
+        else {
+            return Value::Null;
+        };
+        let lines: Vec<Vec<Pos>> = parsed.into_iter().filter(|l| l.len() >= 2).collect();
         return match lines.len() {
             0 => Value::Null,
             1 => json!({"type": "LineString", "coordinates": line_json(&lines[0])}),
@@ -163,7 +172,15 @@ pub fn geometry_to_geojson(g: &Value) -> Value {
         };
     }
     if let Some(rings) = obj.get("rings").and_then(Value::as_array) {
-        let rings: Vec<Ring> = rings.iter().filter_map(|r| positions(r, dims)).collect();
+        // let rings: Vec<Ring> = rings.iter().filter_map(|r| positions(r, dims)).collect();
+        // Replaced (review 2026-10-16): all-or-null; dropping a malformed hole would turn it into a filled polygon.
+        let Some(rings) = rings
+            .iter()
+            .map(|r| positions(r, dims))
+            .collect::<Option<Vec<Ring>>>()
+        else {
+            return Value::Null;
+        };
         let polys = rings_to_polygons(rings);
         let poly_json = |p: &Vec<Ring>| Value::Array(p.iter().map(|r| line_json(r)).collect());
         return match polys.len() {

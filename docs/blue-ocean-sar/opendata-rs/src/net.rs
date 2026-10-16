@@ -10,7 +10,9 @@ use reqwest::{Method, StatusCode};
 use serde::de::DeserializeOwned;
 use url::Url;
 
-use crate::evidence::{Capture, EvidenceLog};
+// use crate::evidence::{Capture, EvidenceLog};
+// Replaced (review 2026-10-16): error messages now redact URLs, so import the redactor.
+use crate::evidence::{redact_url, Capture, EvidenceLog};
 
 pub const USER_AGENT: &str = concat!(
     "opendata-rs/",
@@ -20,6 +22,9 @@ pub const USER_AGENT: &str = concat!(
 
 /// Maximum redirect hops followed (each hop is still allow-list checked).
 pub const MAX_REDIRECTS: usize = 5;
+
+/// Default cap on a response body (256 MiB); see `FetcherConfig::max_body_bytes`.
+pub const DEFAULT_MAX_BODY_BYTES: u64 = 256 * 1024 * 1024;
 
 #[derive(Debug, thiserror::Error)]
 pub enum NetError {
@@ -42,9 +47,15 @@ pub enum NetError {
     },
     #[error("evidence capture failed: {0}")]
     Evidence(String),
+    // Added (review 2026-10-16): bodies are streamed under a size cap.
+    #[error("response from {url} exceeds the {limit}-byte body limit")]
+    TooLarge { url: String, limit: u64 },
 }
 
 /// Scheme + host allow-list. Hosts match exactly (no implicit subdomains).
+/// An entry `host` permits only the scheme's default port (443); an entry
+/// `host:port` permits that one explicit port. Loopback `http://` in tests
+/// accepts any port.
 #[derive(Debug, Clone)]
 pub struct HostPolicy {
     hosts: Vec<String>,
@@ -93,14 +104,36 @@ impl HostPolicy {
                 "credentials embedded in URL for {host} are not allowed"
             ));
         }
-        if !self.hosts.contains(&host) {
+        // if !self.hosts.contains(&host) {
+        //     return Err(format!(
+        //         "host {host:?} is not on the allow-list [{}]",
+        //         self.hosts.join(", ")
+        //     ));
+        // }
+        // Ok(())
+        // Replaced (review 2026-10-16): the allow-list is port-aware, so an allowed host cannot redirect to another service on a non-default HTTPS port.
+        let entry = match url.port() {
+            Some(port) if url.scheme() == "https" => format!("{host}:{port}"),
+            _ => host.clone(),
+        };
+        if !self.hosts.contains(&entry) {
             return Err(format!(
-                "host {host:?} is not on the allow-list [{}]",
+                "host {entry:?} is not on the allow-list [{}]",
                 self.hosts.join(", ")
             ));
         }
         Ok(())
     }
+}
+
+/// The allow-list entry that admits exactly this URL's host and port:
+/// `host` for the default port, `host:port` for an explicit other port.
+pub fn policy_entry(url: &Url) -> Option<String> {
+    let host = url.host_str()?.trim_end_matches('.').to_ascii_lowercase();
+    Some(match url.port() {
+        Some(port) => format!("{host}:{port}"),
+        None => host,
+    })
 }
 
 fn is_loopback(host: &str) -> bool {
@@ -141,6 +174,8 @@ pub struct FetcherConfig {
     pub evidence: Option<Arc<EvidenceLog>>,
     /// Extra PEM root certificates (e.g. a corporate / egress proxy CA).
     pub extra_roots_pem: Option<Vec<u8>>,
+    /// Largest response body accepted; bigger bodies fail with `TooLarge`.
+    pub max_body_bytes: u64,
 }
 
 impl FetcherConfig {
@@ -152,6 +187,7 @@ impl FetcherConfig {
             connect_timeout: Duration::from_secs(15),
             evidence: None,
             extra_roots_pem: None,
+            max_body_bytes: DEFAULT_MAX_BODY_BYTES,
         }
     }
 }
@@ -272,6 +308,7 @@ pub struct Fetcher {
     policy: HostPolicy,
     retry: RetryConfig,
     evidence: Option<Arc<EvidenceLog>>,
+    max_body_bytes: u64,
 }
 
 impl Fetcher {
@@ -285,7 +322,9 @@ impl Fetcher {
             match redirect_policy.check(attempt.url()) {
                 Ok(()) => attempt.follow(),
                 Err(e) => {
-                    let msg = format!("redirect to {} refused: {e}", attempt.url());
+                    // let msg = format!("redirect to {} refused: {e}", attempt.url());
+                    // Replaced (review 2026-10-16): never echo credential-like query parameters.
+                    let msg = format!("redirect to {} refused: {e}", redact_url(attempt.url()));
                     attempt.error(RedirectBlocked(msg))
                 }
             }
@@ -308,6 +347,7 @@ impl Fetcher {
             policy: cfg.policy,
             retry: cfg.retry,
             evidence: cfg.evidence,
+            max_body_bytes: cfg.max_body_bytes,
         })
     }
 
@@ -340,10 +380,16 @@ impl Fetcher {
                         tokio::time::sleep(self.backoff(attempts, None)).await;
                         continue;
                     }
+                    // return Err(NetError::Transport {
+                    //     url: req.url.to_string(),
+                    //     attempts,
+                    //     message: error_chain(&e),
+                    // });
+                    // Replaced (review 2026-10-16): redact the URL and strip reqwest's embedded URL.
                     return Err(NetError::Transport {
-                        url: req.url.to_string(),
+                        url: redact_url(&req.url),
                         attempts,
-                        message: error_chain(&e),
+                        message: error_chain(&e.without_url()),
                     });
                 }
             };
@@ -354,17 +400,38 @@ impl Fetcher {
                 .check(&final_url)
                 .map_err(NetError::RedirectRejected)?;
             let headers = resp.headers().clone();
-            let body = match resp.bytes().await {
-                Ok(b) => b.to_vec(),
+            // let body = match resp.bytes().await {
+            //     Ok(b) => b.to_vec(),
+            //     Err(e) => {
+            //         if can_retry {
+            //             tokio::time::sleep(self.backoff(attempts, None)).await;
+            //             continue;
+            //         }
+            //         return Err(NetError::Transport {
+            //             url: req.url.to_string(),
+            //             attempts,
+            //             message: error_chain(&e),
+            //         });
+            //     }
+            // };
+            // Replaced (review 2026-10-16): stream the body under max_body_bytes instead of buffering an unbounded response.
+            let body = match read_capped(resp, self.max_body_bytes).await {
+                Ok(Some(b)) => b,
+                Ok(None) => {
+                    return Err(NetError::TooLarge {
+                        url: redact_url(&final_url),
+                        limit: self.max_body_bytes,
+                    })
+                }
                 Err(e) => {
                     if can_retry {
                         tokio::time::sleep(self.backoff(attempts, None)).await;
                         continue;
                     }
                     return Err(NetError::Transport {
-                        url: req.url.to_string(),
+                        url: redact_url(&req.url),
                         attempts,
-                        message: error_chain(&e),
+                        message: error_chain(&e.without_url()),
                     });
                 }
             };
@@ -398,9 +465,13 @@ impl Fetcher {
                 continue;
             }
             let snippet: String = String::from_utf8_lossy(&body).chars().take(300).collect();
+            // return Err(NetError::Status {
+            //     status: status.as_u16(),
+            //     url: final_url.to_string(),
+            // Replaced (review 2026-10-16): redact credential-like query parameters in errors.
             return Err(NetError::Status {
                 status: status.as_u16(),
-                url: final_url.to_string(),
+                url: redact_url(&final_url),
                 attempts,
                 snippet,
             });
@@ -425,6 +496,24 @@ impl Fetcher {
             .unwrap_or(0);
         exp + Duration::from_millis(nanos % jitter_cap)
     }
+}
+
+/// Read the body, giving up (`Ok(None)`) as soon as it would exceed `limit`.
+async fn read_capped(
+    mut resp: reqwest::Response,
+    limit: u64,
+) -> Result<Option<Vec<u8>>, reqwest::Error> {
+    if resp.content_length().is_some_and(|n| n > limit) {
+        return Ok(None);
+    }
+    let mut body = Vec::new();
+    while let Some(chunk) = resp.chunk().await? {
+        if body.len() as u64 + chunk.len() as u64 > limit {
+            return Ok(None);
+        }
+        body.extend_from_slice(&chunk);
+    }
+    Ok(Some(body))
 }
 
 pub fn is_retryable(status: StatusCode) -> bool {
@@ -539,5 +628,34 @@ mod tests {
         assert!(lp
             .check(&Url::parse("http://localhost:9/x").unwrap())
             .is_err());
+    }
+
+    #[test]
+    fn policy_is_port_aware_for_https() {
+        let p = HostPolicy::new(["example.org"]);
+        assert!(p
+            .check(&Url::parse("https://example.org:443/x").unwrap())
+            .is_ok());
+        assert!(p
+            .check(&Url::parse("https://example.org:8443/x").unwrap())
+            .is_err());
+        let p = HostPolicy::new(["example.org:8443"]);
+        assert!(p
+            .check(&Url::parse("https://example.org:8443/x").unwrap())
+            .is_ok());
+        assert!(p
+            .check(&Url::parse("https://example.org:9443/x").unwrap())
+            .is_err());
+        assert!(p
+            .check(&Url::parse("https://example.org/x").unwrap())
+            .is_err());
+        assert_eq!(
+            policy_entry(&Url::parse("https://Example.org:443/x").unwrap()).as_deref(),
+            Some("example.org")
+        );
+        assert_eq!(
+            policy_entry(&Url::parse("https://example.org:8443/x").unwrap()).as_deref(),
+            Some("example.org:8443")
+        );
     }
 }

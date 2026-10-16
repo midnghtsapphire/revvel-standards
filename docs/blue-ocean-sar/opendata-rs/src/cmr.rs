@@ -92,6 +92,8 @@ pub fn summarise(entry: &Value) -> Option<GranuleSummary> {
                         .and_then(Value::as_str)
                         .is_some_and(|r| r.ends_with("/data#"))
                 })
+                // Added (review 2026-10-16): skip collection-level links CMR copies into each granule (`"inherited": true`).
+                .filter(|l| l.get("inherited").and_then(Value::as_bool) != Some(true))
                 .filter_map(|l| l.get("href").and_then(Value::as_str).map(str::to_string))
                 .collect()
         })

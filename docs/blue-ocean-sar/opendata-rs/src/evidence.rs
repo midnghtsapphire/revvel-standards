@@ -19,6 +19,8 @@ use url::Url;
 pub const GENESIS_HASH: &str = "0000000000000000000000000000000000000000000000000000000000000000";
 pub const MANIFEST_FILE: &str = "manifest.jsonl";
 pub const OBJECTS_DIR: &str = "objects";
+/// Lock file held (OS-level, exclusive) by the one process writing a dir.
+pub const LOCK_FILE: &str = ".lock";
 
 pub fn sha256_hex(bytes: &[u8]) -> String {
     hex::encode(Sha256::digest(bytes))
@@ -62,7 +64,17 @@ impl EntryBody {
 /// Redact query parameters whose names look like credentials, so the
 /// manifest never stores a secret even if one was passed in a URL.
 pub fn redact_url(url: &Url) -> String {
-    const SENSITIVE: [&str; 7] = [
+    // const SENSITIVE: [&str; 7] = [
+    //     "token",
+    //     "key",
+    //     "sig",
+    //     "secret",
+    //     "password",
+    //     "access_token",
+    //     "subscription",
+    // ];
+    // Replaced (review 2026-10-16): also cover X-Amz-Credential, auth, passwd/pass, session and jwt style names.
+    const SENSITIVE: [&str; 12] = [
         "token",
         "key",
         "sig",
@@ -70,6 +82,11 @@ pub fn redact_url(url: &Url) -> String {
         "password",
         "access_token",
         "subscription",
+        "credential",
+        "auth",
+        "pass",
+        "session",
+        "jwt",
     ];
     if url.query().is_none() {
         return url.to_string();
@@ -101,6 +118,11 @@ struct ChainState {
 pub struct EvidenceLog {
     dir: PathBuf,
     state: Mutex<ChainState>,
+    // Added (review 2026-10-16): exclusive OS lock on `<dir>/.lock`, held for
+    // the log's lifetime (released by the OS even if the process dies), so
+    // a second writer on the same directory is refused instead of forking
+    // the chain.
+    _lock: std::fs::File,
 }
 
 /// What a single capture needs to know.
@@ -121,6 +143,8 @@ impl EvidenceLog {
         tokio::fs::create_dir_all(dir.join(OBJECTS_DIR))
             .await
             .with_context(|| format!("creating evidence dir {}", dir.display()))?;
+        // Added (review 2026-10-16): take the writer lock before reading chain state.
+        let lock = lock_dir(&dir)?;
         let manifest = dir.join(MANIFEST_FILE);
         let state = if tokio::fs::try_exists(&manifest).await? {
             let report = verify_manifest(&dir, true).with_context(|| {
@@ -142,6 +166,7 @@ impl EvidenceLog {
         Ok(Self {
             dir,
             state: Mutex::new(state),
+            _lock: lock,
         })
     }
 
@@ -165,6 +190,14 @@ impl EvidenceLog {
             ));
             tokio::fs::write(&tmp, c.body).await?;
             tokio::fs::rename(&tmp, &path).await?;
+        } else {
+            // Added (review 2026-10-16): never chain a new entry onto an object whose bytes were altered.
+            let existing = tokio::fs::read(&path)
+                .await
+                .with_context(|| format!("reading existing object {rel}"))?;
+            if existing.len() != c.body.len() || sha256_hex(&existing) != sha {
+                bail!("existing object {rel} does not match its content hash (tampered?)");
+            }
         }
 
         let mut st = self.state.lock().await;
@@ -199,6 +232,27 @@ impl EvidenceLog {
         st.next_seq += 1;
         st.last_hash = entry.entry_hash.clone();
         Ok(entry)
+    }
+}
+
+fn lock_dir(dir: &Path) -> Result<std::fs::File> {
+    let path = dir.join(LOCK_FILE);
+    let f = std::fs::OpenOptions::new()
+        .create(true)
+        .truncate(false)
+        .write(true)
+        .open(&path)
+        .with_context(|| format!("opening {}", path.display()))?;
+    match f.try_lock() {
+        Ok(()) => Ok(f),
+        Err(std::fs::TryLockError::WouldBlock) => bail!(
+            "evidence dir {} is already open for writing by another log or process; \
+             concurrent writers are not supported",
+            dir.display()
+        ),
+        Err(std::fs::TryLockError::Error(e)) => {
+            Err(e).with_context(|| format!("locking {}", path.display()))
+        }
     }
 }
 
@@ -271,5 +325,26 @@ mod tests {
             "{r}"
         );
         assert!(r.contains("a=1"));
+    }
+
+    #[test]
+    fn redacts_signed_url_and_auth_params() {
+        let u = Url::parse(
+            "https://h/o?X-Amz-Credential=AKIDEXAMPLE%2F20261016&X-Amz-Signature=abc\
+             &X-Amz-Security-Token=tok&auth=fake-auth&passwd=fake-pw&sessionid=fake-sess&page=2",
+        )
+        .unwrap();
+        let r = redact_url(&u);
+        for leaked in [
+            "AKIDEXAMPLE",
+            "abc",
+            "=tok",
+            "fake-auth",
+            "fake-pw",
+            "fake-sess",
+        ] {
+            assert!(!r.contains(leaked), "{leaked} leaked in {r}");
+        }
+        assert!(r.contains("page=2"), "{r}");
     }
 }

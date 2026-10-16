@@ -129,10 +129,15 @@ pub async fn layer_info(fetcher: &Fetcher, layer: &Url) -> Result<LayerInfo> {
             .filter(|n| *n > 0)
             .unwrap_or(1000),
         object_id_field: oid,
+        // supports_pagination: v
+        //     .pointer("/advancedQueryCapabilities/supportsPagination")
+        //     .and_then(Value::as_bool)
+        //     .unwrap_or(true),
+        // Replaced (review 2026-10-16): only an explicit `true` permits offset paging; older layers omit the capability and ignore resultOffset.
         supports_pagination: v
             .pointer("/advancedQueryCapabilities/supportsPagination")
             .and_then(Value::as_bool)
-            .unwrap_or(true),
+            .unwrap_or(false),
     })
 }
 
@@ -197,11 +202,17 @@ async fn fetch_page(
         .or_else(|| v.pointer("/properties/exceededTransferLimit"))
         .and_then(Value::as_bool)
         .unwrap_or(false);
+    // let raw = v
+    //     .get("features")
+    //     .and_then(Value::as_array)
+    //     .cloned()
+    //     .unwrap_or_default();
+    // Replaced (review 2026-10-16): a response without a features array is malformed, not an empty page.
     let raw = v
         .get("features")
         .and_then(Value::as_array)
         .cloned()
-        .unwrap_or_default();
+        .context("ArcGIS query response has no features array")?;
     let features = if p.server_geojson {
         raw
     } else {
@@ -237,6 +248,14 @@ pub async fn query(fetcher: &Fetcher, layer: &Url, p: &QueryParams) -> Result<Qu
             bail!(
                 "layer does not support pagination and the result exceeded the transfer limit; \
                  narrow --where/--bbox"
+            );
+        }
+        // Added (review 2026-10-16): the single-request path must honour --max-features too.
+        if page.features.len() > p.max_features {
+            bail!(
+                "query returned {} features, above --max-features {}",
+                page.features.len(),
+                p.max_features
             );
         }
         return Ok(QueryOutcome {

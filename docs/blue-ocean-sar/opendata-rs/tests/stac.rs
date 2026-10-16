@@ -5,7 +5,9 @@ use opendata::geo::{Bbox, TimeRange};
 use opendata::net::Secret;
 use opendata::stac::{self, Catalog, SearchParams};
 use serde_json::{json, Value};
-use wiremock::matchers::{body_partial_json, header, method, path, query_param};
+// use wiremock::matchers::{body_partial_json, header, method, path, query_param};
+// Replaced (review 2026-10-16): the header matcher was only used by the replaced PC test.
+use wiremock::matchers::{body_partial_json, method, path, query_param};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
 fn item(id: &str, cloud: f64) -> Value {
@@ -170,11 +172,60 @@ async fn next_link_to_off_list_host_is_rejected() {
     assert!(format!("{err:#}").contains("attacker.example"), "{err:#}");
 }
 
+// #[tokio::test]
+// async fn planetary_computer_key_sent_as_header_not_in_url() {
+//     let s = MockServer::start().await;
+//     Mock::given(method("POST"))
+//         .and(header("ocp-apim-subscription-key", "k-123"))
+//         .respond_with(
+//             ResponseTemplate::new(200)
+//                 .set_body_json(json!({"type": "FeatureCollection", "features": []})),
+//         )
+//         .expect(1)
+//         .mount(&s)
+//         .await;
+//     let f = fetcher_for(&s, None);
+//     let key = Secret::new("k-123");
+//     stac::search(
+//         &f,
+//         &Catalog::Custom(url(&s, "/")),
+//         &params(None, None),
+//         Some(&key),
+//     )
+//     .await
+//     .unwrap();
+//     let reqs = s.received_requests().await.unwrap();
+//     assert!(!reqs[0].url.as_str().contains("k-123"));
+// }
+// Replaced (review 2026-10-16): the old test sent the PC key to a custom catalog and called that a pass; test PC request construction directly and assert custom catalogs never get the key.
+#[test]
+fn planetary_computer_key_sent_as_header_not_in_url() {
+    let key = Secret::new("k-123");
+    let req = stac::initial_request(&Catalog::PlanetaryComputer, &params(None, None), Some(&key))
+        .unwrap();
+    assert_eq!(req.url.host_str(), Some("planetarycomputer.microsoft.com"));
+    assert_eq!(
+        req.headers.get("ocp-apim-subscription-key").unwrap(),
+        "k-123"
+    );
+    assert!(!req.url.as_str().contains("k-123"));
+    let body = String::from_utf8(req.body.unwrap().0).unwrap();
+    assert!(!body.contains("k-123"));
+}
+
 #[tokio::test]
-async fn planetary_computer_key_sent_as_header_not_in_url() {
+async fn custom_catalog_never_receives_planetary_computer_key() {
     let s = MockServer::start().await;
+    let page = json!({
+        "type": "FeatureCollection", "features": [item("a", 1.0)],
+        "links": [{"rel": "next", "href": format!("{}/search?token=p2", s.uri())}]
+    });
     Mock::given(method("POST"))
-        .and(header("ocp-apim-subscription-key", "k-123"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(page))
+        .expect(1)
+        .mount(&s)
+        .await;
+    Mock::given(method("GET"))
         .respond_with(
             ResponseTemplate::new(200)
                 .set_body_json(json!({"type": "FeatureCollection", "features": []})),
@@ -192,8 +243,62 @@ async fn planetary_computer_key_sent_as_header_not_in_url() {
     )
     .await
     .unwrap();
-    let reqs = s.received_requests().await.unwrap();
-    assert!(!reqs[0].url.as_str().contains("k-123"));
+    for r in s.received_requests().await.unwrap() {
+        assert!(
+            r.headers.get("ocp-apim-subscription-key").is_none(),
+            "{}",
+            r.url
+        );
+    }
+    let req =
+        stac::initial_request(&Catalog::EarthSearch, &params(None, None), Some(&key)).unwrap();
+    assert!(req.headers.get("ocp-apim-subscription-key").is_none());
+}
+
+#[tokio::test]
+async fn feature_collection_without_features_is_an_error() {
+    let s = MockServer::start().await;
+    Mock::given(method("POST"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(json!({"type": "FeatureCollection"})),
+        )
+        .expect(1)
+        .mount(&s)
+        .await;
+    let f = fetcher_for(&s, None);
+    let err = stac::search(
+        &f,
+        &Catalog::Custom(url(&s, "/")),
+        &params(None, None),
+        None,
+    )
+    .await
+    .unwrap_err();
+    assert!(format!("{err:#}").contains("no features array"), "{err:#}");
+}
+
+#[test]
+fn allowed_hosts_are_port_aware() {
+    assert_eq!(
+        Catalog::parse("https://stac.example:8443/api")
+            .unwrap()
+            .allowed_hosts(),
+        ["stac.example:8443"]
+    );
+    assert_eq!(
+        Catalog::parse("https://stac.example:443/api")
+            .unwrap()
+            .allowed_hosts(),
+        ["stac.example"]
+    );
+    let hosts = Catalog::parse("cdse").unwrap().allowed_hosts();
+    let policy = opendata::net::HostPolicy::new(hosts);
+    assert!(policy
+        .check(&url::Url::parse("https://stac.dataspace.copernicus.eu/v1/search").unwrap())
+        .is_ok());
+    assert!(policy
+        .check(&url::Url::parse("https://stac.dataspace.copernicus.eu:8443/v1/search").unwrap())
+        .is_err());
 }
 
 #[test]

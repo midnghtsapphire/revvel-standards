@@ -286,10 +286,12 @@ async fn run(cli: Cli) -> Result<()> {
                 },
         } => {
             let layer = arcgis::validate_layer_url(&url)?;
-            let host = layer
-                .host_str()
-                .context("layer URL has no host")?
-                .to_string();
+            // let host = layer
+            //     .host_str()
+            //     .context("layer URL has no host")?
+            //     .to_string();
+            // Replaced (review 2026-10-16): the allow-list is port-aware, so admit the port the user named.
+            let host = opendata::net::policy_entry(&layer).context("layer URL has no host")?;
             let params = arcgis::QueryParams {
                 where_clause,
                 out_fields,
@@ -343,7 +345,9 @@ async fn run(cli: Cli) -> Result<()> {
             };
             let base = Url::parse(cmr::CMR_GRANULES_URL)?;
             let token = Secret::from_env(cmr::EARTHDATA_TOKEN_ENV);
-            let f = fetcher(g, vec![base.host_str().unwrap_or_default().to_string()]).await?;
+            // let f = fetcher(g, vec![base.host_str().unwrap_or_default().to_string()]).await?;
+            // Replaced (review 2026-10-16): the allow-list is port-aware.
+            let f = fetcher(g, opendata::net::policy_entry(&base).into_iter().collect()).await?;
             let res = cmr::search(&f, &base, &params, token.as_ref()).await?;
             print_lines(&res.granules)?;
             eprintln!(

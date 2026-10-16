@@ -130,24 +130,129 @@ async fn short_page_with_exceeded_transfer_limit_is_gap_filled() {
     assert_eq!(out.pages, 3);
 }
 
+// #[tokio::test]
+// async fn arcgis_error_body_with_http_200_fails() {
+//     let s = MockServer::start().await;
+//     mount_meta(&s, 2).await;
+//     Mock::given(path(format!("{LAYER}/query")))
+//         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+//             "error": {"code": 400, "message": "Invalid where clause"}
+//         })))
+//         .mount(&s)
+//         .await;
+//     let f = fetcher_for(&s, None);
+//     let err = arcgis::query(&f, &url(&s, LAYER), &params(100))
+//         .await
+//         .unwrap_err();
+//     assert!(
+//         format!("{err:#}").contains("Invalid where clause"),
+//         "{err:#}"
+//     );
+// }
+// Replaced (review 2026-10-16): the old error mock also answered the count request, so the test failed in count() and never reached a feature page.
 #[tokio::test]
 async fn arcgis_error_body_with_http_200_fails() {
     let s = MockServer::start().await;
     mount_meta(&s, 2).await;
+    mount_count(&s, 1).await;
     Mock::given(path(format!("{LAYER}/query")))
+        .and(query_param("resultOffset", "0"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "error": {"code": 400, "message": "Invalid where clause"}
         })))
+        .expect(1)
         .mount(&s)
         .await;
     let f = fetcher_for(&s, None);
     let err = arcgis::query(&f, &url(&s, LAYER), &params(100))
         .await
         .unwrap_err();
-    assert!(
-        format!("{err:#}").contains("Invalid where clause"),
-        "{err:#}"
-    );
+    let msg = format!("{err:#}");
+    assert!(msg.contains("ArcGIS query error"), "{msg}");
+    assert!(msg.contains("Invalid where clause"), "{msg}");
+}
+
+async fn mount_meta_without_pagination(s: &MockServer, caps: Option<Value>) {
+    let mut meta = json!({"id": 0, "name": "Roads", "maxRecordCount": 1000,
+                          "objectIdField": "OBJECTID"});
+    if let Some(c) = caps {
+        meta["advancedQueryCapabilities"] = c;
+    }
+    Mock::given(method("GET"))
+        .and(path(LAYER))
+        .and(query_param("f", "json"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(meta))
+        .mount(s)
+        .await;
+}
+
+/// Answers only a non-paged feature query; a resultOffset or count request
+/// would match nothing and get wiremock's 404.
+async fn mount_unpaged(s: &MockServer, body: Value) {
+    Mock::given(path(format!("{LAYER}/query")))
+        .and(query_param("returnGeometry", "true"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(body))
+        .expect(1)
+        .mount(s)
+        .await;
+}
+
+#[tokio::test]
+async fn missing_pagination_capability_means_no_offset_paging() {
+    let s = MockServer::start().await;
+    mount_meta_without_pagination(&s, None).await;
+    mount_unpaged(
+        &s,
+        json!({"features": [esri_point(1), esri_point(2)], "exceededTransferLimit": false}),
+    )
+    .await;
+    let f = fetcher_for(&s, None);
+    let out = arcgis::query(&f, &url(&s, LAYER), &params(100))
+        .await
+        .unwrap();
+    assert_eq!(oids(&out.collection), [1, 2]);
+    let reqs = s.received_requests().await.unwrap();
+    assert!(reqs
+        .iter()
+        .all(|r| !r.url.as_str().contains("resultOffset")
+            && !r.url.as_str().contains("returnCountOnly")));
+}
+
+#[tokio::test]
+async fn unpaged_layer_still_honours_max_features() {
+    let s = MockServer::start().await;
+    mount_meta_without_pagination(&s, Some(json!({"supportsPagination": false}))).await;
+    mount_unpaged(
+        &s,
+        json!({"features": [esri_point(1), esri_point(2), esri_point(3)],
+               "exceededTransferLimit": false}),
+    )
+    .await;
+    let f = fetcher_for(&s, None);
+    let mut p = params(100);
+    p.max_features = 2;
+    let err = arcgis::query(&f, &url(&s, LAYER), &p).await.unwrap_err();
+    assert!(format!("{err:#}").contains("max-features"), "{err:#}");
+}
+
+#[tokio::test]
+async fn page_without_features_array_is_an_error() {
+    let s = MockServer::start().await;
+    mount_meta(&s, 2).await;
+    mount_count(&s, 1).await;
+    Mock::given(path(format!("{LAYER}/query")))
+        .and(query_param("resultOffset", "0"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(json!({"exceededTransferLimit": false})),
+        )
+        .expect(1)
+        .mount(&s)
+        .await;
+    let f = fetcher_for(&s, None);
+    let err = arcgis::query(&f, &url(&s, LAYER), &params(100))
+        .await
+        .unwrap_err();
+    assert!(format!("{err:#}").contains("no features array"), "{err:#}");
 }
 
 #[tokio::test]

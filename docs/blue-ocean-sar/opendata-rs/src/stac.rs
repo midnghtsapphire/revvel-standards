@@ -8,7 +8,9 @@ use serde_json::{json, Map, Value};
 use url::Url;
 
 use crate::geo::{Bbox, TimeRange};
-use crate::net::{Fetcher, Request, Secret};
+// use crate::net::{Fetcher, Request, Secret};
+// Replaced (review 2026-10-16): allow-list entries are port-aware.
+use crate::net::{policy_entry, Fetcher, Request, Secret};
 
 /// Environment variable holding an optional Planetary Computer key.
 pub const PC_KEY_ENV: &str = "PC_SDK_SUBSCRIPTION_KEY";
@@ -59,10 +61,12 @@ impl Catalog {
 
     /// Hosts this catalogue may talk to (redirects included).
     pub fn allowed_hosts(&self) -> Vec<String> {
-        match self.search_url().host_str() {
-            Some(h) => vec![h.to_string()],
-            None => vec![],
-        }
+        // match self.search_url().host_str() {
+        //     Some(h) => vec![h.to_string()],
+        //     None => vec![],
+        // }
+        // Replaced (review 2026-10-16): built-in catalogs admit only the default port; a custom catalog keeps the port it names.
+        policy_entry(&self.search_url()).into_iter().collect()
     }
 
     /// CDSE's STAC implements CQL2 filtering rather than the `query` extension.
@@ -200,6 +204,20 @@ fn attach_auth(req: Request, auth: Option<&Secret>) -> Result<Request> {
     }
 }
 
+/// The credential to send to `cat`: the Planetary Computer key goes to
+/// Planetary Computer only, never to any other catalog.
+pub fn auth_for<'a>(cat: &Catalog, auth: Option<&'a Secret>) -> Option<&'a Secret> {
+    auth.filter(|_| matches!(cat, Catalog::PlanetaryComputer))
+}
+
+/// The first search request (body plus any credential `cat` may receive).
+pub fn initial_request(cat: &Catalog, p: &SearchParams, auth: Option<&Secret>) -> Result<Request> {
+    attach_auth(
+        Request::post_json(cat.search_url(), &build_body(cat, p)),
+        auth_for(cat, auth),
+    )
+}
+
 /// Run the search. `auth` is sent only for Planetary Computer.
 pub async fn search(
     fetcher: &Fetcher,
@@ -208,7 +226,10 @@ pub async fn search(
     auth: Option<&Secret>,
 ) -> Result<SearchOutcome> {
     let body = build_body(cat, p);
-    let mut req = attach_auth(Request::post_json(cat.search_url(), &body), auth)?;
+    // let mut req = attach_auth(Request::post_json(cat.search_url(), &body), auth)?;
+    // Replaced (review 2026-10-16): the doc promised PC-only auth but any catalog received the key; gate it here.
+    let auth = auth_for(cat, auth);
+    let mut req = initial_request(cat, p, auth)?;
     let mut out = SearchOutcome::default();
     let mut seen_requests: Vec<(String, Option<Vec<u8>>)> = Vec::new();
     loop {
@@ -233,11 +254,22 @@ pub async fn search(
                 resp.url
             );
         }
+        // let features = fc
+        //     .get("features")
+        //     .and_then(Value::as_array)
+        //     .cloned()
+        //     .unwrap_or_default();
+        // Replaced (review 2026-10-16): a FeatureCollection without a features array is malformed, not empty.
         let features = fc
             .get("features")
             .and_then(Value::as_array)
             .cloned()
-            .unwrap_or_default();
+            .with_context(|| {
+                format!(
+                    "STAC search response from {} has no features array",
+                    crate::evidence::redact_url(&resp.url)
+                )
+            })?;
         for f in &features {
             let Some(s) = summarise(f) else { continue };
             if let (Some(max), Some(cc)) = (p.max_cloud, s.cloud_cover) {
