@@ -1,0 +1,5 @@
+query_id,constellation,resolution_m,timestamp_utc,cloud_cover_pct,sun_elevation_deg,tile_catalog_id,vehicle_detection_status,designation_coords,designation_score
+SAT-MCD-001,Maxar WorldView-3,0.3,2026-09-15T16:22:10Z,1.4,54.8,1040010089C3F100,Primary vehicles parked static at residence apron; no driveway movement.,[DETERMINISTIC],[DETERMINISTIC]
+SAT-MCD-002,Airbus Pléiades Neo 4,0.3,2026-09-17T11:05:42Z,0.8,56.1,PNEO4_20260917_MCD_002,Vehicles remain static in driveway. Unpaved access road shows tire tread disturbance vector toward eastern timber ridge.,[DETERMINISTIC],[DETERMINISTIC]
+SAT-MCD-003,PlanetScope SuperDove,3.0,2026-09-16T10:45:18Z,2.1,53.2,20260916_104518_PS4_3M,Driveway spectral profile unchanged; sub-pixel ground disturbance anomaly detected at southern timber boundary.,[DETERMINISTIC],[DETERMINISTIC]
+SAT-MCD-004,Sentinel-2A (ESA),10.0,2026-09-20T16:41:22Z,0.0,51.9,S2A_MSIL2A_20260920_MCD,SWIR vegetation/nitrogen stress anomaly detected along Indian Creek ravine outfall.,[DETERMINISTIC],[PREDICTIVE / MODELED]

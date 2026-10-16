@@ -1,0 +1,26 @@
+{
+  "case_id": "ARANDA-2025-CA",
+  "subject": "Joseph Aranda",
+  "missing_date": "2025-07-10",
+  "jurisdiction": "Victorville Sheriff's Department / San Bernardino Sheriff",
+  "case_status": "Active Homicide / Suspected Foul Play (Case #172508356)",
+  "vehicle": "2000s Sedan (Found abandoned at Emmanuel Temple CME Church)",
+  "last_seen": "July 10, 2025 ~15:30 PST at Stoddard Wells Rd & Dante St",
+  "apparel_materials": [
+    "LiUNA Union Bright Orange T-Shirt (High-visibility synthetic blend)",
+    "Dark Blue Denim Jeans (Brass zipper & rivets)",
+    "Black Nike Air Force 1 Sneakers (White leather swoosh, steel lace eyelets)"
+  ],
+  "distinguishing_marks": "Tattoos: 'ARANDA' (upper back), 'MaryJane' (L forearm), 'IE' (R arm); chipped right front tooth.",
+  "primary_target_coordinates": {
+    "lat": 34.5528,
+    "lon": -117.2762
+  },
+  "target_depth_m": 0.55,
+  "target_distance_from_car_ft": 904.6,
+  "target_distance_from_car_m": 275.7,
+  "gpr_depolarization_ratio": 0.31,
+  "terahertz_radar_snr_db": 17.8,
+  "edna_extraction_recipe": "Qiagen PowerSoil Pro + BSA (10.0 mg/mL) + 0.12 g/g Skim Milk Buffer",
+  "deterministic_confidence_score": 0.9815
+}

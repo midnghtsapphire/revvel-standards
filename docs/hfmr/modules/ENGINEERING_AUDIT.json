@@ -1,0 +1,19 @@
+{
+  "release": "modules-12-16",
+  "status": "research_prototype",
+  "critical_gaps": [
+    "no verified live Columbus case acquisition",
+    "no verified historical parcel crosswalk",
+    "no authenticated inspection attachments",
+    "no scan OCR or validated historical blueprints",
+    "no ground-truth sensor dataset",
+    "no calibrated remains likelihood",
+    "no externally signed chain of custody"
+  ],
+  "scientific_principles": [
+    "no confidence percentage without calibration",
+    "never infer pour date from permit date",
+    "never treat SAR intensity as coherent phase",
+    "no historical facts invented from simulation"
+  ]
+}
