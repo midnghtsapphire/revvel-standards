@@ -4,7 +4,7 @@ A Colorado lawyer, judge, or licensed legal paraprofessional. CLJE Regulation 10
 
 Counted minutes are only what that professional uses in a representation. A receptionist script, a secretary’s intake form, a field grid, and the Signal pages are not part of this syllabus.
 
-# Syllabus
+## Syllabus
 
 ## Hour 1 — The report and the remains
 
@@ -63,4 +63,3 @@ YouTube working title: Probability of area for lawyers, after a negative search
 | 27:00–40:00 | Who is told to wait | edi |
 | 40:00–52:00 | The wrong behavioral model is a bias error | edi |
 | 52:00–60:00 | Application lab — not counted | none |
-
