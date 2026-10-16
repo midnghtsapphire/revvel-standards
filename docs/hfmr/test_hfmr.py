@@ -1,3 +1,5 @@
+import hashlib
+import json
 import os
 import sys
 import tempfile
@@ -71,9 +73,16 @@ class TestHFMR(unittest.TestCase):
     def test_non_standard_json_constant_fails_verification(self):
         with tempfile.TemporaryDirectory() as d:
             ledger = Ledger(Path(d) / "ledger.jsonl")
-            line = '{"sequence": 0, "previous_hash": "%s", "event": {"x": NaN}, "entry_hash": "0"}\n' % ("0" * 64)
+            # Original:
+            # line = '{"sequence": 0, "previous_hash": "%s", "event": {"x": NaN}, "entry_hash": "0"}\n' % ("0" * 64)
+            #   entry_hash "0" can never match, so the test passed even if NaN were accepted.
+            #   The hash is now computed with permissive encoding, so only the NaN rejection fails it.
+            body = {"sequence": 0, "previous_hash": "0" * 64, "event": {"x": float("nan")}}
+            digest = hashlib.sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+            line = json.dumps(dict(body, entry_hash=digest)) + "\n"
             ledger.path.write_text(line)
             self.assertFalse(ledger.verify())
+            self.assertFalse(ledger.verify(digest))
 
     def test_unknown_sensor_is_value_error(self):
         with self.assertRaisesRegex(ValueError, "no calibration"):
