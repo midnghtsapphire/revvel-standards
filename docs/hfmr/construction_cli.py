@@ -50,3 +50,6 @@ elif v.command == "verify":
 else:
     result = request_text(v.address, v.parcel, v.start, v.end)
 print(result if isinstance(result, str) else json.dumps(result, indent=2))
+# A failed import verification must not exit 0, or automation accepts a tampered import.
+if v.command == "verify" and not result["verified"]:
+    raise SystemExit(1)

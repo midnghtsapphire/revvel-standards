@@ -1,7 +1,12 @@
 # unused (flake8 F401), kept for reference: import csv
+import io
+import runpy
+import sys
+from contextlib import redirect_stdout
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 # star import replaced with explicit names (flake8 F403/F405): from .construction import *
 from .construction import (
@@ -13,6 +18,16 @@ from .construction import (
     timeline,
     verify_import,
 )
+
+
+def run_cli(module, argv):
+    """Run a CLI module in-process and return its exit status (0 when it returns normally)."""
+    with mock.patch.object(sys, "argv", [module] + [str(a) for a in argv]), redirect_stdout(io.StringIO()):
+        try:
+            runpy.run_module(module, run_name="__main__")
+        except SystemExit as exc:
+            return exc.code
+    return 0
 
 
 class TestConstruction(unittest.TestCase):
@@ -30,6 +45,17 @@ class TestConstruction(unittest.TestCase):
             self.assertEqual(timeline(out, address="1546 N High St")[0]["type"], "permit_issued")
             out.write_text("changed")
             self.assertFalse(verify_import(out.with_suffix(".manifest.json")))
+
+    def test_cli_verify_exit_status(self):
+        with tempfile.TemporaryDirectory() as t:
+            inp = Path(t) / "in.csv"
+            out = Path(t) / "out.csv"
+            inp.write_text("ID,ADDR\n7,1546 N. High St\n")
+            import_csv(inp, out, {"record_id": "ID", "address": "ADDR"})
+            manifest = out.with_suffix(".manifest.json")
+            self.assertEqual(run_cli("hfmr.construction_cli", ["verify", "--manifest", manifest]), 0)
+            out.write_text("changed")
+            self.assertEqual(run_cli("hfmr.construction_cli", ["verify", "--manifest", manifest]), 1)
 
     def test_links(self):
         with tempfile.TemporaryDirectory() as t:

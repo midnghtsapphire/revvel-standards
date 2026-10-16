@@ -1,12 +1,26 @@
+import io
 import json
+import runpy
+import sys
 import tempfile
 import unittest
 import urllib.request
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest import mock
 
 # star import replaced with explicit names (flake8 F403/F405): from .columbus import *
 from .columbus import export_csv, metadata, query_by_parcel, save, verify
+
+
+def run_cli(module, argv):
+    """Run a CLI module in-process and return its exit status (0 when it returns normally)."""
+    with mock.patch.object(sys, "argv", [module] + [str(a) for a in argv]), redirect_stdout(io.StringIO()):
+        try:
+            runpy.run_module(module, run_name="__main__")
+        except SystemExit as exc:
+            return exc.code
+    return 0
 
 
 class Response:
@@ -53,6 +67,14 @@ class ColumbusTests(unittest.TestCase):
             self.assertEqual(export_csv(p, Path(t) / "p.csv"), 1)
             p.write_text("changed")
             self.assertFalse(verify(p))
+
+    def test_cli_verify_exit_status(self):
+        with tempfile.TemporaryDirectory() as t:
+            p = Path(t) / "permits.json"
+            save({"records": [{"A": 1}]}, p)
+            self.assertEqual(run_cli("hfmr.columbus_cli", ["verify", "--input", p]), 0)
+            p.write_text("changed")
+            self.assertEqual(run_cli("hfmr.columbus_cli", ["verify", "--input", p]), 1)
 
     def test_overwrite(self):
         with tempfile.TemporaryDirectory() as t:

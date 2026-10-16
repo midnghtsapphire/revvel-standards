@@ -1,13 +1,27 @@
 # unused (flake8 F401), kept for reference: import io
+import io
 import json
+import runpy
+import sys
 import tempfile
 import unittest
 import urllib.request
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest import mock
 
 # star import replaced with explicit names (flake8 F403/F405): from .discovery import *
 from .discovery import arcgis_catalog, inventory, match_identity, stac_search, verify_inventory
+
+
+def run_cli(module, argv):
+    """Run a CLI module in-process and return its exit status (0 when it returns normally)."""
+    with mock.patch.object(sys, "argv", [module] + [str(a) for a in argv]), redirect_stdout(io.StringIO()):
+        try:
+            runpy.run_module(module, run_name="__main__")
+        except SystemExit as exc:
+            return exc.code
+    return 0
 
 
 class FakeResponse:
@@ -107,6 +121,14 @@ class DiscoveryTests(unittest.TestCase):
             self.assertTrue(verify_inventory(p))
             p.write_text("changed")
             self.assertFalse(verify_inventory(p))
+
+    def test_cli_verify_inventory_exit_status(self):
+        with tempfile.TemporaryDirectory() as t:
+            p = Path(t) / "i.json"
+            inventory([{"id": "a"}], p)
+            self.assertEqual(run_cli("hfmr.discovery_cli", ["verify-inventory", "--input", p]), 0)
+            p.write_text("changed")
+            self.assertEqual(run_cli("hfmr.discovery_cli", ["verify-inventory", "--input", p]), 1)
 
     def test_no_overwrite(self):
         with tempfile.TemporaryDirectory() as t:

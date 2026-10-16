@@ -31,3 +31,6 @@ elif v.cmd == "verify":
 else:
     result = {"exported_records": export_csv(v.input, v.output)}
 print(json.dumps(result, indent=2))
+# A failed integrity check must not exit 0, or automation accepts tampered permit data.
+if v.cmd == "verify" and not result["verified"]:
+    raise SystemExit(1)

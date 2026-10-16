@@ -25,3 +25,10 @@ elif v.command == "retrieve":
 else:
     result = verify_queue(v.output)
 print(json.dumps(result, indent=2))
+# Exit status reflects the outcome, not just that the command ran: any row that was not
+# downloaded or already verified (failed, integrity_failure, stale_manifest) is nonzero,
+# as is a verify run that checked nothing or found a mismatch.
+if v.command == "retrieve" and any(r["status"] not in ("downloaded", "already_verified") for r in result):
+    raise SystemExit(2)
+if v.command == "verify" and not (result and all(result.values())):
+    raise SystemExit(1)

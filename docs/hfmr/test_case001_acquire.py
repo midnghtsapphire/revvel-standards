@@ -1,9 +1,24 @@
+import io
 import json
+import runpy
+import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest import mock
 from .case001_acquire import acquire, query_address_variants
 # unused (flake8 F401), kept for reference: from .case001_acquire import metadata
+
+
+def run_cli(module, argv):
+    """Run a CLI module in-process and return its exit status (0 when it returns normally)."""
+    with mock.patch.object(sys, "argv", [module] + [str(a) for a in argv]), redirect_stdout(io.StringIO()):
+        try:
+            runpy.run_module(module, run_name="__main__")
+        except SystemExit as exc:
+            return exc.code
+    return 0
 
 
 class R:
@@ -59,6 +74,13 @@ class Tests(unittest.TestCase):
             self.assertEqual(r["records"], 2)
             self.assertEqual(r["parcel_candidates"], ["123"])
             self.assertEqual(len(list(out.glob("*.sha256"))), 9)
+
+    def test_cli_exits_nonzero_when_incomplete(self):
+        incomplete = {"output": "x", "records": 0, "parcel_candidates": [], "retrieval_complete": False, "errors": [1]}
+        with mock.patch("hfmr.case001_acquire.acquire", return_value=incomplete):
+            self.assertEqual(run_cli("hfmr.case001_acquire_cli", ["--output", "unused"]), 2)
+        with mock.patch("hfmr.case001_acquire.acquire", return_value=dict(incomplete, retrieval_complete=True)):
+            self.assertEqual(run_cli("hfmr.case001_acquire_cli", ["--output", "unused"]), 0)
 
     def test_bad_street(self):
         with self.assertRaises(ValueError):

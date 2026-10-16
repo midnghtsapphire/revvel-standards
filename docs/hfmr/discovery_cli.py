@@ -36,3 +36,6 @@ elif v.command == "match-records":
 else:
     result = {"verified": verify_inventory(v.input)}
 print(json.dumps(result, indent=2))
+# A failed digest must not exit 0, or automation accepts a tampered inventory.
+if v.command == "verify-inventory" and not result["verified"]:
+    raise SystemExit(1)
