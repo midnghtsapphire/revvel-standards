@@ -599,3 +599,40 @@ python dossier.py --case case.json --search-theory st.json --optimal plan.json \
     --lps out/sim --burial out/site --out dossier.html
 python -m unittest test_dossier
 ```
+
+## Sweep width and canopy correction (`sweep_width.py`)
+
+This file supplies the W column that `search_theory.py` and
+`optimal_search.py` need. W comes from the first of these that exists:
+
+1. a `sweep_width_km` you already put in the segments file;
+2. your own field calibration (`--calibration`): a measured W, or a range of
+   detection with W = factor x range (Koester et al. 2014: 1.8, 1.6 and 1.1 x
+   Rd for high, medium and low visibility);
+3. the built-in table in `sweep_width_tables.json`.
+
+The built-in table holds only two sourced values, both for a ground searcher
+in the Koester et al. 2004 USCG/NSARC experiments: 142 m in leaf-off forest
+with a high-visibility object, and 17 m in dense forest with a
+low-visibility object. They come from secondary summaries and should be
+checked against the report. Every other entry is null and needs field
+calibration.
+
+Earlier versions of these tools used POD and sweep values taken from
+AI-generated material that had never been measured. Those values are gone.
+
+**Canopy.** For aircraft and drones, W is reduced by canopy cover:
+W_eff = W_open x (1 - cover)^k, with k = 1 / cos(view angle) by default.
+This is an assumption, and you can change k. Cover comes from a column,
+from GEDI shots (a CSV, averaged per segment polygon) or from a canopy-cover
+GeoTIFF. Ground teams use the vegetation class instead of canopy cover.
+
+```sh
+python sweep_width.py segments.csv --resource ground_searcher --target unresponsive_adult \
+    --calibration my_trials.csv --gedi-shots gedi.csv --segments-geojson segs.geojson --out segs_w.csv
+python optimal_search.py segs_w.csv --effort-km 40
+python -m unittest test_sweep_width
+```
+
+Exit codes: 3 means some segments still have no W (pass `--allow-missing`
+to accept that); 2 means bad input.
