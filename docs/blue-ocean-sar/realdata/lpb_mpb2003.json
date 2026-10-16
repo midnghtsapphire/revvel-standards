@@ -1,0 +1,1999 @@
+{
+  "schema_version": 1,
+  "source": {
+    "citation": "Perkins, D., Roberts, P. and Feeney, G. (2003). Missing Person Behaviour - An Aid to the Search Manager. 1st edition, June 2003. Northumberland National Park SRT / Centre for Search Research; Penrith MRT & Mountain Rescue Council Statistics Officer. UK.",
+    "edition": "1st Edition, June 2003 (pages dated 16/06/2003)",
+    "uploaded_pdf": "294f303b-62385353-Missing-Person-Behaviour-Handbook-June-2003.pdf",
+    "page_numbering": "Printed page numbers; they equal the PDF page index (29 pages).",
+    "uk_study_basis": "372 cases of persons reported missing in the UK, Northern Ireland and Eire where voluntary SAR teams were requested (page 4).",
+    "source_studies_basis": "US / Canadian data adapted by the handbook from Hill (1997), Koester (2000) and Koester personal communication (2000), as labelled under each table.",
+    "transcribed_from": "pdftotext -layout of the uploaded PDF; page 14 also checked against the rendered page."
+  },
+  "units": "Distances are straight-line distance from the IPP, printed in both km and miles; both columns are stored exactly as printed. Percentages are percent of cases.",
+  "datasets": {
+    "uk_study": "'A UK Study (June 2003)' tables on the right-hand pages.",
+    "source_studies": "'Statistics (n = ...)' tables adapted from Hill / Koester on the left-hand pages."
+  },
+  "categories": {
+    "children_1_6": {
+      "title": "Children (1 - 6 years)",
+      "pages": [
+        6,
+        7
+      ],
+      "aliases": [
+        "children_1-6",
+        "child_1_6",
+        "children1-6",
+        "toddler"
+      ],
+      "distance": {
+        "source_studies": {
+          "page": 6,
+          "n": 12,
+          "source": "Data adapted from Hill (1997)",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.47,
+            0.54,
+            0.61,
+            0.72,
+            0.95,
+            1.16,
+            1.51,
+            1.89,
+            2.27,
+            2.65
+          ],
+          "miles": [
+            0.29,
+            0.34,
+            0.38,
+            0.45,
+            0.6,
+            0.73,
+            0.94,
+            1.18,
+            1.42,
+            1.66
+          ]
+        },
+        "uk_study": {
+          "page": 7,
+          "n": 8,
+          "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.1,
+            0.4,
+            0.5,
+            0.5,
+            0.65,
+            0.8,
+            1.0,
+            1.1,
+            1.8,
+            1.8
+          ],
+          "miles": [
+            0.06,
+            0.25,
+            0.31,
+            0.31,
+            0.4,
+            0.5,
+            0.62,
+            0.68,
+            1.12,
+            1.12
+          ]
+        }
+      },
+      "outcomes": {
+        "page": 7,
+        "n": 8,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "fatalities_pct": 0,
+        "injured_pct": 0,
+        "unhurt_pct": 100,
+        "no_trace_pct": 0
+      },
+      "where_found": {
+        "page": 7,
+        "n": 8,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "percent": {
+          "Habitation": 25,
+          "Building / Shelter": 25,
+          "Open Ground": 25,
+          "Wall / Fence Line": 12,
+          "Water / Water's Edge": 12,
+          "Forest / Woodland": 0,
+          "No Trace": 0,
+          "Road": 0,
+          "Stream / Ditch": 0,
+          "Forest Edge / Clearing": 0,
+          "Path / Track": 0
+        }
+      },
+      "other_statistics": [],
+      "characteristics": {
+        "page": 6,
+        "source": "Hill, Syrotuck",
+        "items": [
+          "1-3 years: unaware of the concept of being lost; navigation almost non-existent",
+          "Tend to wander aimlessly; do not respond to whistles or calls",
+          "Good survivability because of tendency to find shelter",
+          "3-6 years: developing concept of being lost; try to return home or to a familiar place",
+          "May panic and become further lost; explorations usually one way",
+          "Follow tracks, trails and 'short cuts'; may follow an animal or older children"
+        ]
+      },
+      "where": {
+        "page": 6,
+        "source": "Hill, Syrotuck",
+        "items": [
+          "Seek a place to lie down and sleep: thick brush, overhanging rock, picnic table, car boot, appliance",
+          "Difficult to detect",
+          "Rarely walk out by themselves"
+        ]
+      },
+      "how": {
+        "page": 7,
+        "source": "Handbook",
+        "items": [
+          "Passive attraction rarely successful; confinement a low priority",
+          "Air scenting dogs alongside rapid response teams",
+          "Thorough search of high priority areas close to IPP; urgent response",
+          "Sign cutting teams along main trails"
+        ]
+      }
+    },
+    "children_7_12": {
+      "title": "Children (7 - 12 years)",
+      "pages": [
+        8,
+        9
+      ],
+      "aliases": [
+        "children_7-12",
+        "child_7_12",
+        "children7-12"
+      ],
+      "distance": {
+        "source_studies": {
+          "page": 8,
+          "n": 9,
+          "source": "Data adapted from Hill (1997)",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            1.12,
+            1.29,
+            1.46,
+            1.68,
+            2.1,
+            2.62,
+            2.97,
+            4.24,
+            6.78,
+            8.0
+          ],
+          "miles": [
+            0.7,
+            0.81,
+            0.91,
+            1.05,
+            1.31,
+            1.64,
+            1.86,
+            2.65,
+            4.24,
+            5.0
+          ]
+        },
+        "uk_study": {
+          "page": 9,
+          "n": 27,
+          "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.0,
+            0.0,
+            0.3,
+            0.5,
+            1.5,
+            1.7,
+            2.0,
+            4.8,
+            6.0,
+            64.4
+          ],
+          "miles": [
+            0.0,
+            0.0,
+            0.19,
+            0.31,
+            0.93,
+            1.06,
+            1.24,
+            2.98,
+            3.73,
+            39.99
+          ]
+        }
+      },
+      "outcomes": {
+        "page": 9,
+        "n": 27,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "fatalities_pct": 7,
+        "injured_pct": 0,
+        "unhurt_pct": 93,
+        "no_trace_pct": 0
+      },
+      "where_found": {
+        "page": 9,
+        "n": 26,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "percent": {
+          "Habitation": 35,
+          "Building / Shelter": 23,
+          "Road": 18,
+          "Water / Water's Edge": 12,
+          "Open Ground": 12,
+          "Forest / Woodland": 4,
+          "Forest Edge / Clearing": 0,
+          "No Trace": 0,
+          "Path / Track": 0,
+          "Stream / Ditch": 0,
+          "Wall / Fence Line": 0
+        }
+      },
+      "other_statistics": [],
+      "characteristics": {
+        "page": 8,
+        "source": "Hill, Syrotuck",
+        "items": [
+          "Navigation more developed; primitive, possibly inaccurate 'mental maps'",
+          "Frequently lost attempting a short cut to a familiar location",
+          "May become lost in fantasy play; may react irrationally when lost",
+          "Often resort to trail-running, which may take them some distance from the PLS/LKP",
+          "Respond more maturely with a friend or sibling; lack adult tactics"
+        ]
+      },
+      "where": {
+        "page": 8,
+        "source": "Hill, Syrotuck",
+        "items": [
+          "Tracks, trails, shortcuts; ask friends about 'secret' or favourite places and hideouts",
+          "Landmarks, high points, ponds, lakes, streams, drainages, forest edges and clearings"
+        ]
+      },
+      "how": {
+        "page": 9,
+        "source": "Handbook",
+        "items": [
+          "Confinement a high priority",
+          "Rapid response teams to high priority areas; air scenting dogs",
+          "Passive attraction rarely successful"
+        ]
+      }
+    },
+    "youth_13_15": {
+      "title": "Youth (13 - 15 years)",
+      "pages": [
+        10,
+        11
+      ],
+      "aliases": [
+        "youth",
+        "youths",
+        "youth_13-15",
+        "teen",
+        "teenager"
+      ],
+      "distance": {
+        "source_studies": {
+          "page": 10,
+          "n": 20,
+          "source": "Data adapted from Hill (1997)",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.56,
+            0.72,
+            0.87,
+            1.13,
+            1.8,
+            2.68,
+            3.73,
+            4.82,
+            5.91,
+            7.0
+          ],
+          "miles": [
+            0.35,
+            0.45,
+            0.54,
+            0.71,
+            1.13,
+            1.68,
+            2.33,
+            3.0,
+            3.7,
+            4.38
+          ]
+        },
+        "uk_study": {
+          "page": 11,
+          "n": 20,
+          "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.05,
+            0.25,
+            0.75,
+            0.9,
+            1.3,
+            1.95,
+            2.0,
+            4.1,
+            6.55,
+            132.0
+          ],
+          "miles": [
+            0.03,
+            0.16,
+            0.47,
+            0.56,
+            0.81,
+            1.21,
+            1.24,
+            2.55,
+            4.07,
+            81.97
+          ]
+        }
+      },
+      "outcomes": {
+        "page": 11,
+        "n": 20,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "fatalities_pct": 5,
+        "injured_pct": 0,
+        "unhurt_pct": 95,
+        "no_trace_pct": 0
+      },
+      "where_found": {
+        "page": 11,
+        "n": 19,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "percent": {
+          "Habitation": 26,
+          "Building / Shelter": 21,
+          "Forest / Woodland": 21,
+          "Path / Track": 11,
+          "Forest Edge / Clearing": 11,
+          "Road": 5,
+          "Stream / Ditch": 5,
+          "No Trace": 0,
+          "Open Ground": 0,
+          "Wall / Fence Line": 0,
+          "Water / Water's Edge": 0
+        }
+      },
+      "other_statistics": [],
+      "characteristics": {
+        "page": 10,
+        "source": "Hill, Syrotuck (* = supported by UK study)",
+        "items": [
+          "Navigation more developed than 6-12 year olds",
+          "Frequently lost in groups while exploring or on adventure activity*",
+          "Rarely travel far in groups",
+          "Usually respond to calls and whistles",
+          "Often resort to 'direction sampling', looking for a familiar place or landmark",
+          "May panic and use irrational tactics to locate themselves"
+        ]
+      },
+      "where": {
+        "page": 10,
+        "source": "Hill, Syrotuck",
+        "items": [
+          "Tracks, trails, shortcuts; 'secret' or favourite places, hideouts, routes",
+          "Landmarks, high points, ponds, lakes, streams, drainages, forest edges, clearings",
+          "Any 'known' places - secret play places*"
+        ]
+      },
+      "how": {
+        "page": 11,
+        "source": "Handbook",
+        "items": [
+          "Confinement a low priority unless subject is alone*",
+          "Rapid response teams to high priority areas; air scenting dogs",
+          "Passive attraction methods can be successful*"
+        ]
+      }
+    },
+    "despondents": {
+      "title": "Despondents",
+      "pages": [
+        12,
+        13
+      ],
+      "aliases": [
+        "despondent",
+        "suicidal"
+      ],
+      "distance": {
+        "source_studies": {
+          "page": 12,
+          "n": 74,
+          "source": "Data adapted from Koester, Personal Communication (2000)",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.0,
+            0.16,
+            0.16,
+            0.24,
+            0.32,
+            0.4,
+            1.2,
+            2.0,
+            6.4,
+            32.0
+          ],
+          "miles": [
+            0.0,
+            0.1,
+            0.1,
+            0.15,
+            0.2,
+            0.25,
+            0.75,
+            1.25,
+            4.0,
+            20.0
+          ],
+          "printed_as": {
+            "km_100": "32.0"
+          }
+        },
+        "uk_study": {
+          "page": 13,
+          "n": 181,
+          "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.0,
+            0.3,
+            0.6,
+            1.0,
+            1.5,
+            2.1,
+            3.5,
+            5.6,
+            10.4,
+            132.0
+          ],
+          "miles": [
+            0.0,
+            0.19,
+            0.37,
+            0.62,
+            0.93,
+            1.3,
+            2.17,
+            3.48,
+            6.46,
+            81.97
+          ]
+        }
+      },
+      "outcomes": {
+        "page": 13,
+        "n": 181,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "fatalities_pct": 34,
+        "injured_pct": 12,
+        "unhurt_pct": 45,
+        "no_trace_pct": 9
+      },
+      "where_found": {
+        "page": 13,
+        "n": 160,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "percent": {
+          "Habitation": 21,
+          "Water / Water's Edge": 18,
+          "Forest / Woodland": 16,
+          "No Trace": 13,
+          "Building / Shelter": 12,
+          "Road": 11,
+          "Forest Edge / Clearing": 8,
+          "Open Ground": 7,
+          "Stream / Ditch": 4,
+          "Path / Track": 3,
+          "Wall / Fence Line": 1
+        }
+      },
+      "other_statistics": [],
+      "characteristics": {
+        "page": 12,
+        "source": "Hill, Syrotuck, Koester (* = supported by UK study)",
+        "items": [
+          "Not usually intending to travel far; seek a place to be alone, possibly contemplate suicide*",
+          "Frequently located at the interface of two terrain or vegetation types",
+          "Often head for a scenic location or beauty spot, e.g. a hill overlooking civilization*",
+          "Rarely found in dense under-brush or trees",
+          "Rarely respond to calls and whistles; may hide and avoid searchers*",
+          "Extremely high fatality rate; drugs and/or alcohol frequently involved*"
+        ]
+      },
+      "where": {
+        "page": 12,
+        "source": "Hill, Syrotuck, Koester",
+        "items": [
+          "Scenic locations, high points overlooking beauty spots and/or civilization",
+          "Places well known to them; favourite walks, tracks, trails*",
+          "Terrain interfaces: vegetation changes, breaks of slope, cliffs",
+          "Two groups: (1) just getting out of sight - close to IPP; (2) seeking a specific, often significant place - may travel long distances"
+        ]
+      },
+      "how": {
+        "page": 13,
+        "source": "Handbook",
+        "items": [
+          "Investigation important: friends, family, work colleagues*",
+          "Response should be urgent",
+          "Thorough search of small area (up to 70%)",
+          "Confinement a low priority; passive tactics not successful"
+        ]
+      }
+    },
+    "psychological_illness": {
+      "title": "Psychological Illness (Psychotics)",
+      "pages": [
+        14,
+        15
+      ],
+      "aliases": [
+        "psychotic",
+        "psychotics",
+        "psychological"
+      ],
+      "distance": {
+        "source_studies": {
+          "page": 14,
+          "n": 25,
+          "source": "Data adapted from Koester, Personal Communication (2000)",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.0,
+            0.16,
+            0.4,
+            0.5,
+            0.64,
+            0.8,
+            1.6,
+            3.2,
+            6.0,
+            12.8
+          ],
+          "miles": [
+            0.0,
+            0.1,
+            0.25,
+            0.3,
+            0.4,
+            0.5,
+            1.0,
+            2.0,
+            4.8,
+            8.0
+          ]
+        },
+        "uk_study": {
+          "page": 15,
+          "n": 20,
+          "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.0,
+            0.1,
+            0.6,
+            0.95,
+            2.1,
+            3.15,
+            7.85,
+            10.2,
+            12.15,
+            16.0
+          ],
+          "miles": [
+            0.0,
+            0.06,
+            0.37,
+            0.59,
+            1.24,
+            1.96,
+            4.87,
+            6.33,
+            7.55,
+            9.94
+          ]
+        }
+      },
+      "outcomes": {
+        "page": 15,
+        "n": 21,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "fatalities_pct": 38,
+        "injured_pct": 5,
+        "unhurt_pct": 52,
+        "no_trace_pct": 5
+      },
+      "where_found": {
+        "page": 15,
+        "n": 21,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "percent": {
+          "Water / Water's Edge": 19,
+          "Habitation": 19,
+          "Road": 14,
+          "Building / Shelter": 14,
+          "No Trace": 9,
+          "Open Ground": 9,
+          "Stream / Ditch": 5,
+          "Wall / Fence Line": 5,
+          "Forest Edge / Clearing": 5,
+          "Forest / Woodland": 0,
+          "Path / Track": 0
+        }
+      },
+      "other_statistics": [
+        {
+          "page": 14,
+          "source": "Koester",
+          "text": "Often found in woods (edges) - 20%; buildings - 23%; along roads - 23%"
+        },
+        {
+          "page": 14,
+          "source": "Koester",
+          "text": "21% walked out"
+        }
+      ],
+      "characteristics": {
+        "page": 14,
+        "source": "Koester",
+        "items": [
+          "May be evasive, run away and/or hide; most do not respond to name",
+          "Rarely travel purposefully to an identifiable target",
+          "Medication, or lack of it, may be a problem",
+          "May be frightened of authority and of being found",
+          "Can be aggressive - consider searcher safety, seek advice",
+          "Rarely 'lost' in the traditional sense; behaviour difficult to predict"
+        ]
+      },
+      "where": {
+        "page": 14,
+        "source": "Koester",
+        "items": [
+          "Tend not to penetrate woods and/or thick undergrowth",
+          "Detailed checks of buildings in the search area should be done by Police",
+          "Drainages, streams, tracks and trails"
+        ]
+      },
+      "how": {
+        "page": 15,
+        "source": "Handbook",
+        "items": [
+          "Search urgency high; detailed investigation essential",
+          "Air scenting dogs around woods and drainages starting near IPP",
+          "Containment along roads/tracks a priority; cut for sign along roads and tracks",
+          "Re-search areas and tracks; trackers near IPP",
+          "On-going systematic search of buildings and residence"
+        ]
+      }
+    },
+    "developmental": {
+      "title": "Developmental Problems (Mentally Retarded)",
+      "pages": [
+        16,
+        17
+      ],
+      "aliases": [
+        "developmental_problems",
+        "learning_difficulties"
+      ],
+      "distance": {
+        "source_studies": {
+          "page": 16,
+          "n": 29,
+          "source": "Data adapted from Koester, Personal Communication (2000)",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.0,
+            0.16,
+            0.3,
+            0.4,
+            0.8,
+            1.2,
+            1.6,
+            2.8,
+            4.8,
+            6.0
+          ],
+          "miles": [
+            0.0,
+            0.1,
+            0.2,
+            0.25,
+            0.5,
+            0.75,
+            1.0,
+            1.7,
+            3.0,
+            4.8
+          ]
+        },
+        "uk_study": {
+          "page": 17,
+          "n": 21,
+          "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.0,
+            0.1,
+            0.2,
+            0.4,
+            0.5,
+            1.3,
+            2.4,
+            16.0,
+            19.0,
+            35.0
+          ],
+          "miles": [
+            0.0,
+            0.06,
+            0.12,
+            0.25,
+            0.31,
+            0.81,
+            1.49,
+            9.94,
+            11.8,
+            21.74
+          ]
+        }
+      },
+      "outcomes": {
+        "page": 17,
+        "n": 22,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "fatalities_pct": 9,
+        "injured_pct": 0,
+        "unhurt_pct": 86,
+        "no_trace_pct": 4
+      },
+      "where_found": {
+        "page": 17,
+        "n": 22,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "percent": {
+          "Habitation": 27,
+          "Forest / Woodland": 23,
+          "Building / Shelter": 14,
+          "Forest Edge / Clearing": 9,
+          "No Trace": 9,
+          "Water / Water's Edge": 9,
+          "Open Ground": 4,
+          "Path / Track": 4,
+          "Road": 0,
+          "Stream / Ditch": 0,
+          "Wall / Fence Line": 0
+        }
+      },
+      "other_statistics": [
+        {
+          "page": 16,
+          "source": "Koester",
+          "text": "Dense undergrowth, 11%"
+        },
+        {
+          "page": 16,
+          "source": "Koester",
+          "text": "Forest edges and will penetrate inside 16%"
+        },
+        {
+          "page": 16,
+          "source": "Koester",
+          "text": "Buildings, (21%) yards, gardens (16%) and outbuildings"
+        },
+        {
+          "page": 16,
+          "source": "Koester",
+          "text": "21% found in drainages"
+        }
+      ],
+      "characteristics": {
+        "page": 16,
+        "source": "Koester",
+        "items": [
+          "Blend of young children and Alzheimer's - lack concept of being 'lost'",
+          "Good survivability; rarely respond",
+          "Possible associated physical impairment",
+          "Rarely travel to a set target; often make for a random building for shelter",
+          "Will penetrate woods, forests and undergrowth; may run from and avoid searchers"
+        ]
+      },
+      "where": {
+        "page": 16,
+        "source": "Koester",
+        "items": [
+          "Not 'route' orientated",
+          "Seek shelter in buildings and outbuildings"
+        ]
+      },
+      "how": {
+        "page": 17,
+        "source": "Handbook",
+        "items": [
+          "Search urgency high; investigation important",
+          "Early deployment of air scenting dogs near IPP",
+          "Detailed ground search of areas up to the 50% zone",
+          "Check streams and drainages; re-search areas; short assignments"
+        ]
+      }
+    },
+    "alzheimers": {
+      "title": "Alzheimer's",
+      "pages": [
+        18,
+        19
+      ],
+      "aliases": [
+        "alzheimer",
+        "alzheimer's",
+        "alzheimers_disease"
+      ],
+      "distance": {
+        "source_studies": {
+          "page": 18,
+          "n": 87,
+          "source": "Data adapted from Koester (2000)",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.16,
+            0.16,
+            0.4,
+            0.5,
+            0.8,
+            0.8,
+            1.1,
+            1.6,
+            2.0,
+            3.2
+          ],
+          "miles": [
+            0.1,
+            0.1,
+            0.25,
+            0.3,
+            0.5,
+            0.5,
+            0.7,
+            1.0,
+            1.25,
+            2.0
+          ]
+        },
+        "uk_study": {
+          "page": 19,
+          "n": 37,
+          "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.4,
+            0.8,
+            1.5,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            7.3,
+            12.5,
+            84.0
+          ],
+          "miles": [
+            0.25,
+            0.5,
+            0.93,
+            1.24,
+            1.86,
+            2.48,
+            3.11,
+            4.53,
+            7.76,
+            52.16
+          ]
+        }
+      },
+      "outcomes": {
+        "page": 19,
+        "n": 38,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "fatalities_pct": 21,
+        "injured_pct": 13,
+        "unhurt_pct": 63,
+        "no_trace_pct": 3
+      },
+      "where_found": {
+        "page": 19,
+        "n": 38,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "percent": {
+          "Habitation": 21,
+          "Road": 18,
+          "Open Ground": 18,
+          "Water / Water's Edge": 10,
+          "Wall / Fence Line": 8,
+          "Building / Shelter": 8,
+          "Forest / Woodland": 5,
+          "No Trace": 5,
+          "Forest Edge / Clearing": 3,
+          "Stream / Ditch": 3,
+          "Path / Track": 0
+        }
+      },
+      "other_statistics": [
+        {
+          "page": 18,
+          "source": "Koester",
+          "text": "50% are found within 0.6 miles of IPP"
+        },
+        {
+          "page": 18,
+          "source": "Koester",
+          "text": "96% are found within 1.5 miles of IPP"
+        }
+      ],
+      "characteristics": {
+        "page": 18,
+        "source": "Koester",
+        "items": [
+          "Possible Alzheimer's disease and related disorders; poor memory",
+          "Impaired ability to make sense of surroundings and recognise hazards",
+          "Loss occurs leaving residence or nursing home, possibly last seen on a roadway",
+          "Previous history of wandering; coexisting medical problems limit mobility",
+          "Will not cry out for help or respond to shouts; leave few clues",
+          "Usually succumbs to the environment (hypothermia, dehydration)"
+        ]
+      },
+      "where": {
+        "page": 18,
+        "source": "Koester",
+        "items": [
+          "Usually found a short distance from a road",
+          "Usually in a creek or drainage and/or caught in briars/bushes; continue until stuck",
+          "May cross roads, trails, tracks; may head for a previously known place"
+        ]
+      },
+      "how": {
+        "page": 19,
+        "source": "Koester / handbook",
+        "items": [
+          "Search urgency high; early containment essential",
+          "Early trackers and tracking dogs at IPP and along roadways",
+          "Early air scent dogs and hasty teams in drainages and streams nearest IPP",
+          "Search residence/nursing home and grounds; repeat every few hours",
+          "Cut for sign along roadways; search heavy briars/bushes; check previous home sites"
+        ]
+      }
+    },
+    "misc_adults": {
+      "title": "Miscellaneous Adults",
+      "pages": [
+        20,
+        21
+      ],
+      "aliases": [
+        "misc",
+        "miscellaneous",
+        "miscellaneous_adults",
+        "adult",
+        "adults"
+      ],
+      "distance": {
+        "source_studies": {
+          "page": 20,
+          "n": 29,
+          "source": "Data adapted from Hill (1997)",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.39,
+            0.68,
+            0.98,
+            1.35,
+            2.05,
+            3.34,
+            3.77,
+            5.37,
+            8.6,
+            19.0
+          ],
+          "miles": [
+            0.24,
+            0.43,
+            0.61,
+            0.84,
+            1.28,
+            2.08,
+            2.36,
+            3.36,
+            5.38,
+            11.88
+          ]
+        },
+        "uk_study": {
+          "page": 21,
+          "n": 25,
+          "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.1,
+            0.25,
+            0.5,
+            0.95,
+            1.0,
+            2.7,
+            4.0,
+            4.75,
+            7.0,
+            10.0
+          ],
+          "miles": [
+            0.06,
+            0.16,
+            0.31,
+            0.59,
+            0.62,
+            1.68,
+            2.48,
+            2.95,
+            4.35,
+            6.21
+          ]
+        }
+      },
+      "outcomes": {
+        "page": 21,
+        "n": 30,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "fatalities_pct": 43,
+        "injured_pct": 3,
+        "unhurt_pct": 37,
+        "no_trace_pct": 17
+      },
+      "where_found": {
+        "page": 21,
+        "n": 30,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "percent": {
+          "Water / Water's Edge": 27,
+          "No Trace": 17,
+          "Open Ground": 17,
+          "Building / Shelter": 10,
+          "Path / Track": 10,
+          "Habitation": 10,
+          "Forest / Woodland": 3,
+          "Road": 3,
+          "Wall / Fence Line": 3,
+          "Forest Edge / Clearing": 0,
+          "Stream / Ditch": 0
+        }
+      },
+      "other_statistics": [
+        {
+          "page": 20,
+          "source": "Mitchell",
+          "text": "40-50% are adequately equipped"
+        },
+        {
+          "page": 20,
+          "source": "Mitchell",
+          "text": "50% followed a trail or drainage at some time while missing"
+        },
+        {
+          "page": 20,
+          "source": "Mitchell",
+          "text": "30-50% move at night"
+        },
+        {
+          "page": 20,
+          "source": "Mitchell",
+          "text": "90% are found within five miles of IPP"
+        }
+      ],
+      "characteristics": {
+        "page": 20,
+        "source": "Hill, Syrotuck; Mitchell",
+        "items": [
+          "Mushroom/fruit pickers, photographers, outdoor workers etc.",
+          "Often inadequately equipped and prepared",
+          "Many found away from trails and tracks",
+          "May panic; poor way-finding skills; may lack map and compass",
+          "Attempts to 'find themselves' often make it worse",
+          "Cause is subject error; high percent are communicative (Mitchell)"
+        ]
+      },
+      "where": {
+        "page": 20,
+        "source": "Hill, Syrotuck",
+        "items": [
+          "Near natural boundaries and vegetation interfaces: forest edge, stream, steep slope",
+          "Navigation aids: walls, fence-lines, shelters",
+          "May wander away from regular tracks and trails",
+          "Identify 'magnets' that may have attracted them"
+        ]
+      },
+      "how": {
+        "page": 21,
+        "source": "Handbook",
+        "items": [
+          "Investigation especially important for this 'mixed bag' category",
+          "Terrain analysis to identify magnets",
+          "Rapid response teams and air scenting dogs on trails, streams, forest edges, fence-lines",
+          "Trackers and trailing dogs at PLS/LKP"
+        ]
+      }
+    },
+    "hikers": {
+      "title": "Hikers / Walkers",
+      "pages": [
+        22,
+        23
+      ],
+      "aliases": [
+        "hiker",
+        "walker",
+        "walkers",
+        "hikers_walkers"
+      ],
+      "distance": {
+        "source_studies": {
+          "page": 22,
+          "n": 24,
+          "source": "Data adapted from Hill (1997)",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.87,
+            1.21,
+            1.55,
+            1.93,
+            2.33,
+            2.74,
+            3.14,
+            5.64,
+            10.87,
+            24.0
+          ],
+          "miles": [
+            0.54,
+            0.76,
+            0.97,
+            1.21,
+            1.46,
+            1.71,
+            1.96,
+            3.53,
+            6.8,
+            15.0
+          ],
+          "printed_as": {
+            "miles_100": "15.0"
+          }
+        },
+        "uk_study": {
+          "page": 23,
+          "n": 72,
+          "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.5,
+            1.0,
+            1.5,
+            2.0,
+            2.95,
+            3.9,
+            5.0,
+            6.1,
+            7.0,
+            25.3
+          ],
+          "miles": [
+            0.31,
+            0.62,
+            0.93,
+            1.24,
+            1.83,
+            2.42,
+            3.11,
+            3.79,
+            4.35,
+            15.71
+          ]
+        }
+      },
+      "outcomes": {
+        "page": 23,
+        "n": 72,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "fatalities_pct": 11,
+        "injured_pct": 4,
+        "unhurt_pct": 85,
+        "no_trace_pct": 0
+      },
+      "where_found": {
+        "page": 23,
+        "n": 72,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "percent": {
+          "Open Ground": 33,
+          "Path / Track": 24,
+          "Building / Shelter": 11,
+          "Road": 11,
+          "Habitation": 7,
+          "Wall / Fence Line": 4,
+          "Forest Edge / Clearing": 3,
+          "Stream / Ditch": 3,
+          "Forest / Woodland": 3,
+          "Water / Water's Edge": 1,
+          "No Trace": 0
+        }
+      },
+      "other_statistics": [],
+      "characteristics": {
+        "page": 22,
+        "source": "Hill, Syrotuck (* = supported by UK study)",
+        "items": [
+          "Trail oriented; lost when trail obscured or at confusing junctions*",
+          "Tend to travel further than other categories*",
+          "Sometimes poorly prepared, lack experience of remote areas*",
+          "Try to find themselves by trail running or finding a high spot",
+          "May follow lines of least resistance (stream, forest edge)*",
+          "May look for shelter at nightfall or if injured*"
+        ]
+      },
+      "where": {
+        "page": 22,
+        "source": "Hill, Syrotuck",
+        "items": [
+          "Tracks, trails, lines of least resistance, forest edges*",
+          "Sheltered points",
+          "High ground - lookouts"
+        ]
+      },
+      "how": {
+        "page": 23,
+        "source": "Handbook",
+        "items": [
+          "Confinement a priority*; check route plans*",
+          "Aerial survey of lines of least resistance, trails, navigation points",
+          "Small, widely spaced rapid response teams and air scenting dogs*",
+          "Tracking dogs and trackers from IPP; clue-aware searchers on trails*",
+          "Be aware of potentially large distances and areas*"
+        ]
+      }
+    },
+    "hunters": {
+      "title": "Hunters",
+      "pages": [
+        24,
+        25
+      ],
+      "aliases": [
+        "hunter"
+      ],
+      "distance": {
+        "source_studies": {
+          "page": 24,
+          "n": 100,
+          "source": "Data adapted from Hill (1997)",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.8,
+            1.28,
+            1.61,
+            1.94,
+            2.4,
+            3.09,
+            3.5,
+            5.0,
+            8.0,
+            19.31
+          ],
+          "miles": [
+            0.5,
+            0.8,
+            1.0,
+            1.21,
+            1.5,
+            1.93,
+            2.19,
+            3.13,
+            5.0,
+            12.07
+          ]
+        },
+        "uk_study": null
+      },
+      "uk_study_note": {
+        "page": 25,
+        "text": "(no equivalent category)"
+      },
+      "outcomes": null,
+      "where_found": null,
+      "other_statistics": [
+        {
+          "page": 24,
+          "source": "Hill, Syrotuck",
+          "text": "On average 1 in 3 walk out unharmed"
+        },
+        {
+          "page": 24,
+          "source": "Mitchell",
+          "text": "Weather a factor in 18% of cases; darkness a factor in 33% of cases"
+        },
+        {
+          "page": 24,
+          "source": "Mitchell",
+          "text": "39% follow drainages"
+        },
+        {
+          "page": 24,
+          "source": "Mitchell",
+          "text": "Many are communicative, 66% found within two miles"
+        }
+      ],
+      "characteristics": {
+        "page": 24,
+        "source": "Hill, Syrotuck; Mitchell",
+        "items": [
+          "Concentration on game distracts from navigation",
+          "Disoriented chasing wounded game into thick cover",
+          "Overextend themselves in darkness",
+          "Will respond to calls and whistles; may fire shots",
+          "May walk out at daybreak after building shelter",
+          "High survivability rate; common cause is subject error"
+        ]
+      },
+      "where": {
+        "page": 24,
+        "source": "Hill, Syrotuck",
+        "items": [
+          "Trails, tracks and forest roads",
+          "Drainages, stream/river banks",
+          "Forest edges, clearings, points for shelter"
+        ]
+      },
+      "how": {
+        "page": 25,
+        "source": "Handbook",
+        "items": [
+          "Confinement a priority; thorough investigation",
+          "Aerial survey of tracks, trails, forest roads, clearings",
+          "Attractive methods may be effective",
+          "Clue aware teams along trails and riverbanks; small rapid response groups"
+        ]
+      }
+    },
+    "fishermen": {
+      "title": "Fishermen",
+      "pages": [
+        26
+      ],
+      "aliases": [
+        "fisherman",
+        "fishers",
+        "anglers"
+      ],
+      "distance": {
+        "source_studies": null,
+        "uk_study": null
+      },
+      "outcomes": null,
+      "where_found": null,
+      "other_statistics": [],
+      "characteristics": {
+        "page": 26,
+        "source": "Syrotuck",
+        "items": [
+          "Generally very well oriented by river flow or lake position",
+          "Overdue mostly through accident: slipping into water, falls, swept off feet",
+          "Very high percentage boat related",
+          "Often a recovery mission"
+        ]
+      },
+      "where": null,
+      "how": null
+    },
+    "climbers": {
+      "title": "Climbers",
+      "pages": [
+        26
+      ],
+      "aliases": [
+        "climber",
+        "mountaineers"
+      ],
+      "distance": {
+        "source_studies": null,
+        "uk_study": null
+      },
+      "outcomes": null,
+      "where_found": null,
+      "other_statistics": [],
+      "characteristics": {
+        "page": 26,
+        "source": "Syrotuck",
+        "items": [
+          "Generally well equipped and self-sufficient",
+          "Tend to remain on or near designated routes",
+          "Primary factors: weather or hazardous conditions; falling debris and avalanche",
+          "Technical expertise generally needed for search and recovery",
+          "Backcountry: route taking longer than planned, or lower limb injuries on non-technical terrain"
+        ]
+      },
+      "where": null,
+      "how": null
+    },
+    "skiers": {
+      "title": "Skiers",
+      "pages": [
+        27
+      ],
+      "aliases": [
+        "skier"
+      ],
+      "distance": {
+        "source_studies": null,
+        "uk_study": null
+      },
+      "outcomes": null,
+      "where_found": null,
+      "other_statistics": [
+        {
+          "page": 27,
+          "source": "Mitchell",
+          "text": "Cause is human error, weather (33%) or darkness (20%)"
+        },
+        {
+          "page": 27,
+          "source": "Mitchell",
+          "text": "Generally follow paths, trails, drainages; 25% attracted by civilization"
+        },
+        {
+          "page": 27,
+          "source": "Mitchell",
+          "text": "Almost all are communicative, 50% are mobile"
+        },
+        {
+          "page": 27,
+          "source": "Mitchell",
+          "text": "85% found within 5 miles of IPP"
+        },
+        {
+          "page": 27,
+          "source": "Mitchell",
+          "text": "83% are not moving after the first 24 hours; 30-45% move at night"
+        },
+        {
+          "page": 27,
+          "source": "Mitchell",
+          "text": "50% found by SAR effort using hasty search, visual tracking; 50% find themselves"
+        }
+      ],
+      "characteristics": null,
+      "where": null,
+      "how": null
+    },
+    "organised_groups": {
+      "title": "Organised Groups",
+      "pages": [
+        27
+      ],
+      "aliases": [
+        "organized_groups",
+        "groups",
+        "organised_group",
+        "organised_party"
+      ],
+      "distance": {
+        "source_studies": null,
+        "uk_study": {
+          "page": 27,
+          "n": 14,
+          "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.9,
+            1.6,
+            2.2,
+            3.1,
+            3.5,
+            4.0,
+            4.2,
+            4.6,
+            5.4,
+            6.5
+          ],
+          "miles": [
+            0.56,
+            0.99,
+            1.37,
+            1.93,
+            2.17,
+            2.48,
+            2.61,
+            2.86,
+            3.35,
+            4.04
+          ]
+        }
+      },
+      "outcomes": {
+        "page": 27,
+        "n": 14,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "fatalities_pct": 0,
+        "injured_pct": 21,
+        "unhurt_pct": 79,
+        "no_trace_pct": 0
+      },
+      "where_found": {
+        "page": 27,
+        "n": 14,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "percent": {
+          "Open Ground": 36,
+          "Building / Shelter": 14,
+          "Path / Track": 14,
+          "Stream / Ditch": 14,
+          "Forest Edge / Clearing": 7,
+          "Forest / Woodland": 7,
+          "Road": 7,
+          "Habitation": 0,
+          "No Trace": 0,
+          "Wall / Fence Line": 0,
+          "Water / Water's Edge": 0
+        }
+      },
+      "other_statistics": [],
+      "characteristics": null,
+      "where": null,
+      "how": null
+    },
+    "dementia_general": {
+      "title": "Dementia (General)",
+      "pages": [
+        28
+      ],
+      "aliases": [
+        "dementia"
+      ],
+      "distance": {
+        "source_studies": null,
+        "uk_study": {
+          "page": 28,
+          "n": 25,
+          "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+          "percent": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100
+          ],
+          "km": [
+            0.2,
+            0.3,
+            0.4,
+            0.65,
+            1.0,
+            1.2,
+            2.8,
+            4.6,
+            8.6,
+            15.5
+          ],
+          "miles": [
+            0.12,
+            0.19,
+            0.25,
+            0.4,
+            0.62,
+            0.75,
+            1.74,
+            2.86,
+            5.34,
+            9.63
+          ]
+        }
+      },
+      "outcomes": {
+        "page": 28,
+        "n": 26,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "fatalities_pct": 23,
+        "injured_pct": 12,
+        "unhurt_pct": 62,
+        "no_trace_pct": 4
+      },
+      "where_found": {
+        "page": 28,
+        "n": 26,
+        "source": "A UK Study (June 2003), Perkins, Roberts & Feeney",
+        "percent": {
+          "Open Ground": 23,
+          "Wall / Fence Line": 15,
+          "Path / Track": 15,
+          "Habitation": 8,
+          "Forest / Woodland": 8,
+          "Stream / Ditch": 8,
+          "Building / Shelter": 8,
+          "Road": 8,
+          "No Trace": 4,
+          "Water / Water's Edge": 4,
+          "Forest Edge / Clearing": 0
+        }
+      },
+      "other_statistics": [],
+      "characteristics": {
+        "page": 28,
+        "source": "UK study",
+        "items": [
+          "Identified within the general 'Vulnerable' category",
+          "Described as confused, poor short-term memory, non-specific or senile dementia",
+          "Usually reported as 'wandering off' from residential care",
+          "May be compounded with other medical conditions"
+        ]
+      },
+      "where": null,
+      "how": null
+    }
+  },
+  "transcription_flags": [
+    {
+      "page": 4,
+      "issue": "Handbook: 'Where percentages are quoted, the total may not add up to 100% because of error in the rounding up process.' Outcome and where-found percentages are stored as printed and are not renormalised."
+    },
+    {
+      "page": 29,
+      "issue": "Glossary defines Youth as 13 - 16 yr; the category pages (10, 11) are titled Youth (13 - 15 years)."
+    },
+    {
+      "page": 18,
+      "issue": "Alzheimer's text says '50% are found within 0.6 miles of IPP'; the table on the same page gives 50% = 0.80 km / 0.50 miles. Both stored as printed."
+    },
+    {
+      "page": 12,
+      "issue": "Despondents (Koester) 100% printed as '32.0' km (one decimal); stored as 32.0."
+    },
+    {
+      "page": 22,
+      "issue": "Hikers (Hill) 100% printed as '15.0' miles (one decimal); stored as 15.0."
+    },
+    {
+      "pages": [
+        7,
+        9,
+        11,
+        13,
+        15,
+        17,
+        19,
+        21,
+        23,
+        27,
+        28
+      ],
+      "issue": "Sample size differs between UK outcome, distance and where-found tables for some categories (e.g. Misc Adults: outcomes n=30, distance n=25). Each table keeps its own printed n."
+    },
+    {
+      "pages": [
+        7,
+        9,
+        11,
+        13,
+        15,
+        17,
+        19,
+        21,
+        23,
+        27,
+        28
+      ],
+      "issue": "The 100% row is the single furthest case found (e.g. 132 km for UK youths and despondents), not a statistical bound; it dominates the outer ring and the grid's outer band."
+    },
+    {
+      "page": 5,
+      "issue": "The handbook gives distances in 10% stages instead of the traditional 25%/median/75% zones. There are no 25%, 75% or 95% rows; any such ring is linearly interpolated by the tool and marked so."
+    },
+    {
+      "page": 25,
+      "issue": "Hunters: the UK study has no equivalent category; only the Hill (1997) table exists."
+    },
+    {
+      "pages": [
+        26,
+        27
+      ],
+      "issue": "Fishermen, climbers and skiers have notes only (Syrotuck / Mitchell); no distance table. Organised groups have only the UK table. No category in the handbook is split by terrain."
+    },
+    {
+      "category": "psychological_illness",
+      "dataset": "source_studies",
+      "page": 14,
+      "percent": 90,
+      "km_printed": 6.0,
+      "miles_printed": 4.8,
+      "miles_as_km": 7.72,
+      "issue": "km and miles columns disagree by more than 4%; both kept as printed, geometry uses the km column"
+    },
+    {
+      "category": "psychological_illness",
+      "dataset": "uk_study",
+      "page": 15,
+      "percent": 50,
+      "km_printed": 2.1,
+      "miles_printed": 1.24,
+      "miles_as_km": 2.0,
+      "issue": "km and miles columns disagree by more than 4%; both kept as printed, geometry uses the km column"
+    },
+    {
+      "category": "developmental",
+      "dataset": "source_studies",
+      "page": 16,
+      "percent": 30,
+      "km_printed": 0.3,
+      "miles_printed": 0.2,
+      "miles_as_km": 0.32,
+      "issue": "km and miles columns disagree by more than 4%; both kept as printed, geometry uses the km column"
+    },
+    {
+      "category": "developmental",
+      "dataset": "source_studies",
+      "page": 16,
+      "percent": 100,
+      "km_printed": 6.0,
+      "miles_printed": 4.8,
+      "miles_as_km": 7.72,
+      "issue": "km and miles columns disagree by more than 4%; both kept as printed, geometry uses the km column"
+    }
+  ]
+}
