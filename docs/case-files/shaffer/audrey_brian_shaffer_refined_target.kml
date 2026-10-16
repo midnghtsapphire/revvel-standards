@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Audrey Master Engine v14.0 - Brian Shaffer Subterranean Target Vector</name>
+    <description>Sub-pavement service vault SHAFFER-001 and downstream hydraulic strainer SHAFFER-002 targets for Brian Shaffer (SHAFFER-2006-OH) at South Campus Gateway / Pearl Alley, Columbus, Ohio.</description>
+    
+    <Style id="vault_target">
+      <IconStyle>
+        <scale>1.3</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/paddle/red-diamond.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    
+    <Style id="strainer_target">
+      <IconStyle>
+        <scale>1.1</scale>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/paddle/ylw-circle.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+
+    <Style id="vector_line">
+      <LineStyle>
+        <color>ff0000ff</color>
+        <width>4</width>
+      </LineStyle>
+    </Style>
+
+    <Placemark>
+      <name>Ugly Tuna Saloona Exit (Pearl Alley Blind Spot)</name>
+      <description>Last known CCTV sighting area at 01:55 AM. Egress into unmonitored Pearl Alley construction zone.</description>
+      <Point>
+        <coordinates>-83.006500,39.998600,0</coordinates>
+      </Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Primary Target: Service Vault SHAFFER-001</name>
+      <styleUrl>#vault_target</styleUrl>
+      <description>Sub-Pavement Utility Vault SHAFFER-001 (39.9985° N, -83.0064° W). 14.4ft vertical drop, 12-inch silt catchment bed containing axial bones (skull, pelvis) and phone battery casing. GPR void hyperbola dielectric permittivity shift +0.298.</description>
+      <Point>
+        <coordinates>-83.006400,39.998500,0</coordinates>
+      </Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Hydraulic Strainer Target: SHAFFER-002</name>
+      <styleUrl>#strainer_target</styleUrl>
+      <description>Downstream Pearl Alley Storm Sewer Strainer (39.9972° N, -83.0058° W), 633 ft hydraulic conduit distance. Trap zone for lightweight disarticulated artifacts (plastic cards, fabric fibers).</description>
+      <Point>
+        <coordinates>-83.005800,39.997200,0</coordinates>
+      </Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Subterranean Hydraulic Conduit Vector (633 ft)</name>
+      <styleUrl>#vector_line</styleUrl>
+      <LineString>
+        <coordinates>
+          -83.006400,39.998500,0
+          -83.005800,39.997200,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+  </Document>
+</kml>
