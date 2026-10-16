@@ -181,10 +181,13 @@ class Cli(unittest.TestCase):
                 json.dump([{"name": "x", "mirrors": [{"name": "m", "kind": "shell", "root": "https://a.example",
                                                       "hosts": ["a.example"]}]}], f)
             self.assertEqual(self._main(["--services", p], healthy_opener())[0], 2)
+            ok_mirror = {"name": "m", "kind": "stac", "root": "https://a.example", "hosts": ["a.example"]}
             for bad in ([1], [{"name": "x", "mirrors": [7]}], {"name": "x"},
                         [{"name": "x", "mirrors": [{"name": "m", "kind": "stac", "root": "https://a.example"}]}],
                         [{"name": "x", "mirrors": [{"name": "m", "kind": "cmr", "root": "https://a.example",
-                                                    "hosts": ["a.example"]}]}]):
+                                                    "hosts": ["a.example"]}]}],
+                        [{"name": "x", "required": "false", "mirrors": [ok_mirror]}],
+                        [{"name": "x", "mirrors": [ok_mirror, ok_mirror]}]):
                 with self.subTest(bad=bad):
                     with open(p, "w", encoding="utf-8") as f:
                         json.dump(bad, f)
@@ -193,7 +196,8 @@ class Cli(unittest.TestCase):
     def test_bad_state_file_is_exit_2(self):
         with tempfile.TemporaryDirectory() as d:
             st = os.path.join(d, "s.json")
-            for bad in ([1, 2], {"history": []}, {"history": {"svc": 3}}):
+            for bad in ([1, 2], {"history": []}, {"history": {"svc": 3}},
+                        {"history": {"svc": {"m": ["no", 0, 1]}}}):
                 with self.subTest(bad=bad):
                     with open(st, "w", encoding="utf-8") as f:
                         json.dump(bad, f)

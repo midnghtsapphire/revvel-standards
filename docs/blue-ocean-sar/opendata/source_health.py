@@ -380,13 +380,21 @@ def validate_services(services, path):
         if s["name"] in names:
             raise ValueError(f"{path}: duplicate service {s['name']}")
         names.add(s["name"])
+        # Review 2026-10-16: run() used bool(required), so the string "false" counted as required.
+        if "required" in s and not isinstance(s["required"], bool):
+            raise ValueError(f"{path}: {s['name']}: required must be true or false")
         if s.get("selection", "first-healthy") not in ("first-healthy", "fastest-healthy"):
             raise ValueError(f"{path}: {s['name']}: selection must be first-healthy or fastest-healthy")
         if not isinstance(s.get("mirrors"), list) or not s["mirrors"]:
             raise ValueError(f"{path}: {s['name']}: mirrors must be a non-empty list")
+        mirror_names = set()
         for m in s["mirrors"]:
             if not isinstance(m, dict) or not isinstance(m.get("name"), str) or not m["name"]:
                 raise ValueError(f"{path}: {s['name']}: every mirror must be an object with a name")
+            # Review 2026-10-16: names key status and history, so a duplicate could hide a failover.
+            if m["name"] in mirror_names:
+                raise ValueError(f"{path}: {s['name']}: duplicate mirror {m['name']}")
+            mirror_names.add(m["name"])
             if m.get("kind") not in PROBES:
                 raise ValueError(f"{path}: mirror {m['name']}: kind must be one of {sorted(PROBES)}")
             if not isinstance(m.get("root"), str):
@@ -480,7 +488,10 @@ def main(argv=None, opener=None, now=None, sleep=time.sleep):
                 state = json.load(f)
             # Review 2026-10-16: a non-object state file used to crash in history_success().
             if not isinstance(state, dict) or not isinstance(state.get("history", {}), dict) or not all(
-                    isinstance(v, dict) and all(isinstance(x, list) for x in v.values())
+                    # isinstance(v, dict) and all(isinstance(x, list) for x in v.values())
+                    # Replaced (review 2026-10-16): history items are counted by truthiness, so require booleans.
+                    isinstance(v, dict) and all(isinstance(x, list) and all(isinstance(i, bool) for i in x)
+                                                for x in v.values())
                     for v in state.get("history", {}).values()):
                 raise ValueError(f"{a.state}: not a source_health state file")
         report, cfg = run(services, samples=a.samples, timeout=a.timeout, state=state, now=now,
