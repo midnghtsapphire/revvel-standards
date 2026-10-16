@@ -418,3 +418,61 @@ reproduce, so that residual is large.
 
 The map is a planning prior. The behaviour weights are not fitted per
 category. Unmapped cliffs and rivers are not barriers unless you supply them.
+
+## Burial timeline signature on three or more lidar surveys (`burial_signature.py`)
+
+This is the real-data version of the uploaded `remains_anomaly_pipeline`. It
+reads N >= 3 DEM GeoTIFFs with their survey years and puts them on one grid
+using `microtopo.py`'s readers. Each survey can come with an uncertainty, as a
+single sigma in metres or as a raster. Then it works through these steps:
+
+1. **Per-pair change.** It computes the change between each pair of surveys
+   and its propagated uncertainty. It then gives the probability that the
+   change is real: P = 1 - 2(1 - Phi(|dZ| / sigma)).
+2. **Burial timeline.** It looks for an earlier mound followed by later
+   subsidence in the same grave-sized neighbourhood. Only (mound, sink)
+   pairs whose timing fits the sink window are tried.
+   - **Rejected:** ground that only rose, and ground that only sank.
+3. **Significance.** It runs a Getis-Ord Gi* hotspot test on the standardised
+   change, separately for each slope class. Both the mound and the sink have
+   to be significant. Benjamini-Hochberg false-discovery-rate control replaces
+   the fixed z cut-off that the prototype used across thousands of cells.
+4. **Voids.** Black top-hat depressions with a PCA shape test sort culverts
+   and vaults (linear) from grave-sized pits (compact).
+5. **Candidate ledger.** It writes the candidates as CSV, GeoJSON and KML
+   with q-values. A manifest records the sha256 of every input and output.
+6. **Optional calibration.** With a known-sites CSV and scikit-learn
+   installed, it trains a calibrated classifier with spatially blocked
+   cross-validation and reports a site-level operating curve. Sites buried
+   before the first survey are censored, not counted as negatives.
+
+```sh
+python burial_signature.py --epoch dtm_2012.tif 2012 0.08 --epoch dtm_2016.tif 2016 0.08 \
+    --epoch dtm_2021.tif 2021 sigma_2021.tif --out-dir out/site [--sites known.csv]
+python -m unittest test_burial_signature
+```
+
+Exit codes:
+
+- **0:** the run finished (zero candidates is a valid result).
+- **2:** bad input.
+- **3:** fewer than three surveys, or no survey pair fits the sink window.
+
+Every output is labelled "screening index, not a probability of a grave"
+unless it was calibrated on real labelled sites.
+
+Synthetic tests:
+
+- **Found:** a planted mound followed by subsidence, at the right place and
+  in the right survey intervals.
+- **Rejected:** mound-only ground, sink-only ground, and a grave inside a
+  high-uncertainty patch.
+- **Noise:** pure-noise stacks gave no candidates in 50 of 50 seeds.
+
+Limits:
+
+- Surveys are aligned vertically only.
+- Correlated lidar noise makes the significance too optimistic.
+- The method is deliberately strict, so faint or old burials will be missed.
+- It has not yet been run on a real stack of three or more 3DEP surveys.
+- St. Francisville has only one 1 m survey, so this cannot be run there.
