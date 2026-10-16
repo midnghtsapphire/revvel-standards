@@ -34,14 +34,19 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_BASELINE = path.join(ROOT, 'config', 'flake8-baseline.txt');
 
+// Earlier form: a one-line assignment followed by the original concatenation
+// as a leftover no-op expression, which orphaned the comment below:
+// const FLAKE8_EXCLUDE =
+//   '.git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,.pytest_cache,mcp-servers/gemini-notebook-mcp-cli,docs/case-files';
 const FLAKE8_EXCLUDE =
-  '.git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,.pytest_cache,mcp-servers/gemini-notebook-mcp-cli,docs/case-files';
   '.git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,'
   + '.pytest_cache,'
   // Vendored upstream project with its own [tool.ruff] config — see .flake8.
   // This gate passes --exclude explicitly, which OVERRIDES .flake8, so the
   // path must be listed here too or the exclusion silently does nothing.
-  + 'mcp-servers/gemini-notebook-mcp-cli';
+  + 'mcp-servers/gemini-notebook-mcp-cli,'
+  // As-received upload archive, kept byte-identical to its MANIFEST.csv.
+  + 'docs/case-files';
 
 
 function isPathExcluded(filePath) {
