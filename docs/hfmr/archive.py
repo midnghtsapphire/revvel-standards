@@ -78,9 +78,15 @@ def inspect_file(path):
 
 
 def register(path, case_id, source_id, output, acquired=None, acquisition_basis="unknown", source_url=None):
+    # Blank, whitespace-only, None and case variants of "unknown" are all "no basis".
+    basis = str(acquisition_basis).strip() if acquisition_basis is not None else ""
+    if not basis or basis.lower() == "unknown":
+        basis = "unknown"
     if acquired:
         datetime.fromisoformat(acquired.replace("Z", "+00:00"))
-        if acquisition_basis == "unknown":
+        # Original: if acquisition_basis == "unknown":
+        #   exact-string check let "", "  ", None and "UNKNOWN" through as an evidence basis.
+        if basis == "unknown":
             raise ValueError("Acquisition date requires explicit evidence basis")
     data = {
         "schema": "hfmr.archive.v1",
@@ -88,7 +94,8 @@ def register(path, case_id, source_id, output, acquired=None, acquisition_basis=
         "source_id": source_id,
         "source_url": source_url,
         "acquisition_time": acquired,
-        "acquisition_basis": acquisition_basis,
+        # Original: "acquisition_basis": acquisition_basis,
+        "acquisition_basis": basis,
         "registered_utc": datetime.now(timezone.utc).isoformat(),
         "file": inspect_file(path),
     }
@@ -97,7 +104,11 @@ def register(path, case_id, source_id, output, acquired=None, acquisition_basis=
     if out.exists():
         raise FileExistsError("Refusing to overwrite existing evidence manifest")
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(data, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+    # Original: out.write_text(json.dumps(data, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+    #   the exists() check above and this write were not atomic, so a concurrent register()
+    #   could overwrite the manifest. Exclusive creation ("x") makes the no-overwrite rule hold.
+    with out.open("x", encoding="utf-8") as f:
+        f.write(json.dumps(data, indent=2, sort_keys=True, default=str) + "\n")
     return data
 
 
