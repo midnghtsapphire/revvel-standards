@@ -63,7 +63,7 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
-      - "npm"
+      # - "npm"   # Removed 2026-10-16: no "npm" label exists, so Dependabot refused to label its PRs.
     cooldown:
       default-days: 7
     commit-message:
@@ -92,7 +92,7 @@ updates:
     open-pull-requests-limit: 2
     labels:
       - "dependencies"
-      - "npm"
+      # - "npm"   # Removed 2026-10-16: no "npm" label exists, so Dependabot refused to label its PRs.
     cooldown:
       default-days: 7
     commit-message:
@@ -117,7 +117,7 @@ updates:
     open-pull-requests-limit: 2
     labels:
       - "dependencies"
-      - "npm"
+      # - "npm"   # Removed 2026-10-16: no "npm" label exists, so Dependabot refused to label its PRs.
     cooldown:
       default-days: 7
     commit-message:
@@ -142,7 +142,7 @@ updates:
     open-pull-requests-limit: 2
     labels:
       - "dependencies"
-      - "npm"
+      # - "npm"   # Removed 2026-10-16: no "npm" label exists, so Dependabot refused to label its PRs.
     cooldown:
       default-days: 7
     commit-message:
@@ -167,7 +167,7 @@ updates:
     open-pull-requests-limit: 2
     labels:
       - "dependencies"
-      - "npm"
+      # - "npm"   # Removed 2026-10-16: no "npm" label exists, so Dependabot refused to label its PRs.
     cooldown:
       default-days: 7
     commit-message:
@@ -192,7 +192,7 @@ updates:
     open-pull-requests-limit: 2
     labels:
       - "dependencies"
-      - "npm"
+      # - "npm"   # Removed 2026-10-16: no "npm" label exists, so Dependabot refused to label its PRs.
     cooldown:
       default-days: 7
     commit-message:
@@ -217,7 +217,7 @@ updates:
     open-pull-requests-limit: 2
     labels:
       - "dependencies"
-      - "npm"
+      # - "npm"   # Removed 2026-10-16: no "npm" label exists, so Dependabot refused to label its PRs.
     cooldown:
       default-days: 7
     commit-message:
@@ -242,7 +242,7 @@ updates:
     open-pull-requests-limit: 2
     labels:
       - "dependencies"
-      - "npm"
+      # - "npm"   # Removed 2026-10-16: no "npm" label exists, so Dependabot refused to label its PRs.
     cooldown:
       default-days: 7
     commit-message:
@@ -267,7 +267,7 @@ updates:
     open-pull-requests-limit: 2
     labels:
       - "dependencies"
-      - "npm"
+      # - "npm"   # Removed 2026-10-16: no "npm" label exists, so Dependabot refused to label its PRs.
     cooldown:
       default-days: 7
     commit-message:
@@ -292,7 +292,7 @@ updates:
     open-pull-requests-limit: 2
     labels:
       - "dependencies"
-      - "npm"
+      # - "npm"   # Removed 2026-10-16: no "npm" label exists, so Dependabot refused to label its PRs.
     cooldown:
       default-days: 7
     commit-message:
