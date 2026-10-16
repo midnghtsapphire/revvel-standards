@@ -346,3 +346,34 @@ pass: either `name, pod`, or `name, ttl_km` with `sweep_width_km` or `add_km`.
 The first POA is a judgement or a lost-person-behaviour prior. The update only
 moves that probability around, and the outputs are planning numbers. Bad input
 exits with code 2.
+
+## Optimal effort allocation (`optimal_search.py`)
+
+`search_theory.py` ranks segments. This script decides how much effort each
+segment should get. It uses Koopman and Stone's optimal search theory for the
+exponential detection model: maximise the sum of POA x (1 - e^(-W z / A))
+with total track length equal to the budget. The solution is exact; there is
+no iteration. Segments are funded in order of POA x W / A until the marginal
+gains are equal.
+
+- **Comparisons.** It reports the gain over equal effort, effort in proportion
+  to POA, and greedy PSR passes.
+- **Increments.** It splits the budget into increments. Each increment's
+  optimal plan is nested inside the next, so stopping early is still optimal.
+- **Re-planning.** After each unsuccessful increment, it updates POA with
+  `search_theory.bayes_update` and re-plans.
+- **Rest Of World.** The ROW segment never gets effort.
+
+```sh
+python optimal_search.py segments.csv --effort-km 40 --increments 4 --out plan.json
+python optimal_search.py segments.csv --effort-hours 24 --out plan.json   # needs speed_kmh
+python -m unittest test_optimal_search
+```
+
+On the workbook's example segments with 40 km of effort, the optimal plan
+gives a total POS of 0.535. Greedy PSR gives 0.526, effort in proportion to
+POA 0.508, and equal effort 0.455. The model's limits:
+
+- Effort is continuous and of one type.
+- There are no per-segment caps or transit times.
+- The output needs rounding into real team assignments.
