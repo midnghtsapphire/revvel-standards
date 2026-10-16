@@ -3,9 +3,11 @@ import tempfile
 import unittest
 import urllib.parse
 from pathlib import Path
+from unittest import mock
 
 # star import replaced with explicit names (flake8 F403/F405): from .case001_live import *
 from .case001_live import reconcile, retrieve, run, where_address
+from .test_case001_acquire import run_cli
 
 
 class Response:
@@ -88,6 +90,21 @@ class TestLive(unittest.TestCase):
             report = run(Path(t) / "out", opener=op)
             self.assertTrue(report["retrieval_complete"])
             self.assertEqual(report["records"], 500)
+
+    def test_cli_exits_nonzero_when_incomplete(self):
+        incomplete = {"records": 0, "errors": [1], "retrieval_complete": False, "output": "x"}
+        with mock.patch("hfmr.case001_live.run", return_value=incomplete):
+            self.assertEqual(run_cli("hfmr.case001_cli", ["--output", "unused"]), 2)
+        with mock.patch("hfmr.case001_live.run", return_value=dict(incomplete, retrieval_complete=True)):
+            self.assertEqual(run_cli("hfmr.case001_cli", ["--output", "unused"]), 0)
+
+    def test_release_quick_start_verifies_only_after_complete_acquisition(self):
+        text = (Path(__file__).parent / "modules" / "RELEASE_README.md").read_text()
+        self.assertIn(
+            "python -m hfmr.case001_cli --output case001_evidence \\\n"
+            "  && python -m hfmr.evidence_engine verify --root case001_evidence",
+            text,
+        )
 
     def test_failed_source(self):
         def op(req, timeout):

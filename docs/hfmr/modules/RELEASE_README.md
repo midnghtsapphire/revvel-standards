@@ -16,9 +16,14 @@ python -m hfmr.evidence_engine quality --inventory sources.json --output output/
 # Original: python -m hfmr.evidence_engine verify --root case001
 #   case001 holds no *.sha256 manifests, so that run checked nothing. Verify a bundle that
 #   has them, e.g. a Module 9 acquisition output (it writes a .sha256 beside every file):
-python -m hfmr.case001_cli --output case001_evidence
-python -m hfmr.evidence_engine verify --root case001_evidence
+# Original (verify ran even when the acquisition failed):
+# python -m hfmr.case001_cli --output case001_evidence
+# python -m hfmr.evidence_engine verify --root case001_evidence
+python -m hfmr.case001_cli --output case001_evidence \
+  && python -m hfmr.evidence_engine verify --root case001_evidence
 ```
+
+`case001_cli` exits 2 when any layer failed or may have been truncated (`"retrieval_complete": false`), so the `&&` runs `verify` only after a complete acquisition; a partial bundle still carries valid `.sha256` files and would otherwise verify.
 
 `verify` exits 1 (and reports `"valid": false`) when the root is missing, contains no `*.sha256` manifests, or any manifest fails.
 
