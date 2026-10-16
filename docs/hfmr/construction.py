@@ -110,7 +110,10 @@ def import_csv(input_file, output_file, mapping=None, source_url=""):
 
 
 def _parcel_key(value):
-    """Exact parcel key: separators removed, letters and digits kept (as in discovery.match_identity)."""
+    # Original docstring:
+    #   Exact parcel key: separators removed, letters and digits kept (as in discovery.match_identity).
+    #   match_identity used a different rule; it now calls this helper, so the claim is true by construction.
+    """Exact parcel key: separators removed, ASCII letters and digits kept; shared with discovery.match_identity."""
     return re.sub(r"[^A-Z0-9]", "", str(value or "").upper())
 
 

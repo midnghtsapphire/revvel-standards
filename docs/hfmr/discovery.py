@@ -8,7 +8,11 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
-from .construction import normalized_address, date_value
+
+# Original: from .construction import normalized_address, date_value
+#   parcel keys were normalised here with \W (keeping "_" and non-ASCII letters) while
+#   construction.timeline used [^A-Z0-9]; both now share construction._parcel_key.
+from .construction import normalized_address, date_value, _parcel_key
 from .safe_redirect import checked_urlopen
 
 
@@ -115,7 +119,8 @@ def match_identity(records, address=None, parcel=None, alias_rows=None):
     """Exact normalized match only; alias records require documented cross-reference."""
     aliases = alias_rows or []
     target_address = normalized_address(address or "")
-    target_parcel = re.sub(r"\W", "", parcel or "").upper()
+    # Original: target_parcel = re.sub(r"\W", "", parcel or "").upper()
+    target_parcel = _parcel_key(parcel)
     verified = set()
     for a in aliases:
         if str(a.get("verified", "")).lower() not in ("true", "1", "yes"):
@@ -135,7 +140,8 @@ def match_identity(records, address=None, parcel=None, alias_rows=None):
     matches = []
     for r in records:
         addr = normalized_address(r.get("address", ""))
-        pid = re.sub(r"\W", "", r.get("parcel", "")).upper()
+        # Original: pid = re.sub(r"\W", "", r.get("parcel", "")).upper()
+        pid = _parcel_key(r.get("parcel", ""))
         reasons = []
         if target_address and addr in verified:
             reasons.append("exact_address_or_documented_alias")

@@ -137,6 +137,14 @@ class DiscoveryTests(unittest.TestCase):
         matches = match_identity(rows, address="1546 N HIGH ST", alias_rows=aliases)
         self.assertEqual([m["record"]["address"] for m in matches], ["1546 N HIGH ST"])
 
+    def test_parcel_match_uses_construction_parcel_key(self):
+        from .construction import _parcel_key
+
+        rows = [{"address": "", "parcel": "010_ABC-123"}, {"address": "", "parcel": ""}]
+        self.assertEqual(_parcel_key("010_ABC-123"), "010ABC123")
+        self.assertEqual([m["record"] for m in match_identity(rows, parcel="010ABC123")], [rows[0]])
+        self.assertEqual(match_identity(rows, parcel="_"), [])
+
     def test_inventory_tamper(self):
         with tempfile.TemporaryDirectory() as t:
             p = Path(t) / "i.json"
