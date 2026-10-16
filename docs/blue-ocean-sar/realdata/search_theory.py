@@ -190,6 +190,10 @@ def run(segments, passes=None, add_factor=2.0):
         name = p["name"].strip()
         if name not in by_name:
             raise ValueError(f"pass for unknown segment {name!r}")
+        if _is_row(name):
+            # SYSTEM_REVIEW M3: a ROW pass reached pass_pod and crashed with KeyError('area_km2'), a traceback
+            # instead of a clear refusal. Lesson: check what a segment is before using fields it may not have.
+            raise ValueError(f"pass for {name!r}: the ROW segment cannot be searched")
         rounds.append({name: pass_pod(by_name[name], p, add_factor)})
     history, cum = [], {}
     current = [dict(s) for s in segments]
@@ -224,7 +228,9 @@ def main(argv=None):
             with open(a.passes, newline="", encoding="utf-8") as f:
                 passes = list(csv.DictReader(f))
         res = run(segs, passes, a.add_factor)
-    except (OSError, ValueError) as e:
+    # SYSTEM_REVIEW M3: bad input that surfaced as KeyError escaped as a traceback; it now exits 2 like the rest.
+    # except (OSError, ValueError) as e:
+    except (OSError, ValueError, KeyError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
     text = json.dumps(res, indent=2)

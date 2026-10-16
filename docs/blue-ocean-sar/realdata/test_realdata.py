@@ -415,8 +415,10 @@ class RealtimeListener(unittest.TestCase):
         self.db = os.path.join(self.tmp.name, "stage0.db")
         # Original: the gate fell back to the Shaffer logs on its own; it now needs them passed in.
         # self.srv = rl.make_server("127.0.0.1", 0, self.db)
-        import stage2_validation_gate as sg
-        self.srv = rl.make_server("127.0.0.1", 0, self.db, ground_truth=sg.DEFAULT_VERIFIED_GROUND_TRUTH)
+        # import stage2_validation_gate as sg
+        # self.srv = rl.make_server("127.0.0.1", 0, self.db, ground_truth=sg.DEFAULT_VERIFIED_GROUND_TRUTH)
+        # SYSTEM_REVIEW C4: the built-in Shaffer ground truth is gone; use a sourced, fictional fixture.
+        self.srv = rl.make_server("127.0.0.1", 0, self.db, ground_truth=sourced_ground_truth())
         self.url = f"http://127.0.0.1:{self.srv.server_port}/"
         threading.Thread(target=self.srv.serve_forever, daemon=True).start()
 
@@ -719,6 +721,40 @@ class ArchiveCollector(unittest.TestCase):
         self.assertEqual(stored, ["dated"])
 
 
+def sourced_ground_truth():
+    """Fictional ground truth for the Stage 2 gate tests (SYSTEM_REVIEW C4): every
+    sector and gap names a source document, and no real person is named."""
+    return {
+        "case_id": "TEST-CASE-0001",
+        "cleared_sectors": [
+            {
+                "sector_id": "TEST_DIRT_PILES",
+                "description": "Fixture: graded construction zone with dirt piles",
+                "cleared_date": "2006-04-05",
+                "cleared_by": "Fixture search team",
+                "methods": ["ground search"],
+                "keywords": ["dirt pile", "open pit", "construction dirt", "buried in dirt"],
+                "source": {"document": "Fixture search log", "reference": "p. 3"},
+            },
+            {
+                "sector_id": "TEST_SEWERS",
+                "description": "Fixture: storm sewer lines",
+                "cleared_date": "2006-04-10",
+                "cleared_by": "Fixture utility crew",
+                "keywords": ["storm sewer", "sewer line"],
+                "source": "Fixture utility inspection report",
+            },
+        ],
+        "verified_unmonitored_gaps": [
+            {
+                "gap_id": "TEST_SERVICE_EXIT",
+                "keywords": ["service door", "service exit", "service hallway", "construction exit"],
+                "source": {"document": "Fixture camera-coverage survey"},
+            }
+        ],
+    }
+
+
 class Stage2Gate(unittest.TestCase):
     def setUp(self):
         import archive_collector_cli as ac
@@ -733,14 +769,24 @@ class Stage2Gate(unittest.TestCase):
         self.conn.close()
         self.tmp.cleanup()
 
-    def _add(self, text):
-        rec = self.ac.normalize_record("manual_ingest", "2006-04-02T00:00:00Z", "t", text)
+    # def _add(self, text):
+    #     rec = self.ac.normalize_record("manual_ingest", "2006-04-02T00:00:00Z", "t", text)
+    def _add(self, text, ts="2006-04-02T00:00:00Z"):  # SYSTEM_REVIEW C4: archive time matters now
+        rec = self.ac.normalize_record("manual_ingest", ts, "t", text)
         self.ac.save_record_to_db(self.conn, rec)
         return rec["record_id"]
 
-    def _run(self, ground_truth):
-        stats = self.sg.Stage2ValidationGate(self.db, ground_truth).validate_records()
+    # def _run(self, ground_truth):
+    #     stats = self.sg.Stage2ValidationGate(self.db, ground_truth).validate_records()
+    def _run(self, ground_truth, recheck=False):
+        stats = self.sg.Stage2ValidationGate(self.db, ground_truth).validate_records(recheck=recheck)
         return {d["record_id"]: d["assigned_status"] for d in stats["details"]}, stats
+
+    def _row(self, rid):
+        import sqlite3
+        with sqlite3.connect(self.db) as c:
+            c.row_factory = sqlite3.Row
+            return dict(c.execute("SELECT * FROM stage0_historical_records WHERE record_id = ?", (rid,)).fetchone())
 
     def test_without_ground_truth_gate_abstains(self):
         rid = self._add("he was buried in dirt near the gateway")
@@ -753,27 +799,33 @@ class Stage2Gate(unittest.TestCase):
                              "unverified")
 
     def test_negated_or_search_report_mention_is_not_debunked(self):
-        gt = self.sg.DEFAULT_VERIFIED_GROUND_TRUTH
+        # gt = self.sg.DEFAULT_VERIFIED_GROUND_TRUTH  # SYSTEM_REVIEW C4: built-in ground truth removed
+        gt = sourced_ground_truth()
         neg = self._add("Police searched the dirt pile and found nothing.")
         pos = self._add("I think he is buried in dirt behind the gateway.")
         got, _ = self._run(gt)
         self.assertEqual(got[neg], "flagged_speculative")
-        self.assertEqual(got[pos], "debunked_by_official_log")
+        # self.assertEqual(got[pos], "debunked_by_official_log")  # SYSTEM_REVIEW C4: never "debunked"
+        self.assertEqual(got[pos], "mentions_cleared_sector_needs_review")
 
     def test_negation_is_scoped_to_the_claim_not_the_whole_sentence(self):
-        gt = self.sg.DEFAULT_VERIFIED_GROUND_TRUTH
+        # gt = self.sg.DEFAULT_VERIFIED_GROUND_TRUTH  # SYSTEM_REVIEW C4: built-in ground truth removed
+        gt = sourced_ground_truth()
         near = self._add("He is buried not far from the dirt pile.")
         contrast = self._add("The police searched the bar but he is buried in dirt by the gateway.")
         searched = self._add("Police searched the dirt pile and found nothing.")
         comma = self._add("He was not, they say, buried in dirt.")
         got, _ = self._run(gt)
-        self.assertEqual(got[near], "debunked_by_official_log")
-        self.assertEqual(got[contrast], "debunked_by_official_log")
+        # self.assertEqual(got[near], "debunked_by_official_log")  # SYSTEM_REVIEW C4: never "debunked"
+        # self.assertEqual(got[contrast], "debunked_by_official_log")
+        self.assertEqual(got[near], "mentions_cleared_sector_needs_review")
+        self.assertEqual(got[contrast], "mentions_cleared_sector_needs_review")
         self.assertEqual(got[searched], "flagged_speculative")
         self.assertEqual(got[comma], "flagged_speculative")
 
     def test_gap_uses_its_own_keywords_and_needs_affirmative_claim(self):
-        gt = self.sg.DEFAULT_VERIFIED_GROUND_TRUTH
+        # gt = self.sg.DEFAULT_VERIFIED_GROUND_TRUTH  # SYSTEM_REVIEW C4: built-in ground truth removed
+        gt = sourced_ground_truth()
         exit_claim = self._add("He walked out the service exit toward the construction area.")
         blind = self._add("There is a blind spot on the camera at the parking garage.")
         denied = self._add("He did not use the service door.")
@@ -808,9 +860,136 @@ class Stage2Gate(unittest.TestCase):
                "source_identifier": "t-10", "raw_content": "seen near the river"}
         results, _ = rl.ingest_records(os.path.join(self.tmp.name, "a.db"), [rec])
         self.assertEqual(results[0]["status"], "ingested_not_validated")
-        results, _ = rl.ingest_records(os.path.join(self.tmp.name, "b.db"), [rec],
-                                       self.sg.DEFAULT_VERIFIED_GROUND_TRUTH)
+        # results, _ = rl.ingest_records(os.path.join(self.tmp.name, "b.db"), [rec],
+        #                                self.sg.DEFAULT_VERIFIED_GROUND_TRUTH)  # SYSTEM_REVIEW C4: removed
+        results, _ = rl.ingest_records(os.path.join(self.tmp.name, "b.db"), [rec], sourced_ground_truth())
         self.assertEqual(results[0]["status"], "ingested_and_validated")
+
+    # ---- SYSTEM_REVIEW C4 / M5 regression tests ----
+
+    def test_no_built_in_ground_truth_and_shaffer_flag_refused(self):
+        import contextlib
+        import io
+        self.assertIsNone(self.sg.DEFAULT_VERIFIED_GROUND_TRUTH)
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            self.assertEqual(self.sg.main(["--db", self.db, "--use-shaffer-default", "--run-validation"]), 2)
+        self.assertIn("removed", err.getvalue())
+
+    def test_ground_truth_without_source_or_with_bad_date_refused(self):
+        import contextlib
+        import io
+        import json
+        for mutate in (lambda g: g["cleared_sectors"][0].pop("source"),
+                       lambda g: g["cleared_sectors"][1].update(source="  "),
+                       lambda g: g["cleared_sectors"][0].update(source={"reference": "p. 3"}),
+                       lambda g: g["verified_unmonitored_gaps"][0].pop("source"),
+                       lambda g: g["cleared_sectors"][0].update(cleared_date="April 5th")):
+            gt = sourced_ground_truth()
+            mutate(gt)
+            with self.assertRaises(ValueError):
+                self.sg.Stage2ValidationGate(self.db, gt)
+            p = os.path.join(self.tmp.name, "gt.json")
+            with open(p, "w") as f:
+                json.dump(gt, f)
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(self.sg.main(["--db", self.db, "--ground-truth", p, "--run-validation"]), 2)
+        self.sg.validate_ground_truth(sourced_ground_truth())
+
+    def test_cleared_sector_mention_needs_review_never_debunked(self):
+        rid = self._add("He is buried in dirt at the construction site.")
+        got, stats = self._run(sourced_ground_truth())
+        self.assertEqual(got[rid], "mentions_cleared_sector_needs_review")
+        self.assertEqual(stats["debunked"], 0)
+        self.assertEqual(stats["needs_review"], 1)
+        row = self._row(rid)
+        self.assertEqual(row["gate_status"], "mentions_cleared_sector_needs_review")
+        self.assertEqual(row["verification_status"], "flagged_speculative")  # allowed by the CHECK constraint
+        self.assertNotIn("debunk", row["verification_status"])
+        reason = row["validation_reason"]
+        for part in ("TEST_DIRT_PILES", "2006-04-05", "Fixture search log", "p. 3", "Not debunked"):
+            self.assertIn(part, reason)
+
+    def test_clearance_date_is_a_time_bound(self):
+        gt = sourced_ground_truth()
+        moved = self._add("The dirt pile was moved after the search and he is buried in dirt there.")
+        later_date = self._add("He was buried in dirt on April 20, 2006.")
+        later_iso = self._add("Buried in dirt, 2006-05-01, by the gateway.")
+        later_year = self._add("They put him in the dirt pile in 2007.")
+        filled = self._add("Somebody filled in the open pit a week later.")
+        before = self._add("He was buried in dirt on April 1, 2006.")
+        before_iso = self._add("He was buried in dirt on 2006-04-05.")
+        sewer_ok = self._add("He washed into the storm sewer on 4/8/2006.")  # before that sector's 2006-04-10
+        got, stats = self._run(gt)
+        out = "mentions_cleared_sector_outside_clearance_window"
+        for rid in (moved, later_date, later_iso, later_year, filled):
+            self.assertEqual(got[rid], out)
+        for rid in (before, before_iso, sewer_ok):
+            self.assertEqual(got[rid], "mentions_cleared_sector_needs_review")
+        self.assertEqual(stats["outside_clearance_window"], 5)
+        self.assertIn("does not cover", self._row(moved)["validation_reason"])
+        self.assertIn("april 20, 2006", self._row(later_date)["validation_reason"])
+        self.assertEqual(self._row(moved)["verification_status"], "flagged_speculative")
+
+    def test_record_dated_after_clearance_gets_a_note(self):
+        rid = self._add("He is buried in dirt by the gateway.", ts="2010-01-01T00:00:00Z")
+        got, _ = self._run(sourced_ground_truth())
+        self.assertEqual(got[rid], "mentions_cleared_sector_needs_review")
+        self.assertIn("dated 2010-01-01, after the clearance", self._row(rid)["validation_reason"])
+
+    def test_recheck_reexamines_previously_judged_records(self):
+        import contextlib
+        import io
+        import json
+        import sqlite3
+        rid = self._add("I think he is buried in dirt behind the gateway.")
+        with sqlite3.connect(self.db) as c:  # what an earlier version of the gate stored
+            c.execute("UPDATE stage0_historical_records SET verification_status = 'debunked_by_official_log'")
+        got, stats = self._run(sourced_ground_truth())
+        self.assertEqual(stats["processed"], 0)
+        self.assertEqual(self._row(rid)["verification_status"], "debunked_by_official_log")
+        got, stats = self._run(sourced_ground_truth(), recheck=True)
+        self.assertEqual(stats["processed"], 1)
+        self.assertEqual(got[rid], "mentions_cleared_sector_needs_review")
+        self.assertEqual(stats["details"][0]["previous_status"], "debunked_by_official_log")
+        self.assertEqual(self._row(rid)["verification_status"], "flagged_speculative")
+        with self.assertRaises(ValueError):
+            self._run(None, recheck=True)
+        p = os.path.join(self.tmp.name, "gt.json")
+        with open(p, "w") as f:
+            json.dump(sourced_ground_truth(), f)
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(self.sg.main(["--db", self.db, "--run-validation", "--recheck"]), 2)
+            self.assertEqual(self.sg.main(["--db", self.db, "--ground-truth", p, "--recheck"]), 2)
+            self.assertEqual(self.sg.main(["--db", self.db, "--ground-truth", p, "--run-validation",
+                                           "--recheck"]), 0)
+
+    def test_timestamps_are_timezone_aware_utc(self):
+        import datetime as real_dt
+        import json
+        from unittest import mock
+
+        class FakeDateTime(real_dt.datetime):
+            @classmethod
+            def utcnow(cls):
+                raise AssertionError("naive utcnow() used (SYSTEM_REVIEW M5)")
+
+            @classmethod
+            def now(cls, tz=None):
+                if tz is None:
+                    raise AssertionError("naive now() used (SYSTEM_REVIEW M5)")
+                return real_dt.datetime(2026, 10, 16, 12, 0, 0, tzinfo=real_dt.timezone.utc).astimezone(tz)
+
+        rid = self._add("seen near the river")
+        with mock.patch.object(self.sg, "datetime", FakeDateTime):
+            gate = self.sg.Stage2ValidationGate(self.db, sourced_ground_truth())
+            gate.validate_records()
+            out = os.path.join(self.tmp.name, "audit.json")
+            gate.export_audit_report(out)
+        self.assertEqual(self._row(rid)["validated_at"], "2026-10-16T12:00:00Z")
+        with open(out) as f:
+            report = json.load(f)
+        self.assertEqual(report["audit_timestamp"], "2026-10-16T12:00:00Z")
+        self.assertEqual(report["records"][0]["gate_status"], "flagged_speculative")
 
 
 if __name__ == "__main__":

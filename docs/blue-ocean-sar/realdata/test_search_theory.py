@@ -1,12 +1,14 @@
 """Tests for search_theory.py, using the WiSAR calculator workbook's example rows."""
 
 import csv
+import io
 import json
 import math
 import os
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -149,6 +151,35 @@ class RunAndCli(unittest.TestCase):
             bad = self.write(d, "bad.csv", ["name", "area_km2", "poa"], [("A", 1, 0.5)])
             self.assertEqual(st.main([bad]), 2)
             self.assertEqual(st.main([os.path.join(d, "missing.csv")]), 2)
+
+    def test_pass_on_row_is_value_error_and_exit_2(self):
+        # SYSTEM_REVIEW M3: a coverage pass on ROW used to crash with KeyError('area_km2').
+        segs = [{"name": "A", "poa": 0.6, "area_km2": 1.0}, {"name": "ROW", "poa": 0.4}]
+        for p in ({"name": "ROW", "ttl_km": "1", "sweep_width_km": "0.1"}, {"name": "row", "pod": "0.5"}):
+            with self.subTest(p=p):
+                seg_names = [dict(s, name=p["name"]) if s["name"] == "ROW" else s for s in segs]
+                with self.assertRaises(ValueError) as cm:
+                    st.run(seg_names, passes=[p])
+                self.assertNotIsInstance(cm.exception, KeyError)
+                self.assertIn("ROW", str(cm.exception).upper())
+        with tempfile.TemporaryDirectory() as d:
+            seg = self.write(d, "s.csv", ["name", "area_km2", "poa"], [("A", 1, 0.6), ("ROW", "", 0.4)])
+            passes = self.write(d, "p.csv", ["name", "ttl_km", "sweep_width_km"], [("ROW", 1, 0.1)])
+            with redirect_stderr(io.StringIO()) as err:
+                self.assertEqual(st.main([seg, "--passes", passes]), 2)
+            self.assertIn("ROW segment cannot be searched", err.getvalue())
+
+    def test_key_error_in_main_is_bad_input(self):
+        # SYSTEM_REVIEW M3: any KeyError escaping run() is reported as bad input (exit 2), not a traceback.
+        with tempfile.TemporaryDirectory() as d:
+            seg = self.write(d, "s.csv", ["name", "area_km2", "poa"], [("A", 1, 1.0)])
+            orig = st.run
+            try:
+                st.run = lambda *a, **k: {}["missing"]
+                with redirect_stderr(io.StringIO()):
+                    self.assertEqual(st.main([seg]), 2)
+            finally:
+                st.run = orig
 
 
 if __name__ == "__main__":

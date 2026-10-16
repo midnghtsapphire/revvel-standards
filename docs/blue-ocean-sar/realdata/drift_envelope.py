@@ -4,12 +4,64 @@ Implements ``docs/case-files/general/drift_modeling_note.md``: the output is a
 probability curve along the river from the last known point (LKP), decaying
 with distance, with spikes at snag features. It is **not** a single distance.
 
+Changes for SYSTEM_REVIEW C3 (2026-10-16)
+-----------------------------------------
+The review found the output byte-identical at 1 h and 240 h, cleared cells set
+to 0, and mass beyond the reach renormalised into it (about doubling the
+in-reach numbers). Now:
+
+* **Elapsed time sets the median** (``median_from_time``). The CLI refuses to
+  run (exit 2) unless you give ``--elapsed-hours`` or state a median for the
+  case with ``--median-mi``. Two documented, overridable models:
+
+  - ``sqrt_time`` (default): ``median = ref_median x (t / ref_hours) ^ exponent``
+    with ``ref_median`` 0.5 mi at ``ref_hours`` 24 h and ``exponent`` 0.5
+    (``--ref-median-mi``, ``--ref-hours``, ``--time-exponent``). The 0.5 mi at
+    24 h anchor is the old fixed default; the square-root growth is a
+    dispersive-spread **assumption**, not a fit to recoveries. At 1 h the median
+    is ~164 m, at 240 h ~1.58 mi.
+  - ``velocity`` (opt-in): ``median = transport_fraction x v x t``, with ``v``
+    from ``--mean-velocity-mps``, or from gauge discharge divided by a cross-section
+    **measured at this reach** (``--discharge-cfs`` with ``--xsec-ft2``).
+    ``--transport-fraction`` (the share of mean velocity a submerged body
+    achieves on average, snag time included) has **no default**: you must
+    state it. This only sets the median of the decaying curve; the naive
+    single-distance figure stays rejected.
+
+  ``--median-mi`` overrides both and is recorded as user-stated.
+* **Cleared cells use a POD**, applied with the Bayesian update from
+  ``search_theory.bayes_update``: ``P_i' = P_i (1 - POD_i) / (1 - sum P_j POD_j)``
+  over all cells **and** the beyond-reach bucket. ``--cleared start:end[:pod]``;
+  the default POD is ``--cleared-pod 0.8``, an explicit **assumption**
+  reported in ``summary.json``. A POD of 1 is used only if you state it.
+* **Mass beyond the reach is kept** in a ``beyond_reach`` bucket (last CSV row,
+  ``summary.model.beyond_reach``); in-reach cells are no longer renormalised.
+* **Columns.** ``prior_mass`` (before search), ``pod``, ``posterior_mass``
+  (after the update; cells plus beyond_reach sum to 1) and
+  ``prior_share_within_reach`` (posterior_mass divided by the in-reach total:
+  the share *conditional on the body being inside the modelled reach*, i.e.
+  the planning prior for the next search within the reach). ``cumulative``
+  and ``mass_within`` are now unconditional (cumulative posterior_mass).
+* **DEPRECATED ``probability`` column.** Kept, equal to
+  ``prior_share_within_reach``, only because ``dossier.py`` reads
+  ``top_cells[].probability`` from ``summary.json``. Do not read it as the
+  probability that the body is in the cell: use ``posterior_mass``. It will be
+  removed once dossier.py reads ``prior_share_within_reach``. With
+  ``--cleared-pod 1`` it reproduces the old ``probability`` values exactly.
+
 Model
 -----
 The reach downstream of the LKP (chainage 0) is cut into cells (default 100 m).
 For each cell::
 
     weight = near_field_decay_mass(cell) x snag_multiplier(cell)
+    prior_mass = (1 - beyond_reach_mass) x weight / sum(weights)
+    posterior_mass = prior_mass x (1 - POD) / norm     (POD = 0 unless cleared; norm includes beyond_reach)
+    prior_share_within_reach = posterior_mass / sum(in-reach posterior_mass)
+    search_priority = posterior_mass x accessibility / sum(...)
+
+Previous model (SYSTEM_REVIEW C3: replaced, kept for the record)::
+
     probability = weight / sum(weights)                 (cleared cells set to 0 first)
     search_priority = probability x accessibility / sum(...)
 
@@ -20,6 +72,8 @@ For each cell::
   half mile. **That is an assumption, not a measurement.** Change it with
   ``--median-mi``. Mass beyond the modelled reach is reported (``prior mass
   beyond reach``) and the in-reach cells are renormalised to sum to 1.
+  [SYSTEM_REVIEW C3: superseded: the median now follows elapsed time, and the
+  beyond-reach mass is kept as its own bucket, not renormalised in.]
 * ``snag_multiplier`` comes from features you map from imagery/NHD (type and
   downstream distance). The default multipliers below are **assumptions**
   chosen to express "bodies hang up here", not measured hang-up rates. Where
@@ -28,7 +82,8 @@ For each cell::
   not change where the body is, so it only enters ``search_priority`` and the
   rank, not ``probability`` or its cumulative sum.
 * cleared cells (searched with a detection probability treated as 1) are set
-  to 0 and everything is renormalised.
+  to 0 and everything is renormalised. [SYSTEM_REVIEW C3: superseded by the
+  per-cell POD update above.]
 
 The naive ``velocity = Q / A; distance = velocity x time`` estimate is
 computed only to show it, flagged ``REJECTED`` with the reasons from the note.
@@ -46,9 +101,10 @@ CLI::
 
     python drift_envelope.py --case sar_case_records.json --case-id OKANOGAN-2026-05-27 \\
         --elapsed-hours 25 --out-dir out/okanogan
-    python drift_envelope.py --lat 48.93 --lon -119.42 --water-temp-c 20 \\
+    python drift_envelope.py --lat 48.93 --lon -119.42 --water-temp-c 20 --elapsed-hours 25 \\
         --feature strainer_logjam:650:Logjam-1 --feature bend_inside:1400 \\
-        --access 2000:2600:0.3 --cleared 0:200 --centreline reach.geojson --out-dir out/x
+        --access 2000:2600:0.3 --cleared 0:200 --cleared 200:400:0.5 --centreline reach.geojson --out-dir out/x
+    python drift_envelope.py --median-mi 0.8 --out-dir out/y        # median stated for the case
 
 Writes ``envelope.csv`` and ``summary.json`` always; ``envelope.geojson`` and
 ``envelope.kml`` when a centreline is given.
@@ -65,6 +121,8 @@ import sys
 from dataclasses import dataclass
 from xml.sax.saxutils import escape
 
+import search_theory  # SYSTEM_REVIEW C3: reuse its Bayesian POD update
+
 M_PER_MI = 1609.344
 FT_PER_MI = 5280.0
 EARTH_R_M = 6371008.8
@@ -72,6 +130,14 @@ EARTH_R_M = 6371008.8
 DEFAULT_REACH_M = 3 * M_PER_MI
 DEFAULT_CELL_M = 100.0
 DEFAULT_MEDIAN_M = 0.5 * M_PER_MI
+# SYSTEM_REVIEW C3: elapsed-time model. ASSUMPTIONS, overridable on the command line.
+DEFAULT_REF_HOURS = 24.0  # the old fixed 0.5 mi median is read as the median at 24 h
+DEFAULT_TIME_EXPONENT = 0.5  # square-root (dispersive) growth of the median with time
+TIME_MODELS = ("sqrt_time", "velocity")
+# Default POD for a cleared range. An explicit assumption, never 1.0 unless the user states it.
+DEFAULT_CLEARED_POD = 0.8
+FT_TO_M = 0.3048
+BEYOND_REACH = "beyond_reach"
 
 # ASSUMPTIONS, not measurements. Relative weight of a cell holding the feature
 # versus the same cell without it. Override per feature or with --multiplier.
@@ -163,6 +229,63 @@ def decay_pdf(x: float, kind: str, median_m: float) -> float:
     return math.sqrt(2.0 / math.pi) / sigma * math.exp(-0.5 * (x / sigma) ** 2)
 
 
+def median_from_time(
+    elapsed_hours,
+    model: str = "sqrt_time",
+    ref_median_m: float = DEFAULT_MEDIAN_M,
+    ref_hours: float = DEFAULT_REF_HOURS,
+    exponent: float = DEFAULT_TIME_EXPONENT,
+    mean_velocity_mps=None,
+    transport_fraction=None,
+):
+    """Median travel distance (m) after ``elapsed_hours`` (SYSTEM_REVIEW C3).
+
+    ``sqrt_time``: ``ref_median_m x (t / ref_hours) ** exponent``.
+    ``velocity``: ``transport_fraction x mean_velocity_mps x t``; both inputs
+    are required (no default fraction). Returns ``(median_m, detail)``.
+    """
+    if elapsed_hours is None:
+        raise EnvelopeError("elapsed hours are needed to scale the median (or state --median-mi for the case)")
+    t = float(elapsed_hours)
+    if not t > 0 or math.isinf(t):
+        raise EnvelopeError(f"elapsed hours must be > 0, got {elapsed_hours}")
+    if model == "sqrt_time":
+        if not ref_median_m > 0 or not ref_hours > 0 or not exponent > 0:
+            raise EnvelopeError("ref median, ref hours and time exponent must be > 0")
+        m = ref_median_m * (t / ref_hours) ** exponent
+        return m, {
+            "model": "sqrt_time",
+            "formula": "median = ref_median_m * (elapsed_hours / ref_hours) ** exponent",
+            "elapsed_hours": t,
+            "ref_median_m": ref_median_m,
+            "ref_hours": ref_hours,
+            "exponent": exponent,
+            "assumption": "Anchor (0.5 mi at 24 h by default) and square-root growth are assumptions, not fitted.",
+        }
+    if model == "velocity":
+        if mean_velocity_mps is None:
+            raise EnvelopeError(
+                "time model 'velocity' needs --mean-velocity-mps, or --discharge-cfs with --xsec-ft2 measured at "
+                "this reach"
+            )
+        if transport_fraction is None:
+            raise EnvelopeError("time model 'velocity' needs --transport-fraction (no default: state it)")
+        if not mean_velocity_mps > 0:
+            raise EnvelopeError("mean velocity must be > 0")
+        if not 0 < transport_fraction <= 1:
+            raise EnvelopeError("transport fraction must be in (0, 1]")
+        m = transport_fraction * mean_velocity_mps * t * 3600.0
+        return m, {
+            "model": "velocity",
+            "formula": "median = transport_fraction * mean_velocity_mps * elapsed_hours * 3600",
+            "elapsed_hours": t,
+            "mean_velocity_mps": mean_velocity_mps,
+            "transport_fraction": transport_fraction,
+            "assumption": "The transport fraction is user-stated; it is not measured by this tool.",
+        }
+    raise EnvelopeError(f"unknown time model {model!r}; use {' or '.join(TIME_MODELS)}")
+
+
 # ---------------------------------------------------------------------------
 # Inputs
 # ---------------------------------------------------------------------------
@@ -213,11 +336,13 @@ def build_envelope(
     features=(),
     accessibility=(),
     cleared=(),
+    cleared_pod: float = DEFAULT_CLEARED_POD,
 ) -> dict:
-    """Return ``{"cells": [...], "prior_mass_beyond_reach": float, "warnings": [...]}``.
+    """Return ``{"cells": [...], "beyond_reach": {...}, "prior_mass_beyond_reach": float, "warnings": [...]}``.
 
     ``features``: iterable of ``Feature``. ``accessibility``: iterable of
-    ``(start_m, end_m, factor)``. ``cleared``: iterable of ``(start_m, end_m)``.
+    ``(start_m, end_m, factor)``. ``cleared``: iterable of ``(start_m, end_m)``
+    or ``(start_m, end_m, pod)``; a pair uses ``cleared_pod``.
     A range applies to cells whose midpoint lies inside it.
     """
     if reach_m <= 0 or cell_m <= 0:
@@ -240,6 +365,7 @@ def build_envelope(
                 "features": [],
                 "accessibility": 1.0,
                 "cleared": False,
+                "pod": 0.0,
             }
         )
     for f in features:
@@ -255,24 +381,72 @@ def build_envelope(
         for c in cells:
             if _range_hits(c["start_m"], c["end_m"], lo, hi):
                 c["accessibility"] = fac
-    for lo, hi in cleared:
+    # for lo, hi in cleared:  # SYSTEM_REVIEW C3: a cleared range now carries a POD
+    for rng in cleared:
+        if len(rng) == 2:
+            (lo, hi), pod = rng, cleared_pod
+        elif len(rng) == 3:
+            lo, hi, pod = rng
+        else:
+            raise EnvelopeError(f"cleared range {rng!r} must be (start_m, end_m) or (start_m, end_m, pod)")
+        if pod is None or not 0.0 <= float(pod) <= 1.0:
+            raise EnvelopeError(f"cleared POD must be in [0, 1], got {pod}")
         hit = False
         for c in cells:
             if _range_hits(c["start_m"], c["end_m"], lo, hi):
                 c["cleared"] = hit = True
+                # Two passes over the same cell combine as independent passes: 1 - (1-a)(1-b).
+                c["pod"] = search_theory.cumulative_pod([c["pod"], float(pod)])
         if not hit:
             warnings.append(f"cleared range {lo}-{hi} m matched no cell midpoint")
 
-    weights = [0.0 if c["cleared"] else c["base_decay"] * c["snag_multiplier"] for c in cells]
+    # SYSTEM_REVIEW C3: cleared cells were set to 0 (a search treated as certain) and mass beyond the reach was
+    # renormalised in, roughly doubling in-reach numbers. Lesson: a search lowers probability by its POD, and
+    # mass the model cannot place must stay visible as its own bucket.
+    # weights = [0.0 if c["cleared"] else c["base_decay"] * c["snag_multiplier"] for c in cells]
+    # tot = sum(weights)
+    # if tot <= 0:
+    #     raise EnvelopeError("every cell is cleared or zero: extend the reach downstream")
+    # cum = 0.0
+    # for c, w in zip(cells, weights):
+    #     c["probability"] = w / tot
+    #     cum += c["probability"]
+    #     c["cumulative"] = cum
+    # pri = [c["probability"] * c["accessibility"] for c in cells]
+    beyond_prior = 1.0 - decay_cdf(reach_m, decay, median_m)
+    weights = [c["base_decay"] * c["snag_multiplier"] for c in cells]
     tot = sum(weights)
     if tot <= 0:
-        raise EnvelopeError("every cell is cleared or zero: extend the reach downstream")
-    cum = 0.0
+        raise EnvelopeError("no prior mass inside the reach: the median is far beyond it; extend the reach")
+    # Snag multipliers move mass within the reach; they do not change how much lies beyond it.
     for c, w in zip(cells, weights):
-        c["probability"] = w / tot
-        cum += c["probability"]
+        c["prior_mass"] = (1.0 - beyond_prior) * w / tot
+    segs = [{"name": f"cell{c['cell']}", "poa": c["prior_mass"]} for c in cells]
+    segs.append({"name": "ROW", "poa": beyond_prior})  # beyond the reach: never searched here
+    pods = {f"cell{c['cell']}": c["pod"] for c in cells if c["cleared"]}
+    try:
+        posterior, pos_total = search_theory.bayes_update(segs, pods)
+    except ValueError as exc:
+        raise EnvelopeError(f"POD update failed: {exc}; extend the reach downstream or lower a POD") from None
+    for c, s_ in zip(cells, posterior):
+        c["posterior_mass"] = s_["poa"]
+    beyond_post = posterior[-1]["poa"]
+    in_reach = sum(c["posterior_mass"] for c in cells)
+    cum = 0.0
+    for c in cells:
+        c["prior_share_within_reach"] = c["posterior_mass"] / in_reach if in_reach > 0 else 0.0
+        # DEPRECATED alias kept for dossier.py (reads top_cells[].probability); see the module docstring.
+        c["probability"] = c["prior_share_within_reach"]
+        cum += c["posterior_mass"]
         c["cumulative"] = cum
-    pri = [c["probability"] * c["accessibility"] for c in cells]
+    if in_reach <= 0:
+        warnings.append("every in-reach cell was searched with POD 1: all remaining mass is beyond the reach")
+    if beyond_post > 0.25:
+        warnings.append(
+            f"{beyond_post:.2f} of the mass lies beyond the {reach_m:.0f} m reach (median {median_m:.0f} m): "
+            "extend the reach downstream"
+        )
+    pri = [c["posterior_mass"] * c["accessibility"] for c in cells]
     ptot = sum(pri)
     if ptot <= 0:
         warnings.append("all remaining cells have accessibility 0; search_priority is 0 everywhere")
@@ -283,21 +457,44 @@ def build_envelope(
         c["rank"] = None
     for r, c in enumerate(order, 1):
         c["rank"] = r
+    # return {
+    #     "cells": cells,
+    #     "prior_mass_beyond_reach": 1.0 - decay_cdf(reach_m, decay, median_m),
+    #     "warnings": warnings,
+    # }  # SYSTEM_REVIEW C3: keep a beyond-reach bucket and the POD update's results
     return {
         "cells": cells,
-        "prior_mass_beyond_reach": 1.0 - decay_cdf(reach_m, decay, median_m),
+        "beyond_reach": {
+            "cell": BEYOND_REACH,
+            "start_m": reach_m,
+            "end_m": None,
+            "prior_mass": beyond_prior,
+            "pod": 0.0,
+            "posterior_mass": beyond_post,
+            "searched": False,
+            "note": "Mass past the modelled reach. Not renormalised into the cells; extend the reach to resolve it.",
+        },
+        "prior_mass_beyond_reach": beyond_prior,
+        "posterior_mass_beyond_reach": beyond_post,
+        "probability_of_detection_so_far": pos_total,
+        "renormalised_within_reach": False,
         "warnings": warnings,
     }
 
 
 def mass_within(cells: list, distance_m: float) -> float:
-    """Probability mass from the LKP to ``distance_m``, linear within a cell."""
+    """Probability mass from the LKP to ``distance_m``, linear within a cell.
+
+    Unconditional (posterior_mass): mass beyond the reach is not in any cell, so
+    at the reach end this is 1 - posterior_mass_beyond_reach (SYSTEM_REVIEW C3)."""
     s = 0.0
     for c in cells:
         if c["end_m"] <= distance_m:
-            s += c["probability"]
+            # s += c["probability"]  # SYSTEM_REVIEW C3: within-reach share overstated the mass
+            s += c["posterior_mass"]
         elif c["start_m"] < distance_m:
-            s += c["probability"] * (distance_m - c["start_m"]) / (c["end_m"] - c["start_m"])
+            # s += c["probability"] * (distance_m - c["start_m"]) / (c["end_m"] - c["start_m"])
+            s += c["posterior_mass"] * (distance_m - c["start_m"]) / (c["end_m"] - c["start_m"])
     return min(1.0, s)
 
 
@@ -430,7 +627,13 @@ def to_geojson(env: dict, lkp=None) -> dict:
     for c in env["cells"]:
         if not c.get("geometry"):
             continue
-        props = {k: c[k] for k in ("cell", "start_m", "end_m", "probability", "cumulative", "search_priority", "rank")}
+        # props = {k: c[k] for k in ("cell", "start_m", "end_m", "probability", "cumulative",
+        #                            "search_priority", "rank")}
+        props = {  # SYSTEM_REVIEW C3: honest columns; "probability" kept as a deprecated alias
+            k: c[k]
+            for k in ("cell", "start_m", "end_m", "prior_mass", "pod", "posterior_mass", "prior_share_within_reach",
+                      "probability", "cumulative", "search_priority", "rank")
+        }
         props["features"] = ", ".join(c["features"])
         feats.append(
             {"type": "Feature", "geometry": {"type": "LineString", "coordinates": c["geometry"]}, "properties": props}
@@ -465,7 +668,10 @@ def to_kml(env: dict, lkp=None, title="Drift envelope") -> str:
     parts.append(f"<name>{escape(title)}</name>")
     for c in sorted((c for c in env["cells"] if c.get("geometry")), key=lambda c: (c["rank"] is None, c["rank"] or 0)):
         coords = " ".join(f"{x:.6f},{y:.6f},0" for x, y in c["geometry"])
-        name = f"rank {c['rank']} p={c['probability']:.3f}" if c["rank"] else f"cleared/0 cell {c['cell']}"
+        # name = f"rank {c['rank']} p={c['probability']:.3f}" if c["rank"] else f"cleared/0 cell {c['cell']}"
+        name = (  # SYSTEM_REVIEW C3: show the unconditional posterior mass
+            f"rank {c['rank']} p={c['posterior_mass']:.3f}" if c["rank"] else f"zero priority cell {c['cell']}"
+        )
         desc = f"{c['start_m']:.0f}-{c['end_m']:.0f} m; features: {', '.join(c['features']) or 'none'}"
         parts.append(
             f"<Placemark><name>{escape(name)}</name><description>{escape(desc)}</description>"
@@ -501,6 +707,11 @@ CSV_FIELDS = [
     "features",
     "accessibility",
     "cleared",
+    # SYSTEM_REVIEW C3: new columns; "probability" is a DEPRECATED alias of prior_share_within_reach.
+    "pod",
+    "prior_mass",
+    "posterior_mass",
+    "prior_share_within_reach",
     "probability",
     "cumulative",
     "search_priority",
@@ -510,7 +721,8 @@ CSV_FIELDS = [
 ]
 
 
-def write_csv(cells, path):
+# def write_csv(cells, path):  # SYSTEM_REVIEW C3: a beyond-reach row follows the cells
+def write_csv(cells, path, beyond=None):
     with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=CSV_FIELDS)
         w.writeheader()
@@ -519,9 +731,24 @@ def write_csv(cells, path):
             row["start_mi"] = round(c["start_m"] / M_PER_MI, 4)
             row["end_mi"] = round(c["end_m"] / M_PER_MI, 4)
             row["features"] = "; ".join(c["features"])
-            for k in ("base_decay", "probability", "cumulative", "search_priority"):
+            # for k in ("base_decay", "probability", "cumulative", "search_priority"):
+            for k in ("base_decay", "pod", "prior_mass", "posterior_mass", "prior_share_within_reach", "probability",
+                      "cumulative", "search_priority"):
                 row[k] = f"{c[k]:.6f}"
             w.writerow(row)
+        if beyond is not None:
+            w.writerow(
+                {
+                    "cell": BEYOND_REACH,
+                    "start_m": beyond["start_m"],
+                    "start_mi": round(beyond["start_m"] / M_PER_MI, 4),
+                    "features": "mass past the modelled reach (not searched, not renormalised)",
+                    "pod": f"{beyond['pod']:.6f}",
+                    "prior_mass": f"{beyond['prior_mass']:.6f}",
+                    "posterior_mass": f"{beyond['posterior_mass']:.6f}",
+                    "cumulative": f"{(cells[-1]['cumulative'] if cells else 0.0) + beyond['posterior_mass']:.6f}",
+                }
+            )
 
 
 def _parse_feature(s: str, overrides) -> Feature:
@@ -535,6 +762,17 @@ def _parse_feature(s: str, overrides) -> Feature:
         except ValueError:
             name = extra
     return make_feature(parts[0], float(parts[1]), mult, name, overrides)
+
+
+def _parse_cleared(items):
+    """``start:end`` or ``start:end:pod`` (SYSTEM_REVIEW C3)."""
+    out = []
+    for s in items or []:
+        p = [float(x) for x in s.split(":")]
+        if len(p) not in (2, 3):
+            raise EnvelopeError(f"--cleared {s!r} wants start_m:end_m[:pod]")
+        out.append(tuple(p))
+    return out
 
 
 def _parse_ranges(items, n):
@@ -583,14 +821,53 @@ def run(a) -> dict:
                     make_feature(d["type"], float(d["distance_m"]), d.get("multiplier"), d.get("name"), overrides)
                 )
     reach_m = a.reach_m if a.reach_m else a.reach_mi * M_PER_MI
+    # SYSTEM_REVIEW C3: a fixed 0.5 mi median made the output byte-identical at 1 h and 240 h, so --elapsed-hours
+    # was decoration. Lesson: an input that changes nothing should fail a test; the median now follows time
+    # unless the user states one for the case.
+    if a.median_mi is not None:
+        if not a.median_mi > 0:
+            raise EnvelopeError("--median-mi must be > 0")
+        median_m = a.median_mi * M_PER_MI
+        median_detail = {"model": "user_stated", "median_mi": a.median_mi, "elapsed_hours": a.elapsed_hours,
+                         "note": "Median stated by the user for this case; elapsed time not used to scale it."}
+    else:
+        if a.elapsed_hours is None:
+            raise EnvelopeError(
+                "refusing to run: give --elapsed-hours (the median then follows the time model) or state the "
+                "case's median with --median-mi. A fixed default median ignored elapsed time (SYSTEM_REVIEW C3)."
+            )
+        v = a.mean_velocity_mps
+        v_source = "user-stated mean velocity" if v is not None else None
+        if v is None and a.time_model == "velocity" and q is not None and a.xsec_ft2 is not None:
+            if not a.xsec_ft2 > 0:
+                raise EnvelopeError("--xsec-ft2 must be > 0")
+            v = q / a.xsec_ft2 * FT_TO_M
+            v_source = f"discharge {q} cfs / measured cross-section {a.xsec_ft2} ft2"
+        median_m, median_detail = median_from_time(
+            a.elapsed_hours,
+            a.time_model,
+            ref_median_m=a.ref_median_mi * M_PER_MI,
+            ref_hours=a.ref_hours,
+            exponent=a.time_exponent,
+            mean_velocity_mps=v,
+            transport_fraction=a.transport_fraction,
+        )
+        if v_source and a.time_model == "velocity":
+            median_detail["velocity_source"] = v_source
+    if not 0.0 <= a.cleared_pod <= 1.0:
+        raise EnvelopeError("--cleared-pod must be in [0, 1]")
+    cleared = _parse_cleared(a.cleared)
     env = build_envelope(
         reach_m=reach_m,
         cell_m=a.cell_m,
         decay=a.decay,
-        median_m=a.median_mi * M_PER_MI,
+        # median_m=a.median_mi * M_PER_MI,  # SYSTEM_REVIEW C3: fixed median ignored elapsed time
+        median_m=median_m,
         features=features,
         accessibility=_parse_ranges(a.access, 3),
-        cleared=_parse_ranges(a.cleared, 2),
+        # cleared=_parse_ranges(a.cleared, 2),  # SYSTEM_REVIEW C3: ranges may carry a POD
+        cleared=cleared,
+        cleared_pod=a.cleared_pod,
     )
     lkp = (lat, lon) if lat is not None and lon is not None else None
     line = None
@@ -609,13 +886,34 @@ def run(a) -> dict:
             if line
             else {"centreline": None, "note": "No centreline given: cells are chainage-only (no lat/lon)."}
         ),
+        # SYSTEM_REVIEW C3: median from elapsed time; beyond-reach bucket kept, not renormalised in.
+        # "model": {
+        #     "decay": a.decay,
+        #     "median_m": a.median_mi * M_PER_MI,
+        #     "reach_m": reach_m,
+        #     "cell_m": a.cell_m,
+        #     "prior_mass_beyond_reach": env["prior_mass_beyond_reach"],
+        #     "renormalised_within_reach": True,
+        # },
         "model": {
             "decay": a.decay,
-            "median_m": a.median_mi * M_PER_MI,
+            "median_m": median_m,
+            "median_from": median_detail,
             "reach_m": reach_m,
             "cell_m": a.cell_m,
             "prior_mass_beyond_reach": env["prior_mass_beyond_reach"],
-            "renormalised_within_reach": True,
+            "posterior_mass_beyond_reach": env["posterior_mass_beyond_reach"],
+            "beyond_reach": env["beyond_reach"],
+            "renormalised_within_reach": False,
+            "cleared_pod_default": a.cleared_pod,
+            "probability_of_detection_so_far": env["probability_of_detection_so_far"],
+            "columns": {
+                "prior_mass": "before any search; cells + beyond_reach sum to 1",
+                "posterior_mass": "after the POD update; cells + beyond_reach sum to 1",
+                "prior_share_within_reach": "posterior_mass / in-reach total: conditional on being in the reach",
+                "probability": "DEPRECATED alias of prior_share_within_reach, kept for dossier.py",
+                "cumulative": "cumulative posterior_mass from the LKP (unconditional)",
+            },
         },
         "mass_within": {k: (mass_within(cells, d) if d <= reach_m + 1e-6 else None) for k, d in marks},
         "top_cells": [
@@ -626,7 +924,11 @@ def run(a) -> dict:
                     "cell",
                     "start_m",
                     "end_m",
-                    "probability",
+                    "prior_mass",
+                    "pod",
+                    "posterior_mass",
+                    "prior_share_within_reach",
+                    "probability",  # DEPRECATED alias (SYSTEM_REVIEW C3), read by dossier.py
                     "cumulative",
                     "search_priority",
                     "features",
@@ -636,21 +938,38 @@ def run(a) -> dict:
         ],
         "features": [f.__dict__ for f in features],
         "accessibility": _parse_ranges(a.access, 3),
-        "cleared": _parse_ranges(a.cleared, 2),
+        # "cleared": _parse_ranges(a.cleared, 2),  # SYSTEM_REVIEW C3
+        "cleared": [
+            {"start_m": r[0], "end_m": r[1], "pod": r[2] if len(r) == 3 else a.cleared_pod,
+             "pod_source": "per-range input" if len(r) == 3 else "--cleared-pod (default 0.8 is an assumption)"}
+            for r in cleared
+        ],
         "refloat": refloat_note(temp),
         "rejected_naive_estimate": naive_estimate(q, a.elapsed_hours, tuple(a.naive_xsec_ft2)),
+        # "assumptions": [
+        #     f"Near-field decay {a.decay} with median {a.median_mi} mi (default 0.5 mi): an assumption, not measured.",
+        #     "Snag multipliers: defaults are assumptions expressing relative hang-up likelihood, not measured rates.",
+        #     "No snag feature locations unless given: map them from current imagery/NHD.",
+        #     "Refloat bands and their temperature edges are rough assumptions.",
+        #     "Cleared cells are treated as searched with detection probability 1.",
+        # ],  # SYSTEM_REVIEW C3: median from time, POD not 1, beyond-reach kept
         "assumptions": [
-            f"Near-field decay {a.decay} with median {a.median_mi} mi (default 0.5 mi): an assumption, not measured.",
+            f"Near-field decay {a.decay} with median {median_m / M_PER_MI:.3f} mi from "
+            f"{median_detail['model']}: an assumption, not measured.",
             "Snag multipliers: defaults are assumptions expressing relative hang-up likelihood, not measured rates.",
+            "Snag multipliers move mass within the reach; they do not change the mass beyond it.",
             "No snag feature locations unless given: map them from current imagery/NHD.",
             "Refloat bands and their temperature edges are rough assumptions.",
-            "Cleared cells are treated as searched with detection probability 1.",
+            f"Cleared cells use POD {a.cleared_pod} unless a range gives its own (the default 0.8 is an assumption); "
+            "updated with P' = P(1 - POD) / (1 - sum P*POD), beyond_reach included.",
+            "Mass beyond the reach is kept as its own bucket, not renormalised into the cells.",
         ],
         "measured_inputs": {"lkp_lat_lon": lkp, "discharge_cfs": q, "water_temp_c": temp},
         "warnings": env["warnings"],
     }
     os.makedirs(a.out_dir, exist_ok=True)
-    write_csv(cells, os.path.join(a.out_dir, "envelope.csv"))
+    # write_csv(cells, os.path.join(a.out_dir, "envelope.csv"))  # SYSTEM_REVIEW C3: beyond-reach row
+    write_csv(cells, os.path.join(a.out_dir, "envelope.csv"), env["beyond_reach"])
     if line:
         with open(os.path.join(a.out_dir, "envelope.geojson"), "w", encoding="utf-8") as f:
             json.dump(to_geojson(env, lkp), f)
@@ -668,20 +987,41 @@ def build_parser():
     ap.add_argument("--lat", type=float)
     ap.add_argument("--lon", type=float)
     ap.add_argument(
-        "--discharge-cfs", type=float, help="governing-gauge discharge (only used for the rejected naive figure)"
+        "--discharge-cfs",
+        type=float,
+        # help="governing-gauge discharge (only used for the rejected naive figure)"  # SYSTEM_REVIEW C3
+        help="governing-gauge discharge: the rejected naive figure, and the 'velocity' time model with --xsec-ft2",
     )
     ap.add_argument("--water-temp-c", type=float)
     ap.add_argument("--reach-mi", type=float, default=3.0)
     ap.add_argument("--reach-m", type=float)
     ap.add_argument("--cell-m", type=float, default=DEFAULT_CELL_M)
     ap.add_argument("--decay", choices=["exponential", "half_normal"], default="exponential")
-    ap.add_argument("--median-mi", type=float, default=0.5, help="median of the near-field decay (assumption)")
+    # ap.add_argument("--median-mi", type=float, default=0.5, help="median of the near-field decay (assumption)")
+    ap.add_argument(  # SYSTEM_REVIEW C3: no fixed default; it ignored elapsed time
+        "--median-mi", type=float, help="state the case's median travel distance; overrides the time model"
+    )
+    ap.add_argument("--time-model", choices=TIME_MODELS, default="sqrt_time", help="how the median grows with time")
+    ap.add_argument("--ref-median-mi", type=float, default=DEFAULT_MEDIAN_M / M_PER_MI,
+                    help="sqrt_time: median at --ref-hours (assumption, default 0.5)")
+    ap.add_argument("--ref-hours", type=float, default=DEFAULT_REF_HOURS, help="sqrt_time: reference time (24)")
+    ap.add_argument("--time-exponent", type=float, default=DEFAULT_TIME_EXPONENT,
+                    help="sqrt_time: growth exponent (0.5)")
+    ap.add_argument("--mean-velocity-mps", type=float, help="velocity model: mean channel velocity at this reach")
+    ap.add_argument("--xsec-ft2", type=float, help="velocity model: cross-section measured at this reach (ft2)")
+    ap.add_argument("--transport-fraction", type=float,
+                    help="velocity model: share of mean velocity the body achieves (required; no default)")
     ap.add_argument("--feature", action="append", help="type:distance_m[:multiplier][:name]; repeatable")
     ap.add_argument("--features-json", help="JSON list of {type, distance_m, multiplier?, name?}")
     ap.add_argument("--multiplier", action="append", help="override a default, e.g. eddy=1.5")
     ap.add_argument("--access", action="append", help="start_m:end_m:factor (0-1); repeatable")
-    ap.add_argument("--cleared", action="append", help="start_m:end_m; repeatable")
-    ap.add_argument("--elapsed-hours", type=float, help="for the rejected naive figure only")
+    # ap.add_argument("--cleared", action="append", help="start_m:end_m; repeatable")
+    # ap.add_argument("--elapsed-hours", type=float, help="for the rejected naive figure only")
+    ap.add_argument("--cleared", action="append", help="start_m:end_m[:pod]; repeatable (SYSTEM_REVIEW C3)")
+    ap.add_argument("--cleared-pod", type=float, default=DEFAULT_CLEARED_POD,
+                    help="POD for a cleared range without its own (assumption, default 0.8)")
+    ap.add_argument("--elapsed-hours", type=float,
+                    help="hours since entry: scales the median (required unless --median-mi)")
     ap.add_argument("--naive-xsec-ft2", type=float, nargs=2, default=list(NAIVE_XSEC_FT2))
     ap.add_argument("--centreline", help="GeoJSON LineString, [lon, lat], first vertex at the LKP")
     ap.add_argument("--top", type=int, default=10)
@@ -696,16 +1036,28 @@ def main(argv=None) -> int:
     except (EnvelopeError, OSError, json.JSONDecodeError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
-    print(f"envelope: {a.decay}, median {a.median_mi} mi, reach {s['model']['reach_m']:.0f} m, cell {a.cell_m:g} m")
+    # print(f"envelope: {a.decay}, median {a.median_mi} mi, reach {s['model']['reach_m']:.0f} m, cell {a.cell_m:g} m")
+    print(
+        f"envelope: {a.decay}, median {s['model']['median_m'] / M_PER_MI:.3f} mi "
+        f"({s['model']['median_from']['model']}), reach {s['model']['reach_m']:.0f} m, cell {a.cell_m:g} m"
+    )
     if not s["geometry"]["centreline"]:
         print("geometry: " + s["geometry"]["note"])
     for k, v in s["mass_within"].items():
         print(f"  mass within {k}: {'n/a' if v is None else f'{v:.3f}'}")
-    print(f"  prior mass beyond reach (before renormalising): {s['model']['prior_mass_beyond_reach']:.3f}")
-    print("top cells (rank, metres, probability, features):")
+    # print(f"  prior mass beyond reach (before renormalising): {s['model']['prior_mass_beyond_reach']:.3f}")
+    # print("top cells (rank, metres, probability, features):")
+    # SYSTEM_REVIEW C3: beyond-reach is kept, and cells show unconditional posterior mass
+    print(
+        f"  beyond reach (kept, not renormalised): prior {s['model']['prior_mass_beyond_reach']:.3f}, "
+        f"after search {s['model']['posterior_mass_beyond_reach']:.3f}"
+    )
+    print("top cells (rank, metres, posterior mass, share within reach, features):")
     for c in s["top_cells"]:
         print(
-            f"  {c['rank']:>3}  {c['start_m']:>6.0f}-{c['end_m']:<6.0f} p={c['probability']:.4f}  "
+            # f"  {c['rank']:>3}  {c['start_m']:>6.0f}-{c['end_m']:<6.0f} p={c['probability']:.4f}  "
+            f"  {c['rank']:>3}  {c['start_m']:>6.0f}-{c['end_m']:<6.0f} p={c['posterior_mass']:.4f} "
+            f"share={c['prior_share_within_reach']:.4f}  "
             + ", ".join(c["features"])
         )
     n = s["rejected_naive_estimate"]
