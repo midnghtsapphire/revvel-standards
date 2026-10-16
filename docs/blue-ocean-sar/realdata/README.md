@@ -21,6 +21,7 @@ registry, logs) are not committed; the scripts regenerate them.
 | `realtime_validation_listener.py` | (your script, fixed: it imported a class and called a method that do not exist) | POSTed JSON records -> stage-0 DB -> Stage 2 gate; `realtime-listener.service` runs it under systemd | Yes (local) |
 | `stage2_validation_gate.py` | (your script, unchanged copy) | The stage-0 database | Yes |
 | `field_log.py` | `taphos_serial_parser.py` ("VALIDATED" for any value present, always ONLINE) | Your Taphos-Stick field log CSV | Yes (offline) |
+| `lab_readers.py` | GC-MS and 16S tabs of `ryverly_recon_app-v6.py` (typed-in peaks and abundances) | A lab's TIC export (CSV/mzML) and 16S feature table | Yes (offline) |
 
 Fixes made to your scripts (the original lines are kept as comments):
 
@@ -147,6 +148,31 @@ is read as a minimum; change with `--bare-number`) or exact text such as
 ```sh
 python field_log.py ops-log.csv --out field_log_report.json
 cat ops-log.csv | python field_log.py - --out report.json
+```
+
+### `lab_readers.py`
+
+- **GC-MS (`gcms`).** Reads a sample and a control total-ion chromatogram
+  (CSV `retention_time_min,intensity`, or mzML when pyteomics or pymzml is
+  installed). It finds peaks and integrates their areas above a local
+  baseline. For each target in your method file it reports whether a peak
+  sits within the tolerance of the expected retention time, plus the sample
+  area, control area and ratio.
+- **Method file.** Retention times depend on the column and method, so they
+  come from your method file. `gcms_method.example.json` is an example with
+  placeholder times, and it is refused unless you pass
+  `--allow-example-method`.
+- **No identification.** A peak at the expected time is not an
+  identification; that needs the mass spectrum and a reference standard.
+- **16S (`16s`).** Reads a QIIME 2 / biom TSV feature table (taxonomy in a
+  column, in `--taxonomy taxonomy.tsv`, or as the row ID) or a long CSV
+  `taxon,sample,count`. It sums counts to a rank and reports relative
+  abundance and fold change, sample vs control, with a pseudocount on the
+  counts. One sample against one control is a description, not a test.
+
+```sh
+python lab_readers.py gcms --sample eff.csv --control ctrl.csv --method my_method.json --out gcms.json
+python lab_readers.py 16s --table feature-table.tsv --sample EFF-A1 --control CTRL-A1 --rank family --out 16s.json
 ```
 
 ## Limits that come with the data
