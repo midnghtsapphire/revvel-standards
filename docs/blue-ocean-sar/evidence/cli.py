@@ -175,9 +175,15 @@ def cmd_import(args, out):
             out.write(f"  note: {n}\n")
         for lack in rep["lacks"]:
             out.write(f"  lacks {lack['guarantee']}: {lack['detail']}\n")
+        if rep.get("already_imported"):
+            out.write(f"{rep['already_imported']} entries were already in {args.into} from an earlier run; "
+                      "skipped\n")
         if new:
             out.write(f"imported {len(new)} entries into {args.into}; new head {new[-1]['entry_hash']}\n")
-    return EXIT_OK if rep["verified"] and (not args.into or new or not rep["records"]) else EXIT_FAIL
+    # return EXIT_OK if rep["verified"] and (not args.into or new or not rep["records"]) else EXIT_FAIL
+    # Replaced (review 2026-10-16): a retry that finds every record already imported has met the postcondition.
+    complete = len(new) + rep.get("already_imported", 0) == len(rep["records"])
+    return EXIT_OK if rep["verified"] and (not args.into or complete) else EXIT_FAIL
 
 
 def _signer_args(sp):

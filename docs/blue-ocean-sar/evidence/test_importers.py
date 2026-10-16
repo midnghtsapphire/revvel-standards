@@ -306,6 +306,113 @@ class HFMR(Base):
         self.assertEqual(new[0]["sha256"], core.sha256_hex(core.canonical(rep["records"][0]["legacy"])))
 
 
+class ReviewRegressions(Base):
+    """Review 2026-10-16: sidecar paths, missing bodies, Rust types, non-object lines, migration."""
+
+    def sidecar(self, d, name, body_bytes, **meta):
+        side = {"url": "https://example.org/a", "fetched_at_utc": "2026-10-16T12:00:00Z",
+                "sha256": core.sha256_hex(body_bytes), "bytes": len(body_bytes), "status": 200}
+        side.update(meta)
+        with open(os.path.join(d, name), "w", encoding="utf-8") as f:
+            json.dump(side, f)
+
+    def test_sidecar_body_file_may_not_escape_the_directory(self):
+        d = self.sub("fetch")
+        with open(os.path.join(self.tmp, "outside.bin"), "wb") as f:
+            f.write(b"secret file")
+        self.sidecar(d, "a.json", b"secret file", body_file="../outside.bin")
+        rep = importers.import_fetch_sidecars(d)
+        self.assertFalse(rep["verified"])
+        self.assertTrue(any("escapes" in p for p in rep["problems"]), rep["problems"])
+        os.remove(os.path.join(d, "a.json"))
+        os.symlink(os.path.join(self.tmp, "outside.bin"), os.path.join(d, "link.bin"))
+        self.sidecar(d, "b.json", b"secret file", body_file="link.bin")
+        self.assertFalse(importers.import_fetch_sidecars(d)["verified"])
+
+    def test_sidecar_without_any_body_is_a_problem(self):
+        d = self.sub("fetch")
+        self.sidecar(d, "a.json", b"bytes that were never stored")
+        rep = importers.import_fetch_sidecars(d)
+        self.assertFalse(rep["verified"])
+        self.assertTrue(any("neither body_file nor body_withheld" in p for p in rep["problems"]))
+        os.remove(os.path.join(d, "a.json"))
+        self.sidecar(d, "b.json", b"x", body_withheld="contained a secret")
+        self.assertTrue(importers.import_fetch_sidecars(d)["verified"])
+
+    def _rust_line(self, d, **override):
+        os.makedirs(os.path.join(d, "objects"), exist_ok=True)
+        sha = core.sha256_hex(b"a")
+        with open(os.path.join(d, "objects", f"{sha}.bin"), "wb") as f:
+            f.write(b"a")
+        e = {"seq": 0, "utc": "2026-10-16T12:00:00.000Z", "method": "GET", "url": "https://h/0",
+             "final_url": "https://h/0", "status": 200, "request_body_sha256": None, "sha256": sha,
+             "bytes": 1, "file": f"objects/{sha}.bin", "prev_hash": importers.GENESIS}
+        e.update(override)
+        e["entry_hash"] = importers._rust_hash(e)
+        with open(os.path.join(d, "manifest.jsonl"), "w", encoding="utf-8") as f:
+            f.write(json.dumps(e, separators=(",", ":")) + "\n")
+
+    def test_rust_manifest_types_are_enforced(self):
+        d = self.sub("rs")
+        self._rust_line(d)
+        self.assertTrue(importers.import_rust_manifest(d)["verified"])
+        for bad in ({"status": 200.0}, {"bytes": True}, {"seq": False}, {"url": 5}, {"status": 70000}):
+            self._rust_line(d, **bad)
+            rep = importers.import_rust_manifest(d)
+            self.assertFalse(rep["verified"], bad)
+            self.assertTrue(any("evidence.rs types" in p for p in rep["problems"]), rep["problems"])
+
+    def test_non_object_lines_are_problems_not_crashes(self):
+        d = self.sub("rs")
+        with open(os.path.join(d, "manifest.jsonl"), "w") as f:
+            f.write("[1, 2]\n5\n")
+        rep = importers.import_rust_manifest(d)
+        self.assertFalse(rep["verified"])
+        self.assertTrue(any("not a JSON object" in p for p in rep["problems"]))
+        r = self.sub("ring")
+        with open(os.path.join(r, "manifest.jsonl"), "w") as f:
+            f.write('"text"\n')
+        self.assertFalse(importers.import_ring_manifest(r)["verified"])
+
+    def _ring(self):
+        d = self.sub("ring")
+        RingManifest.make(self, d)
+        return d, importers.import_ring_manifest(d)
+
+    def test_changed_source_imports_nothing(self):
+        d, rep = self._ring()
+        with open(os.path.join(d, "evt1.mp4"), "wb") as f:
+            f.write(b"edited after verification")
+        target = os.path.join(self.tmp, "shared")
+        with self.assertRaises(core.EvidenceError):
+            importers.to_evidence_log(rep, core.EvidenceLog(target, operator="Op"))
+        self.assertEqual(core.EvidenceLog(target).read_entries(), [])
+
+    def test_interrupted_import_resumes_without_duplicates(self):
+        _, rep = self._ring()
+        target = os.path.join(self.tmp, "shared")
+        log = core.EvidenceLog(target, operator="Op", clock=lambda: {"ntp_synchronized": "yes"})
+        real, calls = log.append, []
+
+        def failing_append(*a, **kw):
+            calls.append(1)
+            if len(calls) == 2:
+                raise OSError("disk full")
+            return real(*a, **kw)
+        log.append = failing_append
+        with self.assertRaises(OSError):
+            importers.to_evidence_log(rep, log)
+        self.assertEqual(len(log.read_entries()), 1)
+        log.append = real
+        new = importers.to_evidence_log(rep, log)
+        self.assertEqual(len(new), 1)
+        self.assertEqual(rep["already_imported"], 1)
+        entries = log.read_entries()
+        self.assertEqual([e["extra"]["legacy_seq"] for e in entries], [0, 1])
+        self.assertTrue(core.verify_log(target)["ok"])
+        self.assertEqual(importers.to_evidence_log(rep, log), [])
+
+
 class Dispatch(Base):
     def test_unknown_format(self):
         p = os.path.join(self.tmp, "x.txt")

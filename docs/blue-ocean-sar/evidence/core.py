@@ -314,20 +314,59 @@ class EvidenceLog:
 
     # -- writing
 
-    def _check_tail(self, entries):
-        """Refuse to extend a log whose chain or signing mode does not hold."""
+    # def _check_tail(self, entries):
+    # Replaced (review 2026-10-16): the old check read only the last entry's key and accepted re-serialised lines.
+    def _check_tail(self, entries, raws=None):
+        """Refuse to extend a log whose chain, canonical form or signing mode does not hold."""
         count, prev = chain_head(entries)
-        if entries:
-            existing = entries[-1].get("key_id")
+        # if entries:
+        #     existing = entries[-1].get("key_id")
+        #     if existing != self.key_id:
+        #         raise EvidenceError(
+        #             "this log is " + (f"signed by key {existing[:16]}" if existing else "unsigned")
+        #             + "; every entry must use the same signing mode and key")
+        # Replaced (review 2026-10-16): check every entry's line, key_id and signature, not only the tail's key.
+        pub = self.private_key.public_key() if self.private_key else None
+        done, done_head = getattr(self, "_tail_ok", (0, GENESIS))
+        start = done if done <= count and (done == 0 or entries[done - 1].get("entry_hash") == done_head) else 0
+        for i in range(count):  # signatures already checked by this instance (i < start) are not re-verified
+            e = entries[i]
+            if raws is not None and canonical(e) != raws[i]:
+                raise EvidenceError(f"existing log line {i + 1} is not in canonical form (re-serialised or "
+                                    "edited); run verify, do not extend it")
+            existing = e.get("key_id")
             if existing != self.key_id:
                 raise EvidenceError(
-                    "this log is " + (f"signed by key {existing[:16]}" if existing else "unsigned")
+                    f"line {i + 1} of this log is " + (f"signed by key {existing[:16]}" if existing else "unsigned")
                     + "; every entry must use the same signing mode and key")
+            sig = e.get("signature")
+            if (sig is None) != (pub is None) or (pub is not None and i >= start
+                                                  and not signature_ok(pub, e["entry_hash"], sig)):
+                raise EvidenceError(f"existing log line {i + 1}: signature does not match the log's signing mode "
+                                    "or key; run verify, do not extend it")
+        self._tail_ok = (count, prev)
         return count, prev
 
+    def _read_raw_entries(self):
+        """(entries, raw lines) of the log, for _check_tail's canonical-form check."""
+        if not os.path.exists(self.log_path):
+            return [], []
+        with open(self.log_path, "rb") as f:
+            data = f.read()
+        if data and not data.endswith(b"\n"):
+            raise EvidenceError(f"{self.log_path} does not end with a newline (truncated write?)")
+        raws = data.split(b"\n")[:-1] if data else []
+        return [parse_line(raw) for raw in raws], raws
+
+    # def append(self, content=None, *, path=None, kind, source, status=None, server_date=None,
+    #            tls_cert_sha256=None, extra=None):
+    # Replaced (review 2026-10-16): expect_sha256 lets a caller refuse bytes that changed before they are committed.
     def append(self, content=None, *, path=None, kind, source, status=None, server_date=None,
-               tls_cert_sha256=None, extra=None):
-        """Store `content` (bytes) or the file at `path` and append one entry. Returns the entry."""
+               tls_cert_sha256=None, extra=None, expect_sha256=None):
+        """Store `content` (bytes) or the file at `path` and append one entry. Returns the entry.
+
+        With expect_sha256, nothing is stored or logged unless the bytes read hash to that value.
+        """
         if not self.operator:
             raise EvidenceError(f"an operator is required (--operator or {ENV_OPERATOR})")
         if (content is None) == (path is None):
@@ -340,8 +379,11 @@ class EvidenceLog:
         with open(os.path.join(self.dir, LOCK_NAME), "a") as lock:
             if fcntl is not None:
                 fcntl.flock(lock, fcntl.LOCK_EX)
-            seq, prev = self._check_tail(self.read_entries())
-            sha, size, rel = self._store(seq, content, path)
+            # seq, prev = self._check_tail(self.read_entries())
+            # sha, size, rel = self._store(seq, content, path)
+            # Replaced (review 2026-10-16): pass raw lines (canonical check) and the expected hash to _store.
+            seq, prev = self._check_tail(*self._read_raw_entries())
+            sha, size, rel = self._store(seq, content, path, expect_sha256)
             entry = {
                 "format": FORMAT, "seq": seq, "utc": iso_utc(self._now()), "operator": self.operator,
                 "host": self.host, "tool": self.tool, "clock": self._clock(), "kind": str(kind),
@@ -357,7 +399,9 @@ class EvidenceLog:
                 os.fsync(f.fileno())
         return entry
 
-    def _store(self, seq, content, path):
+    # def _store(self, seq, content, path):
+    # Replaced (review 2026-10-16): takes expect_sha256 and drops the copy, before linking, when it differs.
+    def _store(self, seq, content, path, expect_sha256=None):
         """Write the bytes once under a name no other entry can have; returns (sha, size, rel)."""
         h = hashlib.sha256()
         tmp = os.path.join(self.dir, OBJECTS_DIR, f".{seq:06d}.{os.getpid()}.{time.monotonic_ns()}.tmp")
@@ -376,6 +420,10 @@ class EvidenceLog:
             out.flush()
             os.fsync(out.fileno())
         sha = h.hexdigest()
+        if expect_sha256 is not None and sha != expect_sha256:
+            os.unlink(tmp)
+            raise EvidenceError(f"{path or 'content'} hashes to {sha}, not the expected {expect_sha256} "
+                                "(changed since it was verified); nothing was stored or logged")
         rel = f"{OBJECTS_DIR}/{seq:06d}_{sha}.bin"
         final = os.path.join(self.dir, rel)
         try:
@@ -436,6 +484,11 @@ def _check_object(directory, lineno, e, problems):
         problems.append(f"line {lineno}: stored file name {rel!r} does not match seq/sha256")
         return None
     full = os.path.join(directory, rel)
+    # Replaced (review 2026-10-16): a symlinked object (or objects dir) could point at a mutable file elsewhere.
+    if os.path.islink(full) or os.path.islink(os.path.join(directory, OBJECTS_DIR)):
+        problems.append(f"line {lineno}: stored file {rel} is a symlink (the library never writes one); "
+                        "its bytes are not held in the evidence directory")
+        return rel
     if not os.path.isfile(full):
         problems.append(f"line {lineno}: stored file missing: {rel}")
         return rel
