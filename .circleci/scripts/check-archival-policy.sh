@@ -156,9 +156,13 @@ if [ -n "$CHANGED_FILES" ]; then
     # (a PDF, video or zip in an upload archive) it ran until CircleCI killed
     # the job, failing policy-check without ever reporting a violation. A file
     # that never mentions the token cannot open or close a block, so skip it
-    # with one whole-file scan; binary files are skipped the same way.
-    grep -Iq . "$file" 2>/dev/null || continue
-    grep -qF 'REVVEL-DISABLED' "$file" || continue
+    # with one whole-file scan.
+    # Earlier form skipped binaries first and lacked "--": a single NUL byte let
+    # a malformed block evade the gate, and a path starting with "-" was read
+    # as a grep option and silently skipped:
+    # grep -Iq . "$file" 2>/dev/null || continue
+    # grep -qF 'REVVEL-DISABLED' "$file" || continue
+    grep -aqF 'REVVEL-DISABLED' -- "$file" || continue
     # Read the current version of the file and scan for blocks
     IN_BLOCK=false
     BLOCK_LINE=0

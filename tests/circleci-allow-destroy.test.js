@@ -228,3 +228,28 @@ test('policy scan skips binaries and token-free files but still flags bad blocks
   assert.doesNotMatch(r.stderr, /big\.txt|blob\.bin/);
   assert.ok(elapsed < 30000, `scan took ${elapsed} ms`);
 });
+
+// Review follow-up: the token pre-scan must not be bypassable with a NUL byte
+// or a file name that starts with "-".
+test('policy scan still flags bad blocks in files with NUL bytes or dash-leading names', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'archival-scan-edge-'));
+  const git = (...args) =>
+    execFileSync('git', args, { cwd: dir, stdio: 'pipe', env: { ...process.env, HOME: dir } });
+  git('init', '-q', '-b', 'main');
+  git('config', 'user.email', 'test@example.com');
+  git('config', 'user.name', 'test');
+  fs.writeFileSync(path.join(dir, 'keep.txt'), 'base\n');
+  git('add', '-A');
+  git('commit', '-qm', 'base');
+  git('checkout', '-q', '-b', 'work');
+  fs.writeFileSync(path.join(dir, 'nul.py'),
+    Buffer.concat([Buffer.from('# REVVEL-DISABLED | AGENT: x\nold = 1\n# REVVEL-DISABLED-END\n'), Buffer.from([0])]));
+  fs.writeFileSync(path.join(dir, '-dash.py'), '# REVVEL-DISABLED | AGENT: x\nold = 1\n# REVVEL-DISABLED-END\n');
+  git('add', '-A', '--', '.');
+  git('commit', '-qm', 'add files');
+  git('update-ref', 'refs/remotes/origin/main', 'main');
+  const r = run(dir, { ALLOW_DESTROY: 'false' });
+  assert.equal(r.status, 1, r.stdout + r.stderr);
+  assert.match(r.stderr, /nul\.py:1 — REVVEL-DISABLED block missing 'MODEL:'/);
+  assert.match(r.stderr, /-dash\.py:1 — REVVEL-DISABLED block missing 'MODEL:'/);
+});
