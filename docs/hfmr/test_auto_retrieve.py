@@ -59,6 +59,19 @@ class Tests(unittest.TestCase):
             p.write_text("tampered")
             self.assertTrue(verify(d))
 
+    def test_verify_fails_without_manifests(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.assertTrue(verify(d))
+            self.assertTrue(verify(Path(d) / "missing"))
+
+    def test_verify_reports_corrupt_sidecar_instead_of_crashing(self):
+        with tempfile.TemporaryDirectory() as d:
+            acquire(d, fetcher=self.fake)
+            next(Path(d).glob("*_manifest.sha256")).write_text("")
+            errors = verify(d)
+            self.assertEqual(len(errors), 1)
+            self.assertIn("manifest invalid", errors[0])
+
     def test_failure_explicit(self):
         with tempfile.TemporaryDirectory() as d:
             m = acquire(d, fetcher=lambda url: (_ for _ in ()).throw(ConnectionError("offline")))

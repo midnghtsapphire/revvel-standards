@@ -185,16 +185,35 @@ def acquire(output, number=1546, street="HIGH", start=2000, end=2010, fetcher=fe
 def verify(output):
     out = pathlib.Path(output)
     errors = []
-    for m in out.glob("*_manifest.json"):
-        sha = m.with_suffix(".sha256")
-        if not sha.exists() or hashlib.sha256(m.read_bytes()).hexdigest() != sha.read_text().split()[0]:
-            errors.append(str(m) + ": manifest invalid")
-            continue
-        data = json.loads(m.read_text())
-        for item in data["layers"].values():
-            p = out / item["file"]
-            if not p.exists() or hashlib.sha256(p.read_bytes()).hexdigest() != item["sha256"]:
-                errors.append(str(p) + ": data invalid")
+    manifests = sorted(out.glob("*_manifest.json"))
+    # An evidence set with no manifest has verified nothing; that is a failure, not a pass.
+    if not manifests:
+        errors.append(str(out) + ": no manifest found")
+    # Original: for m in out.glob("*_manifest.json"):
+    for m in manifests:
+        # Original (loop body, unguarded):
+        #     sha = m.with_suffix(".sha256")
+        #     if not sha.exists() or hashlib.sha256(m.read_bytes()).hexdigest() != sha.read_text().split()[0]:
+        #         errors.append(str(m) + ": manifest invalid")
+        #         continue
+        #     data = json.loads(m.read_text())
+        #     for item in data["layers"].values():
+        #         p = out / item["file"]
+        #         if not p.exists() or hashlib.sha256(p.read_bytes()).hexdigest() != item["sha256"]:
+        #             errors.append(str(p) + ": data invalid")
+        #   an empty/garbled checksum sidecar or malformed manifest raised instead of failing.
+        try:
+            sha = m.with_suffix(".sha256")
+            if not sha.exists() or hashlib.sha256(m.read_bytes()).hexdigest() != sha.read_text().split()[0]:
+                errors.append(str(m) + ": manifest invalid")
+                continue
+            data = json.loads(m.read_text())
+            for item in data["layers"].values():
+                p = out / item["file"]
+                if not p.exists() or hashlib.sha256(p.read_bytes()).hexdigest() != item["sha256"]:
+                    errors.append(str(p) + ": data invalid")
+        except (OSError, ValueError, IndexError, KeyError, TypeError, AttributeError) as exc:
+            errors.append(f"{m}: manifest invalid ({type(exc).__name__})")
     return errors
 
 
