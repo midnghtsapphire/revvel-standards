@@ -55,6 +55,19 @@ class ColumbusTests(unittest.TestCase):
 
         self.assertEqual(query_by_parcel("123456", opener=op)["records"][0]["B1_ALT_ID"], "X")
 
+    def test_short_page_with_exceeded_transfer_limit_keeps_paging(self):
+        pages = [
+            {"features": [{"attributes": {"ID": 1}}], "exceededTransferLimit": True},
+            {"features": [{"attributes": {"ID": 2}}]},
+        ]
+
+        def op(req, timeout):
+            return Response(req.full_url, pages.pop(0))
+
+        doc = query_by_parcel("123456", opener=op, max_records=10)
+        self.assertEqual([r["ID"] for r in doc["records"]], [1, 2])
+        self.assertEqual(len(doc["pages"]), 2)
+
     def test_invalid_parcel(self):
         with self.assertRaises(ValueError):
             query_by_parcel("x' OR 1=1")

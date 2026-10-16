@@ -88,7 +88,10 @@ def query(where, opener=None, max_records=100, delay=0):
         batch = [f.get("attributes", {}) for f in data.get("features", [])]
         pages.append({"url": url, "response_sha256": digest, "count": len(batch)})
         rows.extend(batch)
-        if len(batch) < n:
+        # Original: if len(batch) < n:
+        #   a server whose maxRecordCount is below n returns a short page with
+        #   exceededTransferLimit=true; treating that as the last page saved incomplete results.
+        if not batch or (len(batch) < n and not data.get("exceededTransferLimit")):
             break
         offset += len(batch)
         if delay:
