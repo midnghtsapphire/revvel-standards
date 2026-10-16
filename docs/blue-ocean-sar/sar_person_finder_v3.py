@@ -328,6 +328,9 @@ class MultiBandSAREngine:
                 f"[Blue Ocean 6-Band SAR] Rank {t['rank']} Target\n"
                 f"Fused Confidence: {t['fused_confidence']}\n"
                 f"Multi-Band Spectrum: {db_summary}\n"
+                # The band-order note reached GeoJSON only, so ATAK users never saw that the
+                # band labels were assumed from file order.
+                f"Band order: {t.get('band_order', 'assumed_file_order')}\n"
                 f"Coords: {t['latitude']:.6f}, {t['longitude']:.6f}"
             )
             ET.SubElement(detail, "remarks").text = remarks

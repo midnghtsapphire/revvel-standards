@@ -235,6 +235,9 @@ class FinderV3(unittest.TestCase):
 
         with open(out) as f:
             self.assertEqual(json.load(f)["features"][0]["properties"]["band_order"], "assumed_file_order")
+        # ATAK users see only the CoT remarks, so the note has to be there too.
+        paths = self.engine.export_cot_files(targets[:1], os.path.join(self.tmp.name, "bare_cot"))
+        self.assertIn("Band order: assumed_file_order", ET.parse(paths[0]).getroot().find("detail/remarks").text)
 
     def test_wrong_band_count_rejected(self):
         for bands in (4, 7):
