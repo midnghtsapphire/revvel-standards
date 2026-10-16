@@ -377,3 +377,44 @@ POA 0.508, and equal effort 0.455. The model's limits:
 - Effort is continuous and of one type.
 - There are no per-segment caps or transit times.
 - The output needs rounding into real team assignments.
+
+## Terrain-aware lost-person simulation (`lost_person_sim.py`)
+
+This is a Monte Carlo agent model on a real DEM. Each agent walks at
+Tobler's hiking speed for the local slope, v = 6 e^(-3.5 |tan(theta) + 0.05|)
+km/h, multiplied by 0.6 off trails. Each agent is given one behaviour: random
+walk, route following, direction sampling, downhill, or staying put. The
+behaviour weights are inputs, and the defaults are written to `summary.json`
+as assumptions.
+
+Agents never cross a barrier. Barriers are the ones you supply, plus cells
+with no DEM data and the grid edge. The walking time is scaled so that the
+simulated median distance matches the LPB median for the category. The
+residuals at 25, 75 and 95% are reported, not hidden.
+
+Outputs:
+
+- a probability GeoTIFF that sums to 1;
+- 50, 75 and 95% containment contours;
+- simulated rings next to the LPB rings;
+- a segments CSV with a ROW row, which `search_theory.py` and
+  `optimal_search.py` read directly.
+
+The `update` command applies an unsuccessful search to the map:
+P' = P(1 - POD) / normaliser. Cleared cells stay at zero.
+
+```sh
+python lost_person_sim.py simulate --lat 50.8766 --lon -119.9127 --category despondents \
+    --hours 24 --dem copernicus_tile.tif --out out/sim --segments segments.geojson
+python lost_person_sim.py update --prior out/sim/probability.tif --searched searched.geojson --out out/sim2
+python -m unittest test_lost_person_sim
+```
+
+I ran it on the Copernicus GLO-30 tile for Sun Peaks (5000 agents, about
+11 s). The 25% and 50% distances matched the LPB table within 0.2 km. At 75%
+the simulation gave 3.4 km against the table's 4.6 km. At 95% the LPB figure
+for despondents (71 km) includes vehicle travel, which a walking model cannot
+reproduce, so that residual is large.
+
+The map is a planning prior. The behaviour weights are not fitted per
+category. Unmapped cliffs and rivers are not barriers unless you supply them.
