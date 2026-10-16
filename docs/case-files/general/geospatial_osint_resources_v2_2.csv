@@ -1,0 +1,20 @@
+id,name,band_type,wavelength,resolution_m,revisit_hours,easter_egg_rating,primary_capability
+1,Umbra-02,X-Band,3.1 cm,0.25,8.0,99.1,Sub-meter micro-reflector & metallic gear detection
+2,Capella Space,X-Band,3.1 cm,0.35,6.0,98.5,Ultra-wideband spotlight metallic space blanket identification
+3,ICEYE Constellation,X-Band,3.1 cm,0.5,4.0,96.5,High-revisit persistent SAR monitoring
+4,TerraSAR-X / PAZ,X-Band,3.1 cm,0.25,11.0,96.8,Bistatic DEM generation & structural phase stability
+5,QPS-SAR / Synspective,X-Band,3.1 cm,0.45,3.0,96.2,3-hour rapid smallsat pass re-verification
+6,Sentinel-1A/C,C-Band,5.5 cm,10.0,12.0,94.2,Bitemporal Coherent Change Detection (CCD) & SBAS InSAR
+7,RADARSAT RCM,C-Band,5.5 cm,3.0,12.0,95.0,Compact polarimetry & maritime/land coherence mapping
+8,NISAR (NASA-ISRO),Dual L/S-Band,24.0 cm / 9.3 cm,3.0,12.0,97.4,Sub-canopy forest penetration & soil moisture tracking
+9,ALOS-2 / ALOS-4 PALSAR,L-Band,23.5 cm,3.0,14.0,95.8,Quad-pol Freeman-Durden trunk double-bounce decomposition
+10,SAOCOM-1A/1B,L-Band,23.5 cm,10.0,24.0,93.5,Deep soil dielectric moisture profiling
+11,NovaSAR-1,S-Band,9.3 cm,6.0,24.0,92.0,Medium-penetration canopy & disaster response SAR
+12,ESA BIOMASS,P-Band SAR,70.0 cm (435 MHz),50.0,72.0,98.9,Deep canopy foliage penetration to ground-trunk interfaces & TomoSAR 3D
+13,NASA EMIT / DLR EnMAP,VSWIR Hyperspectral,400-2500 nm,30.0,96.0,97.8,200+ narrow spectral bands for clay mineral disruption & lipid chemical mapping
+14,ASI PRISMA,VSWIR Hyperspectral,400-2500 nm,5.0,72.0,98.1,High-spatial resolution hyperspectral soil alteration & hydrocarbon detection
+15,NASA CYGNSS,GNSS-Reflectometry,19.0 cm (L1 1575.42 MHz),25.0,2.8,96.0,Passive GNSS forward-scatter soil moisture & sub-canopy water logging
+16,ESA FLEX / TROPOMI,SIF (Fluorescence),670-780 nm,0.3,24.0,95.5,Solar-Induced Chlorophyll Fluorescence measuring pre-visual root stress from leachates
+17,Airborne FLIR MWIR/LWIR,Thermal Infrared,3-5 µm / 8-12 µm,0.1,1.0,97.2,Centimeter-scale body heat retention & active decomposition thermal anomalies
+18,SWOT Satellite,Ka-Band Radar (KaRIn),0.8 cm (35.7 GHz),10.0,24.0,94.5,Wide-swath interferometric water surface elevation & riverbank flooding
+19,GRACE-FO / Quantum Mag,Gravimetry & Magnetics,N/A,100.0,120.0,93.0,Subsurface void mass displacement & ferromagnetic structural anomaly detection
