@@ -1,6 +1,7 @@
 import json
 import tempfile
 import unittest
+import urllib.parse
 from pathlib import Path
 
 # star import replaced with explicit names (flake8 F403/F405): from .case001_live import *
@@ -55,6 +56,20 @@ class TestLive(unittest.TestCase):
             self.assertTrue(report["retrieval_complete"])
             self.assertEqual(report["records"], 2)
             self.assertTrue((Path(t) / "out" / "reconciliation.json.sha256").exists())
+
+    def test_capped_layer_is_not_complete(self):
+        # Every page is full, so the 500-record default cap is reached and more may exist.
+        def op(req, timeout):
+            q = urllib.parse.parse_qs(urllib.parse.urlsplit(req.full_url).query)
+            start, n = int(q["resultOffset"][0]), int(q["resultRecordCount"][0])
+            return Response(req.full_url, {"features": [{"attributes": {"OBJECTID": start + i}} for i in range(n)]})
+
+        with tempfile.TemporaryDirectory() as t:
+            report = run(Path(t) / "out", opener=op)
+            self.assertEqual(report["errors"], [])
+            self.assertFalse(report["retrieval_complete"])
+            saved = json.loads((Path(t) / "out" / "reconciliation.json").read_text())
+            self.assertEqual(saved["truncated_layers"], ["building", "site_engineering"])
 
     def test_failed_source(self):
         def op(req, timeout):

@@ -186,7 +186,10 @@ def run(output_dir, number=1546, street="HIGH", year_start=2000, year_end=2010, 
             "target": "1546 N High St, Columbus, OH",
             "errors": errors,
             "sources": list(LAYERS),
-            "retrieval_complete": len(errors) == 0,
+            # Original: "retrieval_complete": len(errors) == 0,
+            #   a layer that hit the record cap may have omitted permits but was reported complete.
+            "truncated_layers": [r["layer"] for r in results if r.get("truncated_possible")],
+            "retrieval_complete": len(errors) == 0 and not any(r.get("truncated_possible") for r in results),
         }
     )
     write_evidence(report, dest / "reconciliation.json")

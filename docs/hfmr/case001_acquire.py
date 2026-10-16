@@ -24,6 +24,16 @@ def metadata(url, opener=None):
     }
 
 
+def _check_address_args(number, street, start, end):
+    """Reject bad query arguments up front, before any output is created or request is made."""
+    if not isinstance(number, int) or not 1 <= number <= 99999:
+        raise ValueError("Invalid number")
+    if not isinstance(street, str) or not re.fullmatch("[A-Z]{2,25}", street):
+        raise ValueError("Invalid street")
+    if not isinstance(start, int) or not isinstance(end, int) or not 1800 <= start <= end <= 2100:
+        raise ValueError("Invalid years")
+
+
 def query_address_variants(layer, number=1546, street="HIGH", start=2000, end=2010, opener=None):
     if layer not in LAYERS:
         raise ValueError("Invalid layer")
@@ -37,10 +47,17 @@ def query_address_variants(layer, number=1546, street="HIGH", start=2000, end=20
     # Separate queries avoid requiring contiguous address text.
     patterns = [f"{number} N {street}", f"{number} NORTH {street}", f"{number} {street}"]
     queries = [f"SITE_ADDRESS LIKE '%{p}%' AND {year} BETWEEN {start} AND {end}" for p in patterns]
-    return [(q, retrieve(layer, q, opener=opener)) for q in queries]
+    # Original: return [(q, retrieve(layer, q, opener=opener)) for q in queries]
+    #   the list was built before the caller could persist anything, so a failure on a later
+    #   variant discarded earlier successful retrievals. Arguments are still validated eagerly
+    #   above; each retrieval now happens as the caller iterates, so it can be saved at once.
+    return ((q, retrieve(layer, q, opener=opener)) for q in queries)
 
 
 def acquire(output, number=1546, street="HIGH", start=2000, end=2010, opener=None):
+    # Invalid arguments are a caller error, not a per-layer retrieval failure: refuse them
+    # before creating output, so no misleading partial report is written.
+    _check_address_args(number, street, start, end)
     dest = Path(output)
     if dest.exists() and any(dest.iterdir()):
         raise FileExistsError("Output not empty")
@@ -53,7 +70,9 @@ def acquire(output, number=1546, street="HIGH", start=2000, end=2010, opener=Non
         try:
             meta = metadata(url, opener)
             write_evidence(meta, dest / f"{layer}_schema.json")
-            metadata_docs.append(meta)
+            # Original: metadata_docs.append(meta)
+            #   it ran before the required-field check, so a layer with missing fields was
+            #   still listed under metadata_verified_for. Appended after the check below.
             needed = {
                 "SITE_ADDRESS",
                 "B1_ALT_ID",
@@ -63,6 +82,7 @@ def acquire(output, number=1546, street="HIGH", start=2000, end=2010, opener=Non
             missing = needed - set(meta["fields"])
             if missing:
                 raise ValueError(f"Missing expected fields: {sorted(missing)}")
+            metadata_docs.append(meta)
             for idx, (query, result) in enumerate(query_address_variants(layer, number, street, start, end, opener), 1):
                 write_evidence(result, dest / f"{layer}_query{idx}.json")
                 outcomes.append(result)
@@ -78,7 +98,10 @@ def acquire(output, number=1546, street="HIGH", start=2000, end=2010, opener=Non
             "parcel_status": "unverified_current_vs_historical",
             "query_attempts": len(outcomes),
             "errors": errors,
-            "retrieval_complete": not errors,
+            # Original: "retrieval_complete": not errors,
+            #   ignored retrieve()'s truncated_possible flag, so a capped query read as complete.
+            "truncated_queries": [o["query"] for o in outcomes if o.get("truncated_possible")],
+            "retrieval_complete": not errors and not any(o.get("truncated_possible") for o in outcomes),
             "metadata_verified_for": [m["url"] for m in metadata_docs],
             "absence_caveat": "Zero records in public GIS does not establish no historical construction or permit.",
             "source_note": "GIS records are leads; historical parcel identities need independent documentary confirmation.",  # noqa: E501
