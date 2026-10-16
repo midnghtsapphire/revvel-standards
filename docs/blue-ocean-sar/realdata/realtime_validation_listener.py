@@ -63,6 +63,30 @@ REQUIRED_FIELDS = ("source_origin", "archive_timestamp", "source_identifier", "r
 SOURCE_ORIGINS = ("wayback_cdx", "usenet_nntp", "git_history", "forum_archive", "darkweb_index", "manual_ingest")
 
 
+def check_ground_truth(gt):
+    """Raise ValueError unless gt is None or has the shape Stage2ValidationGate reads.
+    A wrong shape (e.g. a JSON array) otherwise passed startup and then crashed
+    every POST inside the gate."""
+    if gt is None:
+        return
+    if not isinstance(gt, dict):
+        raise ValueError(f"ground truth must be a JSON object, not {type(gt).__name__}")
+    needed = {"cleared_sectors": ("sector_id", "cleared_by", "cleared_date"), "verified_unmonitored_gaps": ("gap_id",)}
+    for key, fields in needed.items():
+        items = gt.get(key, [])
+        if not isinstance(items, list):
+            raise ValueError(f"ground truth {key!r} must be a list")
+        for i, item in enumerate(items):
+            if not isinstance(item, dict):
+                raise ValueError(f"ground truth {key}[{i}] must be an object")
+            missing = [f for f in fields if f not in item]
+            if missing:
+                raise ValueError(f"ground truth {key}[{i}] is missing {missing}")
+            kws = item.get("keywords", []) if key == "verified_unmonitored_gaps" else item.get("keywords")
+            if not isinstance(kws, list) or not all(isinstance(k, str) for k in kws):
+                raise ValueError(f"ground truth {key}[{i}] keywords must be a list of strings")
+
+
 def _is_loopback(host):
     if host == "localhost":
         return True
@@ -168,6 +192,7 @@ def make_server(host="127.0.0.1", port=8080, db_path="stage0_archive.db", ground
     if not _is_loopback(host) and not (token and tls_cert):
         raise ValueError(f"refusing to listen on {host}: a non-loopback bind needs SAR_LISTENER_TOKEN "
                          "and --tls-cert, or the write endpoint is open to anyone who can reach it")
+    check_ground_truth(ground_truth)
     RealtimeWebhookHandler.db_path = db_path
     RealtimeWebhookHandler.ground_truth = ground_truth
     RealtimeWebhookHandler.token = token
@@ -200,9 +225,18 @@ def load_ground_truth(parser, args):
     if args.ground_truth and args.use_shaffer_default:
         parser.error("use --ground-truth or --use-shaffer-default, not both")
     gt = None
+    # Original: any JSON was accepted, so a file holding [] started the server
+    # and every POST then crashed in the gate.
+    # if args.ground_truth:
+    #     with open(args.ground_truth, encoding="utf-8") as f:
+    #         gt = json.load(f)
     if args.ground_truth:
-        with open(args.ground_truth, encoding="utf-8") as f:
-            gt = json.load(f)
+        try:
+            with open(args.ground_truth, encoding="utf-8") as f:
+                gt = json.load(f)
+            check_ground_truth(gt)
+        except (OSError, ValueError) as e:
+            parser.error(f"--ground-truth {args.ground_truth}: {e}")
     elif args.use_shaffer_default:
         gt = DEFAULT_VERIFIED_GROUND_TRUTH
     return gt

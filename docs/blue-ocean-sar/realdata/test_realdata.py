@@ -559,6 +559,15 @@ class ListenerCli(unittest.TestCase):
         run = self._main("--ground-truth", p)
         self.assertEqual(run.call_args.kwargs["ground_truth"], {"case_id": "OTHER-CASE"})
 
+    def test_ground_truth_that_is_not_an_object_rejected_before_start(self):
+        for text in ("[]", '"x"', '{"cleared_sectors": [{"sector_id": "S"}]}', "{not json"):
+            with self.assertRaises(SystemExit, msg=text) as cm:
+                self._main("--ground-truth", self._gt_file(text))
+            self.assertEqual(cm.exception.code, 2, text)
+        with self.assertRaises(ValueError):
+            self.rl.make_server("127.0.0.1", 0, os.path.join(self.tmp.name, "x.db"), ground_truth=[])
+        self.rl.check_ground_truth(self.rl.DEFAULT_VERIFIED_GROUND_TRUTH)
+
 
 class ServiceUnit(unittest.TestCase):
     def test_database_lives_in_a_state_directory_the_service_user_owns(self):
