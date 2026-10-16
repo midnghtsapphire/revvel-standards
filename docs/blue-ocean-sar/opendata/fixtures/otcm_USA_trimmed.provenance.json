@@ -1,0 +1,9 @@
+{
+ "source_url": "https://raw.githubusercontent.com/AidanWelch/OpenTrafficCamMap/master/cameras/USA.json",
+ "source_sha256": "f9b0df5a00373c80104478a2055ac299a61734d96f58ae8fa585cec78ff9dd41",
+ "source_bytes": 1591599,
+ "source_cameras": 7029,
+ "trimmed_to": "Kentucky/Warren (all), Alabama/Mobile[:6], Ohio/other[:5], California/Mono[:6]",
+ "license_note": "OpenTrafficCamMap catalogue; camera feeds are published by the listed DOTs",
+ "fetched_on_utc": "2026-10-16"
+}
