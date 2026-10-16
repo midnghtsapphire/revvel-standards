@@ -13,6 +13,7 @@ registry, logs) are not committed; the scripts regenerate them.
 | `s2_ndvi.py` | NDVI values in `sentinel_wayback_satellite_math_matrix`, `multi_year_ndvi_signals` | Sentinel-2 L2A scenes, AWS open data (`sentinel-cogs`) | Yes |
 | `s2_change.py` | "brush clearing near the pond" and similar change claims in the Lindeman decks | Sentinel-2 L2A scenes, AWS open data (`sentinel-cogs`) | Yes |
 | `dem_terrain.py` | `run_county.py` random terrain; the slope/slide model in the Whisper deck; "LiDAR depression" claims | Copernicus GLO-30 (AWS), or your own DTM GeoTIFF | Yes |
+| `microtopo.py` | The M-TMAT method in the uploaded guide (it had no code) | Two of your DEMs, or USGS 3DEP 1 m project tiles (AWS, `prd-tnm`) | Yes |
 | `weather_history.py` | The temperature and snowfall figures in the slide decks | ERA5 reanalysis via Open-Meteo | No: host blocked here |
 | `image_phash.py` | The hard-coded hashes in `image_comparison_features.csv` | Your actual image files | Yes (offline) |
 | `qpcr_interpret.py` | `edna_dna_forensic_engine.py` fixed read counts and match % | A lab's qPCR plate export | Yes (offline) |
@@ -59,6 +60,49 @@ Outputs: `claims.csv`, `coordinates.csv`, `elevation_checks.csv`,
 python build_case_registry.py --in UPLOADS_DIR --in extracted_zips/ --out-dir registry/ --elevation
 ```
 
+## Terrain change between two lidar surveys (`microtopo.py`)
+
+`microtopo.py` compares two bare-earth DEMs of the same ground. It reports
+where the ground surface rose or dropped by more than the survey error.
+
+- **Inputs.** Either `--baseline OLD.tif --recent NEW.tif` (any CRS), or
+  `--lat/--lon/--radius-m`. The second form looks up every USGS 3DEP 1 m
+  project over the window in the `FESM_1m.gpkg` index on the public
+  `prd-tnm` bucket, reads each project's tile metadata for the lidar
+  collection dates, and uses the oldest and newest projects. It reads only
+  the window, by HTTP range request.
+- **Method.** Both DEMs go onto a 1 m grid in the baseline CRS. The median
+  dZ over the window is removed as a vertical offset (different geoid
+  models alone shift projects by tens of centimetres). A cell counts only if
+  `|dZ| > t * sqrt(s1^2 + s2^2)`; the defaults are 0.10 m RMSE per survey
+  (QL2) and t = 1.96, so 0.28 m. Patches of 2 m2 or more become
+  `fill_mound` or `excavation_pit` anomalies. A local relief model and a
+  sky-view factor of the newer surface are written alongside.
+- **Outputs.** `dz.tif`, `lrm.tif`, `svf.tif`, `ledger.csv`,
+  `anomalies.geojson` and `anomalies.kml`. Each anomaly has a centroid, area,
+  mean and peak dZ, volume, and distance (m, ft) and true bearing from the
+  reference point. `manifest.json` records the S3 keys, collection dates,
+  parameters, the removed offset, the threshold and a SHA-256 for every file.
+- **Exit codes.** 0 when the analysis ran (no anomalies is a valid result);
+  2 when the DEMs do not overlap or hold no data; 3 when fewer than two 3DEP
+  surveys cover the window. Code 3 still writes a manifest listing what was
+  found.
+
+Limits:
+
+- Many places have only one 3DEP 1 m survey. On 2026-10-16, 30.910 N,
+  91.280 W (St. Francisville, LA) had only `LA_CPRA_2019_C20`, so no change
+  map is possible there from 3DEP alone.
+- A dZ patch is a change in the mapped ground surface. Earthworks, farming,
+  erosion, buildings, dense vegetation classed as ground, and different
+  processing between projects all produce one. The tool cannot tell these
+  apart, and every anomaly needs checking on the ground.
+- Only a constant vertical offset is removed. A horizontal shift or a tilt
+  between surveys shows up as paired rises and drops on slopes.
+- Urban windows show many patches where buildings were removed differently
+  in each project.
+- The point clouds in `usgs-lidar-public` (Entwine) are not used.
+
 ## Commands
 
 ```sh
@@ -68,10 +112,13 @@ python s2_change.py --lat 36.6534 --lon -94.4418 --radius-m 1609 --before 2026-0
 python dem_terrain.py --lat 50.8782 --lon -119.9075 --radius-m 1500 --mu 0.3 0.45 0.6 --out-prefix out/td
 python dem_terrain.py --dem my_1m_dtm.tif --lat .. --lon .. --radius-m 200 --out-prefix out/site   # 1 m data
 python dem_terrain.py --before dtm_2018.tif --after dtm_2025.tif --lod-m 0.10 --out-prefix out/change
+python microtopo.py --lat 29.999 --lon -90.260 --radius-m 150 --out-dir out/msy        # 3DEP 2017 vs 2021
+python microtopo.py --baseline dtm_2015.tif --recent dtm_2022.tif --out-dir out/site    # your own DEMs
 python weather_history.py --lat 50.884 --lon -119.882 --start 2018-02-16 --end 2018-02-18 --tz America/Vancouver --out wx.csv
 python image_phash.py photos/*.jpg --out hashes.csv --pairs pairs.csv
 python qpcr_interpret.py plate.csv --lod95-ct 36 --loq-ct 33 --pos-ct 22 26
 python -m unittest test_realdata     # 24 offline tests with known answers
+python -m unittest test_microtopo    # 18 offline tests for microtopo.py
 ```
 
 Needs: numpy, scipy, rasterio and Pillow; mgrs is used only by the tile-check
