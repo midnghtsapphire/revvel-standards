@@ -98,7 +98,7 @@ Full graveyard of video/voice keys still lives in [`SECRETS_BOM.md`](SECRETS_BOM
 
 ---
 
-## Status of the old daily BOM
+## Is the old daily BOM still working
 
 No as a daily loop.
 

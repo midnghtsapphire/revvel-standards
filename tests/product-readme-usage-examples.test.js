@@ -127,6 +127,16 @@ function parseSteps(block) {
   return steps;
 }
 
+/**
+ * The `products/...` tail of a path, which is the part both sides of a `uses:`
+ * comparison agree on. Returns null when there is no `products/` segment.
+ */
+function fromProducts(p) {
+  const norm = String(p).replace(/\\/g, '/').replace(/^\.\//, '');
+  const i = norm.lastIndexOf('products/');
+  return i === -1 ? null : norm.slice(i);
+}
+
 /** Inputs an action declares with `required: true`. */
 function requiredInputs(actionYmlPath) {
   const src = fs.readFileSync(actionYmlPath, 'utf8');
@@ -146,18 +156,48 @@ function requiredInputs(actionYmlPath) {
   return required;
 }
 
-/** Product directories that ship both an action.yml and a README. */
+/**
+ * Every directory in the repo that ships both an `action.yml` and a
+ * `README.md` — not just the ones directly under `products/`.
+ *
+ * The first version of this test walked only `products/*`. That made it a
+ * decoration the moment the action was copied: #18005, #18007, #18008, #18025
+ * and #18032 each duplicated `products/merge-prosecutor/` into
+ * `artifacts/revvel-finishers/products/merge-prosecutor/`, carrying the
+ * keep-both usage block with them. The guard passed on a repo that contained
+ * two copies of the defect it exists to catch, because it never looked in the
+ * second place (RVS-VERIFY-001 — a check that cannot see the failure is not a
+ * control).
+ *
+ * Walking by shape rather than by path means a future copy is covered
+ * wherever it lands.
+ */
 function productActions() {
-  if (!fs.existsSync(PRODUCTS)) return [];
-  return fs
-    .readdirSync(PRODUCTS, { withFileTypes: true })
-    .filter((e) => e.isDirectory())
-    .map((e) => ({
-      name: e.name,
-      readme: path.join(PRODUCTS, e.name, 'README.md'),
-      actionYml: path.join(PRODUCTS, e.name, 'action.yml'),
-    }))
-    .filter((p) => fs.existsSync(p.readme) && fs.existsSync(p.actionYml));
+  const found = [];
+  const skip = new Set(['node_modules', '.git', 'dist', 'coverage', '.venv']);
+
+  const walk = (dir) => {
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+
+    const readme = path.join(dir, 'README.md');
+    const actionYml = path.join(dir, 'action.yml');
+    if (fs.existsSync(readme) && fs.existsSync(actionYml)) {
+      found.push({ name: path.basename(dir), dir, readme, actionYml });
+    }
+
+    for (const entry of entries) {
+      if (!entry.isDirectory() || skip.has(entry.name)) continue;
+      walk(path.join(dir, entry.name));
+    }
+  };
+
+  walk(ROOT);
+  return found;
 }
 
 test('product README examples do not use the same action twice in one job', () => {
@@ -195,6 +235,9 @@ test('product README examples supply every required input of their own action', 
     const required = requiredInputs(product.actionYml);
     if (required.length === 0) continue;
 
+    const productKey = fromProducts(path.relative(ROOT, product.dir));
+    if (!productKey) continue;
+
     const markdown = fs.readFileSync(product.readme, 'utf8');
     let invocations = 0;
 
@@ -202,9 +245,15 @@ test('product README examples supply every required input of their own action', 
       for (const step of parseSteps(block.body)) {
         if (!step.uses) continue;
         // Both the in-repo form (`./products/x`) and the consumer form
-        // (`owner/repo/products/x@ref`) point at this product's action.
-        const target = step.uses.split('@')[0].replace(/\/+$/, '');
-        if (!new RegExp(`(^\\./|/)products/${product.name}$`).test(target)) continue;
+        // (`owner/repo/products/x@ref`) point at this product's action, and a
+        // product may sit at a nested path (`products/groq-code-review/action`)
+        // or be a copy under `artifacts/`. Comparing the basename alone got
+        // `products/groq-code-review/action` wrong — it looked for
+        // `products/action`. Compare from the last `products/` segment of each
+        // side instead, which also lets a copy under `artifacts/` match the
+        // canonical `products/...` path its README tells people to install.
+        const target = fromProducts(step.uses.split('@')[0].replace(/\/+$/, ''));
+        if (!target || target !== productKey) continue;
 
         invocations += 1;
         const missing = required.filter((input) => !step.withKeys.includes(input));
