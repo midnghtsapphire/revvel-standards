@@ -11,6 +11,8 @@ import json
 import math
 import os
 
+from provenance import DataSource, provenance_block
+
 # Unused in this script; kept commented rather than deleted.
 # import numpy as np
 # import sqlite3
@@ -38,9 +40,37 @@ class MultiBandWaveEngineV2:
         v_target = c / sqrt_target
         return R, v_soil, v_target
 
+    # Original signature: SWIR and SIF silently defaulted to 0.15 / 0.85, so a
+    # call with no hyperspectral data still produced a confident-looking score.
+    # def evaluate_multi_band_node(
+    #     self, x, y, z_depth, er_observed, er_baseline=25.0, swir_1720_reflectance=0.15, sif_stress=0.85
+    # ):
     def evaluate_multi_band_node(
-        self, x, y, z_depth, er_observed, er_baseline=25.0, swir_1720_reflectance=0.15, sif_stress=0.85
+        self,
+        x,
+        y,
+        z_depth,
+        er_observed,
+        er_baseline=25.0,
+        swir_1720_reflectance=None,
+        sif_stress=None,
+        sources=None,
     ):
+        """sources: DataSource list for the inputs. Raises MissingSourceError without it.
+        Inputs left unset fall back to the original defaults and are listed in
+        "assumed_inputs", which marks the result as built on estimates."""
+        assumed = {"er_baseline": er_baseline} if er_baseline == 25.0 else {}
+        if swir_1720_reflectance is None:
+            swir_1720_reflectance = 0.15
+            assumed["swir_1720_reflectance"] = 0.15
+        if sif_stress is None:
+            sif_stress = 0.85
+            assumed["sif_stress"] = 0.85
+        sources = list(sources) if isinstance(sources, (list, tuple)) else ([sources] if sources else [])
+        if assumed and sources:
+            sources.append(DataSource("default values used for: " + ", ".join(sorted(assumed)), "estimate"))
+        prov = provenance_block(sources)
+
         R, v_soil, v_target = self.calculate_gpr_physics(er_soil=er_baseline, er_target=er_observed)
 
         # Probability score based on multi-sensor wave alignment:
@@ -67,6 +97,8 @@ class MultiBandWaveEngineV2:
             "swir_lipid_absorption_flag": bool(swir_1720_reflectance < 0.20),
             "sif_plant_stress_index": sif_stress,
             "score_is_calibrated_probability": False,
+            "assumed_inputs": assumed,
+            "provenance": prov,
         }
 
 
@@ -79,6 +111,12 @@ if __name__ == "__main__":
 
     # Test evaluation
     result = engine.evaluate_multi_band_node(
-        x=2.5, y=-1.8, z_depth=1.2, er_observed=3.1, swir_1720_reflectance=0.12, sif_stress=0.92
+        x=2.5,
+        y=-1.8,
+        z_depth=1.2,
+        er_observed=3.1,
+        swir_1720_reflectance=0.12,
+        sif_stress=0.92,
+        sources=[DataSource("example values typed into this script", "synthetic")],
     )
     print("Multi-Band Fusion Result:", json.dumps(result, indent=2))

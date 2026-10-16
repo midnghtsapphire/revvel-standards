@@ -1,0 +1,79 @@
+"""Tests for provenance.py and its use in the master script (stdlib only)."""
+
+import os
+import sys
+import unittest
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from master_sensor_wave_search_script_v2 import MultiBandWaveEngineV2  # noqa: E402
+from provenance import (  # noqa: E402
+    LABEL_ESTIMATE,
+    LABEL_MEASURED,
+    LABEL_SYNTHETIC,
+    DataSource,
+    MissingSourceError,
+    provenance_block,
+    require_provenance,
+)
+
+
+class ProvenanceTests(unittest.TestCase):
+    def test_no_sources_refused(self):
+        for empty in (None, [], ()):
+            with self.assertRaises(MissingSourceError):
+                provenance_block(empty)
+
+    def test_measured_and_public_record_need_reference(self):
+        for kind in ("measured", "public_record"):
+            with self.assertRaises(MissingSourceError):
+                provenance_block([DataSource("something", kind)])
+            provenance_block([DataSource("something", kind, "https://example.org/x")])
+
+    def test_unknown_kind_and_blank_description(self):
+        with self.assertRaises(MissingSourceError):
+            provenance_block([DataSource("x", "vibes")])
+        with self.assertRaises(MissingSourceError):
+            provenance_block([DataSource("  ", "estimate")])
+
+    def test_label_takes_weakest_source(self):
+        m = DataSource("LiDAR tile", "measured", "USGS 3DEP tile ID")
+        e = DataSource("soil density", "estimate")
+        s = DataSource("test grid", "synthetic")
+        self.assertEqual(provenance_block([m])["status"], LABEL_MEASURED)
+        self.assertEqual(provenance_block([m, e])["status"], LABEL_ESTIMATE)
+        self.assertEqual(provenance_block([m, e, s])["status"], LABEL_SYNTHETIC)
+        self.assertFalse(provenance_block([m])["ground_verified"])
+
+    def test_require_provenance(self):
+        with self.assertRaises(MissingSourceError):
+            require_provenance({"latitude": 1.0})
+        require_provenance({"provenance": provenance_block([DataSource("t", "synthetic")])})
+
+
+class MasterScriptTests(unittest.TestCase):
+    def setUp(self):
+        self.engine = MultiBandWaveEngineV2()
+
+    def test_refuses_without_sources(self):
+        with self.assertRaises(MissingSourceError):
+            self.engine.evaluate_multi_band_node(0, 0, 1.0, 3.1, swir_1720_reflectance=0.1, sif_stress=0.9)
+
+    def test_defaults_are_flagged_as_estimates(self):
+        measured = [DataSource("GPR trace", "measured", "survey-2026-01.dzt")]
+        out = self.engine.evaluate_multi_band_node(0, 0, 1.0, 3.1, sources=measured)
+        self.assertIn("swir_1720_reflectance", out["assumed_inputs"])
+        self.assertIn("sif_stress", out["assumed_inputs"])
+        self.assertEqual(out["provenance"]["status"], LABEL_ESTIMATE)
+        self.assertFalse(out["score_is_calibrated_probability"])
+
+    def test_score_unchanged_from_original(self):
+        # Same numbers as the original demo call: the guard labels, it does not re-score.
+        out = self.engine.evaluate_multi_band_node(
+            2.5, -1.8, 1.2, 3.1, swir_1720_reflectance=0.12, sif_stress=0.92,
+            sources=[DataSource("demo", "synthetic")])
+        self.assertAlmostEqual(out["fused_probability"], 94.7, places=2)  # value from the unmodified script
+
+
+if __name__ == "__main__":
+    unittest.main()

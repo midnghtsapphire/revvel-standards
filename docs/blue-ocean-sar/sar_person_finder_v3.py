@@ -9,6 +9,8 @@ from rasterio.transform import from_origin
 from scipy.ndimage import uniform_filter
 import xml.etree.ElementTree as ET
 
+from provenance import LABEL_SYNTHETIC, DataSource, provenance_block, require_provenance
+
 # NOT VALIDATED on real SAR scenes. Scores are relative rankings, not probabilities.
 
 
@@ -110,7 +112,10 @@ class MultiBandSAREngine:
         weights = var / (var + overall_var + 1e-6)
         return mean + weights * (img - mean)
 
-    def process_multiband_sar(self, raster_path):
+    def process_multiband_sar(self, raster_path, sources=None):
+        """sources: DataSource list naming the raster. Without it this raises
+        MissingSourceError instead of returning locations."""
+        prov = provenance_block(sources)
         with rasterio.open(raster_path) as src:
             transform = src.transform
             num_bands = src.count
@@ -199,6 +204,7 @@ class MultiBandSAREngine:
                     "anomaly_score": round(anomaly, 4),
                     "motion_pdf_weight": round(pdf, 4),
                     "band_backscatter_db": band_readings,
+                    "provenance": prov,
                 }
             )
 
@@ -211,6 +217,7 @@ class MultiBandSAREngine:
     def export_geojson(self, targets, output_path):
         features = []
         for t in targets:
+            prov = require_provenance(t)
             feat = {
                 "type": "Feature",
                 "geometry": {"type": "Point", "coordinates": [t["longitude"], t["latitude"]]},
@@ -221,6 +228,9 @@ class MultiBandSAREngine:
                     "anomaly_score": t["anomaly_score"],
                     "motion_pdf": t["motion_pdf_weight"],
                     "multiband_db": t["band_backscatter_db"],
+                    "status": prov["status"],
+                    "ground_verified": prov["ground_verified"],
+                    "sources": prov["sources"],
                 },
             }
             features.append(feat)
@@ -238,6 +248,7 @@ class MultiBandSAREngine:
         now = now or datetime.now(timezone.utc)
 
         for t in targets:
+            prov = require_provenance(t)
             event = ET.SubElement(
                 root,
                 "event",
@@ -261,14 +272,20 @@ class MultiBandSAREngine:
                 {"lat": str(t["latitude"]), "lon": str(t["longitude"]), "hae": "0.0", "ce": "10.0", "le": "10.0"},
             )
             detail = ET.SubElement(event, "detail")
-            ET.SubElement(
-                detail, "contact", callsign=f"SAR-6BAND-TARGET-#{t['rank']} ({t['fused_confidence'] * 100:.1f}%)"
-            )
+            # Original callsign showed the score as a percentage, which reads as a
+            # probability on an ATAK screen:
+            # ET.SubElement(
+            #     detail, "contact", callsign=f"SAR-6BAND-TARGET-#{t['rank']} ({t['fused_confidence'] * 100:.1f}%)"
+            # )
+            prefix = "SYNTHETIC " if prov["status"] == LABEL_SYNTHETIC else "UNVERIFIED "
+            ET.SubElement(detail, "contact", callsign=f"{prefix}SAR-6BAND-#{t['rank']}")
             ET.SubElement(detail, "usericon", iconsetpath="COT_MAPPING_2525B/Emergency/Search & Rescue")
             ET.SubElement(detail, "color", argb="-65536" if t["rank"] <= 2 else "-256")
 
             db_summary = ", ".join([f"{k}: {v}dB" for k, v in t["band_backscatter_db"].items()])
             remarks = (
+                f"{prov['status']}\n"
+                f"Sources: {'; '.join(src['description'] for src in prov['sources'])}\n"
                 f"[Blue Ocean 6-Band SAR] Rank {t['rank']} Target\n"
                 f"Fused Confidence: {t['fused_confidence']}\n"
                 f"Multi-Band Spectrum: {db_summary}\n"
@@ -304,7 +321,11 @@ if __name__ == "__main__":
     raster_file = os.path.join(out_dir, "sar_multiband_sample.tif")
     engine.generate_multiband_raster(raster_file)
 
-    targets = engine.process_multiband_sar(raster_file)
+    # targets = engine.process_multiband_sar(raster_file)  # original: no source named
+    targets = engine.process_multiband_sar(
+        raster_file,
+        sources=[DataSource("generate_multiband_raster(): random speckle with injected targets", "synthetic")],
+    )
     print("--- 6-BAND SAR TARGET DETECTION COMPLETED ---")
     print(json.dumps(targets[:5], indent=2))
 

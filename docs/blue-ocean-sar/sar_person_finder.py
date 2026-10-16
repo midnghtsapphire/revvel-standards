@@ -11,6 +11,8 @@ from typing import Dict, List, Tuple
 import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
 
+from provenance import DataSource, provenance_block, require_provenance
+
 # NOT VALIDATED on real SAR scenes. Scores are relative rankings, not probabilities.
 
 
@@ -134,10 +136,15 @@ class BlueOceanSARPersonFinder:
         elapsed_hours: float,
         top_n: int = 5,
         min_separation_px: int = 2,
+        sources=None,
     ) -> List[Dict]:
         """
         Reprocesses SAR satellite data, fuses with spatial motion PDF, and extracts real coordinates.
+
+        sources: DataSource list naming the SAR scene (and anything else used).
+        Without it this raises MissingSourceError instead of returning locations.
         """
+        prov = provenance_block(sources)
         # 1. Convert SAR intensity to dB scale & detect scatterer anomalies
         img_db = self.sar_detector.intensity_to_db(sar_intensity_data)
         cs_mask, sar_confidence = self.sar_detector.detect_coherent_scatterers(img_db)
@@ -179,6 +186,7 @@ class BlueOceanSARPersonFinder:
                     "sar_backscatter_db": float(img_db[r, c]),
                     "sar_anomaly_score": float(sar_confidence[r, c]),
                     "motion_pdf_weight": float(motion_confidence[r, c]),
+                    "provenance": prov,
                 }
             )
 
@@ -209,7 +217,12 @@ def run_demo(out_path: str = "candidates.geojson"):
 
     finder = BlueOceanSARPersonFinder(lkp_lat, lkp_lon)
     candidates = finder.process_sar_scene(
-        sar_intensity_data=sar_intensity, grid_lats=grid_lats, grid_lons=grid_lons, elapsed_hours=6.0, top_n=5
+        sar_intensity_data=sar_intensity,
+        grid_lats=grid_lats,
+        grid_lons=grid_lons,
+        elapsed_hours=6.0,
+        top_n=5,
+        sources=[DataSource("random gamma speckle with two injected bright points", "synthetic")],
     )
 
     print("\n--- PRIORITIZED SEARCH AND RESCUE TARGET LOCATIONS ---")
@@ -218,6 +231,7 @@ def run_demo(out_path: str = "candidates.geojson"):
     # Export to GeoJSON
     features = []
     for cand in candidates:
+        require_provenance(cand)
         features.append(
             {
                 "type": "Feature",

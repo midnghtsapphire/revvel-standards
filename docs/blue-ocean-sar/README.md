@@ -28,8 +28,30 @@ Run the tests (numpy is needed; scipy is not):
 
 ```sh
 cd docs/blue-ocean-sar
-python3 -m unittest test_sar_person_finder test_sar_dual_comms_publisher -v
+python3 -m unittest test_provenance test_sar_person_finder test_sar_dual_comms_publisher -v
 ```
+
+## No location without a named source
+
+The person finders and the master script will not produce a location unless
+they are told what the input data is. They take a `sources=[DataSource(...)]`
+argument (see `provenance.py`). Without it, they raise `MissingSourceError`
+instead of returning coordinates.
+
+- `measured` (a SAR scene, LiDAR tile or GPS log) and `public_record` (a
+  news story, bulletin or deed) sources must carry a reference: a file path,
+  URL or scene ID that someone else can check.
+- `estimate` covers assumptions. Inputs that fall back to default values are
+  listed in `assumed_inputs` and add an estimate source automatically.
+- `synthetic` is made-up test data. Every demo uses it.
+
+Every output location carries a `provenance` block with a status of
+`SYNTHETIC DEMO - NOT A REAL LOCATION`, `UNVERIFIED - BUILT PARTLY ON
+ESTIMATES` or `UNVERIFIED CANDIDATE - FROM MEASURED DATA`. It also carries
+`ground_verified: false`, because only a ground search can confirm anything.
+The GeoJSON and ATAK exporters refuse locations that have lost this block.
+ATAK markers say `SYNTHETIC` or `UNVERIFIED` in the callsign, and they no
+longer show the score as a percentage.
 
 ## What the numbers mean and what they don't
 
