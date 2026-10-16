@@ -49,5 +49,57 @@ Formatting was also updated to pass the repository's flake8 gate.
 Run the tests from the repo root:
 
 ```bash
-python3 -m unittest discover -s docs/hfmr -v
+python3 -m unittest discover -s docs/hfmr -t docs -v
 ```
+
+The merged modules use package-relative imports, so `-t docs` is now required.
+
+## Forensic Finders modules 2–9 (merged 2026-10-16)
+
+The uploaded modules 2, 3, 4, 8 and 9 build on each other, and module 9 contains
+everything in the earlier ones. Its package files are merged here. The two
+module 3 uploads were byte-identical. `hfmr.py` and `test_hfmr.py` stay at the
+fixed versions above. Module 9's own `hfmr.py` was the original prototype without
+those fixes, and the rest of the package passes its tests against the fixed one.
+
+Changes from the upload:
+
+- Code was reformatted to pass the flake8 gate. A syntax-tree comparison
+  confirmed formatting changed no logic.
+- Unused imports and the star imports in the tests are commented out, not
+  deleted. Each has an explicit replacement next to it.
+- One exception variable that was bound but never read is handled the same
+  way.
+
+Where things are:
+
+- `case001/` holds the Case 001 registry, manifest, unverified timeline and
+  README.
+- `modules/` holds each module's README as received, plus the package README
+  (`PACKAGE_README.md`).
+
+Run from `docs/` (the tests use package-relative imports):
+
+```bash
+cd docs
+python3 -m unittest discover -s hfmr -t . -p 'test_*.py'
+python3 -m hfmr analyze --case DEMO-001 --input hfmr/examples/synthetic_grid.csv --output demo_run
+```
+
+`test_historical.py` needs `numpy` and `rasterio`. The other tests use the
+standard library only.
+
+### Open points found while merging
+
+- **Two different Columbus GIS hosts.** `columbus.py` (module 8) allows only
+  `arc.columbus.gov`. `case001_live.py` (module 9) allows only
+  `gis.columbus.gov`. Both serve
+  `/arcgis/rest/services/Schemas/BuildingZoning/MapServer`. Neither host can be
+  reached from the build session, so it's still unconfirmed which one is live.
+- **Two different reference coordinates.** `case001/case_manifest.json` uses
+  39.99401, -83.006497 for 1546 N High St. The "vault" coordinate in the
+  Shaffer KML, eval JSON and stratigraphy deck is 39.9985, -83.0064, about
+  499 m north of that address. Queries by parcel or address won't cover the
+  KML polygons unless both points are searched.
+- **Depth figures that disagree.** The stratigraphy deck gives "17 feet
+  (approx. 1.15 m)". 17 ft is 5.18 m, and 1.15 m is 3.8 ft.

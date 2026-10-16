@@ -1,0 +1,70 @@
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+# star import replaced with explicit names (flake8 F403/F405): from .columbus import *
+from .columbus import export_csv, metadata, query_by_parcel, save, verify
+
+
+class Response:
+    def __init__(self, url, obj):
+        self.url = url
+        self.obj = obj
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+    def read(self, n=-1):
+        return json.dumps(self.obj).encode()
+
+
+class ColumbusTests(unittest.TestCase):
+    def test_metadata(self):
+        def op(req, timeout):
+            return Response(
+                req.full_url,
+                {"fields": [{"name": "B1_PARCEL_NBR", "type": "esriFieldTypeString"}], "maxRecordCount": 2000},
+            )
+
+        self.assertEqual(metadata(op)["fields"][0]["name"], "B1_PARCEL_NBR")
+
+    def test_parcel(self):
+        def op(req, timeout):
+            self.assertIn("B1_PARCEL_NBR", req.full_url)
+            return Response(req.full_url, {"features": [{"attributes": {"B1_ALT_ID": "X"}}]})
+
+        self.assertEqual(query_by_parcel("123456", opener=op)["records"][0]["B1_ALT_ID"], "X")
+
+    def test_invalid_parcel(self):
+        with self.assertRaises(ValueError):
+            query_by_parcel("x' OR 1=1")
+
+    def test_save_verify(self):
+        with tempfile.TemporaryDirectory() as t:
+            p = Path(t) / "permits.json"
+            save({"records": [{"A": 1}]}, p)
+            self.assertTrue(verify(p))
+            self.assertEqual(export_csv(p, Path(t) / "p.csv"), 1)
+            p.write_text("changed")
+            self.assertFalse(verify(p))
+
+    def test_overwrite(self):
+        with tempfile.TemporaryDirectory() as t:
+            p = Path(t) / "p.json"
+            save({"records": []}, p)
+            with self.assertRaises(FileExistsError):
+                save({"records": []}, p)
+
+    def test_host(self):
+        with self.assertRaises(ValueError):
+            _bad()
+
+
+def _bad():
+    from .columbus import _request
+
+    _request("https://evil.example/arcgis")
