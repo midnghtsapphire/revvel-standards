@@ -12,6 +12,7 @@ import sys
 import tempfile
 import threading
 import unittest
+import urllib.parse
 import urllib.request
 from unittest import mock
 
@@ -200,6 +201,27 @@ class SecretsAndEvidence(unittest.TestCase):
             side = read_json(r.evidence)
         self.assertIn("body_withheld", side)
 
+    def test_presigned_url_signatures_redacted(self):
+        # Review 2026-10-16: S3 / GCS presigned query parameters were left in logged and saved URLs.
+        sig = "placeholder-" + "s" * 8
+        u = F.redact_url("https://b.s3.us-west-2.amazonaws.com/G.h5?X-Amz-Algorithm=AWS4-HMAC-SHA256"
+                         f"&X-Amz-Credential={sig}c&X-Amz-Security-Token={sig}t&X-Amz-Signature={sig}"
+                         f"&X-Goog-Signature={sig}g")
+        self.assertNotIn(sig, u)
+        self.assertIn("X-Amz-Algorithm=AWS4-HMAC-SHA256", u)
+
+    def test_legacy_withholds_url_quoted_secret(self):
+        # Review 2026-10-16: the legacy guard matched only the literal secret, not its URL-quoted form.
+        secret = "placeholder-" + "x" * 8 + "/+="
+        quoted = urllib.parse.quote(secret, safe="")
+        self.assertNotEqual(quoted, secret)
+        op = FakeOpener().add("GET", "https://api.example.org/", (200, ('{"next": "?t=%s"}' % quoted).encode()))
+        with tempfile.TemporaryDirectory() as d:
+            r = _fetch("https://api.example.org/a", op, evidence_dir=d, secrets=[secret])
+            self.assertEqual(os.listdir(d), [os.path.basename(r.evidence)])
+            side = read_json(r.evidence)
+        self.assertIn("body_withheld", side)
+
     def test_error_message_redacted(self):
         op = FakeOpener().add("GET", "https://api.example.org/", (403, f"bad token {SECRET}".encode()))
         with self.assertRaises(F.FetchError) as cm:
@@ -358,6 +380,54 @@ class SharedEvidenceLog(unittest.TestCase):
         self.assertIsNone(r.body)
         self.assertEqual(r.evidence_entry["sha256"], hashlib.sha256(b"GEOTIFF" * 100).hexdigest())
         self.assertTrue(self.verify()["ok"])
+
+    def test_streamed_body_containing_secret_is_not_stored(self):
+        # Review 2026-10-16: a streamed body was copied into the log without the secret check.
+        body = b"GEOTIFF" * 50 + ("token=" + urllib.parse.quote(SECRET, safe="")).encode() + b"GEOTIFF" * 50
+        op = FakeOpener().add("GET", "https://api.example.org/", _fresh_response(body=body))
+        target = os.path.join(self.tmp, "dem.tif")
+        r = _fetch("https://api.example.org/a", op, evidence_log=self.log(), stream_to=target, secrets=[SECRET])
+        e = r.evidence_entry
+        self.assertIn("body_withheld", e["extra"])
+        self.assertEqual(e["extra"]["sha256_as_received"], hashlib.sha256(body).hexdigest())
+        self.assertEqual(e["size"], 0)
+        for root, _, files in os.walk(self.logdir):
+            for name in files:
+                self.assertNotIn(SECRET.encode(), read_bytes(os.path.join(root, name)))
+        self.assertTrue(self.verify()["ok"])
+
+    def test_secret_across_chunk_boundary_is_found(self):
+        path = os.path.join(self.tmp, "blob.bin")
+        with open(path, "wb") as f:
+            f.write(b"a" * 10 + SECRET.encode() + b"b" * 10)
+        for size in range(1, len(SECRET) + 12):
+            self.assertTrue(F._file_contains_secret(path, [SECRET], chunk_size=size), size)
+        self.assertFalse(F._file_contains_secret(path, ["placeholder-" + "z" * 8], chunk_size=4))
+
+    def test_log_with_altered_object_or_bad_signature_is_not_extended(self):
+        # Review 2026-10-16: open_evidence_log checked only the chain, not stored files or signatures.
+        op = FakeOpener().add("GET", "https://api.example.org/", _fresh_response())
+        _fetch("https://api.example.org/a", op, evidence_log=self.log())
+        self.log()  # an intact log opens
+        obj = os.path.join(self.logdir, self.entries()[0]["file"])
+        original = read_bytes(obj)
+        os.chmod(obj, 0o644)
+        with open(obj, "wb") as f:
+            f.write(b'{"ok": false}')
+        with self.assertRaises(ValueError) as cm:
+            self.log()
+        self.assertIn("does not verify", str(cm.exception))
+        with open(obj, "wb") as f:
+            f.write(original)
+        self.log()
+        path = os.path.join(self.logdir, self.core.LOG_NAME)
+        entry = self.entries()[0]
+        other = self.core.sign_hash(self.core.load_private_key(self.key_path), "0" * 64)
+        with open(path, "wb") as f:
+            f.write(self.core.canonical(dict(entry, signature=other)) + b"\n")
+        with self.assertRaises(ValueError) as cm:
+            self.log()
+        self.assertIn("signature", str(cm.exception))
 
     def test_operator_required_and_checked_before_network(self):
         with self.assertRaises(ValueError) as cm:

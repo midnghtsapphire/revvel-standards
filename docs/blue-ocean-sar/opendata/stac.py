@@ -60,9 +60,15 @@ CATALOGS = {
         "hosts": ["planetarycomputer.microsoft.com"],
         "sas": "https://planetarycomputer.microsoft.com/api/sas/v1/token/",
     },
+    # "cdse": {
+    #     "root": "https://stac.dataspace.copernicus.eu/v1",
+    #     "hosts": ["stac.dataspace.copernicus.eu"],
+    # },
+    # Replaced (review 2026-10-16): CDSE filters with CQL2, not the query extension (as in opendata-rs).
     "cdse": {
         "root": "https://stac.dataspace.copernicus.eu/v1",
         "hosts": ["stac.dataspace.copernicus.eu"],
+        "cql2": True,
     },
 }
 CMR_STAC_PROVIDERS = {"cmr-lpcloud": "LPCLOUD", "cmr-nsidc": "NSIDC_CPRD", "cmr-ornl": "ORNL_CLOUD"}
@@ -71,6 +77,7 @@ for _name, _prov in CMR_STAC_PROVIDERS.items():
                        "hosts": ["cmr.earthdata.nasa.gov"], "earthdata": True}
 CLOUD_KEYS = ("eo:cloud_cover", "cloud_cover", "s2:cloud_coverage_assessment")
 QUERY_OPS = {"<": "lt", "<=": "lte", ">": "gt", ">=": "gte", "=": "eq", "!=": "neq"}
+CQL2_OPS = {"lt": "<", "lte": "<=", "gt": ">", "gte": ">=", "eq": "=", "neq": "<>"}
 _QUERY_RE = re.compile(r"^([A-Za-z0-9_:.\-]+)\s*(<=|>=|!=|=|<|>)\s*(.+)$")
 _COLLECTION_RE = re.compile(r"^[A-Za-z0-9_.\-]+$")
 
@@ -91,7 +98,21 @@ def parse_query(exprs):
     return q
 
 
-def build_search_body(bbox=None, datetime_range=None, collections=None, query=None, limit=100, intersects=None):
+def query_to_cql2(query):
+    """STAC query-extension dict -> CQL2-JSON filter (one comparison, or an "and" of several)."""
+    args = []
+    for prop, ops in query.items():
+        for op, val in ops.items():
+            if op not in CQL2_OPS:
+                raise ValueError(f"query operator {op!r} has no CQL2 equivalent")
+            args.append({"op": CQL2_OPS[op], "args": [{"property": prop}, val]})
+    return args[0] if len(args) == 1 else {"op": "and", "args": args}
+
+
+# def build_search_body(bbox=None, datetime_range=None, collections=None, query=None, limit=100, intersects=None):
+# Replaced (review 2026-10-16): new `cql2` flag so CDSE gets a CQL2-JSON filter instead of an ignored query.
+def build_search_body(bbox=None, datetime_range=None, collections=None, query=None, limit=100, intersects=None,
+                      cql2=False):
     if limit < 1 or limit > 1000:
         raise ValueError("limit must be 1..1000")
     body = {"limit": limit}
@@ -107,7 +128,13 @@ def build_search_body(bbox=None, datetime_range=None, collections=None, query=No
             if not _COLLECTION_RE.match(c):
                 raise ValueError(f"bad collection id {c!r}")
         body["collections"] = list(collections)
-    if query:
+    # if query:
+    #     body["query"] = query
+    # Replaced (review 2026-10-16): CQL2-JSON for catalogues that do not implement the query extension.
+    if query and cql2:
+        body["filter-lang"] = "cql2-json"
+        body["filter"] = query_to_cql2(query)
+    elif query:
         body["query"] = query
     return body
 
@@ -212,8 +239,13 @@ class PCSigner:
             if not collection or not _COLLECTION_RE.match(collection):
                 raise ValueError(f"cannot sign: bad collection {collection!r}")
             url = CATALOGS["planetary-computer"]["sas"] + collection
+            # d = F.fetch_json(url, allowed_hosts=CATALOGS["planetary-computer"]["hosts"],
+            #                  headers=self.headers, **self.kw)
+            # Replaced (review 2026-10-16): the SAS response is a live credential, unknown until it arrives,
+            # so it was stored unredacted; it is fetched without evidence capture (it is auth, not data).
+            kw = {k: v for k, v in self.kw.items() if k not in ("evidence_dir", "evidence_log")}
             d = F.fetch_json(url, allowed_hosts=CATALOGS["planetary-computer"]["hosts"],
-                             headers=self.headers, **self.kw)
+                             headers=self.headers, **kw)
             if not d.get("token"):
                 raise F.FetchError(f"no token in SAS response for {collection}")
             self.tokens[collection] = d["token"]
@@ -230,12 +262,15 @@ class PCSigner:
 def download_assets(summaries, out_dir, auth, **kw):
     """Download every listed asset href (https only) of CMR-STAC items."""
     done = []
+    taken = {}
     for it in summaries:
         for key, asset in it["assets"].items():
             href = asset.get("href") or ""
             if not href.lower().startswith("https://"):
                 continue
-            rec = cmr.download(href, out_dir, auth, **kw)
+            # rec = cmr.download(href, out_dir, auth, **kw)
+            # Replaced (review 2026-10-16): one name map per run so same-named assets do not overwrite.
+            rec = cmr.download(href, out_dir, auth, taken=taken, **kw)
             rec.update({"item": it["id"], "asset": key})
             done.append(rec)
     return done
@@ -255,7 +290,10 @@ def run(a, opener=None):
             raise ValueError("--max-cloud must be 0..100")
         query.setdefault("eo:cloud_cover", {})["lte"] = a.max_cloud
     collections = [c for c in (a.collections or "").split(",") if c]
-    body = build_search_body(bbox, dt, collections, query or None, a.limit)
+    # body = build_search_body(bbox, dt, collections, query or None, a.limit)
+    # Replaced (review 2026-10-16): pass whether this catalogue filters with CQL2.
+    body = build_search_body(bbox, dt, collections, query or None, a.limit,
+                             cql2=bool(CATALOGS[a.catalog].get("cql2")))
     if a.max_items < 1:
         raise ValueError("--max-items must be >= 1")
     signer = None

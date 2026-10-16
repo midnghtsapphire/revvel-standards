@@ -28,6 +28,7 @@ only to urs.earthdata.nasa.gov. Never pass a token on the command line.
 
 import argparse
 import base64
+import hashlib
 import netrc
 import os
 import re
@@ -88,9 +89,17 @@ def search(short, bbox=None, temporal=None, page_size=100, max_granules=1000, ve
         if hits is None and r.header("cmr-hits") is not None:
             hits = int(r.header("cmr-hits"))
         entries = (r.json().get("feed") or {}).get("entry") or []
-        granules.extend(entries)
+        # granules.extend(entries)
+        # nxt = r.header("cmr-search-after")
+        # if not entries or not nxt or nxt == search_after:
+        #     break
+        # Replaced (review 2026-10-16): a page that hands back the cursor it was sent is a repeat;
+        # its entries were kept as duplicates. Refuse it before keeping anything from it.
         nxt = r.header("cmr-search-after")
-        if not entries or not nxt or nxt == search_after:
+        if entries and search_after and nxt == search_after:
+            raise F.FetchError(f"CMR-Search-After did not advance (pagination loop) after {len(granules)} granules")
+        granules.extend(entries)
+        if not entries or not nxt:
             break
         search_after = nxt
     return granules[:max_granules], pages, hits
@@ -128,13 +137,21 @@ def earthdata_auth(token_file=None, netrc_path=None):
                      "urs.earthdata.nasa.gov")
 
 
-def download(url, out_dir, auth, **kw):
+# def download(url, out_dir, auth, **kw):
+# Replaced (review 2026-10-16): `taken` (dest -> url, shared across one run) so two different URLs with the
+# same file name no longer overwrite each other and leave an earlier record's sha256 wrong.
+def download(url, out_dir, auth, taken=None, **kw):
     headers, auth_hosts, secrets = auth
     name = os.path.basename(urllib.parse.urlsplit(url).path) or "granule"
     if name in (".", "..") or "/" in name:
         raise ValueError(f"refusing file name from {url}")
     os.makedirs(out_dir, exist_ok=True)
     dest = os.path.join(out_dir, name)
+    if taken is not None:
+        if taken.get(dest, url) != url:
+            stem, ext = os.path.splitext(name)
+            dest = os.path.join(out_dir, f"{stem}_{hashlib.sha256(url.encode('utf-8')).hexdigest()[:12]}{ext}")
+        taken[dest] = url
     kw = dict(kw)
     kw.setdefault("max_bytes", DOWNLOAD_MAX_BYTES)
     r = F.fetch(url, allowed_hosts=DATA_HOSTS, headers=dict(headers), auth_hosts=auth_hosts,
@@ -160,9 +177,12 @@ def run(a, opener=None):
         if a.max_bytes == F.DEFAULT_MAX_BYTES:
             dkw["max_bytes"] = DOWNLOAD_MAX_BYTES
         res["downloads"] = []
+        taken = {}
         for g in out:
             for link in g["data_links"]:
-                res["downloads"].append(download(link, a.download_dir, auth, **dkw))
+                # res["downloads"].append(download(link, a.download_dir, auth, **dkw))
+                # Replaced (review 2026-10-16): share one name map across the run (see download).
+                res["downloads"].append(download(link, a.download_dir, auth, taken=taken, **dkw))
     return res
 
 

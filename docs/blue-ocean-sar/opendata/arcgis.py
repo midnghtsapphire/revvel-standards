@@ -38,6 +38,7 @@ here (polygon rings are grouped into outer rings and holes by orientation).
 
 import argparse
 import datetime as _dt
+import ipaddress
 import re
 import sys
 import urllib.parse
@@ -64,6 +65,18 @@ class WhereError(ValueError):
     """A where-clause piece was refused."""
 
 
+def _public_host(host):
+    """False for localhost names and for IP literals that are not globally routable."""
+    host = host.rstrip(".")
+    if host == "localhost" or host.endswith(".localhost"):
+        return False
+    try:
+        ip = ipaddress.ip_address(host)
+    except ValueError:
+        return True  # a DNS name: not resolved here (the operator supplies the URL; redirects stay on this host)
+    return ip.is_global and not ip.is_multicast
+
+
 def validate_layer_url(url):
     """Return (normalised url, host). Raises ValueError if it is not a layer URL."""
     try:
@@ -78,6 +91,9 @@ def validate_layer_url(url):
     host = (p.hostname or "").lower()
     if not host or "%" in p.path or ".." in p.path:
         raise ValueError("layer URL has no host or has an encoded / traversal path")
+    # Added (review 2026-10-16): a public service is never a loopback, private or link-local address.
+    if not _public_host(host):
+        raise ValueError(f"layer host {host!r} is not public (localhost, private or reserved address)")
     if _HOSTED_RE.match(host):
         if not _HOSTED_PATH_RE.match(p.path):
             raise ValueError("services*.arcgis.com URL must look like /<org>/arcgis/rest/services/<name>/"
