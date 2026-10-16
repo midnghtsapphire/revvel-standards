@@ -200,6 +200,42 @@ class FinderV3(unittest.TestCase):
         with rasterio.open(path) as src:
             self.assertEqual(tuple(src.index(targets[0]["longitude"], targets[0]["latitude"])), (40, 43))
 
+    def _reordered_copy(self, name, perm, descriptions):
+        import rasterio
+
+        path = os.path.join(self.tmp.name, name)
+        with rasterio.open(self.raster) as src:
+            data, profile = src.read(), src.profile
+        with rasterio.open(path, "w", **profile) as dst:
+            for out_idx, in_idx in enumerate(perm, start=1):
+                dst.write(data[in_idx], out_idx)
+                if descriptions is not None:
+                    dst.set_band_description(out_idx, descriptions[in_idx])
+        return path
+
+    def test_reordered_bands_read_by_description(self):
+        names = list(self.engine.BAND_CONFIGS)
+        ref = self.engine.process_multiband_sar(self.raster, sources=SYN)
+        self.assertEqual(ref[0]["band_order"], "from_band_descriptions")
+        shuffled = self._reordered_copy("rev.tif", [5, 4, 3, 2, 1, 0], names)
+        got = self.engine.process_multiband_sar(shuffled, sources=SYN)
+        self.assertEqual([t["band_backscatter_db"] for t in got], [t["band_backscatter_db"] for t in ref])
+
+    def test_bad_band_descriptions_rejected_and_unlabelled_order_flagged(self):
+        names = list(self.engine.BAND_CONFIGS)
+        dup = self._reordered_copy("dup.tif", range(6), ["Band_A"] + names[:5])
+        with self.assertRaises(ValueError):
+            self.engine.process_multiband_sar(dup, sources=SYN)
+        bare = self._reordered_copy("bare.tif", range(6), None)
+        targets = self.engine.process_multiband_sar(bare, sources=SYN)
+        self.assertEqual(targets[0]["band_order"], "assumed_file_order")
+        out = os.path.join(self.tmp.name, "bare.geojson")
+        self.engine.export_geojson(targets, out)
+        import json
+
+        with open(out) as f:
+            self.assertEqual(json.load(f)["features"][0]["properties"]["band_order"], "assumed_file_order")
+
     def test_wrong_band_count_rejected(self):
         for bands in (4, 7):
             with self.assertRaises(ValueError):

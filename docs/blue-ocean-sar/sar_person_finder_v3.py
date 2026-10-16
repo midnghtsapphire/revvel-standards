@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import json
 from datetime import datetime, timedelta, timezone
@@ -112,6 +113,24 @@ class MultiBandSAREngine:
         weights = var / (var + overall_var + 1e-6)
         return mean + weights * (img - mean)
 
+    def _band_read_order(self, raster_path, descriptions):
+        """(1-based band indexes in BAND_CONFIGS order, how the order was decided).
+
+        Band descriptions that name BAND_CONFIGS bands (as generate_multiband_raster
+        writes them) decide the order, so a reordered raster is read correctly. A
+        raster without such descriptions is read in file order, as before, and the
+        targets say so ("assumed_file_order") because nothing checked it."""
+        names = list(self.BAND_CONFIGS)
+        descs = [d.strip() if isinstance(d, str) else "" for d in (descriptions or ())]
+        if not any(d in names for d in descs):
+            logging.warning("%s: no band descriptions name %s; assuming file order", raster_path, ", ".join(names))
+            return list(range(1, len(names) + 1)), "assumed_file_order"
+        if sorted(descs) != sorted(names):
+            raise ValueError(
+                f"{raster_path} band descriptions {descs} do not name each of {', '.join(names)} exactly once"
+            )
+        return [descs.index(n) + 1 for n in names], "from_band_descriptions"
+
     def process_multiband_sar(self, raster_path, sources=None):
         """sources: DataSource list naming the raster. Without it this raises
         MissingSourceError instead of returning locations."""
@@ -126,6 +145,9 @@ class MultiBandSAREngine:
                     f"{raster_path} has {num_bands} bands; this engine needs exactly {len(self.BAND_CONFIGS)} "
                     f"in the order {', '.join(self.BAND_CONFIGS)}"
                 )
+            # The count check above says nothing about order: a six-band raster
+            # with its bands shuffled was read positionally and mislabelled.
+            read_order, band_order = self._band_read_order(raster_path, src.descriptions)
             # Original: every map was grid_size x grid_size, so any raster of another
             # size failed on the first band.
             shape = (src.height, src.width)
@@ -137,7 +159,8 @@ class MultiBandSAREngine:
             band_keys = list(self.BAND_CONFIGS.keys())
 
             for b in range(1, num_bands + 1):
-                raw_dn = src.read(b)
+                # raw_dn = src.read(b)  # original: always positional
+                raw_dn = src.read(read_order[b - 1])
                 b_name = band_keys[b - 1] if b - 1 < len(band_keys) else f"Band_{b}"
                 cfg = self.BAND_CONFIGS.get(b_name, {"weight": 1.0})
 
@@ -218,6 +241,7 @@ class MultiBandSAREngine:
                     "anomaly_score": round(anomaly, 4),
                     "motion_pdf_weight": round(pdf, 4),
                     "band_backscatter_db": band_readings,
+                    "band_order": band_order,
                     "provenance": prov,
                 }
             )
@@ -242,6 +266,7 @@ class MultiBandSAREngine:
                     "anomaly_score": t["anomaly_score"],
                     "motion_pdf": t["motion_pdf_weight"],
                     "multiband_db": t["band_backscatter_db"],
+                    "band_order": t.get("band_order", "assumed_file_order"),
                     "status": prov["status"],
                     "ground_verified": prov["ground_verified"],
                     "sources": prov["sources"],
