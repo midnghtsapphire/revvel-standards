@@ -6,6 +6,7 @@ late: the request to the redirect target has already been made. These helpers
 run a caller-supplied URL check on each redirect target first.
 """
 
+import socket
 import urllib.request
 
 
@@ -25,7 +26,12 @@ def checked_urlopen(check):
     """Return an ``urlopen``-compatible callable whose redirects are validated by ``check``."""
     opener = urllib.request.build_opener(CheckedRedirectHandler(check))
 
-    def _open(request, timeout=None):
-        return opener.open(request, timeout=timeout)
+    # Original:
+    # def _open(request, timeout=None):
+    #     return opener.open(request, timeout=timeout)
+    #   not urlopen-compatible: it had no data argument and timeout=None disabled the socket
+    #   default timeout instead of inheriting it.
+    def _open(url, data=None, timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
+        return opener.open(url, data, timeout)
 
     return _open

@@ -86,7 +86,9 @@ class TestAcquire(unittest.TestCase):
         handlers = []
 
         class FakeOpener:
-            def open(self, req, timeout=None):
+            # Original: def open(self, req, timeout=None):
+            #   OpenerDirector.open also takes data; checked_urlopen now forwards it like urlopen.
+            def open(self, req, data=None, timeout=None):
                 return FakeResponse(req.full_url)
 
         def fake_build_opener(*args):
@@ -115,6 +117,30 @@ class TestAcquire(unittest.TestCase):
                 opener=lambda r, timeout: FakeResponse(r.full_url),
             )
         build.assert_not_called()
+
+    def test_checked_urlopen_matches_urlopen_signature(self):
+        import socket
+        from .safe_redirect import checked_urlopen
+
+        calls = []
+
+        class FakeOpener:
+            def open(self, url, data=None, timeout=None):
+                calls.append((url, data, timeout))
+
+        with mock.patch("urllib.request.build_opener", lambda *handlers: FakeOpener()):
+            _open = checked_urlopen(lambda target: None)
+        _open("https://example.org/a")
+        _open("https://example.org/b", b"payload", 5)
+        _open("https://example.org/c", data=b"x", timeout=7)
+        self.assertEqual(
+            calls,
+            [
+                ("https://example.org/a", None, socket._GLOBAL_DEFAULT_TIMEOUT),
+                ("https://example.org/b", b"payload", 5),
+                ("https://example.org/c", b"x", 7),
+            ],
+        )
 
     def test_timeline(self):
         with tempfile.TemporaryDirectory() as t:

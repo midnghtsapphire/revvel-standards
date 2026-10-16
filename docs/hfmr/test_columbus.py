@@ -100,7 +100,9 @@ class ColumbusTests(unittest.TestCase):
         handlers = []
 
         class FakeOpener:
-            def open(self, req, timeout=None):
+            # Original: def open(self, req, timeout=None):
+            #   OpenerDirector.open also takes data; checked_urlopen now forwards it like urlopen.
+            def open(self, req, data=None, timeout=None):
                 return Response(req.full_url, {"fields": []})
 
         def fake_build_opener(*args):

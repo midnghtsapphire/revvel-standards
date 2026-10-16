@@ -97,7 +97,9 @@ class DiscoveryTests(unittest.TestCase):
         handlers = []
 
         class FakeOpener:
-            def open(self, req, timeout=None):
+            # Original: def open(self, req, timeout=None):
+            #   OpenerDirector.open also takes data; checked_urlopen now forwards it like urlopen.
+            def open(self, req, data=None, timeout=None):
                 return FakeResponse(req.full_url, {"services": []})
 
         def fake_build_opener(*args):
