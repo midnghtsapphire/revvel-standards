@@ -232,7 +232,9 @@ def run_listener(host="127.0.0.1", port=8080, db_path="stage0_archive.db", **ser
 def load_ground_truth(parser, args):
     """Ground truth chosen on the command line, or None (the gate then abstains)."""
     # Original: with both flags, the file silently won over --use-shaffer-default.
-    if args.ground_truth and args.use_shaffer_default:
+    # Original: an empty --ground-truth "" was falsy, so it counted as no flag at all.
+    # if args.ground_truth and args.use_shaffer_default:
+    if args.ground_truth is not None and args.use_shaffer_default:
         parser.error("use --ground-truth or --use-shaffer-default, not both")
     gt = None
     # Original: any JSON was accepted, so a file holding [] started the server
@@ -240,7 +242,8 @@ def load_ground_truth(parser, args):
     # if args.ground_truth:
     #     with open(args.ground_truth, encoding="utf-8") as f:
     #         gt = json.load(f)
-    if args.ground_truth:
+    # if args.ground_truth:  (an empty value silently ran without case ground truth)
+    if args.ground_truth is not None:
         try:
             with open(args.ground_truth, encoding="utf-8") as f:
                 gt = json.load(f)

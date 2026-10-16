@@ -581,6 +581,12 @@ class ListenerCli(unittest.TestCase):
         run = self._main("--ground-truth", p)
         self.assertEqual(run.call_args.kwargs["ground_truth"], {"case_id": "OTHER-CASE"})
 
+    def test_empty_ground_truth_value_is_not_treated_as_absent(self):
+        for argv in (("--ground-truth", ""), ("--ground-truth", "", "--use-shaffer-default")):
+            with self.assertRaises(SystemExit, msg=argv) as cm:
+                self._main(*argv)
+            self.assertEqual(cm.exception.code, 2, argv)
+
     def test_ground_truth_that_is_not_an_object_rejected_before_start(self):
         for text in ("[]", '"x"', '{"cleared_sectors": [{"sector_id": "S"}]}', "{not json"):
             with self.assertRaises(SystemExit, msg=text) as cm:
