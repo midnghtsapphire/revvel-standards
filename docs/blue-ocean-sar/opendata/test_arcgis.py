@@ -50,6 +50,22 @@ class UrlValidation(unittest.TestCase):
                 arcgis.validate_layer_url(u)
 
 
+class NonPublicHosts(unittest.TestCase):
+    """Regression test for the 2026-10-16 review: loopback / private / link-local hosts are refused."""
+
+    def test_rejects_non_public_hosts_without_sending(self):
+        path = "/arcgis/rest/services/H/D/MapServer/3"
+        for host in ("localhost", "api.localhost", "127.0.0.1", "10.1.2.3", "192.168.0.10", "172.16.5.5",
+                     "169.254.169.254", "0.0.0.0", "[::1]", "[fe80::1]", "[fd00::1]", "100.64.0.1"):
+            with self.assertRaises(ValueError, msg=host):
+                arcgis.validate_layer_url("https://" + host + path)
+            op = FakeOpener()
+            code, _, err = _run(["https://" + host + path, "--info"], op)
+            self.assertEqual(code, 2, host)
+            self.assertEqual(op.requests, [], host)
+        arcgis.validate_layer_url("https://8.8.8.8" + path)  # a public IP literal is still accepted
+
+
 class Where(unittest.TestCase):
     def test_eq_like_date(self):
         w = arcgis.build_where([("STATUS", "Active")], [("ROAD_NAME", "Broad%")],

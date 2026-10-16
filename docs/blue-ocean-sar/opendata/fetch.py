@@ -71,10 +71,18 @@ REDIRECT_STATUSES = {301, 302, 303, 307, 308}
 
 # Query parameters whose values are always replaced with REDACTED in any URL
 # that is logged or saved. "sig" covers Azure SAS tokens (Planetary Computer).
+# SENSITIVE_PARAMS = {
+#     "token", "access_token", "api_key", "apikey", "key", "sig", "signature",
+#     "password", "passwd", "secret", "client_secret", "auth", "code",
+#     "subscription-key", "x-api-key",
+# }
+# Replaced (review 2026-10-16): S3 / GCS presigned URLs (Earthdata redirects to S3) kept their signature.
 SENSITIVE_PARAMS = {
     "token", "access_token", "api_key", "apikey", "key", "sig", "signature",
     "password", "passwd", "secret", "client_secret", "auth", "code",
     "subscription-key", "x-api-key",
+    "x-amz-signature", "x-amz-security-token", "x-amz-credential",
+    "x-goog-signature", "x-goog-credential",
 }
 SENSITIVE_HEADERS = {"authorization", "ocp-apim-subscription-key", "x-api-key", "cookie"}
 # Response headers never copied into evidence metadata (session cookies and the like).
@@ -351,10 +359,39 @@ def utc_now():
 # evidence
 
 
-def _contains_secret(body, secrets):
+def _secret_forms(secrets):
+    """Each secret (4+ chars, as elsewhere) in its literal and URL-quoted forms, as bytes."""
+    forms = set()
     for s in secrets:
-        if s and len(s) >= 4 and s.encode("utf-8") in body:
-            return True
+        if not s or len(s) < 4:
+            continue
+        for form in {s, urllib.parse.quote(s, safe=""), urllib.parse.quote_plus(s)}:
+            forms.add(form.encode("utf-8"))
+    return forms
+
+
+def _contains_secret(body, secrets):
+    # for s in secrets:
+    #     if s and len(s) >= 4 and s.encode("utf-8") in body:
+    #         return True
+    # return False
+    # Replaced (review 2026-10-16): also match the URL-quoted forms that redact_bytes matches.
+    return any(form in body for form in _secret_forms(secrets))
+
+
+def _file_contains_secret(path, secrets, chunk_size=1 << 20):
+    """True if the file at `path` contains any secret form; reads in chunks with overlap."""
+    forms = _secret_forms(secrets)
+    if not forms:
+        return False
+    keep = max(len(f) for f in forms) - 1
+    tail = b""
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(chunk_size), b""):
+            buf = tail + chunk
+            if any(form in buf for form in forms):
+                return True
+            tail = buf[-keep:] if keep else b""
     return False
 
 
@@ -470,6 +507,17 @@ def open_evidence_log(directory, *, operator=None, key_path=None, passphrase_fil
     if entries and entries[-1].get("key_id") != log.key_id:
         raise ValueError(f"evidence log {directory} is " + ("signed with another key" if entries[-1].get("key_id")
                                                             else "unsigned") + "; use the same signing mode and key")
+    # return log
+    # Replaced (review 2026-10-16): the chain check alone let a log with an altered object or a bad
+    # signature be extended; re-verify stored objects and signatures before any network capture.
+    if entries:
+        try:
+            rep = core.verify_log(directory, public_key=key.public_key() if key else None)
+        except (OSError, ValueError, core.EvidenceError) as e:
+            raise ValueError(f"evidence log {directory} cannot be extended: {e}")
+        if not rep["ok"]:
+            raise ValueError(f"evidence log {directory} does not verify, do not extend it: "
+                             + "; ".join(rep["problems"][:3]))
     return log
 
 
@@ -511,8 +559,16 @@ def log_evidence(evidence_log, *, url, final_url, method, status, headers, body,
     kw = dict(kind="http-response", source=redact_url(final_url, secrets), status=status,
               server_date=headers.get("date"), tls_cert_sha256=tls_cert_sha256, extra=extra)
     try:
+        # if body_path is not None:
+        #     extra["streamed_to"] = os.path.abspath(body_path)
+        #     return evidence_log.append(path=body_path, **kw)
+        # Replaced (review 2026-10-16): a streamed body was copied into the log without the secret check.
         if body_path is not None:
             extra["streamed_to"] = os.path.abspath(body_path)
+            if _file_contains_secret(body_path, secrets):
+                # Too large to redact in memory: store nothing, keep the as-received hash.
+                extra["body_withheld"] = "streamed response body contains a secret value; only its sha256 is recorded"
+                return evidence_log.append(b"", **kw)
             return evidence_log.append(path=body_path, **kw)
         stored, nred = redact_bytes(body or b"", secrets)
         if nred:

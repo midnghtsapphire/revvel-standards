@@ -181,6 +181,62 @@ class SharedEvidenceLog(unittest.TestCase):
         self.assertNotIn("deprecated", err)  # only --evidence-dir warns
 
 
+class ReviewFindings(unittest.TestCase):
+    """Regression tests for the 2026-10-16 review of the connectors."""
+
+    def test_cdse_filters_sent_as_cql2_not_query(self):
+        op = FakeOpener()
+        op.add("POST", CDSE, (200, fixture_json("stac_cdse_p1.json")))
+        op.add("GET", CDSE, (200, fixture_json("stac_cdse_p2.json")))
+        code, res, err = _run(["--catalog", "cdse", "--collections", "sentinel-2-l2a", "--max-cloud", "20",
+                               "--query", "platform=sentinel-2a"], op)
+        self.assertEqual(code, 0, err)
+        body = json.loads(op.requests[0]["body"])
+        self.assertNotIn("query", body)
+        self.assertEqual(body["filter-lang"], "cql2-json")
+        self.assertEqual(body["filter"]["op"], "and")
+        self.assertIn({"op": "<=", "args": [{"property": "eo:cloud_cover"}, 20.0]}, body["filter"]["args"])
+        self.assertIn({"op": "=", "args": [{"property": "platform"}, "sentinel-2a"]}, body["filter"]["args"])
+        single = stac.build_search_body(query={"eo:cloud_cover": {"lte": 5}}, cql2=True)
+        self.assertEqual(single["filter"], {"op": "<=", "args": [{"property": "eo:cloud_cover"}, 5]})
+        self.assertEqual(stac.build_search_body(query={"x": {"neq": 1}})["query"], {"x": {"neq": 1}})
+
+    def test_sas_token_response_not_written_to_evidence(self):
+        import fetch as F
+        core = F.evidence_core()
+        op = FakeOpener()
+        op.add("POST", PC, (200, fixture_json("stac_pc_p1.json")), (200, fixture_json("stac_pc_p2.json")))
+        op.add("GET", SAS + "sentinel-2-l2a", (200, fixture_json("stac_pc_sas_token.json")))
+        with mock.patch.dict(os.environ, {core.ENV_OPERATOR: "Det. A. Example"}), \
+                tempfile.TemporaryDirectory() as ev:
+            code, res, err = _run(["--catalog", "planetary-computer", "--collections", "sentinel-2-l2a",
+                                   "--limit", "1", "--band", "B04", "--sign", "--evidence-dir",
+                                   os.path.join(ev, "legacy"), "--evidence-log", os.path.join(ev, "log")], op)
+            self.assertEqual(code, 0, err)
+            self.assertTrue(any(r["url"].startswith(SAS) for r in op.requests))
+            n = 0
+            for root, _, files in os.walk(ev):
+                for name in files:
+                    n += 1
+                    self.assertNotIn(b"FAKEFIXTURESIG", read_bytes(os.path.join(root, name)), name)
+            self.assertGreater(n, 0)
+            self.assertTrue(core.verify_log(os.path.join(ev, "log"))["ok"])
+        self.assertIn("sig=", res["items"][0]["assets"]["B04"]["href"])
+
+    def test_same_named_assets_do_not_overwrite(self):
+        op = FakeOpener()
+        op.add("GET", "https://data.lpdaac.earthdatacloud.nasa.gov/a/", (200, b"first"))
+        op.add("GET", "https://data.lpdaac.earthdatacloud.nasa.gov/b/", (200, b"second"))
+        items = [{"id": "i1", "assets": {"data": {"href": "https://data.lpdaac.earthdatacloud.nasa.gov/a/g.h5"}}},
+                 {"id": "i2", "assets": {"data": {"href": "https://data.lpdaac.earthdatacloud.nasa.gov/b/g.h5"}}}]
+        auth = ({}, ["*.earthdata.nasa.gov"], [])
+        with tempfile.TemporaryDirectory() as d:
+            done = stac.download_assets(items, d, auth, opener=op, retries=0)
+            self.assertNotEqual(done[0]["path"], done[1]["path"])
+            self.assertEqual(read_bytes(done[0]["path"]), b"first")
+            self.assertEqual(read_bytes(done[1]["path"]), b"second")
+
+
 class Cli(unittest.TestCase):
     def test_list_catalogs(self):
         code, res, _ = _run(["--list-catalogs"], FakeOpener())

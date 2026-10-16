@@ -26,7 +26,11 @@ Every request goes through `fetch.py`, which enforces these rules:
   `--evidence-key-passphrase-file` or `EVIDENCE_KEY_PASSPHRASE`, never argv).
   Stored files are named `<seq>_<sha256>.bin`, so two captures in the same
   second never collide. A body that contains a secret is stored with the
-  secret replaced, and the as-received hash is kept. Check a log with
+  secret replaced, and the as-received hash is kept. A streamed download (a
+  body written straight to a file) that contains a secret is not stored at
+  all; only its as-received hash is kept. An existing log is re-verified
+  (stored files and, with a key, signatures) before it is extended, and a log
+  that does not verify is refused. Check a log with
   `python3 -m evidence verify --log DIR --public-key op.pub` from
   `docs/blue-ocean-sar/`. This needs the `cryptography` package; the
   connectors do not need it otherwise.
@@ -41,8 +45,9 @@ Every request goes through `fetch.py`, which enforces these rules:
 - Secrets come only from environment variables, or from a file whose path you
   pass with `--token-file` or `--pc-key-file`. A secret is never accepted as a
   command-line value and is never logged. Secrets are redacted from saved and
-  logged URLs and from error messages. If a response body contains a secret,
-  the body is not saved; only its hash is recorded. Credential headers are
+  logged URLs and from error messages. In the `--evidence-dir` format, a
+  response body that contains a secret is not saved; only its hash is
+  recorded (for `--evidence-log`, see above). Credential headers are
   sent only to the hosts that need them, so a redirect to another host never
   carries them.
 
@@ -91,10 +96,12 @@ That entry is sent only to `urs.earthdata.nasa.gov`.
   tokens are short-lived and anonymous, and are rate-limited per IP address
   unless you supply a subscription key. Signed hrefs contain a `sig`; the
   `sig` is redacted in logs and evidence, but present in the output so the
-  links work.
-- **Copernicus Data Space**: search is open. Downloading products needs a
-  free CDSE account and token, which this package does not implement.
-  Copernicus data licence.
+  links work. The token request itself is not written to evidence, because
+  its body is the token.
+- **Copernicus Data Space**: search is open. `--max-cloud` and `--query` are
+  sent as a CQL2-JSON `filter`, because CDSE does not implement the STAC
+  `query` extension. Downloading products needs a free CDSE account and
+  token, which this package does not implement. Copernicus data licence.
 - **NASA CMR and CMR-STAC**: search is open. Downloads need a free Earthdata
   Login, and you must accept each DAAC's EULA once in the browser (LP DAAC
   for GEDI, NSIDC for ICESat-2). NASA data are open; cite the datasets.

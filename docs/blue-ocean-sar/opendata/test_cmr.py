@@ -135,6 +135,35 @@ class Auth(unittest.TestCase):
         self.assertIn("*.earthdatacloud.nasa.gov", hosts)
 
 
+class ReviewFindings(unittest.TestCase):
+    """Regression tests for the 2026-10-16 review of the connectors."""
+
+    def test_repeated_search_after_is_a_loop_not_a_last_page(self):
+        token = '["lpcloud",1654061954000,2384582411]'
+        op = FakeOpener().add("GET", CMR, _page("cmr_gedi_p1.json", token), _page("cmr_gedi_p1.json", token))
+        code, res, err = _run(["--short-name", "gedi-l2a", "--page-size", "2"], op)
+        self.assertEqual(code, 3, res)
+        self.assertIn("did not advance", err)
+        self.assertEqual(len(op.requests), 2)
+
+    def test_same_file_name_from_two_urls_does_not_overwrite(self):
+        op = FakeOpener()
+        op.add("GET", DATA_HOST + "a/", (200, b"first granule"))
+        op.add("GET", DATA_HOST + "b/", (200, b"second granule"))
+        auth = ({}, cmr.TOKEN_HOSTS, [])
+        taken = {}
+        with tempfile.TemporaryDirectory() as d:
+            r1 = cmr.download(DATA_HOST + "a/G.h5", d, auth, taken=taken, opener=op, retries=0)
+            r2 = cmr.download(DATA_HOST + "b/G.h5", d, auth, taken=taken, opener=op, retries=0)
+            r3 = cmr.download(DATA_HOST + "a/G.h5", d, auth, taken=taken, opener=op, retries=0)
+            self.assertNotEqual(r1["path"], r2["path"])
+            self.assertEqual(r1["path"], r3["path"])  # the same URL again keeps its name
+            self.assertEqual(read_bytes(r1["path"]), b"first granule")
+            self.assertEqual(read_bytes(r2["path"]), b"second granule")
+            self.assertTrue(os.path.basename(r2["path"]).startswith("G_"))
+            self.assertTrue(r2["path"].endswith(".h5"))
+
+
 class Cli(unittest.TestCase):
     def test_bad_inputs(self):
         for argv in (["--short-name", "GEDI02_A;rm"], ["--short-name", "ATL08", "--temporal", "yesterday"],
