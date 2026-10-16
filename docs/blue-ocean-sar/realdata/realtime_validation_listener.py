@@ -23,7 +23,8 @@ Changes from the uploaded version (originals kept as comments below):
   * Request bodies over 1 MiB and records missing required fields get 400.
   * The Stage 2 gate gets no ground truth unless one is given
     (--ground-truth FILE or --use-shaffer-default); without it records stay
-    'unverified' instead of being judged against another case's search logs.
+    'unverified' instead of being judged against another case's search logs,
+    and the result says "ingested_not_validated".
   * A non-loopback --host needs a bearer token (environment variable
     SAR_LISTENER_TOKEN, never on the command line) and a TLS certificate
     (--tls-cert/--tls-key); otherwise it refuses to start. With a token set,
@@ -124,7 +125,11 @@ def ingest_records(db_path, records, ground_truth=None):
     for res in results:
         d = by_id.get(res["record_id"])
         if d:
-            res["status"] = "ingested_and_validated"
+            # Original: an abstention (no ground truth, record left 'unverified')
+            # was reported as validated too.
+            # res["status"] = "ingested_and_validated"
+            res["status"] = "ingested_not_validated" if d["assigned_status"] == "unverified" \
+                else "ingested_and_validated"
             res["validation_status"] = d["assigned_status"]
             res["validation_reason"] = d["reason"]
     # return results, {k: stats[k] for k in ("processed", "debunked", "corroborated", "flagged_speculative")}

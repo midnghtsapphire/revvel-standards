@@ -748,6 +748,16 @@ class Stage2Gate(unittest.TestCase):
         self.assertEqual(results[0]["validation_status"], "unverified")
         self.assertEqual(stats["abstained"], 1)
 
+    def test_listener_abstention_not_reported_as_validated(self):
+        import realtime_validation_listener as rl
+        rec = {"source_origin": "manual_ingest", "archive_timestamp": "2006-04-02T00:00:00Z",
+               "source_identifier": "t-10", "raw_content": "seen near the river"}
+        results, _ = rl.ingest_records(os.path.join(self.tmp.name, "a.db"), [rec])
+        self.assertEqual(results[0]["status"], "ingested_not_validated")
+        results, _ = rl.ingest_records(os.path.join(self.tmp.name, "b.db"), [rec],
+                                       self.sg.DEFAULT_VERIFIED_GROUND_TRUTH)
+        self.assertEqual(results[0]["status"], "ingested_and_validated")
+
 
 if __name__ == "__main__":
     unittest.main()
