@@ -493,6 +493,19 @@ class RealtimeListener(unittest.TestCase):
         self.assertEqual(code, 400)  # authenticated; rejected only for the missing fields
 
 
+class ServiceUnit(unittest.TestCase):
+    def test_database_lives_in_a_state_directory_the_service_user_owns(self):
+        unit = {}
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "realtime-listener.service")) as f:
+            for line in f:
+                if "=" in line and not line.lstrip().startswith("#"):
+                    k, v = line.strip().split("=", 1)
+                    unit[k] = v
+        self.assertIn("StateDirectory", unit)
+        db = unit["ExecStart"].split("--db ", 1)[1].split()[0]
+        self.assertTrue(db.startswith(f"/var/lib/{unit['StateDirectory']}/"), db)
+
+
 class Stage2Gate(unittest.TestCase):
     def setUp(self):
         import archive_collector_cli as ac

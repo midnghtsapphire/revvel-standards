@@ -19,7 +19,12 @@ Type=simple
 # User=root
 User=sarlisten
 WorkingDirectory=/opt/sar_realtime_listener
-ExecStart=/usr/bin/python3 /opt/sar_realtime_listener/realtime_validation_listener.py --host 127.0.0.1 --port 8080 --db /opt/sar_realtime_listener/stage0_archive.db
+# systemd creates /var/lib/sar-realtime-listener owned by User=, so sarlisten
+# can write the database. /opt/sar_realtime_listener is root-owned under the
+# install steps above, so the original --db path could not be created:
+# ExecStart=/usr/bin/python3 /opt/sar_realtime_listener/realtime_validation_listener.py --host 127.0.0.1 --port 8080 --db /opt/sar_realtime_listener/stage0_archive.db
+StateDirectory=sar-realtime-listener
+ExecStart=/usr/bin/python3 /opt/sar_realtime_listener/realtime_validation_listener.py --host 127.0.0.1 --port 8080 --db /var/lib/sar-realtime-listener/stage0_archive.db
 Restart=always
 RestartSec=5
 SyslogIdentifier=sar-realtime-listener
