@@ -1,0 +1,21 @@
+# Subject matters
+
+These are substantive and procedural areas. They are not ethics.
+
+Professional responsibility applies to the lawyer in every row, whether the missing child is a parental matter or an organizational one (parent, sheriff, school, county department, SAR nonprofit, coroner). Rules 1.2, 1.6, and 1.7 do not switch off because the client is an organization, and they do not replace the statute. Do not represent both sides of one child.
+
+Confirm each section against the official PDF. Shepardize People v. Tippett, 733 P.2d 1183 (Colo. 1987).
+
+| Area | Authority | Parental | Organizational |
+|---|---|---|---|
+| Acceptance and clocks | § 16-2.7-102; § 16-2.7-103 | A parent is a proper reporter. “They are with the other parent” is not a waiting period. | A school, county department, or sheriff is not a substitute for the report. DHS custody still starts the two-hour clock under § 19-1-115.3. |
+| Parental-responsibilities crime | § 18-3-304 | A parent who takes a child, knowing there is no privilege or heedless of it, or who violates a custody order to deprive the custodian, is in this section. Removal from the country is the elevated offense in subsection (2.5). | The section also names a person, agency, or institution that holds parental responsibilities. It is not the offense you charge a SAR team with for a slow search. |
+| Child kidnapping | § 18-3-302(2) | Taking a child who is not the actor’s own, to keep or conceal the child from a parent or guardian, is a different statute. Do not relabel § 18-3-304 as this one. | People v. Tippett, 733 P.2d 1183 (Colo. 1987), is the lead that the custody offense is distinct. Shepardize before you tell a prosecutor or a parent which charge fits. |
+| Custody jurisdiction | UCCJEA, § 14-13-101 et seq. | Home-state jurisdiction and enforcement of a child-custody determination. A missing-person report does not pick the forum. | A department or court that already has the child still has to be read against the UCCJEA. Do not invent jurisdiction from a search map. |
+| Civil abduction prevention | § 14-13.5-108 and the rest of article 13.5 of title 14 | Preventive orders, passport controls, and a warrant to take physical custody of the child. Confirm the official article before you draft. | The warrant is to law enforcement, not to a volunteer team. An organizational client does not get a private recovery power from this article. |
+| International civil return | Hague Convention on the Civil Aspects of International Child Abduction | Civil return through the U.S. Central Authority when both countries are contracting states. Separate from the criminal enhancement in § 18-3-304(2.5). | A sheriff’s alert is not a Hague application. Counsel does not file one and call it the other. |
+| Alerts | § 24-33.5-415.7; § 24-33.5-431 | Amber is an abducted child. The abductor can be a parent or a stranger. The indigenous-person alert is a different statute and is not limited to strangers. | Local law enforcement verifies Amber. CBI issues it. A nonprofit does not self-issue either alert. |
+| Entry and search | Caniglia v. Strom, 141 S. Ct. 1596 (2021); Colo. Const. art. II, § 7 | A left-behind parent cannot demand a warrantless entry of the other parent’s home because the child is missing. | A sheriff or SAR organization has the same Fourth Amendment limit. Fear is not a warrant for either client. |
+| Records | Colorado Open Records Act, article 72 of title 24 | A parent’s lawyer may request. The request is not a promise of the investigative file. | The agency-client’s criminal-justice records are governed by their own part of that article. Do not tell the family the file is “just a CORA.” |
+| Unidentified remains | § 16-2.7-104; § 30-10-606; § 24-80-1302 | A family is not the coroner. Counsel does not advise them to move remains. | The duty to notify, identify, enter NCIC, and not dispose before DNA, if possible, sits on the custodian who already has the remains. |
+| What may be signed | Koopman identity, used only as a legal-writing exhibit | A parent’s declaration may report inputs, the update rule, and the posterior. It may not call the number probable cause or a find. | The same sentences bind counsel for the SAR organization. A lieutenant’s “86 percent” insert is refused for both clients. |
