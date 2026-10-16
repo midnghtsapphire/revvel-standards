@@ -25,9 +25,20 @@ DATE_RE = re.compile(
 #   next word ("ABC-123456 issu"). Letters are now optional, a bare "#NNN" is accepted, the
 #   qualifier words cannot start the ID, a space-separated suffix must contain a digit, and
 #   the ID must end on a word boundary (not inside a date).
+# Original (previous revision of the pattern below):
+# PERMIT_RE = re.compile(
+#     r"(?:\b(?:permit|application|case)\s*(?:no\.?|number|#|id)?\s*[:#-]?\s*|#\s*)"
+#     r"(?!(?:no|number|id)\b)((?:[A-Z]{1,5}[- ]?)?\d{1,12}(?:-[A-Z0-9]{1,5}|[A-Z0-9]{1,5}|\s(?=[A-Z]*\d)[A-Z0-9]{1,5})?)"  # noqa: E501
+#     r"\b(?!/\d)",
+#     re.I,
+# )
+#   a dash-separated date after a qualifier was read as an ID ("Permit No. 2006-01-02" gave
+#   "2006-01"); the ID may no longer start with a Y-M-D or M-D-Y date-shaped token.
 PERMIT_RE = re.compile(
     r"(?:\b(?:permit|application|case)\s*(?:no\.?|number|#|id)?\s*[:#-]?\s*|#\s*)"
-    r"(?!(?:no|number|id)\b)((?:[A-Z]{1,5}[- ]?)?\d{1,12}(?:-[A-Z0-9]{1,5}|[A-Z0-9]{1,5}|\s(?=[A-Z]*\d)[A-Z0-9]{1,5})?)"
+    r"(?!(?:no|number|id)\b)"
+    r"(?!(?:(?:19|20)\d{2}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[-/]\d{1,2}[-/](?:19|20)\d{2})\b)"
+    r"((?:[A-Z]{1,5}[- ]?)?\d{1,12}(?:-[A-Z0-9]{1,5}|[A-Z0-9]{1,5}|\s(?=[A-Z]*\d)[A-Z0-9]{1,5})?)"
     r"\b(?!/\d)",
     re.I,
 )

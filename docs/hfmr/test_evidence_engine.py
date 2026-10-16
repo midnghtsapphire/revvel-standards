@@ -51,6 +51,10 @@ class EvidenceTests(unittest.TestCase):
             "Permit ABC-123456 issued 03/12/2006": ["ABC-123456"],
             "Case: CV-2006-1234 filed": ["CV-2006-1234"],
             "permit issued 03/12/2006": [],
+            "Permit No. 2006-01-02": [],
+            "#2006-01-02 site visit": [],
+            "Permit 01-02-2006 issued": [],
+            "Permit No. 2006-0123": ["2006-0123"],
         }
         for text, expected in cases.items():
             self.assertEqual(PERMIT_RE.findall(text), expected, text)
