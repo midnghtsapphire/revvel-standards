@@ -85,6 +85,34 @@ class TestPipeline(unittest.TestCase):
             (out / "manifest.json").unlink()
             self.assertEqual(run_cli("hfmr.__main__", ["verify", "--output", out]), 1)
 
+    def test_geojson_declares_projected_crs(self):
+        with tempfile.TemporaryDirectory() as t:
+            p = Path(t) / "input.csv"
+            write_grid(p)
+            out = Path(t) / "run"
+            analyze("TEST-001", p, out, cell_size_m=1.0, origin_xy=[500000.0, 4400000.0], crs="EPSG:32613")
+            geo = json.loads((out / "candidate_points.geojson").read_text())
+            self.assertEqual(geo["crs"]["properties"]["name"], "EPSG:32613")
+            self.assertEqual(geo["features"][0]["properties"]["source_crs"], "EPSG:32613")
+            out4326 = Path(t) / "run4326"
+            analyze("TEST-001", p, out4326, cell_size_m=0.001, origin_xy=[-83.0, 40.0], crs="EPSG:4326")
+            self.assertNotIn("crs", json.loads((out4326 / "candidate_points.geojson").read_text()))
+
+    def test_geojson_tampering_fails_verification(self):
+        with tempfile.TemporaryDirectory() as t:
+            p = Path(t) / "input.csv"
+            write_grid(p)
+            out = Path(t) / "run"
+            analyze("TEST-001", p, out, cell_size_m=1.0, origin_xy=[500000.0, 4400000.0], crs="EPSG:32613")
+            geo_path = out / "candidate_points.geojson"
+            geo = json.loads(geo_path.read_text())
+            self.assertTrue(verify_run(out))
+            geo["features"][0]["geometry"]["coordinates"] = [0.0, 0.0]
+            geo_path.write_text(json.dumps(geo, indent=2))
+            self.assertFalse(verify_run(out))
+            geo_path.unlink()
+            self.assertFalse(verify_run(out))
+
     def test_alignment_error(self):
         with self.assertRaises(ValueError):
             compare([[1]], [[1, 2]])

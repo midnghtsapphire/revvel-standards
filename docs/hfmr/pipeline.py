@@ -156,21 +156,60 @@ def analyze(
     }
     path = out / "manifest.json"
     path.write_bytes(json.dumps(manifest, indent=2, allow_nan=False).encode())
-    ledger = Ledger(out / "ledger.jsonl")
-    head = ledger.append({"type": "analysis", "manifest_sha256": digest_file(path), "case_id": case_id})
-    (out / "ledger_head.txt").write_text(head + "\n")
-    features = {"type": "FeatureCollection", "features": []}
+    # Original (ledger written first, GeoJSON after and never hashed):
+    # ledger = Ledger(out / "ledger.jsonl")
+    # head = ledger.append({"type": "analysis", "manifest_sha256": digest_file(path), "case_id": case_id})
+    # (out / "ledger_head.txt").write_text(head + "\n")
+    # features = {"type": "FeatureCollection", "features": []}
+    # if origin_xy is not None:
+    #     for a in candidates:
+    #         features["features"].append(
+    #             {
+    #                 "type": "Feature",
+    #                 "geometry": {"type": "Point", "coordinates": a["map_xy"]},
+    #                 "properties": {k: v for k, v in a.items() if k != "map_xy"},
+    #             }
+    #         )
+    #     (out / "candidate_points.geojson").write_text(json.dumps(features, indent=2))
+    #   Two problems: verify_run could not detect tampering of candidate_points.geojson, and
+    #   projected map_xy values (e.g. EPSG:32613 metres) were written as bare GeoJSON
+    #   coordinates, which RFC 7946 readers take as WGS 84 lon/lat and plot far off.
+    #   The GeoJSON is now written first and its digest chained in the ledger entry, and a
+    #   non-WGS 84 CRS is declared with a named "crs" member (honoured by GDAL/QGIS) plus a
+    #   source_crs property. Coordinates stay in the supplied CRS: this stdlib-only pipeline
+    #   has no projection library, so it labels rather than silently reprojects.
+    event = {"type": "analysis", "manifest_sha256": digest_file(path), "case_id": case_id}
     if origin_xy is not None:
+        features = {"type": "FeatureCollection", "features": []}
+        if not _is_wgs84(crs):
+            features["crs"] = {"type": "name", "properties": {"name": crs}}
         for a in candidates:
+            properties = {k: v for k, v in a.items() if k != "map_xy"}
+            properties["source_crs"] = crs
             features["features"].append(
-                {
-                    "type": "Feature",
-                    "geometry": {"type": "Point", "coordinates": a["map_xy"]},
-                    "properties": {k: v for k, v in a.items() if k != "map_xy"},
-                }
+                {"type": "Feature", "geometry": {"type": "Point", "coordinates": a["map_xy"]}, "properties": properties}
             )
-        (out / "candidate_points.geojson").write_text(json.dumps(features, indent=2))
+        geo_path = out / "candidate_points.geojson"
+        geo_path.write_text(json.dumps(features, indent=2))
+        event["candidate_points_sha256"] = digest_file(geo_path)
+    ledger = Ledger(out / "ledger.jsonl")
+    head = ledger.append(event)
+    (out / "ledger_head.txt").write_text(head + "\n")
     return manifest
+
+
+_WGS84_NAMES = {
+    "EPSG:4326",
+    "OGC:CRS84",
+    "CRS84",
+    "WGS84",
+    "URN:OGC:DEF:CRS:OGC:1.3:CRS84",
+    "URN:OGC:DEF:CRS:EPSG::4326",
+}
+
+
+def _is_wgs84(crs):
+    return str(crs or "").strip().upper() in _WGS84_NAMES
 
 
 def verify_run(out):
@@ -181,4 +220,13 @@ def verify_run(out):
     entries = Ledger(out / "ledger.jsonl").read()
     if not entries:
         return False
-    return entries[-1]["event"]["manifest_sha256"] == digest_file(out / "manifest.json")
+    # Original: return entries[-1]["event"]["manifest_sha256"] == digest_file(out / "manifest.json")
+    #   candidate_points.geojson is a run output too; its chained digest is now checked as well.
+    event = entries[-1]["event"]
+    if event["manifest_sha256"] != digest_file(out / "manifest.json"):
+        return False
+    geojson_sha256 = event.get("candidate_points_sha256")
+    if geojson_sha256 is not None:
+        geo_path = out / "candidate_points.geojson"
+        return geo_path.is_file() and digest_file(geo_path) == geojson_sha256
+    return True
