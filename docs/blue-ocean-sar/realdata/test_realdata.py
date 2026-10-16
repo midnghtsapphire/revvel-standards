@@ -341,6 +341,27 @@ class Registry(unittest.TestCase):
         self.assertEqual(s["depth_m_values"], [1.2])
         self.assertTrue(os.path.exists(os.path.join(out, "case_registry.sqlite")))
 
+    def test_nested_json_inherits_parent_case_id(self):
+        d = tempfile.mkdtemp()
+        with open(os.path.join(d, "targets.json"), "w") as f:
+            f.write('{"cases": [{"case_id": "X-2020-AA", "targets": [{"target_id": "T1", "gps": "10.0, 20.0"}]},'
+                    ' {"case_id": "Y-2021-BB", "targets": [{"target_id": "T2", "lat": 5.0, "lon": 6.0}]}],'
+                    ' "by_case": {"Z-2019-CC": {"sites": [{"latitude": 1.5, "longitude": 2.5}]}}}')
+        claims, _, summary, _ = reg.build([d], os.path.join(d, "out"))
+        coords = {(c["case_id"], c["value"]) for c in claims if c["field"] == "coordinate"}
+        self.assertEqual(coords, {("X-2020-AA", "10.000000,20.000000"), ("Y-2021-BB", "5.000000,6.000000"),
+                                  ("Z-2019-CC", "1.500000,2.500000")})
+
+    def test_same_named_files_in_different_folders_keep_distinct_sources(self):
+        d1, d2 = tempfile.mkdtemp(), tempfile.mkdtemp()
+        for d, lat in ((d1, 10.0), (d2, 30.0)):
+            with open(os.path.join(d, "targets.csv"), "w") as f:
+                f.write(f"case_id,latitude,longitude\nX-2020-AA,{lat},20.0\n")
+        claims, _, summary, _ = reg.build([d1, d2], os.path.join(d1, "out"))
+        sources = {c["source"].split(":")[0] for c in claims if c["field"] == "coordinate"}
+        self.assertEqual(len(sources), 2)
+        self.assertEqual(summary["X-2020-AA"]["files"], 2)
+
 
 @unittest.skipUnless(HAS_GEO, "numpy/scipy/rasterio not installed")
 class Sentinel2Change(unittest.TestCase):

@@ -110,15 +110,34 @@ def classify_numeric(key):
     return None
 
 
-def records_from_obj(obj, path=()):
-    """Yield every dict inside a JSON-like object, with a path label."""
+# Original: nested dicts lost their parent's case_id, so their claims were
+# dropped unless the file name named the case.
+# def records_from_obj(obj, path=()):
+#     """Yield every dict inside a JSON-like object, with a path label."""
+#     if isinstance(obj, dict):
+#         yield path, obj
+#         for k, v in obj.items():
+#             yield from records_from_obj(v, path + (str(k),))
+#     elif isinstance(obj, list):
+#         for i, v in enumerate(obj):
+#             yield from records_from_obj(v, path + (str(i),))
+def records_from_obj(obj, path=(), case_id=None):
+    """Yield every dict inside a JSON-like object, with a path label. A dict
+    without its own case_id inherits the nearest enclosing one (a parent's
+    case_id field, or a key that is a case id)."""
     if isinstance(obj, dict):
+        own = obj.get("case_id")
+        if isinstance(own, str) and own:
+            case_id = own
+        elif case_id:
+            obj = dict(obj, case_id=case_id)
         yield path, obj
         for k, v in obj.items():
-            yield from records_from_obj(v, path + (str(k),))
+            child = str(k) if CASE_ID_RE.fullmatch(str(k)) else case_id
+            yield from records_from_obj(v, path + (str(k),), child)
     elif isinstance(obj, list):
         for i, v in enumerate(obj):
-            yield from records_from_obj(v, path + (str(i),))
+            yield from records_from_obj(v, path + (str(i),), case_id)
 
 
 def records_from_py(text):
@@ -256,13 +275,22 @@ def build(inputs, out_dir, elevation=False, log=print):
     os.makedirs(out_dir, exist_ok=True)
     claims = []
     files = []
+    seen_disp = set()
     for root in inputs:
         for dirpath, _, names in os.walk(root):
             for n in sorted(names):
                 p = os.path.join(dirpath, n)
                 if os.path.getsize(p) > 50_000_000:
                     continue
+                # Original: basename only, so same-named files from different folders
+                # or --in roots shared one source name (and one claimed-elevation key).
+                # disp = re.sub(r"^[0-9a-f]{8}-", "", n)
+                rel = os.path.relpath(dirpath, root)
                 disp = re.sub(r"^[0-9a-f]{8}-", "", n)
+                disp = disp if rel == "." else os.path.join(rel, disp)
+                if disp in seen_disp:
+                    disp = os.path.abspath(p)
+                seen_disp.add(disp)
                 c = extract_claims(p, disp)
                 if c:
                     files.append((disp, len(c)))
