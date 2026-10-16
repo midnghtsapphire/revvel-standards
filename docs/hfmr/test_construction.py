@@ -45,3 +45,8 @@ class TestConstruction(unittest.TestCase):
 
     def test_request(self):
         self.assertIn("concrete placement", request_text("1546 N High St"))
+
+    def test_request_letter_has_no_lint_markers(self):
+        # A lint suppression once landed inside this triple-quoted letter and
+        # would have been mailed to the records office as literal text.
+        self.assertNotIn("noqa", request_text("1546 N High St"))

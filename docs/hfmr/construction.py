@@ -216,11 +216,11 @@ def request_text(address, parcel="", start="2000", end="2010"):
 To: bzsrecords@columbus.gov
 
 Please provide available non-exempt records for {address} (parcel: {parcel or 'unknown'}) covering {start}–{end}:
-building, demolition, excavation, grading, foundation, concrete, utility and right-of-way permits; applications, inspections, inspection notes, completion/occupancy records, site plans, photographs, engineering drawings, and associated attachments.  # noqa: E501
+building, demolition, excavation, grading, foundation, concrete, utility and right-of-way permits; applications, inspections, inspection notes, completion/occupancy records, site plans, photographs, engineering drawings, and associated attachments.
 
-Please include record identifiers, original event dates, document creation dates, and any historical address or parcel cross-references. I am specifically trying to distinguish permit approval dates from actual dates of excavation, concrete placement, inspection, and completion.  # noqa: E501
+Please include record identifiers, original event dates, document creation dates, and any historical address or parcel cross-references. I am specifically trying to distinguish permit approval dates from actual dates of excavation, concrete placement, inspection, and completion.
 
-If any plans or photographs have been destroyed under retention schedules, please identify the applicable retention rule and whether indexes, inspection logs, archived microfilm, or other records remain.  # noqa: E501
+If any plans or photographs have been destroyed under retention schedules, please identify the applicable retention rule and whether indexes, inspection logs, archived microfilm, or other records remain.
 
 Please advise of any fees before proceeding. Electronic copies are preferred.
-"""
+"""  # noqa: E501
