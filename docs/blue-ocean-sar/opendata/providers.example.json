@@ -1,0 +1,67 @@
+{
+  "provider": "example-vendor",
+  "owner_note": "OWNER NOTE: fictional example. Replace with your vendor's name, API base URL and endpoints from their documentation. Record here the contract / terms-of-use version you accepted and the permissible purposes the vendor approved your account for.",
+  "base_url": "https://api.example.com",
+  "auth": {
+    "style": "header",
+    "header_name": "X-Api-Key",
+    "key_env": "EXAMPLE_VENDOR_API_KEY",
+    "key_file": null
+  },
+  "rate_limit": {
+    "calls": 30,
+    "per_seconds": 60
+  },
+  "timeout_seconds": 30,
+  "max_response_bytes": 20000000,
+  "endpoints": {
+    "people_search": {
+      "owner_note": "OWNER NOTE: what this search returns, which agency/officer confirmed you may run it for which case, and any vendor restriction on re-use of the results.",
+      "method": "GET",
+      "path": "/v1/people/search",
+      "source_class": "LICENSED",
+      "allowed_params": ["first_name", "middle_name", "last_name", "dob", "city", "state"],
+      "required_params": ["last_name"],
+      "subject_params": ["first_name", "last_name"],
+      "permissible_purposes": ["GLBA:6802(e)(8)", "DPPA:2721(b)(1)"]
+    },
+    "address_history": {
+      "owner_note": "OWNER NOTE: address history for a vendor person id returned by people_search. Note the purpose the vendor requires and who authorised it.",
+      "method": "GET",
+      "path": "/v1/people/{person_id}/addresses",
+      "source_class": "LICENSED",
+      "allowed_params": ["person_id", "since"],
+      "required_params": ["person_id"],
+      "subject_params": ["person_id"],
+      "permissible_purposes": ["GLBA:6802(e)(8)", "DPPA:2721(b)(1)"]
+    },
+    "vehicle_registration": {
+      "owner_note": "OWNER NOTE: motor-vehicle records are covered by the DPPA. Only enable this if the vendor and the agency have confirmed a DPPA purpose applies to you for this case.",
+      "method": "GET",
+      "path": "/v1/vehicles/{plate}",
+      "source_class": "LICENSED",
+      "allowed_params": ["plate", "state"],
+      "required_params": ["plate", "state"],
+      "subject_params": ["plate"],
+      "permissible_purposes": ["DPPA:2721(b)(1)"]
+    },
+    "subscriber_records": {
+      "owner_note": "OWNER NOTE: placeholder for a source that needs a warrant, court order, subpoena or written consent. Such data should come through, or at the direction of, the agency holding the legal process. Record the warrant in authority.py before enabling.",
+      "method": "POST",
+      "path": "/v1/legal-process/subscriber",
+      "source_class": "LEGAL_PROCESS",
+      "allowed_params": ["phone", "legal_process_reference"],
+      "required_params": ["phone", "legal_process_reference"],
+      "subject_params": ["phone"],
+      "permissible_purposes": ["law-enforcement-legal-process"]
+    },
+    "public_court_index": {
+      "owner_note": "OWNER NOTE: public index example; still audited, no authority needed.",
+      "method": "GET",
+      "path": "/v1/public/court-index",
+      "source_class": "PUBLIC",
+      "allowed_params": ["name", "county", "state"],
+      "required_params": ["name"]
+    }
+  }
+}
