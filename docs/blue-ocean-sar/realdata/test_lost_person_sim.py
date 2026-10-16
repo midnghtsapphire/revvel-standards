@@ -119,6 +119,72 @@ class CliArgumentTest(unittest.TestCase):
         self.assertEqual(w["random_walk"], 1.0)
 
 
+EXAMPLE_TABLE = os.path.join(HERE, "distance_table.example.json")
+
+
+def _table(**kw):
+    base = {"schema": "distance_table/1", "fictional": True, "source": "FICTIONAL test", "licence": "test only",
+            "data_period": "FICTIONAL 2020", "entries": [
+                {"category": "t_cat", "terrain": "flat", "n": 1000,
+                 "km": {"25": 0.05, "50": 0.65, "75": 0.7, "95": 0.75}}]}
+    base.update(kw)
+    return base
+
+
+class DistanceTableTest(unittest.TestCase):
+    """--distance-table parsing and selection: no dependencies."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+
+    def _path(self, obj):
+        return _dump(os.path.join(self.tmp.name, "t.json"), obj)
+
+    def test_example_table_is_marked_fictional(self):
+        tab = sim.load_distance_table(EXAMPLE_TABLE)
+        self.assertTrue(tab["fictional"])
+        self.assertIn("FICTIONAL", tab["source"])
+        tg = sim.table_targets(tab, "Example_Hiker", "mountainous", EXAMPLE_TABLE)
+        self.assertEqual(tg["km"], {25: 0.5, 50: 1.0, 75: 2.0, 95: 4.0})
+        self.assertEqual(tg["dataset"], "user_table")
+        self.assertIn("FICTIONAL", tg["data_age"])
+        self.assertEqual(tg["n"], 100)
+        # ecoregion also selects; ambiguity and unknown names are refused
+        self.assertEqual(sim.table_targets(tab, "example_hiker", "example_dry", EXAMPLE_TABLE)["terrain"], "flat")
+        with self.assertRaises(sim.DistanceTableError):
+            sim.table_targets(tab, "example_hiker", None, EXAMPLE_TABLE)
+        with self.assertRaises(sim.DistanceTableError):
+            sim.table_targets(tab, "hikers", None, EXAMPLE_TABLE)
+        with self.assertRaises(sim.DistanceTableError):
+            sim.table_targets(tab, "example_hiker", "swamp", EXAMPLE_TABLE)
+
+    def test_malformed_tables_refused(self):
+        bad = [
+            _table(schema="other"),
+            _table(licence=""),
+            _table(fictional="maybe"),
+            _table(data_period=None),
+            _table(entries=[]),
+            _table(entries=[{"category": "c", "terrain": "t", "km": {"25": 1, "50": 0.5, "75": 2, "95": 3}}]),
+            _table(entries=[{"category": "c", "terrain": "t", "km": {"25": 1, "50": 2, "75": 3}}]),
+            _table(entries=[{"category": "c", "terrain": "t", "n": 0, "km": {"25": 1, "50": 2, "75": 3, "95": 4}}]),
+            _table(entries=[{"category": "c", "km": {"25": 1, "50": 2, "75": 3, "95": 4}}]),
+        ]
+        for obj in bad:
+            with self.assertRaises(sim.DistanceTableError, msg=json.dumps(obj)):
+                sim.load_distance_table(self._path(obj))
+
+    def test_cli_table_errors_exit_2(self):
+        out = os.path.join(self.tmp.name, "o")
+        common = ["simulate", "--lat", "54.5", "--lon", "-3.1", "--hours", "3", "--dem", EXAMPLE_TABLE, "--out", out]
+        self.assertEqual(sim.main(common + ["--category", "hikers", "--table-terrain", "flat"]), 2)
+        self.assertEqual(sim.main(common + ["--category", "nobody", "--distance-table", EXAMPLE_TABLE]), 2)
+        self.assertEqual(sim.main(common + ["--category", "t_cat", "--distance-table",
+                                            self._path(_table(schema="x"))]), 2)
+        self.assertFalse(os.path.exists(out))
+
+
 @unittest.skipUnless(HAS_DEPS, NEEDS)
 class MovementTest(unittest.TestCase):
     def test_agents_never_cross_a_barrier(self):
@@ -205,6 +271,57 @@ class CalibrationTest(unittest.TestCase):
         out = sim.run(self.t, "fishermen", 2.0, _params(n_agents=100, max_walk_hours=1.0), walk_scale_hours=0.5)
         self.assertFalse(out["calibration"]["calibrated"])
         self.assertAlmostEqual(float(out["prob"].sum()), 1.0, places=12)
+
+    def test_ks_check_and_data_age_on_lpb_run(self):
+        cal = self.res["calibration"]
+        ks = cal["ks"]
+        self.assertEqual(set(ks["points"]), set(sim.CALIBRATION_PERCENTILES))
+        self.assertLess(ks["points"][50]["abs_gap"], 0.03)  # the median is the fitted point
+        self.assertAlmostEqual(ks["tolerance"], round(1.36 / math.sqrt(8), 4))  # UK children 1-6 table, n = 8
+        self.assertIn("warning", ks)  # n = 8 makes a weak check, and it says so
+        self.assertEqual(ks["pass"], ks["statistic"] <= ks["tolerance"])
+        self.assertEqual(cal["lpb_table"]["data_age"], "2003 UK")
+        self.assertIn("2003 UK", cal["target"])
+        rings = sim.containment_rings(self.t, self.res["dist_km"], self.res["targets"], {})
+        table_rings = [f["properties"] for f in rings["features"] if f["properties"].get("source") == "lpb_table"]
+        self.assertEqual(len(table_rings), 4)
+        for p in table_rings:
+            self.assertTrue(p["label"].endswith("(2003 UK)"), p["label"])
+            self.assertEqual(p["data_age"], "2003 UK")
+
+    def test_ks_statistic_by_hand(self):
+        d = np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+        tg = {"n": None, "km": {25: 0.25, 50: 0.5, 75: 0.75, 95: 0.95}}
+        ks = sim.ks_check(d, tg)
+        # F(0.25)=0.2, F(0.5)=0.5, F(0.75)=0.7, F(0.95)=0.9 -> gaps 0.05, 0, 0.05, 0.05
+        self.assertAlmostEqual(ks["statistic"], 0.05)
+        self.assertEqual(ks["tolerance"], 0.1)  # no n -> 0.10
+        self.assertTrue(ks["pass"])
+        self.assertFalse(sim.ks_check(d, tg, ks_tol=0.01)["pass"])
+
+    def test_user_table_replaces_lpb(self):
+        tg = sim.table_targets(sim.load_distance_table(EXAMPLE_TABLE), "example_child", None, EXAMPLE_TABLE)
+        out = sim.run(self.t, "ignored", 4.0, _params(n_agents=1500, max_walk_hours=6.0), table=tg)
+        cal = out["calibration"]
+        self.assertEqual(out["key"], "example_child")
+        self.assertTrue(cal["converged"], cal["message"])
+        self.assertEqual(cal["quantiles"][50]["lpb_km"], 0.6)  # the table's median, not the UK 0.65
+        self.assertEqual(cal["lpb_table"]["dataset"], "user_table")
+        self.assertTrue(cal["lpb_table"]["fictional"])
+        self.assertIn("FICTIONAL", cal["target"])
+        self.assertTrue(cal["ks"]["pass"])
+        labels = [f["properties"]["label"] for f in
+                  sim.containment_rings(self.t, out["dist_km"], out["targets"], {})["features"]
+                  if f["properties"].get("source") == "user_table"]
+        self.assertTrue(labels and all("(FICTIONAL 2000-2010 (FICTIONAL))" in s for s in labels), labels)
+
+    def test_shape_misfit_fails_ks(self):
+        tg = sim.table_targets(sim.load_distance_table(EXAMPLE_TABLE), "example_child", None, EXAMPLE_TABLE)
+        tg = dict(tg, n=1000, km={25: 0.05, 50: 0.6, 75: 0.62, 95: 0.64})  # a shape the walkers cannot make
+        cal = sim.calibrate(sim.simulate(self.t, _params(n_agents=800, max_walk_hours=6.0)), tg)
+        self.assertTrue(cal["converged"])  # the median still fits...
+        self.assertFalse(cal["ks"]["pass"])  # ...but the shape does not
+        self.assertGreater(cal["ks"]["statistic"], cal["ks"]["tolerance"])
 
     def test_reproducible_with_seed(self):
         p1 = sim.run(self.t, "children_1_6", 2.0, _params(n_agents=300, max_walk_hours=2.0, seed=11))["prob"]
@@ -332,6 +449,31 @@ class CliEndToEndTest(unittest.TestCase):
         self.assertAlmostEqual(sum(segs.values()), 1.0, places=9)
         with rasterio.open(os.path.join(out2, "posterior.tif")) as src:
             self.assertIn("prior_inputs", json.loads(src.tags()["inputs"]))
+
+    def test_distance_table_cli(self):
+        out = os.path.join(self.tmp.name, "tab")
+        rc = sim.main(["simulate", "--lat", str(LAT), "--lon", str(LON), "--category", "example_child",
+                       "--distance-table", EXAMPLE_TABLE, "--hours", "3", "--dem", self.dem, "--out", out,
+                       "--res-m", "30", "--radius-km", "1.8", "--agents", "400", "--max-walk-hours", "3"])
+        self.assertEqual(rc, 0)
+        with open(os.path.join(out, "summary.json"), encoding="utf-8") as fh:
+            summary = json.load(fh)
+        self.assertEqual(summary["inputs"]["distance_table"], os.path.abspath(EXAMPLE_TABLE))
+        self.assertIn("FICTIONAL", summary["citation"])
+        self.assertIn("FICTIONAL", summary["distance_table_data_age"])
+        self.assertIn("ks", summary["calibration"])
+
+    def test_ks_failure_exits_5_with_outputs(self):
+        km = {"25": 0.05, "50": 0.6, "75": 0.62, "95": 0.64}
+        bad = _dump(os.path.join(self.tmp.name, "bad_shape.json"),
+                    _table(entries=[{"category": "t_cat", "terrain": "flat", "n": 1000, "km": km}]))
+        out = os.path.join(self.tmp.name, "ks")
+        rc = sim.main(["simulate", "--lat", str(LAT), "--lon", str(LON), "--category", "t_cat",
+                       "--distance-table", bad, "--hours", "3", "--dem", self.dem, "--out", out,
+                       "--res-m", "30", "--radius-km", "1.8", "--agents", "400", "--max-walk-hours", "3"])
+        self.assertEqual(rc, 5)
+        with open(os.path.join(out, "summary.json"), encoding="utf-8") as fh:
+            self.assertFalse(json.load(fh)["calibration"]["ks"]["pass"])
 
     def test_no_table_exits_3(self):
         out = os.path.join(self.tmp.name, "f")

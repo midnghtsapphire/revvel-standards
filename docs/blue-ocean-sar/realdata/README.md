@@ -678,3 +678,40 @@ python -m unittest test_evidence_fusion
 The module ships no LR values. Every number must come from a measured study
 or your own field trials. The SAREnv loader follows that project's own code
 but has not been run on real SAREnv files.
+
+## CalTopo / SARTopo file exchange (`caltopo_io.py`)
+
+This tool works with files only and never writes to the CalTopo API.
+
+- **Export.** It turns segment polygons, plus POA, POD, PSR and planned
+  effort from `search_theory.py`, `optimal_search.py` or
+  `lost_person_sim.py`, into a GeoJSON file that CalTopo can import. Each
+  feature is an Assignment or Shape, styled yellow to red by POA. The
+  numbers are written into the description, so they survive even if CalTopo
+  drops unknown properties.
+- **Import.** It reads a CalTopo export, measures how much of each walked
+  track lies inside each segment, and computes coverage C = km x W / area
+  and POD = 1 - e^-C. It writes a passes CSV that
+  `search_theory.py --passes` reads.
+
+```sh
+python caltopo_io.py export --polygons segs.geojson --segments segs.csv --optimal plan.json --out caltopo.json
+python caltopo_io.py import caltopo_export.json --segments-geojson segs.geojson --sweep-width-km 0.05 --passes-out passes.csv
+python -m unittest test_caltopo_io
+```
+
+The property names follow the open-source `caltopo_python` client, because
+CalTopo publishes no import schema. Try a first import on a scratch map.
+
+## Your own distance tables in `lost_person_sim.py`
+
+`--distance-table FILE` replaces the 2003 UK table with your own, for
+example ISRID figures from your licensed Lost Person Behavior book or app.
+The table gives category, terrain and the 25/50/75/95% distances in km,
+with its source and licence.
+
+The tool reports how closely the simulation matches the table at those
+points, as a KS-style distance D, and exits 5 when the fit is outside the
+tolerance. The age of the data is shown next to every ring.
+`distance_table.example.json` is fictional and is only there to show the
+format. No ISRID numbers are included, because they are licensed.

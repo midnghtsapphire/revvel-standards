@@ -64,6 +64,41 @@ in summary.json under ``assumptions``):
   lost_person_behavior.rings) is reported. A category with no printed
   distance table is refused calibration; give --walk-scale-hours instead.
 
+  Shape check (KS-style): the median is the only fitted number, so the
+  other quantiles are tested too. D = max over p in 25/50/75/95 of
+  |F_sim(q_table(p)) - p/100|, where F_sim is the empirical CDF of the
+  simulated long-time distances. It is a Kolmogorov-Smirnov statistic
+  evaluated only at the table's quantile points (so it can only be <= the
+  full KS statistic). It passes when D <= --ks-tol. The default tolerance is
+  1.36 / sqrt(n), the 5% KS critical value for the table's own sample size n
+  (a difference smaller than the table's sampling noise is not evidence of a
+  misfit); 0.10 when the table gives no n. A small table therefore gives a
+  weak check, and the summary says so.
+
+  User distance tables (--distance-table JSON) replace the 2003 UK table for
+  calibration, e.g. the owner's licensed ISRID / Lost Person Behavior (Koester
+  2008) figures. This repository ships no ISRID numbers (licensed data); the
+  only bundled table, distance_table.example.json, is FICTIONAL and for tests.
+  Format (every field except n/ecoregion/region is required)::
+
+      {"schema": "distance_table/1", "fictional": false,
+       "source": "citation", "licence": "who may use these numbers and how",
+       "data_period": "incident years, e.g. 1990-2008", "region": "...",
+       "entries": [{"category": "hiker", "terrain": "mountainous",
+                    "ecoregion": "temperate", "n": 120,
+                    "km": {"25": 1.1, "50": 2.0, "75": 3.6, "95": 7.9}}]}
+
+  --category picks the entry (case-insensitive); --table-terrain picks among
+  entries for the same category by terrain or ecoregion. The data age
+  (2003 UK for the bundled table, data_period for a user table) is printed
+  next to every table ring and in summary.json.
+
+  Candid provenance note: the request for this option came from an
+  AI-generated system review (SYSTEM_REVIEW.md, upgrade R4), which describes
+  ISRID as "about 300,000 incidents". That figure was not checked here and
+  should not be quoted from this code; use the count your licensed source
+  states.
+
   Probability raster: counts of final positions per cell, Gaussian kernel
   (sigma = kernel_sigma_m) applied separately inside each 4-connected
   passable region (each region keeps its share of agents, so smoothing does
@@ -95,9 +130,11 @@ searched.geojson: Polygon features with property ``pod`` in [0, 1] or
 (RFC 7946). Feature/barrier inputs may also be GeoTIFF masks (nonzero = on).
 
 Exit codes: 0 done; 2 bad input (unknown category, missing DEM, bad
-arguments, missing numpy/scipy/rasterio); 3 the category has no LPB distance
-table and no --walk-scale-hours was given (nothing written); 4 calibration
-did not reach the LPB median (outputs written and flagged).
+arguments, bad distance table, missing numpy/scipy/rasterio); 3 the category
+has no distance table and no --walk-scale-hours was given (nothing written);
+4 calibration did not reach the table median (outputs written and flagged);
+5 the median converged but the KS-style shape check failed (outputs written
+and flagged).
 
 This is a planning prior for sizing and weighting a search, not a
 prediction of where a particular person is.
@@ -670,10 +707,144 @@ def lpb_targets(category, dataset="auto"):
         "source": rs[0]["source"],
         "km": {r["percent"]: r["km"] for r in rs},
         "interpolated": {r["percent"]: r["interpolated"] for r in rs},
+        "data_age": LPB_DATA_AGE.get(rs[0]["dataset"], "2003 UK handbook"),
+        "label": "LPB table",
     }
 
 
-def calibrate(sim, targets, tol=0.05, iterations=80):
+# Data age shown next to every table ring. These are publication / study dates, not incident dates.
+LPB_DATA_AGE = {
+    "uk_study": "2003 UK",
+    "source_studies": "US/Canada 1997-2000, via 2003 UK handbook",
+}
+DISTANCE_TABLE_SCHEMA = "distance_table/1"
+DEFAULT_KS_TOL_NO_N = 0.10
+KS_C_ALPHA_05 = 1.36  # large-sample 5% critical value of the one-sample KS statistic, times sqrt(n)
+
+
+class DistanceTableError(ValueError):
+    """A --distance-table file is malformed or has no entry for the category/terrain."""
+
+
+def _table_text(obj, key, path, where="table"):
+    v = obj.get(key)
+    if not isinstance(v, str) or not v.strip():
+        raise DistanceTableError(f"{path}: {where} needs a non-empty '{key}' string")
+    return v.strip()
+
+
+def load_distance_table(path):
+    """Read and check a user distance table (see the module docstring for the format)."""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            tab = json.load(fh)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise DistanceTableError(f"{path}: cannot read distance table: {exc}") from exc
+    if not isinstance(tab, dict):
+        raise DistanceTableError(f"{path}: top level must be a JSON object")
+    if tab.get("schema") != DISTANCE_TABLE_SCHEMA:
+        raise DistanceTableError(f"{path}: schema must be {DISTANCE_TABLE_SCHEMA!r}")
+    for k in ("source", "licence", "data_period"):
+        _table_text(tab, k, path)
+    if not isinstance(tab.get("fictional"), bool):
+        raise DistanceTableError(f"{path}: 'fictional' must be true or false (say which it is)")
+    entries = tab.get("entries")
+    if not isinstance(entries, list) or not entries:
+        raise DistanceTableError(f"{path}: 'entries' must be a non-empty list")
+    for i, e in enumerate(entries):
+        where = f"entry {i}"
+        if not isinstance(e, dict):
+            raise DistanceTableError(f"{path}: {where} is not an object")
+        _table_text(e, "category", path, where)
+        _table_text(e, "terrain", path, where)
+        km = e.get("km")
+        if not isinstance(km, dict):
+            raise DistanceTableError(f"{path}: {where} needs 'km' with keys 25, 50, 75, 95")
+        vals = []
+        for p in CALIBRATION_PERCENTILES:
+            v = km.get(str(p), km.get(p))
+            if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or v <= 0:
+                raise DistanceTableError(f"{path}: {where} km[{p}] must be a positive number")
+            vals.append(float(v))
+        if any(b < a for a, b in zip(vals, vals[1:])):
+            raise DistanceTableError(f"{path}: {where} quantiles must not decrease: {vals}")
+        n = e.get("n")
+        if n is not None and (isinstance(n, bool) or not isinstance(n, int) or n < 1):
+            raise DistanceTableError(f"{path}: {where} n must be a positive integer when given")
+    return tab
+
+
+def table_targets(tab, category, terrain=None, path=None):
+    """Targets (same shape as lpb_targets) from a user distance table entry."""
+    cat = category.strip().lower()
+    hits = [e for e in tab["entries"] if e["category"].strip().lower() == cat]
+    if not hits:
+        known = sorted({e["category"] for e in tab["entries"]})
+        raise DistanceTableError(f"{path}: no entry for category {category!r}; table has {known}")
+    if terrain:
+        t = terrain.strip().lower()
+        hits = [e for e in hits if t in (e["terrain"].strip().lower(), str(e.get("ecoregion", "")).strip().lower())]
+        if not hits:
+            raise DistanceTableError(f"{path}: no {category!r} entry for terrain/ecoregion {terrain!r}")
+    if len(hits) > 1:
+        opts = sorted({e["terrain"] for e in hits})
+        raise DistanceTableError(f"{path}: {len(hits)} entries for {category!r}; pick one with --table-terrain "
+                                 f"({opts})")
+    e = hits[0]
+    km = {p: float(e["km"].get(str(p), e["km"].get(p))) for p in CALIBRATION_PERCENTILES}
+    label = "FICTIONAL example table" if tab["fictional"] else "user distance table"
+    return {
+        "category": e["category"],
+        "dataset": "user_table",
+        "page": None,
+        "n": e.get("n"),
+        "source": tab["source"],
+        "licence": tab["licence"],
+        "fictional": tab["fictional"],
+        "terrain": e["terrain"],
+        "ecoregion": e.get("ecoregion"),
+        "region": tab.get("region"),
+        "table_path": os.path.abspath(path) if path else None,
+        "km": km,
+        "interpolated": {p: False for p in CALIBRATION_PERCENTILES},
+        "data_age": tab["data_period"] + (" (FICTIONAL)" if tab["fictional"] else ""),
+        "label": label,
+    }
+
+
+def ks_check(dist_km, targets, ks_tol=None):
+    """KS-style distance between the simulated distance CDF and the table quantiles (see module docstring)."""
+    d = np.asarray(dist_km, dtype="f8")
+    n = targets.get("n")
+    auto = ks_tol is None
+    tol = (KS_C_ALPHA_05 / math.sqrt(n) if n else DEFAULT_KS_TOL_NO_N) if auto else float(ks_tol)
+    if not tol > 0:
+        raise ValueError("KS tolerance must be > 0")
+    points, worst, at = {}, -1.0, None
+    for p in CALIBRATION_PERCENTILES:
+        q = targets["km"][p]
+        f = float(np.mean(d <= q))
+        gap = abs(f - p / 100.0)
+        points[p] = {"table_km": q, "sim_cdf_at_table_km": round(f, 4), "abs_gap": round(gap, 4)}
+        if gap > worst:
+            worst, at = gap, p
+    out = {
+        "statistic": round(worst, 4),
+        "at_percent": at,
+        "tolerance": round(tol, 4),
+        "tolerance_rule": ("auto: 1.36/sqrt(n) for the table's n" if auto and n else
+                           f"auto: {DEFAULT_KS_TOL_NO_N} (table gives no n)" if auto else "user --ks-tol"),
+        "pass": bool(worst <= tol),
+        "points": points,
+        "method": "max |F_sim(q_table(p)) - p| over p = 25/50/75/95%; KS evaluated at the table quantiles only",
+    }
+    if tol > 0.25:
+        out["warning"] = (f"tolerance {tol:.2f} is wide because the table is small (n={n}); the check can only "
+                          "catch gross misfits")
+    return out
+
+
+def calibrate(sim, targets, tol=0.05, iterations=80, ks_tol=None):
     """Bisection on log(k) so the simulated median distance (no elapsed cap) equals the LPB 50% distance."""
     d_ck = sim.ck_dist_km
     a = np.arange(d_ck.shape[1])
@@ -716,15 +887,24 @@ def calibrate(sim, targets, tol=0.05, iterations=80):
     }
     capped = float(np.mean((k * sim.budget) > t_sim))
     converged = reachable and abs(sim_q[50] - target) <= tol * target + floor_km
+    # "lpb_km" / "lpb_table" keep their names (dossier.py reads them) but hold whichever table calibrated the run.
+    table_keys = ("category", "dataset", "page", "n", "source", "data_age", "licence", "fictional", "terrain",
+                  "ecoregion", "region", "table_path")
     return {
         "calibrated": True,
         "converged": bool(converged),
         "walk_scale_hours": k,
-        "target": "LPB 50% straight-line distance (long-time limit, no elapsed-time cap)",
+        # Replaced: the target is no longer always the LPB table; a --distance-table entry can replace it.
+        # "target": "LPB 50% straight-line distance (long-time limit, no elapsed-time cap)",
+        "target": (f"{targets.get('label', 'LPB table')} ({targets.get('data_age', '2003 UK')}) 50% straight-line "
+                   "distance (long-time limit, no elapsed-time cap)"),
         "tolerance": {"relative": tol, "plus_km": floor_km},
         "quantiles": resid,
+        "ks": ks_check(d, targets, ks_tol),
         "fraction_budget_capped_at_max_walk_hours": round(capped, 4),
-        "lpb_table": {k2: targets[k2] for k2 in ("category", "dataset", "page", "n", "source")},
+        # Replaced: data age, licence and terrain of the table now travel with the result.
+        # "lpb_table": {k2: targets[k2] for k2 in ("category", "dataset", "page", "n", "source")},
+        "lpb_table": {k2: targets.get(k2) for k2 in table_keys if k2 in targets},
         "message": None if converged else (
             f"simulated median reaches only {med_hi:.3f} km of {target} km within max_walk_hours={t_sim:.3g}; "
             "increase --max-walk-hours, --radius-km or check barriers" if not reachable
@@ -809,14 +989,25 @@ def containment_rings(terrain, dist_km, targets, inputs, n_vertices=96):
     feats = [{"type": "Feature", "geometry": {"type": "Point", "coordinates": [terrain.lon, terrain.lat]},
               "properties": {"name": "IPP", "label": "Initial planning point (IPP)"}}]
     rings = []
+    tsrc = "user_table" if targets and targets.get("dataset") == "user_table" else "lpb_table"
     for p in CALIBRATION_PERCENTILES:
         km = float(np.quantile(dist_km, p / 100.0))
         rings.append(("simulation", p, km))
         if targets:
-            rings.append(("lpb_table", p, float(targets["km"][p])))
+            rings.append((tsrc, p, float(targets["km"][p])))
+    age = (targets or {}).get("data_age", "2003 UK")
+    tlabel = (targets or {}).get("label", "LPB table")
     for src, p, km in rings:
-        props = {"source": src, "percent": p, "km": round(km, 4),
-                 "label": f"{'simulated' if src == 'simulation' else 'LPB table'} {p}%: {km:.3g} km"}
+        # Replaced: the table ring label now carries the data age (e.g. "2003 UK") so old figures are visible.
+        # props = {"source": src, "percent": p, "km": round(km, 4),
+        #          "label": f"{'simulated' if src == 'simulation' else 'LPB table'} {p}%: {km:.3g} km"}
+        if src == "simulation":
+            label = f"simulated {p}%: {km:.3g} km" + (f" (calibrated to {age} table)" if targets else "")
+        else:
+            label = f"{tlabel} {p}%: {km:.3g} km ({age})"
+        props = {"source": src, "percent": p, "km": round(km, 4), "label": label}
+        if src != "simulation" or targets:
+            props["data_age"] = age
         if km <= 0:
             props["zero_radius"] = True
             feats.append({"type": "Feature", "geometry": None, "properties": props})
@@ -941,31 +1132,36 @@ def _write_json(path, obj):
         fh.write("\n")
 
 
-def run(terrain, category, elapsed_hours, params=None, dataset="auto", walk_scale_hours=None, calib_tol=0.05):
+def run(terrain, category, elapsed_hours, params=None, dataset="auto", walk_scale_hours=None, calib_tol=0.05,
+        table=None, ks_tol=None):
     """Simulate, calibrate (unless walk_scale_hours is given) and build the probability raster.
 
+    ``table``: targets from table_targets (a user distance table); it replaces the 2003 UK LPB table.
     Returns dict with prob, dist_km, calibration, sim, targets.
     """
     if not elapsed_hours > 0:
         raise ValueError("elapsed hours must be > 0")
-    key = lpb.resolve_category(category)
-    targets = None
-    if walk_scale_hours is None:
+    # Replaced: a user table's category need not be an LPB category (ISRID uses its own names).
+    # key = lpb.resolve_category(category)
+    key = table["category"] if table else lpb.resolve_category(category)
+    targets = table
+    if walk_scale_hours is None and targets is None:
         targets = lpb_targets(key, dataset)  # raises CalibrationError when no table
     sim = simulate(terrain, params)
     if walk_scale_hours is None:
-        calib = calibrate(sim, targets, tol=calib_tol)
+        calib = calibrate(sim, targets, tol=calib_tol, ks_tol=ks_tol)
         k = calib["walk_scale_hours"]
     else:
         if not walk_scale_hours > 0:
             raise ValueError("walk scale hours must be > 0")
         k = float(walk_scale_hours)
         calib = {"calibrated": False, "converged": None, "walk_scale_hours": k,
-                 "message": "walking-time scale given by the user; not calibrated to LPB distances"}
-        try:
-            targets = lpb_targets(key, dataset)
-        except CalibrationError:
-            targets = None
+                 "message": "walking-time scale given by the user; not calibrated to a distance table"}
+        if targets is None:
+            try:
+                targets = lpb_targets(key, dataset)
+            except CalibrationError:
+                targets = None
     rows, cols, t = final_positions(sim, k, elapsed_hours)
     r0, c0 = sim.ipp_rc
     dist_km = np.hypot(rows - r0, cols - c0) * terrain.res / 1000.0
@@ -1000,6 +1196,8 @@ def _inputs_record(a, key, terrain, params):
         "linear_features_and_barriers": terrain.feature_sources,
         "segments": os.path.abspath(a.segments) if a.segments else None,
         "walk_scale_hours_given": a.walk_scale_hours,
+        "distance_table": os.path.abspath(a.distance_table) if a.distance_table else None,
+        "table_terrain": a.table_terrain,
         "params": asdict(params),
     }
 
@@ -1021,8 +1219,19 @@ def _check_files(paths):
 
 
 def _cmd_simulate(a):
+    table = None
     try:
-        key = lpb.resolve_category(a.category)
+        if a.distance_table:
+            _check_files([a.distance_table])
+            table = table_targets(load_distance_table(a.distance_table), a.category, a.table_terrain,
+                                  a.distance_table)
+            key = table["category"]
+        else:
+            if a.table_terrain:
+                raise ValueError("--table-terrain needs --distance-table")
+            key = lpb.resolve_category(a.category)
+        if a.ks_tol is not None and not a.ks_tol > 0:
+            raise ValueError("--ks-tol must be > 0")
         if not (-90 < a.lat < 90 and -180 <= a.lon <= 180):
             raise ValueError(f"IPP out of range: {a.lat}, {a.lon}")
         if not a.hours > 0:
@@ -1033,7 +1242,9 @@ def _cmd_simulate(a):
                       *(a.barriers or [])])
         _require_deps()
         params = _params_from_args(a)
-        targets = None if a.walk_scale_hours is not None else lpb_targets(key, a.dataset)
+        # Replaced: a user distance table supplies the targets instead of the 2003 UK LPB table.
+        # targets = None if a.walk_scale_hours is not None else lpb_targets(key, a.dataset)
+        targets = table if table else (None if a.walk_scale_hours is not None else lpb_targets(key, a.dataset))
     except CalibrationError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 3
@@ -1049,7 +1260,8 @@ def _cmd_simulate(a):
         terrain = load_terrain(a.dem, a.lat, a.lon, radius_km * 1000.0, a.res_m)
         add_inputs(terrain, a.roads, a.trails, a.streams, a.barriers)
         polygons = read_polygons(a.segments) if a.segments else None
-        res = run(terrain, key, a.hours, params, a.dataset, a.walk_scale_hours, a.calib_tol)
+        res = run(terrain, key, a.hours, params, a.dataset, a.walk_scale_hours, a.calib_tol, table=table,
+                  ks_tol=a.ks_tol)
     except (ValueError, CalibrationError, OSError, *RASTER_ERRORS) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
@@ -1059,13 +1271,29 @@ def _cmd_simulate(a):
     cal = res["calibration"]
     print(f"{key}: k = {cal['walk_scale_hours']:.4g} h walking scale "
           f"({'calibrated' if cal['calibrated'] else 'user-given'}); wrote {a.out}")
+    tg = res["targets"]
+    if tg and tg.get("fictional"):
+        print("warning: the distance table is marked FICTIONAL; do not use this map on a real search",
+              file=sys.stderr)
     if cal["calibrated"]:
+        age = tg.get("data_age", "2003 UK")
+        tname = "table" if tg.get("dataset") == "user_table" else "LPB"
         for p, q in cal["quantiles"].items():
-            print(f"  {p:>3}%  LPB {q['lpb_km']:>8.3f} km   sim {q['sim_km']:>8.3f} km   "
+            # Replaced: the table column now names the data age next to each ring distance.
+            # print(f"  {p:>3}%  LPB {q['lpb_km']:>8.3f} km   sim {q['sim_km']:>8.3f} km   "
+            #       f"residual {q['residual_km']:+.3f}")
+            print(f"  {p:>3}%  {tname} {q['lpb_km']:>8.3f} km ({age})   sim {q['sim_km']:>8.3f} km   "
                   f"residual {q['residual_km']:+.3f}")
+        ks = cal["ks"]
+        print(f"  KS-style D = {ks['statistic']:.3f} at {ks['at_percent']}% (tolerance {ks['tolerance']:.3f}): "
+              f"{'PASS' if ks['pass'] else 'FAIL'}" + (f"; {ks['warning']}" if ks.get("warning") else ""))
     if cal["calibrated"] and not cal["converged"]:
         print(f"error: calibration did not converge: {cal['message']}", file=sys.stderr)
         return 4
+    if cal["calibrated"] and not cal["ks"]["pass"]:
+        print("error: simulated distance distribution does not match the table shape (KS-style check failed); "
+              "outputs written and flagged", file=sys.stderr)
+        return 5
     return 0
 
 
@@ -1086,7 +1314,11 @@ def _write_outputs(out, terrain, res, inputs, polygons):
         "probability_total": float(prob.sum()),
         "assumptions": list(ASSUMPTIONS),
         "model": "Tobler v = 6 exp(-3.5 |tan(theta) + 0.05|) km/h; correlated random walk with behaviour mixture",
-        "citation": lpb.load_data()["source"]["citation"],
+        # Replaced: the citation is the user table's source when one calibrated the run.
+        # "citation": lpb.load_data()["source"]["citation"],
+        "citation": (res["targets"]["source"] if res["targets"] and res["targets"].get("dataset") == "user_table"
+                     else lpb.load_data()["source"]["citation"]),
+        "distance_table_data_age": res["targets"].get("data_age") if res["targets"] else None,
         "note": PRIOR_NOTE,
         "outputs": ["probability.tif", "containment_rings.geojson", "contours.geojson"],
     }
@@ -1169,6 +1401,11 @@ def _parser():
     s.add_argument("--kernel-m", type=float, help="kernel smoothing sigma in metres (default 2 cells)")
     s.add_argument("--walk-scale-hours", type=float, help="skip calibration and use this walking-time scale k")
     s.add_argument("--calib-tol", type=float, default=0.05)
+    s.add_argument("--distance-table", help="JSON distance table (e.g. your licensed ISRID figures) that replaces "
+                                            "the 2003 UK LPB table for calibration")
+    s.add_argument("--table-terrain", help="terrain or ecoregion of the --distance-table entry to use")
+    s.add_argument("--ks-tol", type=float, help="tolerance for the KS-style shape check "
+                                                "(default 1.36/sqrt(n) of the table, 0.10 without n)")
     u = sub.add_parser("update", help="Bayesian update of a probability raster after unsuccessful searches")
     u.add_argument("--prior", required=True, help="probability.tif (or posterior.tif) to update")
     u.add_argument("--searched", required=True, help="GeoJSON polygons with pod or cleared: true")
