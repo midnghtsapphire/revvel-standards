@@ -15,6 +15,10 @@ Every file uploaded during the Blue Ocean SAR sessions, stored as received.
   `gis_parcel_adjacency.csv`, both `relational_graph_degrees*.csv`, and the
   two `ryverly_lindeman_integration` JSONs. They are still listed in
   `MANIFEST.csv` and kept in the private archive.
+- Nine more are held out the same way (status `held_out_of_public_copy`):
+  the four `stfrancisville/` uploads and `code/ryverly_recon_app-v6.py`,
+  which name a private home address, and the four published rescue manuals
+  in `general/reference/`, which are other authors' documents.
 - `.py` and `.md` files here are excluded from flake8 and markdownlint so
   they stay byte-identical to the upload.
 - Nothing has been edited. Analysis and corrected scripts live in
