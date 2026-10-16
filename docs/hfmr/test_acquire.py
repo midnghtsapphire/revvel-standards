@@ -102,6 +102,20 @@ class TestAcquire(unittest.TestCase):
             redirect[0].redirect_request(req, None, 302, "Found", {}, "https://169.254.169.254/latest")
         self.assertIsNotNone(redirect[0].redirect_request(req, None, 302, "Found", {}, "https://example.org/b"))
 
+    def test_module3_readme_limits_redirect_claim_to_default_opener(self):
+        # fetch only installs the checked redirect handler when no opener is passed.
+        text = (Path(__file__).parent / "modules" / "MODULE3_README.md").read_text()
+        self.assertIn("With the default opener, redirects are validated before they are followed", text)
+        self.assertIn("must enforce the same policy itself", text)
+        with mock.patch("urllib.request.build_opener") as build, tempfile.TemporaryDirectory() as t:
+            fetch(
+                "https://example.org/f",
+                Path(t) / "f",
+                ["example.org"],
+                opener=lambda r, timeout: FakeResponse(r.full_url),
+            )
+        build.assert_not_called()
+
     def test_timeline(self):
         with tempfile.TemporaryDirectory() as t:
             p = Path(t) / "r.csv"
