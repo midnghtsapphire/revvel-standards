@@ -70,6 +70,11 @@ def check_ground_truth(gt):
     every POST inside the gate."""
     if gt is None:
         return
+    # Added (SYSTEM_REVIEW C4): the gate now requires a cited source and an ISO
+    # clearance date for every sector; check that at startup instead of letting
+    # every POST fail with 400 after the record is stored.
+    from stage2_validation_gate import validate_ground_truth
+    validate_ground_truth(gt)
     if not isinstance(gt, dict):
         raise ValueError(f"ground truth must be a JSON object, not {type(gt).__name__}")
     needed = {"cleared_sectors": ("sector_id", "cleared_by", "cleared_date"), "verified_unmonitored_gaps": ("gap_id",)}
@@ -250,8 +255,14 @@ def load_ground_truth(parser, args):
             check_ground_truth(gt)
         except (OSError, ValueError) as e:
             parser.error(f"--ground-truth {args.ground_truth}: {e}")
+    # Replaced (SYSTEM_REVIEW C4): the built-in Shaffer ground truth is gone. It
+    # came from AI-generated material, named real people and cited no document.
+    # Lesson: "verified" in a generated report is not a source.
+    # elif args.use_shaffer_default:
+    #     gt = DEFAULT_VERIFIED_GROUND_TRUTH
     elif args.use_shaffer_default:
-        gt = DEFAULT_VERIFIED_GROUND_TRUTH
+        parser.error("--use-shaffer-default was removed: the built-in Shaffer facts had no source document. "
+                     "Give --ground-truth FILE with a source and clearance date for every sector.")
     return gt
 
 

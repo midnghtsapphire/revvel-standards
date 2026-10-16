@@ -761,8 +761,12 @@ def sec_drift(path, max_rows):
         s["flags"].append(f"warning: {v(w)}")
     pm = get(d, "model", "prior_mass_beyond_reach")
     if _num(pm) and pm > 0:
+        # Replaced (SYSTEM_REVIEW C3): drift_envelope no longer renormalises the
+        # in-reach cells; it keeps the beyond-reach mass in its own row.
+        # s["flags"].append(f"model.prior_mass_beyond_reach = {v(pm)}: that much prior mass lies past the modelled "
+        #                   "reach and the in-reach cells were renormalised.")
         s["flags"].append(f"model.prior_mass_beyond_reach = {v(pm)}: that much prior mass lies past the modelled "
-                          "reach and the in-reach cells were renormalised.")
+                          "reach (kept as the beyond_reach row, not spread over the cells).")
     return finish(s)
 
 

@@ -578,8 +578,13 @@ class ListenerCli(unittest.TestCase):
         with self.assertRaises(SystemExit) as cm:
             self._main("--ground-truth", p, "--use-shaffer-default")
         self.assertEqual(cm.exception.code, 2)
-        run = self._main("--use-shaffer-default")
-        self.assertIs(run.call_args.kwargs["ground_truth"], self.rl.DEFAULT_VERIFIED_GROUND_TRUTH)
+        # Replaced (SYSTEM_REVIEW C4): the unsourced built-in Shaffer default was
+        # removed, so the flag alone is now refused.
+        # run = self._main("--use-shaffer-default")
+        # self.assertIs(run.call_args.kwargs["ground_truth"], self.rl.DEFAULT_VERIFIED_GROUND_TRUTH)
+        with self.assertRaises(SystemExit) as cm:
+            self._main("--use-shaffer-default")
+        self.assertEqual(cm.exception.code, 2)
         run = self._main("--ground-truth", p)
         self.assertEqual(run.call_args.kwargs["ground_truth"], {"case_id": "OTHER-CASE"})
 
