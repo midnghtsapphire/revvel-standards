@@ -114,6 +114,14 @@ class DiscoveryTests(unittest.TestCase):
                 redirect[0].redirect_request(req, None, 302, "Found", {}, bad)
         self.assertIsNotNone(redirect[0].redirect_request(req, None, 302, "Found", {}, "https://example.gov/b"))
 
+    def test_incomplete_alias_does_not_match_blank_addresses(self):
+        rows = [{"address": "", "parcel": ""}, {"address": "1546 N HIGH ST", "parcel": ""}]
+        aliases = [
+            {"from_address": "1546 N HIGH ST", "to_address": "", "verified": "yes", "source_url": "https://x.gov/r"}
+        ]
+        matches = match_identity(rows, address="1546 N HIGH ST", alias_rows=aliases)
+        self.assertEqual([m["record"]["address"] for m in matches], ["1546 N HIGH ST"])
+
     def test_inventory_tamper(self):
         with tempfile.TemporaryDirectory() as t:
             p = Path(t) / "i.json"

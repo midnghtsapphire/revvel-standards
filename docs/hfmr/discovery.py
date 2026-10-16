@@ -119,6 +119,10 @@ def match_identity(records, address=None, parcel=None, alias_rows=None):
             continue
         from_addr = normalized_address(a.get("from_address", ""))
         to_addr = normalized_address(a.get("to_address", ""))
+        # An alias missing either end would add "" to the verified set, so blank-address
+        # records would match the target.
+        if not from_addr or not to_addr:
+            continue
         if target_address and target_address in (from_addr, to_addr):
             verified.update((from_addr, to_addr))
     if target_address:
