@@ -20,6 +20,7 @@ registry, logs) are not committed; the scripts regenerate them.
 | `archive_collector_cli.py` | (your script, fixed) | Wayback CDX, USENET, local JSONL | Ingest yes; Wayback blocked here |
 | `realtime_validation_listener.py` | (your script, fixed: it imported a class and called a method that do not exist) | POSTed JSON records -> stage-0 DB -> Stage 2 gate; `realtime-listener.service` runs it under systemd | Yes (local) |
 | `stage2_validation_gate.py` | (your script, unchanged copy) | The stage-0 database | Yes |
+| `field_log.py` | `taphos_serial_parser.py` ("VALIDATED" for any value present, always ONLINE) | Your Taphos-Stick field log CSV | Yes (offline) |
 
 Fixes made to your scripts (the original lines are kept as comments):
 
@@ -124,6 +125,29 @@ python -m unittest test_microtopo    # 18 offline tests for microtopo.py
 Needs: numpy, scipy, rasterio and Pillow; mgrs is used only by the tile-check
 test. Without them, the raster and image tests skip and the qPCR, weather and
 registry tests still run.
+
+## Field log, lab exports and site ranking
+
+### `field_log.py`
+
+Checks each row of a Taphos-Stick field log (columns `Subsystem`,
+`Parameter`, `Expected_Threshold`, `Actual_Field_Value`) against its own
+threshold. Thresholds can be `>= 12`, `< 0.5`, `12-20`, `85%` (a bare value
+is read as a minimum; change with `--bare-number`) or exact text such as
+`RTK Fix`. Quote text that contains digits.
+
+- **Row status.** `PASS`, `FAIL`, `PENDING` (no value) or
+  `UNPARSEABLE_THRESHOLD`.
+- **Overall status and exit code.** `PASS` exits 0, `FAIL` exits 1, and
+  `INCOMPLETE` (pending or unparseable rows, or no rows) exits 2. A missing
+  file or missing column also exits 2.
+- **What it does not do.** It does not report whether the device is online.
+  The report covers only what the log records.
+
+```sh
+python field_log.py ops-log.csv --out field_log_report.json
+cat ops-log.csv | python field_log.py - --out report.json
+```
 
 ## Limits that come with the data
 
