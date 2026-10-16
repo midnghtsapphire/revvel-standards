@@ -23,3 +23,31 @@ The local hash chain is neither immutable nor authenticated. Production requires
 
 ## Model validation
 Report per-stratum false alarm rate, sensitivity, precision-recall, Brier score, log loss, expected calibration error, abstention rate, and geolocation uncertainty. Establish acceptance thresholds before opening the blind test set. Do not equate a metal likelihood with a remains likelihood.
+
+## Changes since the original upload
+
+All original logic is kept. Each fix below adds code, and each has a test in
+`test_hfmr.py`.
+
+1. **Out-of-distribution abstention.** If no hypothesis explains the
+   observations within 4 combined standard deviations (`OOD_Z_LIMIT`), `infer`
+   returns `decision: "abstain"` and `posterior: None`. Before, a reading of
+   `1e6` reported 100% for whichever hypothesis was least bad.
+2. **Model coverage checks.** `means` and `intrinsic_sd` must cover every
+   hypothesis, and every observed sensor must be calibrated, or you get a clear
+   `ValueError` instead of a raw `KeyError`.
+3. **Corrupt ledgers fail verification instead of crashing.** A truncated or
+   garbage line makes `verify()` return `False`.
+4. **Concurrent appends are safe.** `append` holds an exclusive file lock
+   (POSIX) across read-then-write. Without it, 20 concurrent writers broke the
+   chain in 10 of 10 trials.
+5. **Empty input is rejected.** `infer([])` raises instead of silently
+   returning the priors.
+
+Formatting was also updated to pass the repository's flake8 gate.
+
+Run the tests from the repo root:
+
+```bash
+python3 -m unittest discover -s docs/hfmr -v
+```
