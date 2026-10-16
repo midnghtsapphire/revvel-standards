@@ -236,7 +236,9 @@ class Stage2ValidationGate:
 
             report = {
                 "audit_timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "ground_truth_case_id": self.ground_truth.get("case_id"),
+                # Original crashed with AttributeError when the gate had no ground truth:
+                # "ground_truth_case_id": self.ground_truth.get("case_id"),
+                "ground_truth_case_id": self.ground_truth.get("case_id") if self.ground_truth else None,
                 "status_breakdown": status_counts,
                 "validated_records_count": len(validated_records),
                 "records": validated_records,

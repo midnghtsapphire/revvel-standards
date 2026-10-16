@@ -748,6 +748,18 @@ class Stage2Gate(unittest.TestCase):
         self.assertEqual(results[0]["validation_status"], "unverified")
         self.assertEqual(stats["abstained"], 1)
 
+    def test_audit_report_without_ground_truth_has_null_case_id(self):
+        import json
+        self._add("seen near the river")
+        gate = self.sg.Stage2ValidationGate(self.db, None)
+        gate.validate_records()
+        out = os.path.join(self.tmp.name, "audit.json")
+        gate.export_audit_report(out)
+        with open(out) as f:
+            report = json.load(f)
+        self.assertIsNone(report["ground_truth_case_id"])
+        self.assertEqual(report["status_breakdown"], {"unverified": 1})
+
     def test_listener_abstention_not_reported_as_validated(self):
         import realtime_validation_listener as rl
         rec = {"source_origin": "manual_ingest", "archive_timestamp": "2006-04-02T00:00:00Z",
