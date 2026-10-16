@@ -112,6 +112,19 @@ class ProvenanceTests(unittest.TestCase):
         with self.assertRaises(MissingSourceError):
             require_provenance({"provenance": {"status": "TOTALLY VERIFIED", "sources": [{"x": 1}]}})
 
+    def test_strict_exporter_refuses_blank_description_or_missing_reference(self):
+        def rec(*sources):
+            return {"provenance": {"status": LABEL_MEASURED, "ground_verified": False, "sources": list(sources)}}
+
+        for bad in ({"description": "  ", "kind": "estimate", "reference": ""},
+                    {"description": "LiDAR tile", "kind": "measured", "reference": ""},
+                    {"description": "news report", "kind": "public_record"},
+                    {"description": "LiDAR tile", "kind": "measured", "reference": 12}):
+            with self.assertRaises(MissingSourceError, msg=bad):
+                require_provenance(rec(bad))
+        require_provenance(rec({"description": "LiDAR tile", "kind": "measured", "reference": "tile-7"},
+                               {"description": "soil density", "kind": "estimate", "reference": ""}))
+
     def test_require_provenance(self):
         with self.assertRaises(MissingSourceError):
             require_provenance({"latitude": 1.0})

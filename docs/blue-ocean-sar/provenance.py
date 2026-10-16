@@ -121,7 +121,25 @@ def require_provenance(record):
         raise MissingSourceError(f"refusing to export a location with malformed provenance: {problem}")
     if STRICT and not prov.get("sources"):
         raise MissingSourceError("refusing to export a location with no provenance attached")
+    # The shape check above accepts a blank description or a measured source
+    # with no reference, which DataSource.validate() refuses on the way in.
+    if STRICT:
+        for src in prov["sources"]:
+            problem = _strict_source_problem(src)
+            if problem:
+                raise MissingSourceError(f"refusing to export a location with an incomplete source: {problem}")
     return prov
+
+
+def _strict_source_problem(src):
+    """What DataSource.validate() would refuse in this exported source dict, or None."""
+    if not src["description"].strip():
+        return "a source has a blank description"
+    if src["kind"] in NEEDS_REFERENCE:
+        ref = src.get("reference")
+        if not isinstance(ref, str) or not ref.strip():
+            return f"{src['kind']} source {src['description']!r} has no reference (file path, URL or ID)"
+    return None
 
 
 STATUS_LABELS = (LABEL_SYNTHETIC, LABEL_ESTIMATE, LABEL_MEASURED, LABEL_UNSOURCED)
