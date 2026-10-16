@@ -151,7 +151,9 @@ else:
             ok = verify_run(args.output)
         else:
             ok = False
-    except (OSError, ValueError, KeyError, AttributeError):
+    # Original: except (OSError, ValueError, KeyError, AttributeError):
+    #   a ledger event that is a list or string raised TypeError and crashed verify.
+    except (OSError, ValueError, KeyError, AttributeError, TypeError, IndexError):
         # Missing or unreadable manifest, ledger or output artifact: not verified.
         ok = False
     print("VERIFIED" if ok else "FAILED")

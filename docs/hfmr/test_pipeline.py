@@ -102,6 +102,17 @@ class TestPipeline(unittest.TestCase):
                 self.assertTrue(verify_run(out))
                 self.assertEqual(run_cli("hfmr.__main__", ["verify", "--output", out]), 1)
 
+    def test_verify_malformed_ledger_event_fails_without_crashing(self):
+        with tempfile.TemporaryDirectory() as t:
+            out = Path(t) / "run"
+            out.mkdir()
+            (out / "manifest.json").write_text(json.dumps({"schema": "hfmr.run.v1"}))
+            for event in (["manifest_sha256"], "manifest_sha256"):
+                (out / "ledger.jsonl").unlink(missing_ok=True)
+                head = Ledger(out / "ledger.jsonl").append(event)
+                (out / "ledger_head.txt").write_text(head + "\n")
+                self.assertEqual(run_cli("hfmr.__main__", ["verify", "--output", out]), 1)
+
     def test_geojson_declares_projected_crs(self):
         with tempfile.TemporaryDirectory() as t:
             p = Path(t) / "input.csv"
