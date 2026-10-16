@@ -18,7 +18,10 @@ ALLOWED_HOSTS = {"arc.columbus.gov"}
 
 def _check_redirect(url):
     dest = urllib.parse.urlsplit(url)
-    if dest.scheme != "https" or dest.hostname not in ALLOWED_HOSTS:
+    # Original: if dest.scheme != "https" or dest.hostname not in ALLOWED_HOSTS:
+    #   any port on an allowlisted host was accepted; only the default HTTPS port is now,
+    #   matching acquire.validate_url.
+    if dest.scheme != "https" or dest.hostname not in ALLOWED_HOSTS or dest.port not in (None, 443):
         raise ValueError("Redirect rejected")
 
 

@@ -119,6 +119,9 @@ class ColumbusTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             redirect[0].redirect_request(req, None, 302, "Found", {}, "http://arc.columbus.gov/arcgis")
         self.assertIsNotNone(redirect[0].redirect_request(req, None, 302, "Found", {}, "https://arc.columbus.gov/b"))
+        with self.assertRaises(ValueError):
+            redirect[0].redirect_request(req, None, 302, "Found", {}, "https://arc.columbus.gov:8443/admin")
+        self.assertIsNotNone(redirect[0].redirect_request(req, None, 302, "Found", {}, "https://arc.columbus.gov:443/"))
 
     def test_host(self):
         with self.assertRaises(ValueError):
