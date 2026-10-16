@@ -58,6 +58,37 @@ function readSecretFile(p) {
   return fs.readFileSync(p, 'utf8').trim();
 }
 
+// Hosts like Railway can only inject secrets as environment variables. Move any
+// SHCI_* secret into a mode-600 file (the form loadConfig expects) and drop it
+// from the environment so workflow steps and act never inherit it.
+const ENV_SECRETS = {
+  SHCI_GITHUB_TOKEN: 'GITHUB_TOKEN_FILE',
+  SHCI_ADMIN_TOKEN: 'ADMIN_TOKEN_FILE',
+  SHCI_SECRETS: 'SECRETS_FILE',
+};
+
+function materializeEnvSecrets(env, dir) {
+  fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
+  for (const [from, to] of Object.entries(ENV_SECRETS)) {
+    if (!env[from] || env[to]) continue;
+    const file = path.join(dir, from.toLowerCase());
+    fs.writeFileSync(file, env[from].replace(/\\n/g, '\n') + '\n', { mode: 0o600 });
+    env[to] = file;
+    delete env[from];
+  }
+  return env;
+}
+
+// act reads GITHUB_TOKEN / GH_TOKEN from its own environment to download actions;
+// a stale or placeholder value there breaks every run. The real token reaches
+// workflows through --secret-file instead.
+function actEnv(env = process.env) {
+  const out = { ...env };
+  delete out.GITHUB_TOKEN;
+  delete out.GH_TOKEN;
+  return out;
+}
+
 function verifySignature(secret, rawBody, header) {
   if (!header || !header.startsWith('sha256=')) return false;
   const expected = Buffer.from('sha256=' + crypto.createHmac('sha256', secret).update(rawBody).digest('hex'));
@@ -351,7 +382,7 @@ async function runJob(cfg, gh, token, job, log = console) {
       result = await run(
         cfg.actBin,
         buildActArgs({ trigger: job.trigger, workflowFile: job.workflow.file, eventFile, secretFile, runnerImage: cfg.runnerImage }),
-        { cwd: checkout.dir, out, timeoutMs: cfg.jobTimeoutMs },
+        { cwd: checkout.dir, out, timeoutMs: cfg.jobTimeoutMs, env: actEnv() },
       );
     } finally {
       fs.closeSync(out);
@@ -488,6 +519,7 @@ async function makeRepoDirResolver(cfg, gh, token) {
 }
 
 async function main() {
+  materializeEnvSecrets(process.env, path.join(process.env.WORK_DIR || path.join(os.tmpdir(), 'self-hosted-ci'), 'secrets'));
   const cfg = loadConfig();
   fs.mkdirSync(cfg.logDir, { recursive: true });
   fs.mkdirSync(path.join(cfg.workDir, 'jobs'), { recursive: true });
@@ -502,6 +534,7 @@ async function main() {
 
 module.exports = {
   LOOP_PRONE_EVENTS,
+  actEnv,
   GitHubClient,
   Queue,
   buildActArgs,
@@ -509,6 +542,7 @@ module.exports = {
   createServer,
   globToRegExp,
   loadConfig,
+  materializeEnvSecrets,
   loadWorkflows,
   matchWorkflows,
   normalizeOn,
