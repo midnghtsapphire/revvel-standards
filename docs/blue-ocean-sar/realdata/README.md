@@ -476,3 +476,39 @@ Limits:
 - The method is deliberately strict, so faint or old burials will be missed.
 - It has not yet been run on a real stack of three or more 3DEP surveys.
 - St. Francisville has only one 1 m survey, so this cannot be run there.
+
+## Columbus public building and engineering records (`columbus_records.py`)
+
+This is the owner's `retriever.py`, ported and hardened. It queries the City
+of Columbus public ArcGIS MapServer (`gis.columbus.gov`). By default it uses
+the building (5) and engineering (22) layers; `--layer name=id` changes them,
+and `--list-layers` lists what the server offers. It searches for an address
+and a year range.
+
+- **Safe queries.** The where clause is built only from validated parts: a
+  street of letters, digits and spaces, a house number, years, and field
+  names taken from the server's own metadata.
+- **Paging.** It follows the server's `maxRecordCount` and
+  `exceededTransferLimit`. Truncated or incomplete results are flagged with
+  the reason.
+- **Raw evidence.** Every raw response, including error pages, is saved byte
+  for byte. The manifest chains the hashes:
+  chain_i = sha256(chain_{i-1} + sha256_i).
+- **Verification.** `--verify` detects edited, deleted or reordered files.
+  Keep the printed chain head somewhere else and pass it with
+  `--expect-head`.
+
+```sh
+python columbus_records.py --number 1546 --street HIGH --start 2000 --end 2010 --output evidence
+python columbus_records.py --verify evidence/run_<stamp> --expect-head <hex>
+python -m unittest test_columbus_records
+```
+
+Exit codes: 0 means complete; 1 means incomplete, truncated or a failed
+verify; 2 means bad input. The host is blocked from the build sandbox, so
+the tests use recorded responses. The real layer fields have not been
+confirmed yet.
+
+The address match keeps the original `LIKE '%number%street%'` pattern, so
+1546 can also match 15460. Review the results by hand. No results does not
+prove no construction took place.
