@@ -512,3 +512,40 @@ confirmed yet.
 The address match keeps the original `LIKE '%number%street%'` pattern, so
 1546 can also match 15460. Review the results by hand. No results does not
 prove no construction took place.
+
+## qPCR assay validation and quantification (`qpcr_assay.py`)
+
+This replaces the lab half of the uploaded `field_confirmation.py`. It follows
+MIQE (Bustin et al. 2009) and the eDNA LOD/LOQ approach of Forootan et al.
+(2017) and Klymus et al. (2020). It uses the standard library only and reads
+the same plate format as `qpcr_interpret.py`.
+
+- **Standard curve.** It fits Ct = slope x log10(copies) + intercept and
+  reports R^2, efficiency E = 10^(-1/slope) - 1 and standard errors. The
+  curve fails if efficiency is outside 90-110% or R^2 is below 0.98.
+- **LOD95.** It fits detection probability against log10(copies) by maximum
+  likelihood (logistic or probit), with a 95% CI. It says so when the assay
+  never reaches 95% detection, or when the data cannot support a fit.
+- **LOQ.** This is the lowest standard from which every higher level has a
+  coefficient of variation of 35% or less. The CV is computed from the
+  back-calculated copy numbers.
+- **Unknowns.** Copies per reaction come with a prediction interval.
+  Copies per gram = copies x (elution / template) x dilution / soil grams,
+  with every input given explicitly. Recovery from extraction is not
+  corrected for.
+- **Calls, in order.**
+  1. Contaminated NTC or blank, failed curve, inhibition, or discordant
+     replicates: `INCONCLUSIVE`. These are never reported as negative.
+  2. No amplification: `NOT_DETECTED` (cannot exclude presence below LOD).
+  3. Amplified, but below LOD95: `DETECTED_BELOW_LOD`.
+  4. Between LOD95 and the LOQ: `DETECTED_NOT_QUANTIFIABLE`.
+  5. At or above the LOQ: `QUANTIFIED`.
+
+```sh
+python qpcr_assay.py validate standards.csv
+python qpcr_assay.py quantify --standards standards.csv plate.csv --elution-ul 100 --template-ul 2 --soil-g 0.25
+python -m unittest test_qpcr_assay
+```
+
+Every result is labelled as an assay interpretation, not an identification.
+Sequencing is still needed to identify the source.
