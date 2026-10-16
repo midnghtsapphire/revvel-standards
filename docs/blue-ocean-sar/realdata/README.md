@@ -311,3 +311,38 @@ python -m unittest test_evidence_scoring test_usgs_gauges test_drift_envelope
 `fixtures/nwis_iv_synthetic_okanogan.json` has the layout of an NWIS IV
 response, but its numbers are made up for the tests. They are not gauge
 readings.
+
+## Search theory: coverage, POD and POA updates (`search_theory.py`)
+
+This script is built from the WiSAR field checklist and the Bayesian calculator
+workbook in `docs/case-files/general/`. It does the workbook's arithmetic from
+a segments CSV and adds three things the workbook leaves out:
+
+- **A Rest Of World segment.** A row named `ROW` holds the chance that the
+  person is outside every mapped segment. Without it, an unsuccessful search
+  pushes all of that probability onto the segments.
+- **Cumulative POD.** Repeated passes over a segment combine as
+  1 - (1 - POD1)(1 - POD2)...
+- **Input checks.** POA must sum to 1, areas must be positive and POD must
+  stay between 0 and 1.
+
+The formulas are the standard exponential detection model:
+
+- Coverage C = TTL x W / A, and POD = 1 - e^-C.
+- Probability density Pden = POA / A, and PSR = W x V x Pden. PSR ranks the
+  tasking.
+- After an unsuccessful round, POA' = POA x (1 - POD) / (1 - sum of POS).
+
+```sh
+python search_theory.py segments.csv --out result.json
+python search_theory.py segments.csv --passes passes.csv --add-factor 2 --out result.json
+python -m unittest test_search_theory
+```
+
+`segments.csv` has the columns `name, area_km2, poa`, and optionally
+`ttl_km, sweep_width_km, speed_kmh, pod`. `passes.csv` has one row per later
+pass: either `name, pod`, or `name, ttl_km` with `sweep_width_km` or `add_km`.
+
+The first POA is a judgement or a lost-person-behaviour prior. The update only
+moves that probability around, and the outputs are planning numbers. Bad input
+exits with code 2.
