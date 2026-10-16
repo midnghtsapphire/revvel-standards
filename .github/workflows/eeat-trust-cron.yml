@@ -60,7 +60,7 @@ jobs:
           node-version: "24"
       - name: Setup Python
         if: steps.quiet.outputs.active == 'true'
-        uses: actions/setup-python@v6.3.0
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       # Doppler fetch step removed 2026-07-09 — Doppler is decommissioned
