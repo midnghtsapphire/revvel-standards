@@ -1,0 +1,5 @@
+target_id,target_name,latitude,longitude,primary_anomaly_type,confidence_score_pct,spatial_derivation_methodology
+TD-001,Target Delta (Creek Catchment Cut-Bank),50.8782,-119.9075,Root-Bound Cut-Bank & Vegetation Nitrogen Spike,88,Bare-earth LiDAR DTM minus optical canopy + Multi-temporal NDVI chlorophyll flush analysis
+TA-001,Target Alpha (Burfield Party House Area),50.8766,-119.9127,Origin Point / Active Construction Foundation,88,Last Known Sighting (PLS) origin point cross-referenced with 2018 cadastral plans
+TB-001,Target Beta (632-Ft Forested Direct Corridor),50.8768,-119.9105,Dense Timber Canopy & Tree Well Voids,75,Straight-line 632-ft vector between PLS and residence overlaid with 2018 LiDAR point cloud
+TG-001,Target Gamma (Heffley-Louis Creek Logging Egress),50.835,-119.985,Isolated FSR Pullouts & Steep Embankments,91,Geographic profiling combining 3:00 AM 12-mile cell ping with BC TRIM logging road layers
