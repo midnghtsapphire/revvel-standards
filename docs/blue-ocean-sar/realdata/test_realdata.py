@@ -338,5 +338,82 @@ class Sentinel2Change(unittest.TestCase):
         self.assertLess(clusters[0]["mean_z"], -10)
 
 
+class RealtimeListener(unittest.TestCase):
+    """Runs the webhook server on a free local port; standard library only."""
+
+    def setUp(self):
+        import threading
+        import realtime_validation_listener as rl
+        self.tmp = tempfile.TemporaryDirectory()
+        self.db = os.path.join(self.tmp.name, "stage0.db")
+        self.srv = rl.make_server("127.0.0.1", 0, self.db)
+        self.url = f"http://127.0.0.1:{self.srv.server_port}/"
+        threading.Thread(target=self.srv.serve_forever, daemon=True).start()
+
+    def tearDown(self):
+        self.srv.shutdown()
+        self.srv.server_close()
+        self.tmp.cleanup()
+
+    def _post(self, body):
+        import json
+        import urllib.error
+        import urllib.request
+        req = urllib.request.Request(self.url, data=json.dumps(body).encode(), method="POST",
+                                     headers={"Content-Type": "application/json"})
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        try:
+            with opener.open(req, timeout=10) as r:
+                return r.status, json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            return e.code, json.loads(e.read())
+
+    def test_ingest_validate_and_dedupe(self):
+        import sqlite3
+        rec = {"source_origin": "manual_ingest", "archive_timestamp": "2006-04-02T00:00:00Z",
+               "source_identifier": "t-1", "raw_content": "seen near the river on April 2"}
+        code, body = self._post([rec])
+        self.assertEqual(code, 200)
+        self.assertEqual(body["results"][0]["status"], "ingested_and_validated")
+        self.assertIn("validation_status", body["results"][0])
+        code, body = self._post(rec)
+        self.assertEqual(body["results"][0]["status"], "duplicate_skipped")
+        with sqlite3.connect(self.db) as c:
+            n, unverified = c.execute("SELECT COUNT(*), SUM(verification_status = 'unverified') "
+                                      "FROM stage0_historical_records").fetchone()
+        self.assertEqual((n, unverified), (1, 0))
+
+    def test_unknown_source_origin_rejected_not_reported_as_duplicate(self):
+        rec = {"source_origin": "test", "archive_timestamp": "2006-04-02T00:00:00Z",
+               "source_identifier": "t-2", "raw_content": "x"}
+        code, body = self._post(rec)
+        self.assertEqual(code, 400)
+        self.assertIn("source_origin", body["message"])
+
+    def test_collector_raises_on_check_violation_instead_of_duplicate(self):
+        # Regression: save_record_to_db used to return False ("duplicate") for
+        # any IntegrityError, hiding CHECK-constraint rejections.
+        import sqlite3
+        import archive_collector_cli as ac
+        conn = ac.init_database(os.path.join(self.tmp.name, "direct.db"))
+        bad = ac.normalize_record("not_a_source", "2006-04-02T00:00:00Z", "id", "body")
+        with self.assertRaises(sqlite3.IntegrityError):
+            ac.save_record_to_db(conn, bad)
+        good = ac.normalize_record("manual_ingest", "2006-04-02T00:00:00Z", "id", "body")
+        self.assertTrue(ac.save_record_to_db(conn, good))
+        self.assertFalse(ac.save_record_to_db(conn, dict(good, record_id="other")))
+        conn.close()
+
+    def test_missing_fields_rejected_and_nothing_stored(self):
+        import sqlite3
+        code, body = self._post({"raw_content": "no source"})
+        self.assertEqual(code, 400)
+        if os.path.exists(self.db):
+            with sqlite3.connect(self.db) as c:
+                tables = c.execute("SELECT name FROM sqlite_master WHERE name='stage0_historical_records'").fetchall()
+                if tables:
+                    self.assertEqual(c.execute("SELECT COUNT(*) FROM stage0_historical_records").fetchone()[0], 0)
+
+
 if __name__ == "__main__":
     unittest.main()

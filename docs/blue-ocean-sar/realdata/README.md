@@ -17,6 +17,7 @@ registry, logs) are not committed; the scripts regenerate them.
 | `image_phash.py` | The hard-coded hashes in `image_comparison_features.csv` | Your actual image files | Yes (offline) |
 | `qpcr_interpret.py` | `edna_dna_forensic_engine.py` fixed read counts and match % | A lab's qPCR plate export | Yes (offline) |
 | `archive_collector_cli.py` | (your script, fixed) | Wayback CDX, USENET, local JSONL | Ingest yes; Wayback blocked here |
+| `realtime_validation_listener.py` | (your script, fixed: it imported a class and called a method that do not exist) | POSTed JSON records -> stage-0 DB -> Stage 2 gate; `realtime-listener.service` runs it under systemd | Yes (local) |
 | `stage2_validation_gate.py` | (your script, unchanged copy) | The stage-0 database | Yes |
 
 Fixes made to your scripts (the original lines are kept as comments):

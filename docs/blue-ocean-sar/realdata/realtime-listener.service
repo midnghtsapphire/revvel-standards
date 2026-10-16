@@ -1,0 +1,28 @@
+# systemd unit for realtime_validation_listener.py
+#
+# The uploaded unit started realtime_validation_listener-v3.py with
+# --alert-threshold and --alert-log, which the listener does not have, so it
+# would have failed on every start. Original line, kept for reference:
+# ExecStart=/usr/bin/python3 /opt/sar_realtime_listener/realtime_validation_listener-v3.py --port 8080 --alert-threshold 30.0 --db /opt/sar_realtime_listener/stage0_archive.db --alert-log /opt/sar_realtime_listener/realtime_alerts.json
+#
+# Copy realtime_validation_listener.py, archive_collector_cli.py and
+# stage2_validation_gate.py into /opt/sar_realtime_listener, create the
+# "sarlisten" user, then: systemctl enable --now realtime-listener
+
+[Unit]
+Description=Stage 0/2 Real-Time Ingestion & Validation Webhook Listener Service
+After=network.target
+
+[Service]
+Type=simple
+# Original ran as root; an unprivileged user is enough for port 8080.
+# User=root
+User=sarlisten
+WorkingDirectory=/opt/sar_realtime_listener
+ExecStart=/usr/bin/python3 /opt/sar_realtime_listener/realtime_validation_listener.py --host 127.0.0.1 --port 8080 --db /opt/sar_realtime_listener/stage0_archive.db
+Restart=always
+RestartSec=5
+SyslogIdentifier=sar-realtime-listener
+
+[Install]
+WantedBy=multi-user.target
