@@ -129,6 +129,11 @@ class CLI(unittest.TestCase):
         code, out, err = self.run_cli("import", led, "--into", self.log, "--operator", "Analyst")
         self.assertEqual(code, 0, out + err)
         self.assertEqual(len(core.EvidenceLog(self.log).read_entries()), 1)
+        # Review 2026-10-16: running the same import again (a retry) adds nothing and still exits 0.
+        code, out, err = self.run_cli("import", led, "--into", self.log, "--operator", "Analyst")
+        self.assertEqual(code, 0, out + err)
+        self.assertIn("already in", out)
+        self.assertEqual(len(core.EvidenceLog(self.log).read_entries()), 1)
 
     def test_runs_as_module_and_as_script(self):
         env = dict(os.environ, PYTHONPATH="")

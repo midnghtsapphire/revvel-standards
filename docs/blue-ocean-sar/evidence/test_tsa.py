@@ -12,6 +12,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -227,6 +228,20 @@ class TSARoundTrip(unittest.TestCase):
         self.assertEqual(info["hash_algorithm"].lower(), "sha256")
         self.assertIsNotNone(core.parse_aware(info["gen_time"]))
         self.assertFalse(res["verified_against_ca"])
+
+    def test_openssl_timeout_is_a_tsa_error_and_a_verify_problem(self):
+        # Review 2026-10-16: subprocess.TimeoutExpired used to escape both stamping and verification.
+        tsa.stamp_head(self.logdir, tsa_urls=["x"], cafile=self.tsa.cafile, transport=self.tsa.transport)
+        hang = subprocess.TimeoutExpired("openssl", 30)
+        with mock.patch.object(tsa.subprocess, "run", side_effect=hang):
+            with self.assertRaises(tsa.TSAError):
+                tsa.stamp_head(self.logdir, tsa_urls=["x"], transport=self.tsa.transport)
+            ok, msg = tsa.verify_reply("x.tsr", "ab" * 32, self.tsa.cafile)
+            self.assertFalse(ok)
+            self.assertIn("did not finish", msg)
+            rep = core.verify_log(self.logdir, tsa_cafile=self.tsa.cafile)
+        self.assertFalse(rep["ok"])
+        self.assertTrue(any("did not finish" in p for p in rep["problems"]), rep["problems"])
 
 
 if __name__ == "__main__":

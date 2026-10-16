@@ -126,13 +126,26 @@ def import_fetch_sidecars(directory, expect_head=None):
             continue
         body = meta.get("body_file")
         full = None
-        if body:
+        # Replaced (review 2026-10-16): a relative body_file could climb out with ../ or a symlink, and a
+        # sidecar with no body representation at all was reported as verified. fetch.py writes exactly one
+        # of body_file (a bare name, or an absolute path for a streamed download) and body_withheld.
+        if body and meta.get("body_withheld"):
+            rep["problems"].append(f"{name}: has both body_file and body_withheld; fetch.py writes one")
+        if body and not isinstance(body, str):
+            rep["problems"].append(f"{name}: body_file {body!r} is not a path")
+        elif body and not os.path.isabs(body) and (os.path.basename(body) != body or body in (".", "..")
+                                                   or os.path.islink(os.path.join(directory, body))):
+            rep["problems"].append(f"{name}: body_file {body!r} is not a plain file in the evidence dir "
+                                   "(path or symlink escapes it)")
+        elif body:
             full = body if os.path.isabs(body) else os.path.join(directory, body)
             if os.path.isabs(body):
                 rep["notes"].append(f"{name}: body_file is an absolute path outside the evidence dir ({body})")
             _check_content(rep, name, full, meta.get("sha256"), meta.get("bytes"))
         elif meta.get("body_withheld"):
             rep["notes"].append(f"{name}: body withheld (contained a secret); only its sha256 exists")
+        else:
+            rep["problems"].append(f"{name}: neither body_file nor body_withheld; the captured bytes are missing")
         rep["records"].append(_record(None, meta.get("fetched_at_utc"), meta.get("final_url") or meta.get("url"),
                                       meta.get("sha256"), meta.get("bytes"), full, meta, meta.get("status")))
     rep["records"].sort(key=lambda r: (str(r["utc"]), r["sha256"] or ""))
@@ -158,11 +171,35 @@ def _rust_hash(entry):
     return core.sha256_hex(json.dumps(body, separators=(",", ":"), ensure_ascii=False).encode("utf-8"))
 
 
+# Added (review 2026-10-16): the evidence.rs field types, so a line serde would refuse is not "verified".
+RUST_TYPES = {"seq": "u64", "utc": "str", "method": "str", "url": "str", "final_url": "str", "status": "u16",
+              "request_body_sha256": "opt_str", "sha256": "str", "bytes": "u64", "file": "str",
+              "prev_hash": "str", "entry_hash": "str"}
+
+
+def _rust_type_ok(value, kind):
+    if kind == "str":
+        return isinstance(value, str)
+    if kind == "opt_str":
+        return value is None or isinstance(value, str)
+    limit = 0xFFFF if kind == "u16" else 2 ** 64 - 1
+    return isinstance(value, int) and not isinstance(value, bool) and 0 <= value <= limit
+
+
 def import_rust_manifest(directory, expect_head=None):
     rep = _report("rust-manifest", directory)
     path = os.path.join(directory, "manifest.jsonl")
     prev, listed = GENESIS, set()
     for lineno, e in _read_jsonl(path, rep):
+        # Replaced (review 2026-10-16): a non-object line crashed the importer; it is now a problem.
+        if not isinstance(e, dict):
+            rep["problems"].append(f"line {lineno}: not a JSON object")
+            rep["count"] += 1
+            continue
+        bad = [k for k, kind in RUST_TYPES.items() if k in e and not _rust_type_ok(e[k], kind)]
+        if bad:
+            rep["problems"].append(f"line {lineno}: fields {bad} do not have the evidence.rs types "
+                                   "(integers, strings; no floats, booleans or NaN)")
         if set(e) != set(RUST_FIELDS) | {"entry_hash"}:
             rep["problems"].append(f"line {lineno}: fields {sorted(e)} are not the evidence.rs fields")
         if e.get("seq") != rep["count"]:
@@ -252,6 +289,11 @@ def import_ring_manifest(directory, expect_head=None):
     rep = _report("ring-manifest", directory)
     prev, listed = GENESIS, set()
     for lineno, rec in _read_jsonl(os.path.join(directory, "manifest.jsonl"), rep):
+        # Replaced (review 2026-10-16): a non-object line crashed the importer; it is now a problem.
+        if not isinstance(rec, dict):
+            rep["problems"].append(f"line {lineno}: not a JSON object")
+            rep["count"] += 1
+            continue
         label = f"line {lineno} (event {rec.get('event_id')})"
         if rec.get("prev_hash") != prev:
             rep["problems"].append(f"{label}: prev_hash does not match the previous chain_hash")
@@ -415,27 +457,64 @@ def import_any(path, fmt=None, expect_head=None):
     return IMPORTERS[fmt](path, expect_head=expect_head)
 
 
+def _import_key(extra):
+    """What identifies one imported legacy record: the set, its head, its position and its full content."""
+    fields = ("legacy_format", "legacy_path", "legacy_head", "legacy_seq", "legacy_entry")
+    return core.canonical({k: extra.get(k) for k in fields})
+
+
+def _imported_keys(log, report):
+    keys = set()
+    for e in log.read_entries():
+        extra = e.get("extra") if isinstance(e.get("extra"), dict) else {}
+        same_set = extra.get("legacy_path") == report["path"]
+        if same_set and str(e.get("kind", "")).startswith(f"import:{report['format']}"):
+            keys.add(_import_key(extra))
+    return keys
+
+
 def to_evidence_log(report, log):
     """Copy a verified legacy set into a shared EvidenceLog. Returns the new entries.
 
     The capture time of each new entry is the import time; the legacy time is
     kept only as a claim inside `extra`, with the legacy record and head, so the
     import itself is hashed and (if the log is signed) signed.
+
+    Records an earlier, interrupted run already imported are skipped (counted
+    in report["already_imported"]), so re-running after a failure resumes.
     """
     if not report["verified"]:
         raise core.EvidenceError(f"refusing to import a {report['format']} set that does not verify: "
                                  + "; ".join(report["problems"][:5]))
+    # Added (review 2026-10-16): check every file before the first append, so a changed or missing source
+    # fails the import with nothing written; and skip records an interrupted earlier run already imported,
+    # so a retry resumes instead of importing them twice.
+    for r in report["records"]:
+        if r["file"] and r["sha256"]:
+            if not os.path.isfile(r["file"]):
+                raise core.EvidenceError(f"{r['file']} is gone since it was verified; nothing was imported")
+            if _sha_file(r["file"])[0] != r["sha256"]:
+                raise core.EvidenceError(f"{r['file']} changed since it was verified; nothing was imported")
+    done = _imported_keys(log, report)
+    report["already_imported"] = 0
     out = []
     for r in report["records"]:
         extra = {"legacy_format": report["format"], "legacy_path": report["path"], "legacy_seq": r["seq"],
                  "legacy_head": report["head"], "legacy_utc_claim": r["utc"], "legacy_entry": r["legacy"],
                  "legacy_lacks": sorted({x["guarantee"] for x in report["lacks"]})}
+        if _import_key(extra) in done:
+            report["already_imported"] += 1
+            continue
         kind = f"import:{report['format']}"
         if r["file"] and os.path.isfile(r["file"]):
-            e = log.append(path=r["file"], kind=kind, source=str(r["source"]), status=r["status"], extra=extra)
-            if r["sha256"] and e["sha256"] != r["sha256"]:
-                raise core.EvidenceError(f"{r['file']} changed while it was being imported "
-                                         f"(seq {e['seq']} now records sha256 {e['sha256']})")
+            # e = log.append(path=r["file"], kind=kind, source=str(r["source"]), status=r["status"], extra=extra)
+            # if r["sha256"] and e["sha256"] != r["sha256"]:
+            #     raise core.EvidenceError(f"{r['file']} changed while it was being imported "
+            #                              f"(seq {e['seq']} now records sha256 {e['sha256']})")
+            # Replaced (review 2026-10-16): the old check ran after the entry was committed; expect_sha256
+            # makes append refuse the changed bytes before anything is stored or logged.
+            e = log.append(path=r["file"], kind=kind, source=str(r["source"]), status=r["status"], extra=extra,
+                           expect_sha256=r["sha256"] or None)
             out.append(e)
         else:
             out.append(log.append(core.canonical(r["legacy"]), kind=kind + ":record", source=str(r["source"]),

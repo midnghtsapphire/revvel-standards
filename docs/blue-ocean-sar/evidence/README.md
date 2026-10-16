@@ -80,11 +80,17 @@ Each entry holds:
 | `key_id` | SHA-256 of the signer's raw public key, or `null` for an unsigned log |
 | `prev_hash` | the previous entry's `entry_hash` (64 zeros for the first) |
 | `entry_hash` | SHA-256 of the canonical JSON of every field above |
-| `signature` | Ed25519 over `entry_hash`, base64, or `null` |
+| `signature` | Ed25519, base64, or `null`; see the signed message below |
 
 Canonical JSON means sorted keys, no whitespace, UTF-8 and no NaN. Each line on
 disk must be exactly the canonical form, so even a re-serialised line is
 flagged.
+
+The signed message is not the hex `entry_hash` text. It is a 24-byte domain
+prefix (the ASCII text `revvel-evidence/1 entry` and one zero byte), then the 32 raw
+bytes of `entry_hash` (the hex decoded). In Python that is
+`b"revvel-evidence/1 entry\x00" + bytes.fromhex(entry_hash)`. Another
+implementation must sign and verify exactly these 56 bytes.
 
 Stored file names are `<seq>_<sha256>.bin`. `seq` is assigned under a file
 lock, so two captures in the same second (even of identical bytes) get
@@ -209,8 +215,13 @@ Then verify with `--expect-head` (or the token) in court mode.
 `import` re-verifies an older evidence set by that format's own rule, reads the
 bytes from disk, and lists which guarantees it lacks. Add `--into DIR` to copy a
 verified set into a shared log. Each legacy entry, its claimed time and the
-legacy head are kept in `extra`, and the new entry is hashed and signed. A set
-that fails verification is never imported.
+legacy head are kept in `extra`, and the new entry is hashed. It is signed only
+when you pass `--key`; without it `--into` writes an unsigned log (or refuses to
+extend a signed one). A set that fails verification is never imported. Every
+file is re-hashed before the first entry is written, so a file that changed
+since verification stops the import with nothing written. If an import is
+interrupted, run the same command again: records already in the log are
+skipped, not imported twice.
 
 ```bash
 python3 -m evidence import realdata/out/run_20261016T120000Z --expect-head <head>

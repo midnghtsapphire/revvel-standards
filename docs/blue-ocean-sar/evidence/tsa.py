@@ -44,7 +44,14 @@ def _openssl():
 
 
 def _ossl(args, timeout=30, input_bytes=None):
-    p = subprocess.run([_openssl()] + args, input=input_bytes, capture_output=True, timeout=timeout, check=False)
+    # p = subprocess.run([_openssl()] + args, input=input_bytes, capture_output=True, timeout=timeout,
+    #                    check=False)
+    # Replaced (review 2026-10-16): a timeout escaped as TimeoutExpired instead of the documented TSAError.
+    try:
+        p = subprocess.run([_openssl()] + args, input=input_bytes, capture_output=True, timeout=timeout,
+                           check=False)
+    except subprocess.TimeoutExpired:
+        raise TSAError(f"openssl {' '.join(args[:2])} did not finish within {timeout}s")
     return p.returncode, p.stdout.decode("utf-8", "replace"), p.stderr.decode("utf-8", "replace")
 
 
@@ -131,7 +138,12 @@ def verify_reply(tsr_path, digest_hex, cafile, *, queryfile=None, untrusted=None
     args += ["-queryfile", queryfile] if queryfile else ["-digest", digest_hex]
     if untrusted:
         args += ["-untrusted", untrusted]
-    rc, out, err = _ossl(args)
+    # rc, out, err = _ossl(args)
+    # Replaced (review 2026-10-16): an openssl failure to run is a failed verification, not an exception.
+    try:
+        rc, out, err = _ossl(args)
+    except TSAError as exc:
+        return False, str(exc)
     msg = (out + err).strip()
     return rc == 0 and "Verification: OK" in out, msg
 

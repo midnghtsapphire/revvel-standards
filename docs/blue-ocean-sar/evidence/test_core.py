@@ -456,5 +456,80 @@ class HTTPSCapture(Base):
             core.fetch_https("http://example.org/")
 
 
+class ReviewRegressions(Base):
+    """Review 2026-10-16: an append must not extend a log that would fail verify."""
+
+    def _rewrite(self, edit_first, sign_rest=True):
+        out, prev = [], core.GENESIS
+        for i, raw in enumerate(self.lines()):
+            e = json.loads(raw)
+            if i == 0:
+                edit_first(e)
+            e["prev_hash"] = prev
+            e["entry_hash"] = core.entry_hash(e)
+            if i > 0 and sign_rest:
+                e["signature"] = core.sign_hash(self.key, e["entry_hash"])
+            prev = e["entry_hash"]
+            out.append(core.canonical(e))
+        self.write_lines(out)
+
+    def _append_signed(self):
+        return core.EvidenceLog(self.dir, operator="Op", private_key=self.key, clock=_clock).append(
+            b"x", kind="note", source="s")
+
+    def test_mixed_log_with_matching_tail_is_not_extended(self):
+        self.make(n=2)
+        self._rewrite(lambda e: e.update(key_id=None, signature=None))
+        self.assertFails(self.verify(public_key=self.pubkey), "mixes signed and unsigned")
+        with self.assertRaises(core.EvidenceError):
+            self._append_signed()
+        self.assertEqual(len(self.lines()), 2)
+
+    def test_bad_signature_under_the_right_key_is_not_extended(self):
+        self.make(n=2)
+        lines = self.lines()
+        e = json.loads(lines[0])
+        e["signature"] = core.sign_hash(self.key, "00" * 32)
+        self.write_lines([core.canonical(e)] + lines[1:])
+        with self.assertRaises(core.EvidenceError):
+            self._append_signed()
+
+    def test_reserialised_log_is_not_extended(self):
+        self.make(n=2, signed=False)
+        lines = self.lines()
+        pretty = json.dumps(json.loads(lines[0]), indent=1).replace("\n", " ").encode()
+        self.write_lines([pretty] + lines[1:])
+        with self.assertRaises(core.EvidenceError) as cm:
+            core.EvidenceLog(self.dir, operator="Op", clock=_clock).append(b"x", kind="note", source="s")
+        self.assertIn("canonical", str(cm.exception))
+        self.assertEqual(len(self.lines()), 2)
+
+    def test_repeated_appends_still_verify(self):
+        log = core.EvidenceLog(self.dir, operator="Op", private_key=self.key, clock=_clock)
+        for i in range(4):
+            log.append(f"n{i}".encode(), kind="note", source="s")
+        self.assertTrue(self.verify(public_key=self.pubkey)["ok"])
+
+    def test_symlinked_object_fails_verification(self):
+        self.make(n=1)
+        e = json.loads(self.lines()[0])
+        inside = os.path.join(self.dir, e["file"])
+        outside = os.path.join(self.tmp, "outside.bin")
+        shutil.copyfile(inside, outside)
+        os.chmod(inside, 0o600)
+        os.remove(inside)
+        os.symlink(outside, inside)
+        self.assertFails(self.verify(public_key=self.pubkey), "is a symlink")
+
+    def test_expect_sha256_refuses_before_anything_is_written(self):
+        log = core.EvidenceLog(self.dir, operator="Op", clock=_clock)
+        with self.assertRaises(core.EvidenceError):
+            log.append(b"changed", kind="note", source="s", expect_sha256=core.sha256_hex(b"original"))
+        self.assertEqual(log.read_entries(), [])
+        self.assertEqual(os.listdir(os.path.join(self.dir, core.OBJECTS_DIR)), [])
+        e = log.append(b"original", kind="note", source="s", expect_sha256=core.sha256_hex(b"original"))
+        self.assertEqual(e["seq"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()
