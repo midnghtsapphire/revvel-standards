@@ -5,12 +5,23 @@ Stage 2 Validation Gate: Ground-Truth Cross-Examination Engine
 Cross-examines unindexed historical archive records (from Stage 0 ingestion)
 against verified official police search logs, cleared sectors, and established
 case facts before any spatial or predictive pipeline execution.
+
+Ground truth is case-specific. The gate only judges records against the
+ground truth it is given (--ground-truth FILE, or --use-shaffer-default for an
+archive that holds only Brian Shaffer / Columbus 2006 records). With none, it
+abstains: records stay 'unverified' with a reason saying why, so they can be
+judged later against the right case.
+
+A keyword only counts as a claim when its sentence is affirmative. Mentions in
+negated or search-report sentences ("searched the dirt pile and found
+nothing") are kept as speculative rather than debunked or corroborated.
 """
 
 import sqlite3
 import json
 import argparse
 import logging
+import re
 # from typing import Dict, List, Any, Tuple  # original; List was unused
 from typing import Dict, Any, Tuple
 from datetime import datetime
@@ -52,15 +63,29 @@ DEFAULT_VERIFIED_GROUND_TRUTH = {
             "gap_id": "SERVICE_HALLWAY_CONSTRUCTION_EXIT",
             "description": "Unmonitored service exit leading to rear construction area without direct camera coverage",
             "status": "UNMONITORED_EGRESS_ROUTE",
+            # Phrases that name this gap. The original check hard-coded "service door",
+            # "construction exit" and "blind spot" for every gap, whatever the gap was.
+            "keywords": ["service door", "service exit", "service hallway", "construction exit"],
         }
     ],
 }
+
+ABSTAIN_REASON = (
+    "No case-specific ground truth supplied; not judged. Run the gate with the ground truth for this "
+    "record's case (--ground-truth FILE, or --use-shaffer-default for a Shaffer-only archive)."
+)
+# A keyword in a sentence with one of these is not an affirmative claim about the place.
+NEGATION_RE = re.compile(r"\b(no|not|never|nothing|none|nobody|neither|nor|cannot|ruled out|searched|cleared)\b|n't\b")
+SENTENCE_RE = re.compile(r"[.!?;\n]+")
 
 
 class Stage2ValidationGate:
     def __init__(self, db_path: str, ground_truth_data: Dict[str, Any] = None):
         self.db_path = db_path
-        self.ground_truth = ground_truth_data or DEFAULT_VERIFIED_GROUND_TRUTH
+        # Original: every gate fell back to the Shaffer logs, so records from any
+        # other case were judged against Columbus 2006 search sectors.
+        # self.ground_truth = ground_truth_data or DEFAULT_VERIFIED_GROUND_TRUTH
+        self.ground_truth = ground_truth_data
         self._init_validation_table()
 
     def _get_connection(self) -> sqlite3.Connection:
@@ -85,7 +110,9 @@ class Stage2ValidationGate:
         Cross-references all 'unverified' records in stage0_historical_records against
         official cleared search sectors.
         """
-        stats = {"processed": 0, "debunked": 0, "corroborated": 0, "flagged_speculative": 0, "details": []}
+        # stats = {"processed": 0, "debunked": 0, "corroborated": 0, "flagged_speculative": 0, "details": []}
+        stats = {"processed": 0, "debunked": 0, "corroborated": 0, "flagged_speculative": 0, "abstained": 0,
+                 "details": []}
 
         with self._get_connection() as conn:
             cursor = conn.cursor()
@@ -96,12 +123,18 @@ class Stage2ValidationGate:
                 stats["processed"] += 1
                 rec_id = record["record_id"]
                 content = record["raw_content"].lower()
-                status, reason = self._examine_content(content)
+                # status, reason = self._examine_content(content)
+                if self.ground_truth is None:
+                    status, reason = "unverified", ABSTAIN_REASON
+                else:
+                    status, reason = self._examine_content(content)
 
                 if status == "debunked_by_official_log":
                     stats["debunked"] += 1
                 elif status == "corroborated_by_log":
                     stats["corroborated"] += 1
+                elif status == "unverified":
+                    stats["abstained"] += 1
                 else:
                     stats["flagged_speculative"] += 1
 
@@ -129,25 +162,58 @@ class Stage2ValidationGate:
             conn.commit()
 
         logging.info(
-            f"Stage 2 Validation Complete: {stats['processed']} records evaluated. ({stats['debunked']} debunked, {stats['flagged_speculative']} speculative, {stats['corroborated']} corroborated)"  # noqa: E501
+            f"Stage 2 Validation Complete: {stats['processed']} records evaluated. ({stats['debunked']} debunked, {stats['flagged_speculative']} speculative, {stats['corroborated']} corroborated, {stats['abstained']} not judged: no ground truth)"  # noqa: E501
         )
         return stats
 
+    @staticmethod
+    def _find_claim(content: str, phrases) -> Tuple[str, str]:
+        """(affirmative_phrase, mentioned_phrase): the first phrase used in a
+        sentence with no negation/search-report cue, and the first phrase seen
+        at all. Either may be None."""
+        mentioned = None
+        for sentence in SENTENCE_RE.split(content):
+            for kw in phrases:
+                if kw.lower() in sentence:
+                    if not NEGATION_RE.search(sentence):
+                        return kw, kw
+                    mentioned = mentioned or kw
+        return None, mentioned
+
     def _examine_content(self, content: str) -> Tuple[str, str]:
         """Evaluates content against cleared search sectors and verified facts."""
+        ambiguous = []
         # 1. Check against cleared sectors
+        # Original: any mention of a keyword counted as a claim, so "searched the dirt
+        # pile and found nothing" was stored as debunked.
+        # for sector in self.ground_truth.get("cleared_sectors", []):
+        #     for kw in sector["keywords"]:
+        #         if kw in content:
         for sector in self.ground_truth.get("cleared_sectors", []):
-            for kw in sector["keywords"]:
-                if kw in content:
-                    reason = f"Claims location/method ({kw}) in cleared sector '{sector['sector_id']}', physically inspected and cleared by {sector['cleared_by']} on {sector['cleared_date']}."  # noqa: E501
-                    return "debunked_by_official_log", reason
+            kw, seen = self._find_claim(content, sector["keywords"])
+            if seen and not kw:
+                ambiguous.append(seen)
+            if kw:
+                reason = f"Claims location/method ({kw}) in cleared sector '{sector['sector_id']}', physically inspected and cleared by {sector['cleared_by']} on {sector['cleared_date']}."  # noqa: E501
+                return "debunked_by_official_log", reason
 
         # 2. Check if it references verified gaps without contradicting cleared areas
+        # Original: the same three global phrases for every gap, whatever the gap.
+        # for gap in self.ground_truth.get("verified_unmonitored_gaps", []):
+        #     if "service door" in content or "construction exit" in content or "blind spot" in content:
         for gap in self.ground_truth.get("verified_unmonitored_gaps", []):
-            if "service door" in content or "construction exit" in content or "blind spot" in content:
+            kw, seen = self._find_claim(content, gap.get("keywords", []))
+            if seen and not kw:
+                ambiguous.append(seen)
+            if kw:
                 reason = f"References verified unmonitored egress route ({gap['gap_id']}) without contradicting cleared search perimeters."  # noqa: E501
                 return "corroborated_by_log", reason
 
+        if ambiguous:
+            return (
+                "flagged_speculative",
+                f"Mentions {', '.join(ambiguous)} only in a negated or search-report sentence; not read as a claim.",
+            )
         # 3. Default for unverified historical claims
         return (
             "flagged_speculative",
@@ -182,14 +248,31 @@ class Stage2ValidationGate:
             logging.info(f"Audit report saved to {output_file}")
 
 
+def load_ground_truth(args):
+    if args.ground_truth and args.use_shaffer_default:
+        raise SystemExit("use --ground-truth or --use-shaffer-default, not both")
+    if args.ground_truth:
+        with open(args.ground_truth, encoding="utf-8") as f:
+            return json.load(f)
+    if args.use_shaffer_default:
+        return DEFAULT_VERIFIED_GROUND_TRUTH
+    logging.warning("No ground truth given: records are left unverified (see --help).")
+    return None
+
+
 def main():
     parser = argparse.ArgumentParser(description="Stage 2 Validation Gate: Ground-Truth Cross-Examination Engine")
     parser.add_argument("--db", required=True, help="Path to Stage 0 SQLite database")
     parser.add_argument("--run-validation", action="store_true", help="Execute validation pass on unverified records")
     parser.add_argument("--export-report", help="Export audit report to specified JSON file")
+    parser.add_argument("--ground-truth", help="JSON file with the case's cleared_sectors / verified_unmonitored_gaps")
+    parser.add_argument("--use-shaffer-default", action="store_true",
+                        help="judge every unverified record against the built-in Shaffer (Columbus 2006) logs; "
+                             "only for an archive holding that case alone")
     args = parser.parse_args()
 
-    gate = Stage2ValidationGate(db_path=args.db)
+    # gate = Stage2ValidationGate(db_path=args.db)
+    gate = Stage2ValidationGate(db_path=args.db, ground_truth_data=load_ground_truth(args))
 
     if args.run_validation:
         gate.validate_records()

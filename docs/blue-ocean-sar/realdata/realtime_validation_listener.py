@@ -21,13 +21,23 @@ Changes from the uploaded version (originals kept as comments below):
   * It listened on all interfaces; the default is now 127.0.0.1 (--host to
     change it).
   * Request bodies over 1 MiB and records missing required fields get 400.
+  * The Stage 2 gate gets no ground truth unless one is given
+    (--ground-truth FILE or --use-shaffer-default); without it records stay
+    'unverified' instead of being judged against another case's search logs.
+  * A non-loopback --host needs a bearer token (environment variable
+    SAR_LISTENER_TOKEN, never on the command line) and a TLS certificate
+    (--tls-cert/--tls-key); otherwise it refuses to start. With a token set,
+    POSTs without "Authorization: Bearer <token>" get 401.
 """
 
 import argparse
+import hmac
+import ipaddress
 import json
 import logging
 import os
 import sqlite3
+import ssl
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -45,7 +55,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 # except ImportError as e:
 #     logging.warning(f"Module import warning: {e}. Will attempt relative imports if running standalone.")
 from archive_collector_cli import init_database, normalize_record, save_record_to_db  # noqa: E402
-from stage2_validation_gate import Stage2ValidationGate  # noqa: E402
+from stage2_validation_gate import DEFAULT_VERIFIED_GROUND_TRUTH, Stage2ValidationGate  # noqa: E402
 
 MAX_BODY_BYTES = 1024 * 1024
 REQUIRED_FIELDS = ("source_origin", "archive_timestamp", "source_identifier", "raw_content")
@@ -53,7 +63,17 @@ REQUIRED_FIELDS = ("source_origin", "archive_timestamp", "source_identifier", "r
 SOURCE_ORIGINS = ("wayback_cdx", "usenet_nntp", "git_history", "forum_archive", "darkweb_index", "manual_ingest")
 
 
-def ingest_records(db_path, records):
+def _is_loopback(host):
+    if host == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
+
+
+# def ingest_records(db_path, records):
+def ingest_records(db_path, records, ground_truth=None):
     """Store records and run Stage 2 once. Returns per-record results plus
     the gate's statistics."""
     for r in records:
@@ -74,7 +94,8 @@ def ingest_records(db_path, records):
                             "status": "ingested" if stored else "duplicate_skipped"})
     finally:
         conn.close()
-    stats = Stage2ValidationGate(db_path).validate_records()
+    # stats = Stage2ValidationGate(db_path).validate_records()
+    stats = Stage2ValidationGate(db_path, ground_truth).validate_records()
     by_id = {d["record_id"]: d for d in stats["details"]}
     for res in results:
         d = by_id.get(res["record_id"])
@@ -82,11 +103,15 @@ def ingest_records(db_path, records):
             res["status"] = "ingested_and_validated"
             res["validation_status"] = d["assigned_status"]
             res["validation_reason"] = d["reason"]
-    return results, {k: stats[k] for k in ("processed", "debunked", "corroborated", "flagged_speculative")}
+    # return results, {k: stats[k] for k in ("processed", "debunked", "corroborated", "flagged_speculative")}
+    return results, {k: stats[k] for k in ("processed", "debunked", "corroborated", "flagged_speculative",
+                                           "abstained")}
 
 
 class RealtimeWebhookHandler(BaseHTTPRequestHandler):
     db_path = "stage0_archive.db"
+    ground_truth = None
+    token = None
 
     def _reply(self, code, body):
         data = json.dumps(body, indent=2).encode("utf-8")
@@ -97,7 +122,19 @@ class RealtimeWebhookHandler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_POST(self):
-        content_length = int(self.headers.get("Content-Length", 0))
+        if self.token and not hmac.compare_digest(self.headers.get("Authorization", ""), f"Bearer {self.token}"):
+            self._reply(401, {"status": "error", "message": "missing or wrong bearer token"})
+            return
+        # Original: a non-integer Content-Length raised a traceback and a negative
+        # one slipped past the size limit.
+        # content_length = int(self.headers.get("Content-Length", 0))
+        try:
+            content_length = int(self.headers.get("Content-Length", 0))
+        except ValueError:
+            content_length = -1
+        if content_length < 0:
+            self._reply(400, {"status": "error", "message": "invalid Content-Length"})
+            return
         if content_length > MAX_BODY_BYTES:
             self._reply(400, {"status": "error", "message": "body too large"})
             return
@@ -112,7 +149,8 @@ class RealtimeWebhookHandler(BaseHTTPRequestHandler):
             #     ingested = ingestion_engine.ingest_record(record)
             #     if ingested:
             #         validation_res = validation_gate.run_validation_pass()
-            results, stats = ingest_records(self.db_path, records)
+            # results, stats = ingest_records(self.db_path, records)
+            results, stats = ingest_records(self.db_path, records, self.ground_truth)
             self._reply(200, {"status": "success", "processed_count": len(results),
                               "results": results, "validation": stats})
         except (ValueError, json.JSONDecodeError, sqlite3.Error) as e:
@@ -124,14 +162,29 @@ class RealtimeWebhookHandler(BaseHTTPRequestHandler):
                           "status": "active", "db_path": self.db_path})
 
 
-def make_server(host="127.0.0.1", port=8080, db_path="stage0_archive.db"):
+# def make_server(host="127.0.0.1", port=8080, db_path="stage0_archive.db"):
+def make_server(host="127.0.0.1", port=8080, db_path="stage0_archive.db", ground_truth=None, token=None,
+                tls_cert=None, tls_key=None):
+    if not _is_loopback(host) and not (token and tls_cert):
+        raise ValueError(f"refusing to listen on {host}: a non-loopback bind needs SAR_LISTENER_TOKEN "
+                         "and --tls-cert, or the write endpoint is open to anyone who can reach it")
     RealtimeWebhookHandler.db_path = db_path
+    RealtimeWebhookHandler.ground_truth = ground_truth
+    RealtimeWebhookHandler.token = token
     # Original bound every interface: server_address = ("", port)
-    return HTTPServer((host, port), RealtimeWebhookHandler)
+    # return HTTPServer((host, port), RealtimeWebhookHandler)
+    httpd = HTTPServer((host, port), RealtimeWebhookHandler)
+    if tls_cert:
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ctx.load_cert_chain(tls_cert, tls_key)
+        httpd.socket = ctx.wrap_socket(httpd.socket, server_side=True)
+    return httpd
 
 
-def run_listener(host="127.0.0.1", port=8080, db_path="stage0_archive.db"):
-    httpd = make_server(host, port, db_path)
+# def run_listener(host="127.0.0.1", port=8080, db_path="stage0_archive.db"):
+#     httpd = make_server(host, port, db_path)
+def run_listener(host="127.0.0.1", port=8080, db_path="stage0_archive.db", **server_kw):
+    httpd = make_server(host, port, db_path, **server_kw)
     logging.info(f"Listening on {host}:{httpd.server_port} using DB: {db_path}")
     try:
         httpd.serve_forever()
@@ -146,5 +199,18 @@ if __name__ == "__main__":
     parser.add_argument("--host", default=os.environ.get("HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8080")))
     parser.add_argument("--db", default=os.environ.get("DB_PATH", "stage0_archive.db"))
+    parser.add_argument("--ground-truth", help="case ground-truth JSON for the Stage 2 gate")
+    parser.add_argument("--use-shaffer-default", action="store_true",
+                        help="judge records against the built-in Shaffer logs (Shaffer-only archives)")
+    parser.add_argument("--tls-cert", help="PEM certificate; required with a non-loopback --host")
+    parser.add_argument("--tls-key", help="PEM private key for --tls-cert")
     args = parser.parse_args()
-    run_listener(args.host, args.port, args.db)
+    gt = None
+    if args.ground_truth:
+        with open(args.ground_truth, encoding="utf-8") as f:
+            gt = json.load(f)
+    elif args.use_shaffer_default:
+        gt = DEFAULT_VERIFIED_GROUND_TRUTH
+    # run_listener(args.host, args.port, args.db)
+    run_listener(args.host, args.port, args.db, ground_truth=gt, token=os.environ.get("SAR_LISTENER_TOKEN"),
+                 tls_cert=args.tls_cert, tls_key=args.tls_key)

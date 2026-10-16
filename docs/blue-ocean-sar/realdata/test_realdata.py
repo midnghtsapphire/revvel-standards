@@ -382,7 +382,10 @@ class RealtimeListener(unittest.TestCase):
         import realtime_validation_listener as rl
         self.tmp = tempfile.TemporaryDirectory()
         self.db = os.path.join(self.tmp.name, "stage0.db")
-        self.srv = rl.make_server("127.0.0.1", 0, self.db)
+        # Original: the gate fell back to the Shaffer logs on its own; it now needs them passed in.
+        # self.srv = rl.make_server("127.0.0.1", 0, self.db)
+        import stage2_validation_gate as sg
+        self.srv = rl.make_server("127.0.0.1", 0, self.db, ground_truth=sg.DEFAULT_VERIFIED_GROUND_TRUTH)
         self.url = f"http://127.0.0.1:{self.srv.server_port}/"
         threading.Thread(target=self.srv.serve_forever, daemon=True).start()
 
@@ -449,6 +452,105 @@ class RealtimeListener(unittest.TestCase):
                 tables = c.execute("SELECT name FROM sqlite_master WHERE name='stage0_historical_records'").fetchall()
                 if tables:
                     self.assertEqual(c.execute("SELECT COUNT(*) FROM stage0_historical_records").fetchone()[0], 0)
+
+    def _raw_post(self, body=b"{}", headers=None):
+        import http.client
+        conn = http.client.HTTPConnection("127.0.0.1", self.srv.server_port, timeout=10)
+        conn.putrequest("POST", "/")
+        for k, v in (headers or {}).items():
+            conn.putheader(k, v)
+        conn.endheaders()
+        if body:
+            conn.send(body)
+        r = conn.getresponse()
+        out = r.status, r.read()
+        conn.close()
+        return out
+
+    def test_bad_content_length_is_400_not_traceback(self):
+        for cl in ("abc", "-1"):
+            code, _ = self._raw_post(b"", {"Content-Length": cl, "Content-Type": "application/json"})
+            self.assertEqual(code, 400, cl)
+
+    def test_non_loopback_bind_refused_without_token_and_tls(self):
+        import realtime_validation_listener as rl
+        with self.assertRaises(ValueError):
+            rl.make_server("0.0.0.0", 0, self.db)
+        with self.assertRaises(ValueError):
+            rl.make_server("0.0.0.0", 0, self.db, token="t")
+
+    def test_token_required_when_set(self):
+        import realtime_validation_listener as rl
+        self.srv.shutdown()
+        self.srv.server_close()
+        self.srv = rl.make_server("127.0.0.1", 0, self.db, token="s3cret")
+        threading = __import__("threading")
+        threading.Thread(target=self.srv.serve_forever, daemon=True).start()
+        body = b'{"raw_content": "x"}'
+        code, _ = self._raw_post(body, {"Content-Length": str(len(body))})
+        self.assertEqual(code, 401)
+        code, _ = self._raw_post(body, {"Content-Length": str(len(body)), "Authorization": "Bearer s3cret"})
+        self.assertEqual(code, 400)  # authenticated; rejected only for the missing fields
+
+
+class Stage2Gate(unittest.TestCase):
+    def setUp(self):
+        import archive_collector_cli as ac
+        import stage2_validation_gate as sg
+        self.sg = sg
+        self.tmp = tempfile.TemporaryDirectory()
+        self.db = os.path.join(self.tmp.name, "s0.db")
+        self.conn = ac.init_database(self.db)
+        self.ac = ac
+
+    def tearDown(self):
+        self.conn.close()
+        self.tmp.cleanup()
+
+    def _add(self, text):
+        rec = self.ac.normalize_record("manual_ingest", "2006-04-02T00:00:00Z", "t", text)
+        self.ac.save_record_to_db(self.conn, rec)
+        return rec["record_id"]
+
+    def _run(self, ground_truth):
+        stats = self.sg.Stage2ValidationGate(self.db, ground_truth).validate_records()
+        return {d["record_id"]: d["assigned_status"] for d in stats["details"]}, stats
+
+    def test_without_ground_truth_gate_abstains(self):
+        rid = self._add("he was buried in dirt near the gateway")
+        got, stats = self._run(None)
+        self.assertEqual(got[rid], "unverified")
+        self.assertEqual(stats["abstained"], 1)
+        import sqlite3
+        with sqlite3.connect(self.db) as c:
+            self.assertEqual(c.execute("SELECT verification_status FROM stage0_historical_records").fetchone()[0],
+                             "unverified")
+
+    def test_negated_or_search_report_mention_is_not_debunked(self):
+        gt = self.sg.DEFAULT_VERIFIED_GROUND_TRUTH
+        neg = self._add("Police searched the dirt pile and found nothing.")
+        pos = self._add("I think he is buried in dirt behind the gateway.")
+        got, _ = self._run(gt)
+        self.assertEqual(got[neg], "flagged_speculative")
+        self.assertEqual(got[pos], "debunked_by_official_log")
+
+    def test_gap_uses_its_own_keywords_and_needs_affirmative_claim(self):
+        gt = self.sg.DEFAULT_VERIFIED_GROUND_TRUTH
+        exit_claim = self._add("He walked out the service exit toward the construction area.")
+        blind = self._add("There is a blind spot on the camera at the parking garage.")
+        denied = self._add("He did not use the service door.")
+        got, _ = self._run(gt)
+        self.assertEqual(got[exit_claim], "corroborated_by_log")
+        self.assertEqual(got[blind], "flagged_speculative")
+        self.assertEqual(got[denied], "flagged_speculative")
+
+    def test_listener_without_ground_truth_leaves_records_unverified(self):
+        import realtime_validation_listener as rl
+        rec = {"source_origin": "manual_ingest", "archive_timestamp": "2006-04-02T00:00:00Z",
+               "source_identifier": "t-9", "raw_content": "buried in dirt pile"}
+        results, stats = rl.ingest_records(os.path.join(self.tmp.name, "l.db"), [rec])
+        self.assertEqual(results[0]["validation_status"], "unverified")
+        self.assertEqual(stats["abstained"], 1)
 
 
 if __name__ == "__main__":
