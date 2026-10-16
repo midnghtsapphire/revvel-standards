@@ -92,3 +92,38 @@ registry tests still run.
   animal or person in two different photos.
 - **qPCR "DETECTED" is the lab's call about DNA in the tube.** Identifying a
   person needs the lab's profile comparison.
+
+## Lost-person-behaviour rings
+
+`lost_person_behavior.py` draws search-planning rings from the June 2003 UK
+handbook *Missing Person Behaviour - An Aid to the Search Manager* (Perkins,
+Roberts and Feeney). The numbers are in `lpb_mpb2003.json`, copied as printed,
+with the page number on every table.
+
+- **What is in the data.** Each category has distances from the IPP in 10%
+  steps (km and miles, as printed), with the sample size. Most categories have
+  two tables: the UK study and a US/Canadian table adapted from Hill or
+  Koester. Survivability and where-found percentages come from the UK study.
+  Behaviour notes are short strings.
+- **What is not.** Fishermen, climbers and skiers have notes only. Hunters
+  have no UK table. The handbook does not split any category by terrain, and
+  it prints no 25%, 75% or 95% rows. Rings at those values are interpolated
+  and marked as such.
+- **Rows that disagree.** A few rows have km and miles values that do not
+  match. They are kept as printed and listed under `transcription_flags`. The
+  maps use the km column.
+- **What the output means.** The rings and the `--grid` probability-of-area
+  grid are a planning prior for the size of a search area. They do not
+  predict where a person is, and figures from other regions and eras differ.
+
+```sh
+python lost_person_behavior.py --list
+python lost_person_behavior.py --category hikers --lat 54.5 --lon -3.1 --out out/lpb
+python lost_person_behavior.py --category misc_adults --lat .. --lon .. --out out/lpb --find LAT LON --grid
+python -m unittest test_lost_person_behavior   # numpy only for the grid tests
+```
+
+Outputs: `rings.geojson`, `rings.kml` and `summary.json` (citation, pages,
+sample size and notes), plus `grid.geojson` with `--grid`. The tool exits 2
+for an unknown category. It exits 3 when the handbook has no distance table
+for the category; `summary.json` is still written in that case.
