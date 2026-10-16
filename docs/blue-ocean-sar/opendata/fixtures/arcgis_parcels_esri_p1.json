@@ -1,0 +1,129 @@
+{
+ "objectIdFieldName": "FID",
+ "geometryType": "esriGeometryPolygon",
+ "spatialReference": {
+  "wkid": 4326,
+  "latestWkid": 4326
+ },
+ "fields": [
+  {
+   "name": "FID",
+   "type": "esriFieldTypeOID"
+  },
+  {
+   "name": "NAME",
+   "type": "esriFieldTypeString"
+  }
+ ],
+ "features": [
+  {
+   "attributes": {
+    "FID": 10,
+    "NAME": "Pond with island"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       10
+      ],
+      [
+       10,
+       10
+      ],
+      [
+       10,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     [
+      [
+       2,
+       2
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       2,
+       2
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "FID": 11,
+    "NAME": "Two basins"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       10
+      ],
+      [
+       10,
+       10
+      ],
+      [
+       10,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     [
+      [
+       20,
+       0
+      ],
+      [
+       20,
+       5
+      ],
+      [
+       25,
+       5
+      ],
+      [
+       25,
+       0
+      ],
+      [
+       20,
+       0
+      ]
+     ]
+    ]
+   }
+  }
+ ],
+ "exceededTransferLimit": true
+}
