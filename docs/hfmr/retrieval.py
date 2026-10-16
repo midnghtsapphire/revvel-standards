@@ -99,6 +99,15 @@ def run_queue(
         try:
             validate_url(url, allow_hosts)
             if manifest.exists():
+                # A manifest for this source_id may describe a different download (the queue's URL
+                # changed, or the id was reused): reusing it would silently keep the old artifact.
+                previous = json.loads(manifest.read_text(encoding="utf8"))
+                if previous.get("source_id") != sid or previous.get("requested_url") != url:
+                    status["status"] = "stale_manifest"
+                    status["error"] = "Existing manifest is for a different source_id/URL; manual review required"
+                    status["manifest_requested_url"] = previous.get("requested_url")
+                    results.append(status)
+                    continue
                 status["status"] = "already_verified" if verify_manifest(manifest) else "integrity_failure"
                 results.append(status)
                 continue

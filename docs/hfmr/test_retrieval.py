@@ -68,6 +68,29 @@ class RetrievalTests(unittest.TestCase):
             (out / "raw" / "a" / "original.bin").write_bytes(b"tampered")
             self.assertFalse(verify_queue(out)["a"])
 
+    def test_changed_url_is_not_reused_as_verified(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            q = root / "q.csv"
+            q.write_text("source_id,url\na,https://example.gov/old\n")
+
+            def fake(url, dest, hosts, max_bytes):
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                dest.write_bytes(b"evidence")
+                return {
+                    "file": str(dest),
+                    "bytes": 8,
+                    "sha256": hashlib.sha256(b"evidence").hexdigest(),
+                    "requested_url": url,
+                }
+
+            out = root / "out"
+            run_queue(q, out, ["example.gov"], fetcher=fake)
+            q.write_text("source_id,url\na,https://example.gov/new\n")
+            result = run_queue(q, out, ["example.gov"], fetcher=fake)[0]
+            self.assertEqual(result["status"], "stale_manifest")
+            self.assertEqual(result["manifest_requested_url"], "https://example.gov/old")
+
     def test_host_rejection(self):
         with tempfile.TemporaryDirectory() as d:
             q = Path(d) / "q.csv"
