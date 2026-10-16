@@ -193,3 +193,38 @@ test('the token never reaches argv', () => {
     'a Bearer header on the command line leaks the token to `ps`',
   );
 });
+
+// Regression (PR #18128): the REVVEL-DISABLED scan read every changed file
+// line by line, several greps per line. A PR adding a large binary archive
+// ran until CircleCI killed policy-check. Binary files and files that never
+// mention the token must be skipped, while a bad block in a text file is
+// still reported.
+test('policy scan skips binaries and token-free files but still flags bad blocks', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'archival-scan-'));
+  const git = (...args) =>
+    execFileSync('git', args, { cwd: dir, stdio: 'pipe', env: { ...process.env, HOME: dir } });
+  git('init', '-q', '-b', 'main');
+  git('config', 'user.email', 'test@example.com');
+  git('config', 'user.name', 'test');
+  fs.writeFileSync(path.join(dir, 'keep.txt'), 'base\n');
+  git('add', '-A');
+  git('commit', '-qm', 'base');
+  git('checkout', '-q', '-b', 'work');
+  // ~200k lines of text without the token, plus a binary blob.
+  fs.writeFileSync(path.join(dir, 'big.txt'), 'plain line\n'.repeat(200000));
+  const bin = Buffer.alloc(4 * 1024 * 1024);
+  bin[0] = 0;
+  fs.writeFileSync(path.join(dir, 'blob.bin'), bin);
+  fs.writeFileSync(path.join(dir, 'bad.py'),
+    '# REVVEL-DISABLED | AGENT: x\nold = 1\n# REVVEL-DISABLED-END\n');
+  git('add', '-A');
+  git('commit', '-qm', 'add files');
+  git('update-ref', 'refs/remotes/origin/main', 'main');
+  const started = Date.now();
+  const r = run(dir, { ALLOW_DESTROY: 'false' });
+  const elapsed = Date.now() - started;
+  assert.equal(r.status, 1, r.stdout + r.stderr);
+  assert.match(r.stderr, /bad\.py:1 — REVVEL-DISABLED block missing 'MODEL:'/);
+  assert.doesNotMatch(r.stderr, /big\.txt|blob\.bin/);
+  assert.ok(elapsed < 30000, `scan took ${elapsed} ms`);
+});
