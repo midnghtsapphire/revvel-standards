@@ -4,7 +4,9 @@ This repository-ready project builds on HFMR Modules 1–17. The new `hfmr.auto_
 
 ## Local quickstart
 ```bash
-python -m unittest discover -s tests -v
+# Original: python -m unittest discover -s tests -v
+#   there is no tests/ directory in this layout; the tests live inside the hfmr package.
+python -m unittest discover -s hfmr -t . -v
 python -m hfmr.auto_retrieve acquire --output evidence --number 1546 --street HIGH --start 2000 --end 2010
 python -m hfmr.auto_retrieve verify --output evidence
 ```
@@ -12,6 +14,8 @@ python -m hfmr.auto_retrieve verify --output evidence
 ## GitHub
 1. Create a private repository (e.g. `midnghtsapphire/forensic-finders-records`). Upload the contents of this ZIP to the repository root.
 2. Enable Actions. Run **Public permit acquisition** via Actions > Run workflow, or let its weekly schedule run.
+
+   > **Not installed in this repository.** The workflow is archived as received at `modules/workflows_as_received/retrieve.yml.txt`; it is not under `.github/workflows/`, so Actions does not offer it and no schedule runs. To use it, copy it to `.github/workflows/retrieve.yml` in the repository that hosts the `hfmr` package, and change its unit-test step to `python -m unittest discover -s hfmr -t . -v` (the archived copy still runs `-s tests`, which does not exist in this layout).
 3. Download the evidence artifact from the workflow run. Artifacts expire according to configured retention; archive separately if preservation is required.
 4. Review `*_manifest.json`, JSON source snapshots and `index.sqlite3`. Failures produce an incomplete manifest and a nonzero exit code.
 
