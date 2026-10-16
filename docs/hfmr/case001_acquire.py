@@ -26,7 +26,9 @@ def metadata(url, opener=None):
 
 def _check_address_args(number, street, start, end):
     """Reject bad query arguments up front, before any output is created or request is made."""
-    if not isinstance(number, int) or not 1 <= number <= 99999:
+    # Original: if not isinstance(number, int) or not 1 <= number <= 99999:
+    #   bool subclasses int, so number=True passed as street number 1.
+    if type(number) is not int or not 1 <= number <= 99999:
         raise ValueError("Invalid number")
     if not isinstance(street, str) or not re.fullmatch("[A-Z]{2,25}", street):
         raise ValueError("Invalid street")
@@ -37,7 +39,9 @@ def _check_address_args(number, street, start, end):
 def query_address_variants(layer, number=1546, street="HIGH", start=2000, end=2010, opener=None):
     if layer not in LAYERS:
         raise ValueError("Invalid layer")
-    if not isinstance(number, int) or not 1 <= number <= 99999:
+    # Original: if not isinstance(number, int) or not 1 <= number <= 99999:
+    #   bool subclasses int, so number=True passed as street number 1.
+    if type(number) is not int or not 1 <= number <= 99999:
         raise ValueError("Invalid number")
     if not re.fullmatch("[A-Z]{2,25}", street):
         raise ValueError("Invalid street")

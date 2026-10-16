@@ -119,7 +119,9 @@ class Tests(unittest.TestCase):
     def test_invalid_arguments_rejected_before_output(self):
         with tempfile.TemporaryDirectory() as t:
             out = Path(t) / "case"
-            for kwargs in ({"street": "high"}, {"number": 0}, {"start": 2011, "end": 2010}):
+            # Original: for kwargs in ({"street": "high"}, {"number": 0}, {"start": 2011, "end": 2010}):
+            #   number=True (a bool, which subclasses int) is now rejected too.
+            for kwargs in ({"street": "high"}, {"number": 0}, {"number": True}, {"start": 2011, "end": 2010}):
                 with self.assertRaises(ValueError):
                     acquire(out, opener=self.opener, **kwargs)
                 self.assertFalse(out.exists())
@@ -139,6 +141,10 @@ class Tests(unittest.TestCase):
     def test_bad_street(self):
         with self.assertRaises(ValueError):
             query_address_variants("building", street="HIGH';DROP")
+
+    def test_bool_number_rejected(self):
+        with self.assertRaises(ValueError):
+            query_address_variants("building", number=True, opener=self.opener)
 
     def test_failures_explicit(self):
         def fail(req, timeout):
