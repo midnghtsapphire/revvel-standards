@@ -193,12 +193,17 @@ def make_server(host="127.0.0.1", port=8080, db_path="stage0_archive.db", ground
         raise ValueError(f"refusing to listen on {host}: a non-loopback bind needs SAR_LISTENER_TOKEN "
                          "and --tls-cert, or the write endpoint is open to anyone who can reach it")
     check_ground_truth(ground_truth)
-    RealtimeWebhookHandler.db_path = db_path
-    RealtimeWebhookHandler.ground_truth = ground_truth
-    RealtimeWebhookHandler.token = token
+    # Original set these on the shared class, so a second server in the same
+    # process rewrote the first one's database, ground truth and token:
+    # RealtimeWebhookHandler.db_path = db_path
+    # RealtimeWebhookHandler.ground_truth = ground_truth
+    # RealtimeWebhookHandler.token = token
+    handler = type("BoundRealtimeWebhookHandler", (RealtimeWebhookHandler,),
+                   {"db_path": db_path, "ground_truth": ground_truth, "token": token})
     # Original bound every interface: server_address = ("", port)
     # return HTTPServer((host, port), RealtimeWebhookHandler)
-    httpd = HTTPServer((host, port), RealtimeWebhookHandler)
+    # httpd = HTTPServer((host, port), RealtimeWebhookHandler)
+    httpd = HTTPServer((host, port), handler)
     if tls_cert:
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
         ctx.load_cert_chain(tls_cert, tls_key)

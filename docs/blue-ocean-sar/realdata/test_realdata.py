@@ -523,6 +523,28 @@ class RealtimeListener(unittest.TestCase):
         code, _ = self._raw_post(body, {"Content-Length": str(len(body)), "Authorization": "Bearer s3cret"})
         self.assertEqual(code, 400)  # authenticated; rejected only for the missing fields
 
+    def test_second_server_does_not_rewrite_the_first_servers_settings(self):
+        import json
+        import threading
+        import urllib.request
+        import realtime_validation_listener as rl
+        other_db = os.path.join(self.tmp.name, "other.db")
+        other = rl.make_server("127.0.0.1", 0, other_db, token="other-token")
+        threading.Thread(target=other.serve_forever, daemon=True).start()
+        try:
+            opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+            with opener.open(self.url, timeout=10) as r:
+                self.assertEqual(json.loads(r.read())["db_path"], self.db)
+            rec = {"source_origin": "manual_ingest", "archive_timestamp": "2006-04-02T00:00:00Z",
+                   "source_identifier": "t-3", "raw_content": "first server, no token"}
+            code, body = self._post(rec)
+            self.assertEqual(code, 200)
+            self.assertNotEqual(body["results"][0]["validation_status"], "unverified")  # still has its ground truth
+            self.assertIsNone(rl.RealtimeWebhookHandler.token)
+        finally:
+            other.shutdown()
+            other.server_close()
+
 
 class ListenerCli(unittest.TestCase):
     """The listener's command line, with run_listener mocked so no server starts."""
