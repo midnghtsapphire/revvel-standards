@@ -93,6 +93,23 @@ GitHub ──webhook──▶ dispatcher.js ──▶ act (Docker) ──▶ wor
 Start narrow if you like. `ONLY_WORKFLOWS=python-flake8.yml,lint-md.yml` runs
 just those two workflows until you trust the setup, and then you can widen it.
 
+## Running without Docker (host mode)
+
+Set `RUNNER_IMAGE=-self-hosted` to have `act` run steps directly on the
+server instead of in containers. It then works on hosts that have no Docker
+daemon, including container platforms. The trade-off is isolation: steps run
+as the dispatcher's own user. Workflows still only come from `main`, and fork
+PRs stay off unless `ALLOW_FORK_PRS=true`.
+
+Verified with act 0.2.82: `python-flake8.yml` ran all steps in host mode and
+reported `Job succeeded` (checkout, the flake8 action, setup-node,
+setup-python, the baseline gate, `npm ci`, and the workflow tests).
+
+**Gotcha:** don't leave a `GITHUB_TOKEN` or `GH_TOKEN` variable in the
+dispatcher's own environment. `act` picks it up to download actions, and a
+stale or placeholder token fails with `authentication required`. The
+dispatcher passes the real token to workflows via `--secret-file`.
+
 ## Manual runs (`workflow_dispatch`)
 
 ```bash
