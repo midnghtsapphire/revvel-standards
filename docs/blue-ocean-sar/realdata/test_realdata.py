@@ -80,6 +80,16 @@ class Terrain(unittest.TestCase):
         r = dt.analyse_point(self.lat, self.lon, 90, 1.0, [p])
         self.assertEqual(r["downhill_path"]["end"], "left_grid")
 
+    def test_partial_coverage_rejected_unless_allowed(self):
+        z = self.plane.copy()
+        z[:, :60] = -9999  # nodata strip on the west side, inside a 90 m window
+        p = os.path.join(self.tmp.name, "partial.tif")
+        _write(p, z)
+        with self.assertRaises(ValueError):
+            dt.analyse_point(self.lat, self.lon, 90, 1.0, [p])
+        r = dt.analyse_point(self.lat, self.lon, 90, 1.0, [p], allow_partial=True)
+        self.assertGreater(r["nodata_cells_filled"], 0)
+
     def test_dem_change_finds_only_real_change(self):
         n = 101
         before = np.full((n, n), 50.0) + np.random.default_rng(1).normal(0, 0.02, (n, n))

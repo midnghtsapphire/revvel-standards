@@ -185,10 +185,22 @@ def slide_runout(coords_lon_lat_z, mu, g=9.81, v0=0.0):
             "note": "still moving at the end of the profile; enlarge --radius-m"}
 
 
-def analyse_point(lat, lon, radius_m, res_m, sources, min_depth_m=0.5, lrm_sigma_m=None):
+# def analyse_point(lat, lon, radius_m, res_m, sources, min_depth_m=0.5, lrm_sigma_m=None):
+def analyse_point(lat, lon, radius_m, res_m, sources, min_depth_m=0.5, lrm_sigma_m=None, allow_partial=False):
+    """allow_partial: run on a grid with nodata cells by filling them with the
+    lowest elevation (the original behaviour). That invents terrain, so it is
+    off by default and the count of filled cells is reported."""
     z, t, crs = load_grid(lat, lon, radius_m, res_m, sources)
     if np.isnan(z).all():
         raise ValueError("no elevation data covers this area")
+    # Original: nodata was silently filled with the window minimum, which shows up
+    # as false slopes, pits and downhill paths at the edge of coverage.
+    # z = np.where(np.isnan(z), np.nanmin(z), z)
+    nodata = int(np.isnan(z).sum())
+    if nodata and not allow_partial:
+        raise ValueError(f"{nodata} of {z.size} grid cells have no elevation data; shrink --radius-m, add a "
+                         "--dem that covers them, or pass --allow-partial to fill them (results near the gap "
+                         "are not real terrain)")
     z = np.where(np.isnan(z), np.nanmin(z), z)
     filled = priority_flood(z)
     routed = priority_flood(z, eps=1e-4)
@@ -210,6 +222,7 @@ def analyse_point(lat, lon, radius_m, res_m, sources, min_depth_m=0.5, lrm_sigma
             "drop_m": float(z[path[0]] - z[path[-1]]), "coords_lon_lat_z": coords},
         "depressions": depressions(z, filled, res_m, min_depth_m, t, crs),
         "sources": list(sources),
+        "nodata_cells_filled": nodata,
         "note": "Copernicus GLO-30 is a 30 m surface model; it cannot resolve grave-scale features."
         if any("copernicus-dem-30m" in s for s in sources) else "",
         "_arrays": {"z": z, "slope": sl, "lrm": lrm, "depth": filled - z, "transform": t, "crs": crs},
@@ -259,6 +272,8 @@ def main(argv=None):
     ap.add_argument("--res-m", type=float, help="grid resolution (default 30, or 1 with --dem)")
     ap.add_argument("--dem", action="append", help="your own elevation GeoTIFF(s); default Copernicus GLO-30")
     ap.add_argument("--min-depth-m", type=float, default=0.5)
+    ap.add_argument("--allow-partial", action="store_true",
+                    help="fill nodata cells with the lowest elevation instead of stopping (invents terrain)")
     ap.add_argument("--mu", type=float, nargs="*",
                     help="friction coefficient(s) for sliding run-out, e.g. 0.3 0.45 0.6")
     ap.add_argument("--before")
@@ -278,7 +293,8 @@ def main(argv=None):
             ap.error("--lat/--lon required")
         sources = a.dem or cop30_sources(a.lat, a.lon, a.radius_m)
         res_m = a.res_m or (1.0 if a.dem else 30.0)
-        res = analyse_point(a.lat, a.lon, a.radius_m, res_m, sources, a.min_depth_m)
+        # res = analyse_point(a.lat, a.lon, a.radius_m, res_m, sources, a.min_depth_m)
+        res = analyse_point(a.lat, a.lon, a.radius_m, res_m, sources, a.min_depth_m, allow_partial=a.allow_partial)
         if a.mu:
             res["slide_runout"] = [slide_runout(res["downhill_path"]["coords_lon_lat_z"], m) for m in a.mu]
         arr = res.pop("_arrays")
