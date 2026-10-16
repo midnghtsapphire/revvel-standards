@@ -169,7 +169,15 @@ def save_record_to_db(conn: sqlite3.Connection, record: Dict[str, Any]) -> bool:
         )
         conn.commit()
         return True
-    except sqlite3.IntegrityError:
+    # Original treated every IntegrityError as a duplicate, so a record rejected
+    # by a CHECK constraint (e.g. an unknown source_origin) was silently dropped
+    # and logged as "duplicate":
+    # except sqlite3.IntegrityError:
+    #     logger.warning(f"Duplicate record skipped (SHA-256: {record['checksum_sha256'][:16]}...)")
+    #     return False
+    except sqlite3.IntegrityError as e:
+        if "UNIQUE" not in str(e):
+            raise
         logger.warning(f"Duplicate record skipped (SHA-256: {record['checksum_sha256'][:16]}...)")
         return False
 
