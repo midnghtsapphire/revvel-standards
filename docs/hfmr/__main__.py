@@ -142,8 +142,15 @@ else:
             from .historical import verify as historical_verify
 
             ok = historical_verify(args.output)
-        else:
+        # Original:
+        # else:
+        #     ok = verify_run(args.output)
+        #   any unknown or missing schema fell through to the scalar verifier and could print
+        #   VERIFIED; only the schema pipeline.analyze writes is verified as a scalar run now.
+        elif schema == "hfmr.run.v1":
             ok = verify_run(args.output)
+        else:
+            ok = False
     except (OSError, ValueError, KeyError, AttributeError):
         # Missing or unreadable manifest, ledger or output artifact: not verified.
         ok = False

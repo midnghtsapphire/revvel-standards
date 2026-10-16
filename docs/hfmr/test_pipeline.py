@@ -85,6 +85,23 @@ class TestPipeline(unittest.TestCase):
             (out / "manifest.json").unlink()
             self.assertEqual(run_cli("hfmr.__main__", ["verify", "--output", out]), 1)
 
+    def test_verify_rejects_unknown_manifest_schema(self):
+        with tempfile.TemporaryDirectory() as t:
+            p = Path(t) / "input.csv"
+            write_grid(p)
+            out = Path(t) / "run"
+            analyze("TEST-001", p, out)
+            self.assertEqual(run_cli("hfmr.__main__", ["verify", "--output", out]), 0)
+            for schema in ("hfmr.unknown.v9", None):
+                manifest = json.loads((out / "manifest.json").read_text())
+                manifest["schema"] = schema
+                (out / "manifest.json").write_text(json.dumps(manifest))
+                # Re-chain the edited manifest so only the schema dispatch can reject it.
+                head = Ledger(out / "ledger.jsonl").append({"manifest_sha256": digest_file(out / "manifest.json")})
+                (out / "ledger_head.txt").write_text(head + "\n")
+                self.assertTrue(verify_run(out))
+                self.assertEqual(run_cli("hfmr.__main__", ["verify", "--output", out]), 1)
+
     def test_geojson_declares_projected_crs(self):
         with tempfile.TemporaryDirectory() as t:
             p = Path(t) / "input.csv"
