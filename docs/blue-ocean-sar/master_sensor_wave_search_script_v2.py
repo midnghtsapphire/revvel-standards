@@ -68,7 +68,14 @@ class MultiBandWaveEngineV2:
             assumed["sif_stress"] = 0.85
         # Both are normalised indices; values outside [0, 1] pushed the score past 100.
         for name, value in (("swir_1720_reflectance", swir_1720_reflectance), ("sif_stress", sif_stress)):
-            if not isinstance(value, (int, float)) or not math.isfinite(value) or not 0.0 <= value <= 1.0:
+            # Original accepted True/False as 1/0 and let a huge int raise OverflowError:
+            # if not isinstance(value, (int, float)) or not math.isfinite(value) or not 0.0 <= value <= 1.0:
+            try:
+                ok = (not isinstance(value, bool) and isinstance(value, (int, float)) and math.isfinite(value)
+                      and 0.0 <= value <= 1.0)
+            except OverflowError:
+                ok = False
+            if not ok:
                 raise ValueError(f"{name} must be a finite number in [0, 1], got {value!r}")
         sources = list(sources) if isinstance(sources, (list, tuple)) else ([sources] if sources else [])
         if assumed and sources:

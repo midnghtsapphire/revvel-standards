@@ -165,6 +165,16 @@ class MasterScriptTests(unittest.TestCase):
                                                    sources=src)
         self.assertLessEqual(out["fused_probability"], 100.0)
 
+    def test_bool_and_huge_int_indices_rejected_with_value_error(self):
+        src = [DataSource("demo", "synthetic")]
+        for kw in ({"sif_stress": True}, {"swir_1720_reflectance": False}, {"sif_stress": 10 ** 400}):
+            args = dict({"swir_1720_reflectance": 0.12, "sif_stress": 0.92}, **kw)
+            with self.assertRaises(ValueError, msg=kw):
+                self.engine.evaluate_multi_band_node(0, 0, 1.0, 3.1, sources=src, **args)
+        out = self.engine.evaluate_multi_band_node(0, 0, 1.0, 3.1, swir_1720_reflectance=0, sif_stress=1,
+                                                   sources=src)
+        self.assertEqual(out["sif_plant_stress_index"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()
