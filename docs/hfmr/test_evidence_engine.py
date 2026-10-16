@@ -67,6 +67,13 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(out[0]["permit_id"], "BLD200601")
         self.assertEqual(out[0]["source_line"], 3)
 
+    def test_crossref_indexes_both_identifiers(self):
+        record = {"permit_id": "P-77", "record_id": "BLD200601"}
+        for value in ("BLD-2006-01", "P-77"):
+            out = cross_reference([{"kind": "permit_mention", "value": value, "line": 1}], [record])
+            self.assertEqual(len(out), 1, value)
+            self.assertEqual(out[0]["permit_id"], "P-77")
+
     def test_capability_gates(self):
         self.assertFalse(
             sensor_compatibility({"sensor": "sar", "complex_slc": False, "independent_baselines": 7})["tomo_sar"]

@@ -122,9 +122,16 @@ def cross_reference(findings, records):
     #   municipal.ingest_permits records carry `record_id`, not `permit_id`, so they never matched.
     ids = {}
     for x in records:
-        record_key = x.get("permit_id") or x.get("record_id")
-        if record_key:
-            ids[re.sub(r"[^A-Z0-9]", "", str(record_key).upper())] = x
+        # Original:
+        # record_key = x.get("permit_id") or x.get("record_id")
+        # if record_key:
+        #     ids[re.sub(r"[^A-Z0-9]", "", str(record_key).upper())] = x
+        #   a record carrying both identifiers was indexed only under permit_id, so a document
+        #   citing its record_id never matched. Every non-empty identifier is indexed now.
+        for field in ("permit_id", "record_id"):
+            record_key = x.get(field)
+            if record_key:
+                ids[re.sub(r"[^A-Z0-9]", "", str(record_key).upper())] = x
     out = []
     for item in findings:
         if item.get("kind") != "permit_mention":
