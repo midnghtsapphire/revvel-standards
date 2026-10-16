@@ -93,6 +93,27 @@ GitHub ──webhook──▶ dispatcher.js ──▶ act (Docker) ──▶ wor
 Start narrow if you like. `ONLY_WORKFLOWS=python-flake8.yml,lint-md.yml` runs
 just those two workflows until you trust the setup, and then you can widen it.
 
+## Deploying on Railway
+
+The `Dockerfile` here builds an image with Node 22, git, Python and a
+checksum-pinned `act`, and defaults to host mode, so no Docker daemon is
+needed. Create a service from this repo and set these variables:
+
+| Variable | Value |
+|---|---|
+| `RAILWAY_DOCKERFILE_PATH` | `ops/self-hosted-ci/Dockerfile` |
+| `REPO_FULL_NAME` | `midnghtsapphire/revvel-standards` |
+| `WEBHOOK_SECRET` | a long random string; the same value goes in the GitHub webhook |
+| `SHCI_GITHUB_TOKEN` | the fine-grained GitHub token (see Setup, step 2) |
+| `SHCI_SECRETS` | optional: workflow secrets as `NAME=value` pairs joined by `\n` |
+| `SHCI_ADMIN_TOKEN` | optional: enables `POST /dispatch` |
+| `IGNORE_SENDERS` | the login that owns the token |
+
+At startup the `SHCI_*` values are written to mode-600 files and removed from
+the environment, so workflow steps never inherit them. Generate a public
+domain for the service, then point the webhook (Setup, step 5) at
+`https://<domain>/webhook`.
+
 ## Running without Docker (host mode)
 
 Set `RUNNER_IMAGE=-self-hosted` to have `act` run steps directly on the
