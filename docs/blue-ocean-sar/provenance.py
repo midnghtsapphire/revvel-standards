@@ -31,6 +31,12 @@ LABEL_UNSOURCED = "UNSOURCED - NO INPUT SOURCE NAMED"
 # of refusing. Set provenance.STRICT = True for the refuse-to-run behaviour.
 STRICT = False
 
+# Export paths (GeoJSON, CoT, KML) are strict regardless of STRICT: a location
+# that leaves this folder as a file or an ATAK marker must name checkable
+# sources. Demos opt out per call with allow_unverified=True (CLI: --demo).
+# See SYSTEM_REVIEW H1.
+EXPORT_STRICT = True
+
 
 class MissingSourceError(ValueError):
     """Raised instead of producing a location from unnamed inputs."""
@@ -54,13 +60,24 @@ class DataSource:
             )
 
 
-def require_sources(sources):
-    """Validate sources; raise MissingSourceError if there are none or any is incomplete."""
+def _resolve_strict(strict):
+    """strict=None means "use the module-wide STRICT setting"."""
+    return STRICT if strict is None else bool(strict)
+
+
+def require_sources(sources, strict=None):
+    """Validate sources; raise MissingSourceError if there are none or any is incomplete.
+
+    strict: None follows provenance.STRICT; True/False overrides it for this call."""
+    strict = _resolve_strict(strict)
     if sources is None or isinstance(sources, DataSource):
         sources = [sources] if sources is not None else []
     sources = list(sources)
     if not sources:
-        if not STRICT:
+        # What was wrong: one global STRICT switch, off by default, governed both inputs and exports, so
+        # unsourced locations reached files and ATAK. Lesson: exports need their own strict path (H1).
+        # if not STRICT:
+        if not strict:
             return []
         raise MissingSourceError(
             "refusing to produce a location: no input data source was named. "
@@ -71,7 +88,8 @@ def require_sources(sources):
             raise MissingSourceError(f"expected DataSource, got {type(s).__name__}")
         # Original: every source was always validated (refused without a reference).
         # s.validate()
-        if STRICT:
+        # if STRICT:  # now the per-call setting (H1)
+        if strict:
             s.validate()
         elif s.kind not in SOURCE_KINDS:
             # A mistyped kind would otherwise be labelled as measured data.
@@ -90,9 +108,12 @@ def status_label(sources):
     return LABEL_MEASURED
 
 
-def provenance_block(sources):
-    """The dict attached to every output location."""
-    sources = require_sources(sources)
+def provenance_block(sources, strict=None):
+    """The dict attached to every output location.
+
+    strict: None follows provenance.STRICT; True refuses missing or incomplete sources."""
+    # sources = require_sources(sources)  # now the per-call setting (H1)
+    sources = require_sources(sources, strict=strict)
     return {
         "status": status_label(sources),
         "ground_verified": False,
@@ -100,15 +121,20 @@ def provenance_block(sources):
     }
 
 
-def require_provenance(record):
-    """Consumer-side check: exporters call this so a location that lost its
-    provenance on the way cannot be written out as if it were clean."""
+def require_provenance(record, strict=None):
+    """Consumer-side check so a location that lost its provenance on the way
+    cannot be written out as if it were clean.
+
+    strict: None follows provenance.STRICT. Exporters should call
+    require_export_provenance() instead, which is strict by default."""
+    strict = _resolve_strict(strict)
     prov = record.get("provenance") if isinstance(record, dict) else None
     # Original: refused any location without a status and a non-empty source list.
     # if not prov or not prov.get("status") or not prov.get("sources"):
     #     raise MissingSourceError("refusing to export a location with no provenance attached")
     if not prov or not prov.get("status"):
-        if not STRICT:
+        # if not STRICT:  # now the per-call setting (H1)
+        if not strict:
             return {"status": LABEL_UNSOURCED, "ground_verified": False, "sources": []}
         raise MissingSourceError("refusing to export a location with no provenance attached")
     # A block with only some keys, or a status that is not one of the labels,
@@ -116,19 +142,33 @@ def require_provenance(record):
     # or wrote the unchecked status out.
     problem = _provenance_problem(prov)
     if problem:
-        if not STRICT:
+        # if not STRICT:  # now the per-call setting (H1)
+        if not strict:
             return {"status": LABEL_UNSOURCED, "ground_verified": False, "sources": []}
         raise MissingSourceError(f"refusing to export a location with malformed provenance: {problem}")
-    if STRICT and not prov.get("sources"):
+    # if STRICT and not prov.get("sources"):  # now the per-call setting (H1)
+    if strict and not prov.get("sources"):
         raise MissingSourceError("refusing to export a location with no provenance attached")
     # The shape check above accepts a blank description or a measured source
     # with no reference, which DataSource.validate() refuses on the way in.
-    if STRICT:
+    # if STRICT:  # now the per-call setting (H1)
+    if strict:
         for src in prov["sources"]:
             problem = _strict_source_problem(src)
             if problem:
                 raise MissingSourceError(f"refusing to export a location with an incomplete source: {problem}")
     return prov
+
+
+def require_export_provenance(record, allow_unverified=False):
+    """require_provenance() for export paths (GeoJSON, CoT, KML).
+
+    Strict unless allow_unverified=True: refuses a location with missing,
+    malformed or unsourced provenance, and a measured or public_record source
+    without a reference. allow_unverified=True (CLI --demo) falls back to
+    provenance.STRICT, which by default labels such a location UNSOURCED."""
+    strict = None if allow_unverified else EXPORT_STRICT
+    return require_provenance(record, strict=strict)
 
 
 def _strict_source_problem(src):

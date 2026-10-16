@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import sar_dual_comms_publisher  # noqa: E402
 from sar_dual_comms_publisher import DualCommsTAKPublisher, build_sample_cot, parse_args  # noqa: E402
 
 
@@ -62,9 +63,13 @@ class PublisherTests(unittest.TestCase):
         pub = DualCommsTAKPublisher(primary_port=srv.port, multicast=False)
         res = pub.publish_cot_event(cot)
         srv.join(5)
-        self.assertTrue(res["primary_status"].startswith("SUCCESS (TCP"), res)
+        # What was wrong: this asserted the "SUCCESS" wording, so the test locked in an overclaim (H4).
+        # self.assertTrue(res["primary_status"].startswith("SUCCESS (TCP"), res)
+        self.assertTrue(res["primary_status"].startswith("SENT (unacknowledged) (TCP"), res)
         self.assertEqual(srv.received.decode(), cot)
         self.assertEqual(res["secondary_status"], "DISABLED")
+        self.assertEqual(res["sent_via"], ["primary"])
+        self.assertFalse(res["failover"])
 
     @unittest.skipUnless(shutil.which("openssl"), "openssl CLI not available")
     def test_tls_delivers_payload(self):
@@ -86,7 +91,9 @@ class PublisherTests(unittest.TestCase):
         )
         res = pub.publish_cot_event(cot)
         srv.join(5)
-        self.assertTrue(res["primary_status"].startswith("SUCCESS (TLS"), res)
+        # What was wrong: this asserted the "SUCCESS" wording, so the test locked in an overclaim (H4).
+        # self.assertTrue(res["primary_status"].startswith("SUCCESS (TLS"), res)
+        self.assertTrue(res["primary_status"].startswith("SENT (unacknowledged) (TLS"), res)
         self.assertEqual(srv.received.decode(), cot)
 
     def test_tls_rejects_untrusted_server(self):
@@ -148,6 +155,70 @@ class PublisherTests(unittest.TestCase):
         self.assertEqual(parse_args(["--tls", "--port", "9000"]).port, 9000)
         self.assertEqual(DualCommsTAKPublisher(use_tls=True).primary_port, 8089)
         self.assertEqual(DualCommsTAKPublisher().primary_port, 8087)
+
+    def test_no_success_wording_and_no_failover_claim_without_secondary(self):
+        # H4: the primary failed and multicast is off, so nothing was sent and no
+        # failover happened; the old status claimed "Switching to Failover".
+        pub = DualCommsTAKPublisher(primary_port=_free_port(), multicast=False, timeout=1)
+        res = pub.publish_cot_event(build_sample_cot())
+        self.assertNotIn("Failover", res["primary_status"])
+        self.assertNotIn("SUCCESS", str(res))
+        self.assertFalse(res["failover"])
+        self.assertEqual(res["sent_via"], [])
+
+    def test_failover_reported_only_when_secondary_sent(self):
+        # Unicast loopback stands in for the multicast group so the send works offline.
+        rx = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        rx.bind(("127.0.0.1", 0))
+        rx.settimeout(5)
+        self.addCleanup(rx.close)
+        pub = DualCommsTAKPublisher(primary_port=_free_port(), multicast=True, timeout=1,
+                                    secondary_mcast_group="127.0.0.1", secondary_mcast_port=rx.getsockname()[1])
+        cot = build_sample_cot()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            res = pub.publish_cot_event(cot)
+        self.assertTrue(res["primary_status"].startswith("PRIMARY_FAILED"), res)
+        self.assertTrue(res["secondary_status"].startswith("SENT (unacknowledged) (UDP"), res)
+        self.assertEqual(res["sent_via"], ["secondary"])
+        self.assertTrue(res["failover"])
+        self.assertEqual(rx.recv(65536).decode(), cot)
+
+    def test_secondary_send_after_primary_success_is_not_failover(self):
+        srv = _Server()
+        srv.start()
+        rx = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        rx.bind(("127.0.0.1", 0))
+        self.addCleanup(rx.close)
+        pub = DualCommsTAKPublisher(primary_port=srv.port, multicast=True,
+                                    secondary_mcast_group="127.0.0.1", secondary_mcast_port=rx.getsockname()[1])
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            res = pub.publish_cot_event(build_sample_cot())
+        srv.join(5)
+        self.assertEqual(res["sent_via"], ["primary", "secondary"])
+        self.assertFalse(res["failover"])
+
+    def test_cli_exits_non_zero_when_nothing_sent(self):
+        script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sar_dual_comms_publisher.py")
+        proc = subprocess.run([sys.executable, script, "--port", str(_free_port())],
+                              capture_output=True, text=True, timeout=30)
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("NOT SENT", proc.stderr)
+        self.assertNotIn("SUCCESS", proc.stdout)
+
+    def test_header_makes_no_mesh_radio_claims(self):
+        doc = sar_dual_comms_publisher.__doc__
+        for word in ("Meshtastic", "GoTenna", "RF Mesh"):
+            self.assertNotIn(word, doc)
+        self.assertNotIn("RF Mesh", build_sample_cot())
+
+    def test_sample_cot_point_does_not_claim_height_or_accuracy(self):
+        import xml.etree.ElementTree as ET
+
+        pt = ET.fromstring(build_sample_cot()).find("point")
+        for attr in ("hae", "ce", "le"):
+            self.assertEqual(float(pt.get(attr)), 9999999.0)
 
     def test_sample_cot_uses_current_time(self):
         now = datetime(2030, 1, 2, 3, 4, 5, tzinfo=timezone.utc)

@@ -14,6 +14,7 @@ from provenance import (  # noqa: E402
     DataSource,
     MissingSourceError,
     provenance_block,
+    require_export_provenance,
     require_provenance,
 )
 import provenance  # noqa: E402
@@ -79,6 +80,40 @@ class DefaultModeTests(unittest.TestCase):
     def test_unknown_kind_still_rejected(self):
         with self.assertRaises(MissingSourceError):
             provenance_block([DataSource("x", "vibes")])
+
+
+class ExportStrictTests(unittest.TestCase):
+    """SYSTEM_REVIEW H1: export paths are strict even when provenance.STRICT is False."""
+
+    def setUp(self):
+        provenance.STRICT = False
+
+    def tearDown(self):
+        provenance.STRICT = True
+
+    def test_export_refuses_unsourced_and_unreferenced_measured(self):
+        unref = provenance_block([DataSource("Sentinel-1 scene", "measured")])  # allowed in default mode
+        self.assertEqual(unref["status"], LABEL_MEASURED)
+        for rec in ({"latitude": 1.0}, {"provenance": provenance_block(None)}, {"provenance": unref},
+                    {"provenance": {"status": "TOTALLY VERIFIED"}}):
+            with self.assertRaises(MissingSourceError, msg=rec):
+                require_export_provenance(rec)
+
+    def test_allow_unverified_falls_back_to_labelling(self):
+        out = require_export_provenance({"latitude": 1.0}, allow_unverified=True)
+        self.assertEqual(out["status"], provenance.LABEL_UNSOURCED)
+
+    def test_complete_sources_export(self):
+        good = provenance_block([DataSource("S1 GRD", "measured", "S1A_IW_GRDH_EXAMPLE")])
+        self.assertIs(require_export_provenance({"provenance": good}), good)
+        syn = provenance_block([DataSource("demo", "synthetic")])
+        self.assertIs(require_export_provenance({"provenance": syn}), syn)
+
+    def test_per_call_strict_overrides_module_flag(self):
+        with self.assertRaises(MissingSourceError):
+            provenance_block(None, strict=True)
+        provenance.STRICT = True
+        self.assertEqual(provenance_block(None, strict=False)["status"], provenance.LABEL_UNSOURCED)
 
 
 class ProvenanceTests(unittest.TestCase):
