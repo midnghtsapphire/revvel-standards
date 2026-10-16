@@ -172,7 +172,8 @@ before the query, and write the answer in the authority's `--notes`.
 | --- | --- |
 | `authority_ledger.jsonl` | Authorities added and revoked (`--ledger`, env `AUTHORITY_LEDGER`). |
 | `authority_audit.jsonl` | Every `allow` and `refuse` decision, and a `result` entry per call (`--audit-log`, env `AUTHORITY_AUDIT_LOG`). |
-| `evidence/<case>/<time>-<provider>-<endpoint>-<id>/` | `request.json`, `response.body`, `response.meta.json`, `manifest.json` (`--evidence-dir`, env `RECORDS_EVIDENCE_DIR`). |
+| `evidence/<case>/<time>-<provider>-<endpoint>-<id>/` | `request.json`, `response.body`, `response.meta.json`, `manifest.json` (`--evidence-dir`, env `RECORDS_EVIDENCE_DIR`). Always written. |
+| `<log>/evidence.jsonl`, `<log>/objects/` | Optional shared evidence log (`--evidence-log`, env `RECORDS_EVIDENCE_LOG`): one `records-request` and one `records-response` entry per call. See below. |
 
 All files are created with mode `0600` (directories `0700`). They hold
 sensitive personal data: keep them on an encrypted disk, back them up, and
@@ -221,6 +222,35 @@ sha256. `response.meta.json` keeps both `sha256_as_received` and
 `sha256_saved`; they differ only when the key had to be redacted from the body,
 and `secret_redactions` says how many times.
 
+That per-call `manifest.json` has no chain between calls, no operator and no
+signature, and nothing outside the audit entry protects it. To fix that
+(SYSTEM_REVIEW C5 and M1), add the shared evidence log from
+[`../evidence`](../evidence/README.md):
+
+```sh
+export EVIDENCE_OPERATOR="Analyst B. Example"
+python3 records_adapter.py call ... --evidence-log case-014 --evidence-key ~/keys/analyst.key
+python3 -m evidence verify --log case-014 --public-key analyst.pub --expect-head <head>   # from docs/blue-ocean-sar/
+```
+
+- The operator is required (`--operator` or `EVIDENCE_OPERATOR`). The log,
+  the key and the operator are checked before the gate is asked or anything is
+  sent; a problem exits `2`.
+- Each call appends two entries. `records-request` holds the redacted
+  `request.json`. `records-response` holds the saved (redacted) body with the
+  HTTP status, the server's `Date` header, the SHA-256 of the TLS peer
+  certificate, the redacted headers, the as-received and saved hashes, the
+  case, purpose, provider, endpoint and authority reference, and the hash of
+  the request entry. Every field is hashed into the chain, and
+  `--evidence-key` signs each entry with Ed25519.
+- The audit `result` entry also records `evidence_log_head` and
+  `evidence_log_seq`, so the authority decision and the shared log point at
+  each other.
+- If the shared log cannot be written, the call's result is not `ok` and the
+  exit code is `4`.
+- The per-call directory is still written, so existing reviews and the
+  `evidence_manifest_sha256` check above keep working.
+
 ## Limits
 
 - The gate trusts what is recorded. It cannot confirm that a warrant exists,
@@ -230,8 +260,10 @@ and `secret_redactions` says how many times.
 - The actor, `recorded_by` and the countersignature are names typed by whoever
   runs the tool. Nothing authenticates them: anyone with shell access can set
   `AUTHORITY_ACTOR` to any name. They make a claim on the record that can be
-  checked later, not proof of identity. Entries are not signed (see the
-  evidence-library item C5 in `../SYSTEM_REVIEW.md`).
+  checked later, not proof of identity. Audit entries are not signed (see the
+  evidence-library item C5 in `../SYSTEM_REVIEW.md`). The records adapter's
+  shared evidence log can be signed with `--evidence-key`; the audit log
+  cannot yet.
 - The required expiry on a `LICENSED` authority is whatever date the person
   recording it types; choose the end of the vendor approval or the agency's
   direction, not an arbitrary far-off date.

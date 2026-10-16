@@ -1,10 +1,19 @@
 """Tests for fetch.py: allow-list, redirects, retries, size cap, evidence, secrets."""
 
+import datetime as dt
+import hashlib
+import http.server
+import ipaddress
 import json
 import os
+import shutil
+import ssl
 import sys
 import tempfile
+import threading
 import unittest
+import urllib.request
+from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -13,6 +22,10 @@ from _fakenet import FakeOpener, FakeResponse, read_bytes, read_json  # noqa: E4
 
 # Low-entropy placeholder: a random-looking value here trips secret scanners.
 SECRET = "placeholder-" + "secret" * 3
+OPERATOR = "Det. A. Example"
+SERVER_DATE = "Fri, 16 Oct 2026 12:00:00 GMT"
+# A fake certificate fingerprint for the fake opener: the hash of a fixed phrase, not a secret.
+FAKE_TLS_FP = hashlib.sha256(b"fake peer certificate").hexdigest()
 
 
 def _fetch(url, opener, **kw):
@@ -208,6 +221,222 @@ class SecretsAndEvidence(unittest.TestCase):
         self.assertIsNone(F.secret_from_env_or_file("NO_SUCH_VAR_XYZ"))
         with self.assertRaises(ValueError):
             F.secret_from_env_or_file("X", "/nonexistent/secret")
+
+
+def _evidence_core():
+    return F.evidence_core()
+
+
+def _fresh_response(status=200, body=b'{"ok": true}', headers=None, tls=FAKE_TLS_FP):
+    """Route factory: a new FakeResponse per call, carrying a Date header and a TLS fingerprint."""
+    def make(url, body_in, hdrs):
+        h = {"Content-Type": "application/json", "Date": SERVER_DATE}
+        h.update(headers or {})
+        r = FakeResponse(status, body, h)
+        r.peer_cert_sha256 = tls
+        return r
+    return make
+
+
+class SharedEvidenceLog(unittest.TestCase):
+    """fetch(evidence_log=...): the shared revvel-evidence/1 log (SYSTEM_REVIEW C5/M1)."""
+
+    def setUp(self):
+        self.core = _evidence_core()
+        self.tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.logdir = os.path.join(self.tmp, "case")
+        self.key_path = os.path.join(self.tmp, "op.key")
+        self.pub_path = os.path.join(self.tmp, "op.pub")
+        self.core.generate_keypair(self.key_path, self.pub_path)  # throwaway test key in a temp dir
+        env = mock.patch.dict(os.environ, {}, clear=False)
+        env.start()
+        self.addCleanup(env.stop)
+        os.environ.pop(self.core.ENV_OPERATOR, None)
+        os.environ.pop(F.ENV_EVIDENCE_PASSPHRASE, None)
+
+    def log(self, signed=True):
+        return F.open_evidence_log(self.logdir, operator=OPERATOR, key_path=self.key_path if signed else None)
+
+    def entries(self):
+        with open(os.path.join(self.logdir, self.core.LOG_NAME), "rb") as f:
+            return [json.loads(line) for line in f.read().splitlines()]
+
+    def verify(self, **kw):
+        kw.setdefault("public_key", self.core.load_public_key(self.pub_path))
+        return self.core.verify_log(self.logdir, **kw)
+
+    def test_same_second_captures_do_not_collide(self):
+        op = FakeOpener().add("GET", "https://api.example.org/", _fresh_response())
+        log = self.log()
+        with mock.patch.object(F, "utc_now", lambda: "2026-10-16T12:00:00Z"):
+            r1 = _fetch("https://api.example.org/a", op, evidence_log=log)
+            r2 = _fetch("https://api.example.org/a", op, evidence_log=log)
+        self.assertNotEqual(r1.evidence_entry["file"], r2.evidence_entry["file"])
+        self.assertEqual(r1.evidence_entry["sha256"], r2.evidence_entry["sha256"])
+        self.assertEqual([e["seq"] for e in self.entries()], [0, 1])
+        self.assertEqual(len(os.listdir(os.path.join(self.logdir, "objects"))), 2)
+        self.assertTrue(self.verify()["ok"])
+
+    def test_entry_records_full_metadata(self):
+        op = FakeOpener()
+        op.add("POST", "https://api.example.org/a", (307, b"", {"Location": "/b"}))  # 307 keeps POST
+        op.add("POST", "https://api.example.org/b", _fresh_response(headers={"Set-Cookie": "session=1"}))
+        r = _fetch("https://api.example.org/a?api_key=" + SECRET, op, method="POST", json_body={"q": 1},
+                   evidence_log=self.log(), secrets=[SECRET])
+        e = r.evidence_entry
+        self.assertEqual(e["operator"], OPERATOR)
+        self.assertEqual(e["status"], 200)
+        self.assertEqual(e["server_date"], SERVER_DATE)
+        self.assertEqual(e["tls_cert_sha256"], FAKE_TLS_FP)
+        self.assertEqual(r.tls_cert_sha256, FAKE_TLS_FP)
+        self.assertEqual(e["source"], "https://api.example.org/b")
+        self.assertEqual(e["tool"]["name"], "opendata-fetch")
+        self.assertIn("ntp_synchronized", e["clock"])
+        self.assertIsNotNone(e["signature"])
+        x = e["extra"]
+        self.assertIn("REDACTED", x["url"])
+        self.assertEqual(x["redirects"], [x["url"]])
+        self.assertEqual(x["response_headers"]["set-cookie"], "REDACTED")
+        self.assertEqual(x["request_body_sha256"], hashlib.sha256(b'{"q": 1}').hexdigest())
+        self.assertEqual(x["sha256_as_received"], e["sha256"])
+        self.assertTrue(self.verify()["ok"])
+        self.assertNotIn(SECRET, json.dumps(self.entries()))
+
+    def test_metadata_edits_detected_by_verify(self):
+        op = FakeOpener().add("GET", "https://api.example.org/", _fresh_response())
+        _fetch("https://api.example.org/a", op, evidence_log=self.log())
+        path = os.path.join(self.logdir, self.core.LOG_NAME)
+        original = self.entries()[0]
+        for field, value in (("server_date", "Sat, 17 Oct 2026 09:00:00 GMT"), ("tls_cert_sha256", "0" * 64),
+                             ("operator", "Someone Else"), ("status", 404), ("source", "https://elsewhere/")):
+            edited = dict(original, **{field: value})
+            with open(path, "wb") as f:
+                f.write(self.core.canonical(edited) + b"\n")
+            rep = self.verify(public_key=None)
+            self.assertFalse(rep["ok"], field)
+            self.assertTrue(any("entry edited" in p for p in rep["problems"]), (field, rep["problems"]))
+        with open(path, "wb") as f:
+            f.write(self.core.canonical(original) + b"\n")
+        self.assertTrue(self.verify()["ok"])
+
+    def test_signing_with_test_key_and_wrong_key_fails(self):
+        op = FakeOpener().add("GET", "https://api.example.org/", _fresh_response())
+        _fetch("https://api.example.org/a", op, evidence_log=self.log())
+        e = self.entries()[0]
+        self.assertEqual(e["key_id"], self.core.key_id(self.core.load_public_key(self.pub_path)))
+        other_pub = os.path.join(self.tmp, "other.pub")
+        self.core.generate_keypair(os.path.join(self.tmp, "other.key"), other_pub)
+        rep = self.verify(public_key=self.core.load_public_key(other_pub))
+        self.assertFalse(rep["ok"])
+        self.assertTrue(any("signature does not verify" in p for p in rep["problems"]))
+        with self.assertRaises(ValueError):  # a signed log cannot be extended unsigned
+            self.log(signed=False)
+
+    def test_secret_in_body_is_stored_redacted(self):
+        echo = ('{"echo": "%s"}' % SECRET).encode()
+        op = FakeOpener().add("GET", "https://api.example.org/", _fresh_response(body=echo))
+        r = _fetch("https://api.example.org/a", op, evidence_log=self.log(), secrets=[SECRET])
+        e = r.evidence_entry
+        self.assertEqual(e["extra"]["secret_redactions"], 1)
+        self.assertNotEqual(e["sha256"], e["extra"]["sha256_as_received"])
+        for root, _, files in os.walk(self.logdir):
+            for name in files:
+                self.assertNotIn(SECRET.encode(), read_bytes(os.path.join(root, name)))
+        self.assertTrue(self.verify()["ok"])
+
+    def test_rejected_status_is_recorded_then_raised(self):
+        op = FakeOpener().add("GET", "https://api.example.org/", _fresh_response(status=404, body=b"nope"))
+        with self.assertRaises(F.FetchError):
+            _fetch("https://api.example.org/a", op, evidence_log=self.log())
+        self.assertEqual(self.entries()[0]["status"], 404)
+
+    def test_streamed_body_is_captured_from_disk(self):
+        op = FakeOpener().add("GET", "https://api.example.org/", _fresh_response(body=b"GEOTIFF" * 100))
+        target = os.path.join(self.tmp, "dem.tif")
+        r = _fetch("https://api.example.org/a", op, evidence_log=self.log(), stream_to=target)
+        self.assertIsNone(r.body)
+        self.assertEqual(r.evidence_entry["sha256"], hashlib.sha256(b"GEOTIFF" * 100).hexdigest())
+        self.assertTrue(self.verify()["ok"])
+
+    def test_operator_required_and_checked_before_network(self):
+        with self.assertRaises(ValueError) as cm:
+            F.open_evidence_log(self.logdir)
+        self.assertIn("operator", str(cm.exception))
+        os.environ[self.core.ENV_OPERATOR] = OPERATOR
+        self.assertEqual(F.open_evidence_log(self.logdir).operator, OPERATOR)
+
+    def test_cli_flags(self):
+        import census  # a connector that uses add_common_args / common_kwargs / cli_main
+        op = FakeOpener()
+        base = ["--address", "1 Main St, Columbus OH", "--retries", "0", "--evidence-log", self.logdir]
+        with mock.patch("sys.stderr"), mock.patch("sys.stdout"):
+            self.assertEqual(census.main(base, opener=op), 2)  # no operator
+            self.assertEqual(census.main(["--address", "x", "--evidence-key", self.key_path], opener=op), 2)
+        self.assertEqual(op.requests, [])
+
+
+def _self_signed_localhost(tmp):
+    from cryptography import x509
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.x509.oid import NameOID
+    key = ec.generate_private_key(ec.SECP256R1())
+    name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "localhost")])
+    now = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=1)
+    cert = (x509.CertificateBuilder().subject_name(name).issuer_name(name).public_key(key.public_key())
+            .serial_number(x509.random_serial_number()).not_valid_before(now)
+            .not_valid_after(now + dt.timedelta(days=2))
+            .add_extension(x509.SubjectAlternativeName([x509.IPAddress(ipaddress.ip_address("127.0.0.1"))]),
+                           critical=False)
+            .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
+            .sign(key, hashes.SHA256()))
+    cert_path, key_path = os.path.join(tmp, "srv.pem"), os.path.join(tmp, "srv.key")
+    with open(cert_path, "wb") as f:
+        f.write(cert.public_bytes(serialization.Encoding.PEM))
+    with open(key_path, "wb") as f:
+        f.write(key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8,
+                                  serialization.NoEncryption()))
+    return cert_path, key_path, hashlib.sha256(cert.public_bytes(serialization.Encoding.DER)).hexdigest()
+
+
+class _Hello(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):  # noqa: N802
+        code = 404 if self.path.startswith("/missing") else 200
+        body = b"hello"
+        self.send_response(code)
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, *a):
+        pass
+
+
+class DefaultOpenerTLS(unittest.TestCase):
+    def test_default_opener_records_peer_certificate(self):
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp, True)
+        cert, key, fp = _self_signed_localhost(tmp)
+        server = http.server.HTTPServer(("127.0.0.1", 0), _Hello)
+        sctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        sctx.load_cert_chain(cert, key)
+        server.socket = sctx.wrap_socket(server.socket, server_side=True)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        try:
+            opener = F.default_opener(context=ssl.create_default_context(cafile=cert), proxies={})
+            base = f"https://127.0.0.1:{server.server_port}"
+            ok = opener(urllib.request.Request(base + "/page"), 5)
+            self.assertEqual(F._status(ok), 200)
+            self.assertEqual(F.peer_cert_of(ok), fp)
+            self.assertIsNotNone(F._norm_headers(ok.headers).get("date"))
+            ok.read()
+            missing = opener(urllib.request.Request(base + "/missing"), 5)  # HTTPError returned, not raised
+            self.assertEqual(F._status(missing), 404)
+            self.assertEqual(F.peer_cert_of(missing), fp)
+        finally:
+            server.shutdown()
+            server.server_close()
 
 
 class Parsers(unittest.TestCase):

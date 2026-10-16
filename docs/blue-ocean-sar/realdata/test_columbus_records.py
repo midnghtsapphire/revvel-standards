@@ -3,12 +3,14 @@
 import contextlib
 import io
 import json
+import os
 import pathlib
 import tempfile
 import unittest
 import urllib.error
 import urllib.parse
 import urllib.request
+from unittest import mock
 
 import columbus_records as cr
 
@@ -581,6 +583,132 @@ class ExitCodeTests(unittest.TestCase):
         self.assertEqual(code, cr.EXIT_OK)
         self.assertEqual([x["layer"] for x in json.loads(out)["layers"]], ["permits"])
         self.assertTrue(all(u.startswith(cr.BASE + "/7") for u in fake.calls))
+
+
+SERVER_DATE = "Fri, 16 Oct 2026 12:00:00 GMT"
+FAKE_TLS = cr.digest(b"fake peer certificate")  # hash of a fixed phrase, not a secret
+OPERATOR = "Det. A. Example"
+
+
+class FakeHTTPResponseWithHeaders(FakeHTTPResponse):
+    def __init__(self, body, url, status=200):
+        super().__init__(body, url, status)
+        self.headers = {"Date": SERVER_DATE}
+        self.peer_cert_sha256 = FAKE_TLS
+
+
+class SharedEvidenceLogTests(unittest.TestCase):
+    """--evidence-log: the shared revvel-evidence/1 log (SYSTEM_REVIEW C5/M1)."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = pathlib.Path(self.tmp.name)
+        self.core = cr.evidence_core()
+        env = mock.patch.dict(os.environ, {})
+        env.start()
+        self.addCleanup(env.stop)
+        os.environ.pop(self.core.ENV_OPERATOR, None)
+        self.log_dir = self.root / "case-log"
+        self.key, self.pub = self.root / "op.key", self.root / "op.pub"
+        self.core.generate_keypair(str(self.key), str(self.pub))  # throwaway test key in a temp dir
+
+    def getter_with_transport(self, fake):
+        def get(url):
+            out = fake(url)
+            out.update(server_date=SERVER_DATE, tls_cert_sha256=FAKE_TLS)
+            return out
+        return get
+
+    def run_logged(self, **kwargs):
+        log = cr.open_shared_log(self.log_dir, OPERATOR, str(self.key))
+        report = cr.run(self.root / "runs", getter=self.getter_with_transport(FakeArcGIS()), evidence_log=log,
+                        **kwargs)
+        return report, self.entries()
+
+    def entries(self):
+        return [json.loads(line) for line in (self.log_dir / self.core.LOG_NAME).read_text().splitlines()]
+
+    def verify(self, **kw):
+        kw.setdefault("public_key", self.core.load_public_key(str(self.pub)))
+        return self.core.verify_log(str(self.log_dir), **kw)
+
+    def test_read_once_captures_date_and_tls(self):
+        class Opener(FakeOpener):
+            def open(self, request, timeout=None):
+                self.requests.append(request.full_url)
+                return FakeHTTPResponseWithHeaders(b"{}", request.full_url)
+        result = cr.fetch(FetchTests.URL, opener=Opener([]))
+        self.assertEqual((result["server_date"], result["tls_cert_sha256"]), (SERVER_DATE, FAKE_TLS))
+        self.assertIsNone(cr.fetch(FetchTests.URL, opener=FakeOpener([(b"{}", None, 200)]))["server_date"])
+
+    def test_every_response_summary_and_manifest_logged(self):
+        report, entries = self.run_logged()
+        self.assertTrue(report["complete"], report)
+        kinds = [e["kind"] for e in entries]
+        self.assertEqual(len(entries), 13)  # 2 layers x (metadata, count, 3 pages, summary) + run manifest
+        self.assertEqual(kinds[:6], ["arcgis-metadata", "arcgis-count"] + ["arcgis-query"] * 3
+                         + ["columbus-layer-summary"])
+        self.assertEqual(kinds[-1], "columbus-run-manifest")
+        run_dir = pathlib.Path(report["run_dir"])
+        self.assertEqual((self.log_dir / entries[-1]["file"]).read_bytes(), (run_dir / cr.MANIFEST).read_bytes())
+        raw = entries[0]
+        self.assertEqual((raw["status"], raw["server_date"], raw["tls_cert_sha256"]), (200, SERVER_DATE, FAKE_TLS))
+        self.assertEqual((raw["operator"], raw["extra"]["case"]), (OPERATOR, "CASE001"))
+        self.assertEqual(raw["tool"]["name"], cr.TOOL_NAME)
+        self.assertTrue(all(e["signature"] for e in entries))
+        self.assertEqual(report["evidence_log"]["head"], entries[-1]["entry_hash"])
+        self.assertEqual(cr.verify(run_dir), [])
+        self.assertTrue(self.verify(expect_head=entries[-1]["entry_hash"], court=True)["ok"])
+
+    def test_identical_bodies_get_distinct_files(self):
+        _, entries = self.run_logged()
+        # both layers return byte-identical metadata; each capture still has its own stored file
+        self.assertEqual(entries[0]["sha256"], entries[6]["sha256"])
+        self.assertEqual(len({e["file"] for e in entries}), len(entries))
+
+    def test_metadata_edit_undetected_by_legacy_but_detected_by_shared_verify(self):
+        report, entries = self.run_logged()
+        run_dir = pathlib.Path(report["run_dir"])
+        manifest = json.loads((run_dir / cr.MANIFEST).read_text())
+        manifest["files"][0]["url"] = cr.BASE + "/99?f=json"
+        manifest["case"] = "OTHER"
+        (run_dir / cr.MANIFEST).write_text(json.dumps(manifest))
+        self.assertEqual(cr.verify(run_dir), [])  # the legacy weakness (C5): metadata edits pass
+        for field, value in (("source", cr.BASE + "/99?f=json"), ("status", 404),
+                             ("server_date", "Sat, 17 Oct 2026 09:00:00 GMT")):
+            edited = [dict(e) for e in entries]
+            edited[0][field] = value
+            (self.log_dir / self.core.LOG_NAME).write_bytes(b"".join(self.core.canonical(e) + b"\n" for e in edited))
+            rep = self.verify()
+            self.assertFalse(rep["ok"], field)
+            self.assertTrue(any("entry edited" in p for p in rep["problems"]), rep["problems"])
+
+    def test_cli_operator_required_then_verify(self):
+        fake = FakeArcGIS()
+        code, _, err = ExitCodeTests.main(self, ["--output", str(self.root / "runs"),
+                                                 "--evidence-log", str(self.log_dir)], fake)
+        self.assertEqual(code, cr.EXIT_BAD_INPUT)
+        self.assertIn("operator", err)
+        self.assertEqual(fake.calls, [])
+        code, _, _ = ExitCodeTests.main(self, ["--evidence-key", str(self.key)], fake)
+        self.assertEqual(code, cr.EXIT_BAD_INPUT)  # a key without a log
+        code, out, err = ExitCodeTests.main(self, ["--output", str(self.root / "runs"), "--evidence-log",
+                                                   str(self.log_dir), "--operator", OPERATOR,
+                                                   "--evidence-key", str(self.key)], fake)
+        self.assertEqual(code, cr.EXIT_OK, err)
+        head = json.loads(out)["evidence_log"]["head"]
+        argv = ["--verify", str(self.log_dir), "--public-key", str(self.pub), "--expect-head", head, "--court"]
+        code, out, _ = ExitCodeTests.main(self, argv)
+        self.assertEqual(code, cr.EXIT_OK, out)
+        self.assertTrue(json.loads(out)["verified"])
+        lines = (self.log_dir / self.core.LOG_NAME).read_text().splitlines()
+        (self.log_dir / self.core.LOG_NAME).write_text("\n".join(lines[:-1]) + "\n")  # truncate the last entry
+        code, out, _ = ExitCodeTests.main(self, argv)
+        self.assertEqual(code, cr.EXIT_INCOMPLETE)
+        self.assertFalse(json.loads(out)["verified"])
+        code, _, _ = ExitCodeTests.main(self, ["--verify", str(self.root / "runs"), "--court"])
+        self.assertEqual(code, cr.EXIT_BAD_INPUT)  # --court only applies to a shared log
 
 
 if __name__ == "__main__":

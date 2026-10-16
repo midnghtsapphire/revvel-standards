@@ -21,6 +21,14 @@ code. For every call this adapter:
      that echoes the key has it replaced, and both the as-received and saved
      hashes are kept), and writes a 'result' entry to the audit log that ties
      the authority decision to the evidence manifest;
+  5b. with --evidence-log DIR, also appends the request and the response to
+     the shared revvel-evidence/1 log (../evidence; SYSTEM_REVIEW C5/M1): an
+     operator is required (--operator or EVIDENCE_OPERATOR), every metadata
+     field (status, server Date header, TLS peer-certificate SHA-256, redacted
+     headers, case, purpose, authority) is hashed into a chain, --evidence-key
+     signs each entry with Ed25519, and the audit 'result' entry records the
+     log's new head. The per-call directory above (whose manifest.json has no
+     chain and no operator) is still written for backward compatibility;
   6. prints the response as JSON.
 
   python records_adapter.py validate --provider-file providers.json
@@ -34,6 +42,8 @@ refused. Otherwise --subject is required for LICENSED and LEGAL_PROCESS calls.
 
 Paths: --evidence-dir (env RECORDS_EVIDENCE_DIR, default evidence/), --ledger
 and --audit-log as in authority.py. Evidence files are written mode 0600.
+--evidence-log (env RECORDS_EVIDENCE_LOG) names the shared log; --operator
+(env EVIDENCE_OPERATOR) is then required and --evidence-key is optional.
 
 Exit codes: 0 response 2xx, 2 bad input or provider file, 3 refused by the
 authority gate, 4 network error or non-2xx response (evidence still saved).
@@ -56,8 +66,10 @@ import uuid
 
 try:
     from . import authority as A
+    from . import fetch as F
 except ImportError:
     import authority as A
+    import fetch as F
 
 try:
     import fcntl
@@ -72,7 +84,9 @@ STYLE_HEADER = "header"
 AUTH_STYLES = frozenset((STYLE_BEARER, STYLE_HEADER))
 METHODS = ("GET", "POST")
 ENV_EVIDENCE = "RECORDS_EVIDENCE_DIR"
+ENV_EVIDENCE_LOG = "RECORDS_EVIDENCE_LOG"
 DEFAULT_EVIDENCE = "evidence"
+TOOL_VERSION = "0.2"
 DEFAULT_TIMEOUT = 30
 DEFAULT_MAX_BYTES = 20 * 1024 * 1024
 REDACTED = "[REDACTED]"
@@ -242,7 +256,10 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 def default_opener():
-    op = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ssl.create_default_context()),
+    # op = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ssl.create_default_context()),
+    #                                  _NoRedirect())
+    # Replaced: the stock handler drops the peer certificate; this one keeps its SHA-256 for the evidence log.
+    op = urllib.request.build_opener(F.CertRecordingHTTPSHandler(context=ssl.create_default_context()),
                                      _NoRedirect())
 
     def _open(req, timeout):
@@ -288,10 +305,11 @@ class RateLimiter:
 
 class RecordsAdapter:
     def __init__(self, provider, gate, evidence_dir, *, opener=None, key=None, key_file=None,
-                 clock=time.time, sleep=time.sleep, environ=None):
+                 clock=time.time, sleep=time.sleep, environ=None, evidence_log=None):
         self.p = provider
         self.gate = gate
         self.evidence_dir = evidence_dir
+        self.evidence_log = evidence_log  # evidence.core.EvidenceLog (see fetch.open_evidence_log) or None
         self.opener = opener or default_opener()
         self._key = key
         self._key_file = key_file
@@ -373,13 +391,16 @@ class RecordsAdapter:
         sent_at = A.iso(A.utc_now())
         req = urllib.request.Request(url, data=data, headers=headers, method=ep["method"])
         status, resp_headers, body, error = None, {}, b"", None
+        tls_fp = None
         try:
             resp = self.opener(req, self.p["timeout_seconds"])
             status = getattr(resp, "status", None) or resp.getcode()
             resp_headers = dict(resp.headers.items())
+            tls_fp = F.peer_cert_of(resp)
             body = self._read(resp)
         except urllib.error.HTTPError as e:
             status, resp_headers = e.code, dict(e.headers.items()) if e.headers else {}
+            tls_fp = F.peer_cert_of(e)
             try:
                 body = self._read(e)
             except (OSError, ValueError) as x:
@@ -398,11 +419,22 @@ class RecordsAdapter:
             "rate_limit_wait_seconds": round(waited, 3),
         }
         ev = self._save_evidence(case_id, ep, request_record, status, resp_headers, body, received_at, error, secrets)
+        log_fields = {}
+        if self.evidence_log is not None:
+            try:
+                shared = self._append_shared(case_id, ep, purpose, ref, request_record, status, resp_headers, body,
+                                             received_at, error, secrets, tls_fp, ev)
+                ev["evidence_log"] = shared
+                log_fields = {"evidence_log_head": shared["head"], "evidence_log_seq": shared["response_seq"]}
+            except Exception as e:  # noqa: BLE001 - EvidenceError / OSError: the capture postcondition fails
+                error = (error + "; " if error else "") + redact_text(f"evidence log append failed: {e}", secrets)
         try:
+            # self.gate.log("result", ..., evidence_manifest_sha256=..., evidence_dir=ev["dir"], **subject_fields)
+            # Replaced: the audit entry now also names the shared evidence log head (when one is used).
             self.gate.log("result", source_class=ep["source_class"], source_name=self.source_name(ep),
                           case_id=case_id, purpose=purpose, authority=ref, status=status, error=error,
                           evidence_manifest_sha256=ev["manifest_sha256"], evidence_dir=ev["dir"],
-                          **self.gate.subject_fields(subject))
+                          **log_fields, **self.gate.subject_fields(subject))
         except (OSError, ValueError, KeyError) as e:
             error = (error + "; " if error else "") + f"audit result entry not written: {e}"
 
@@ -426,17 +458,46 @@ class RecordsAdapter:
             raise ValueError(f"response larger than max_response_bytes ({cap})")
         return body
 
-    def _save_evidence(self, case_id, ep, request_record, status, resp_headers, body, received_at, error, secrets):
-        stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        d = os.path.join(self.evidence_dir, safe_component(case_id),
-                         f"{stamp}-{self.p['provider']}-{ep['name']}-{uuid.uuid4().hex[:8]}")
-        os.makedirs(d, mode=0o700)
+    @staticmethod
+    def _evidence_payload(request_record, status, resp_headers, body, received_at, error, secrets):
+        """(request bytes, saved response bytes, response metadata): the same content for both evidence formats."""
         saved, nred = redact_bytes(body, secrets)
         req_bytes = (json.dumps(request_record, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode("utf-8")
         meta = {"status": status, "error": error, "received_at": received_at,
                 "headers": redact_headers(resp_headers, secrets),
                 "nbytes_as_received": len(body), "sha256_as_received": A.sha256_bytes(body),
                 "sha256_saved": A.sha256_bytes(saved), "secret_redactions": nred}
+        return req_bytes, saved, meta
+
+    def _append_shared(self, case_id, ep, purpose, ref, request_record, status, resp_headers, body, received_at,
+                       error, secrets, tls_fp, legacy):
+        """Append the request and the response to the shared evidence log; returns seqs and the new head."""
+        req_bytes, saved, meta = self._evidence_payload(request_record, status, resp_headers, body, received_at,
+                                                        error, secrets)
+        common = {"provider": self.p["provider"], "endpoint": ep["name"], "source_class": ep["source_class"],
+                  "case_id": case_id, "purpose": purpose, "authority": ref,
+                  "legacy_dir": os.path.basename(legacy["dir"]), "legacy_manifest_sha256": legacy["manifest_sha256"]}
+        source = request_record["url"]  # already redacted
+        req_entry = self.evidence_log.append(req_bytes, kind="records-request", source=source,
+                                             extra=dict(common, sent_at=request_record["sent_at"]))
+        date = next((v for k, v in resp_headers.items() if k.lower() == "date"), None)
+        resp_entry = self.evidence_log.append(
+            saved, kind="records-response", source=source, status=status,
+            server_date=redact_text(date, secrets) if date else None, tls_cert_sha256=tls_fp,
+            extra=dict(common, request_seq=req_entry["seq"], request_entry_hash=req_entry["entry_hash"], **meta))
+        return {"dir": self.evidence_log.dir, "request_seq": req_entry["seq"], "response_seq": resp_entry["seq"],
+                "head": resp_entry["entry_hash"], "signed": resp_entry["signature"] is not None}
+
+    def _save_evidence(self, case_id, ep, request_record, status, resp_headers, body, received_at, error, secrets):
+        stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        d = os.path.join(self.evidence_dir, safe_component(case_id),
+                         f"{stamp}-{self.p['provider']}-{ep['name']}-{uuid.uuid4().hex[:8]}")
+        os.makedirs(d, mode=0o700)
+        # saved, nred = redact_bytes(body, secrets)
+        # req_bytes = ...; meta = {...}
+        # Replaced: built once in _evidence_payload so the legacy files and the shared log hold identical content.
+        req_bytes, saved, meta = self._evidence_payload(request_record, status, resp_headers, body, received_at,
+                                                        error, secrets)
         meta_bytes = (json.dumps(meta, indent=2, sort_keys=True) + "\n").encode("utf-8")
         files = {"request.json": req_bytes, "response.body": saved, "response.meta.json": meta_bytes}
         for name, data in files.items():
@@ -485,6 +546,8 @@ def build_parser():
     p.add_argument("--subject-mode", choices=A.SUBJECT_MODES, default="hash")
     p.add_argument("--actor", help="who is running the call (written to the audit log)")
     p.add_argument("--out", help="write the JSON result here instead of stdout")
+    F.add_evidence_log_args(p.add_argument_group("shared evidence log (revvel-evidence/1)"))
+    p.set_defaults(evidence_log=os.environ.get(ENV_EVIDENCE_LOG) or None)
     return ap
 
 
@@ -501,8 +564,13 @@ def main(argv=None, opener=None, environ=None):
             return 0
         key = read_key(provider, a.key_file, environ)
         secrets.append(key)
+        # Operator, key and log are checked before the gate is asked or anything is sent.
+        evidence_log = F.evidence_log_from_args(a, tool_name="records_adapter", tool_version=TOOL_VERSION,
+                                                tool_path=os.path.abspath(__file__))
         gate = A.Gate(a.ledger, a.audit_log, subject_mode=a.subject_mode, actor=a.actor)
-        adapter = RecordsAdapter(provider, gate, a.evidence_dir, opener=opener, key=key)
+        # adapter = RecordsAdapter(provider, gate, a.evidence_dir, opener=opener, key=key)
+        # Replaced: pass the shared evidence log through (None keeps the legacy-only behaviour).
+        adapter = RecordsAdapter(provider, gate, a.evidence_dir, opener=opener, key=key, evidence_log=evidence_log)
         res = adapter.call(a.endpoint, a.case, a.purpose, parse_params(a.param), subject=a.subject)
     except A.AuthorityError as e:
         print(f"refused: {redact_text(e, secrets)}", file=sys.stderr)

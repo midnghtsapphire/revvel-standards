@@ -507,13 +507,34 @@ and a year range.
   chain_i = sha256(chain_{i-1} + sha256_i).
 - **Verification.** `--verify` detects edited, deleted or reordered files.
   Keep the printed chain head somewhere else and pass it with
-  `--expect-head`.
+  `--expect-head`. This legacy chain covers only the file hashes. The URL,
+  status, time and the manifest's top-level fields (case, query, completeness)
+  can be edited without detection (SYSTEM_REVIEW C5).
+- **Shared evidence log.** `--evidence-log DIR` also appends every raw
+  response, each layer summary and the run's `manifest.json` to the shared
+  `revvel-evidence/1` log in [`../evidence`](../evidence/README.md). Each entry
+  hashes all of its metadata into the chain: operator (required, `--operator`
+  or `EVIDENCE_OPERATOR`), host, tool version and git commit, clock state,
+  URL, HTTP status, the server's `Date` header, the SHA-256 of the TLS peer
+  certificate, case and run id. `--evidence-key` signs each entry with
+  Ed25519. Identical responses get separate stored files. One log can hold
+  every run of a case. The run directory is still written as before. The
+  operator, key and log are checked before any request is sent.
+- **Verifying a shared log.** `--verify DIR` recognises a shared log
+  (`evidence.jsonl`) and checks it with the library. It accepts
+  `--public-key`, `--expect-head`, `--court` and `--tsa-ca`.
 
 ```sh
 python columbus_records.py --number 1546 --street HIGH --start 2000 --end 2010 --output evidence
 python columbus_records.py --verify evidence/run_<stamp> --expect-head <hex>
+python columbus_records.py --number 1546 --street HIGH --output evidence \
+    --evidence-log case-014 --operator "Det. J. Smith" --evidence-key ~/keys/jsmith.key
+python columbus_records.py --verify case-014 --public-key jsmith.pub --expect-head <head> --court
 python -m unittest test_columbus_records
 ```
+
+The shared log needs the `cryptography` package. Without `--evidence-log` the
+tool still uses only the standard library.
 
 Exit codes: 0 means complete; 1 means incomplete, truncated or a failed
 verify; 2 means bad input. The host is blocked from the build sandbox, so

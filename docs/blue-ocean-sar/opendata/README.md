@@ -15,9 +15,29 @@ Every request goes through `fetch.py`, which enforces these rules:
   honoured; if it asks for more than 120 s, the request fails instead.
 - The User-Agent names the project. When `CONTACT_EMAIL` is set, the
   User-Agent includes it.
-- `--evidence-dir DIR` saves the raw response bytes and a JSON sidecar for
-  each request. The sidecar records the sha256, the redacted URL, the UTC time
-  and the HTTP status.
+- `--evidence-log DIR` appends every response to the shared evidence log in
+  [`../evidence`](../evidence/README.md) (format `revvel-evidence/1`). Each
+  entry records and hashes the operator, host, tool version and git commit,
+  clock state, redacted URL and redirect hops, HTTP status, the server's
+  `Date` header, the SHA-256 of the TLS peer certificate, the redacted response
+  headers and the request-body hash, and chains to the entry before it. The
+  operator is required: `--operator NAME` or `EVIDENCE_OPERATOR`.
+  `--evidence-key KEY` signs every entry with an Ed25519 key (passphrase from
+  `--evidence-key-passphrase-file` or `EVIDENCE_KEY_PASSPHRASE`, never argv).
+  Stored files are named `<seq>_<sha256>.bin`, so two captures in the same
+  second never collide. A body that contains a secret is stored with the
+  secret replaced, and the as-received hash is kept. Check a log with
+  `python3 -m evidence verify --log DIR --public-key op.pub` from
+  `docs/blue-ocean-sar/`. This needs the `cryptography` package; the
+  connectors do not need it otherwise.
+- `--evidence-dir DIR` (deprecated, kept unchanged for existing scripts and
+  directories) saves the raw response bytes and a JSON sidecar for each
+  request. The sidecar records the sha256, the redacted URL, the UTC time and
+  the HTTP status. It has no chain, no operator and no Date or TLS data, its
+  metadata can be edited undetected, and two identical responses in the same
+  second share a name, so the second overwrites the first. Using it prints a
+  warning. `python3 -m evidence import DIR --into LOG` moves a verified
+  sidecar directory into a shared log. Both options can be given together.
 - Secrets come only from environment variables, or from a file whose path you
   pass with `--token-file` or `--pc-key-file`. A secret is never accepted as a
   command-line value and is never logged. Secrets are redacted from saved and
@@ -142,8 +162,10 @@ python3 traffic_cams.py --catalog-file USA.json --lat 36.97 --lon -86.45 \
   --snapshot-nearest 1 --snapshot-dir snaps/ --evidence-dir evidence/
 ```
 
-Add `--evidence-dir DIR` to any command to keep the raw responses, and `-v` to
-log the requests (with secrets redacted) to stderr.
+Add `--evidence-log DIR --operator NAME` (optionally `--evidence-key KEY`) to
+any command to keep the raw responses in the shared evidence log, and `-v` to
+log the requests (with secrets redacted) to stderr. The older
+`--evidence-dir DIR` still works but is deprecated.
 
 ## Tests
 

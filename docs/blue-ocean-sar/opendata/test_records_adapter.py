@@ -17,6 +17,7 @@ import urllib.error
 from unittest import mock
 
 import authority as A
+import fetch as F
 import records_adapter as R
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -336,6 +337,118 @@ class TestGatedCalls(Base):
             "people_search", CASE, PURPOSE, {"last_name": "Example", "first_name": "J"})
         self.assertFalse(res["ok"])
         self.assertIn("max_response_bytes", res["error"])
+
+
+class TestSharedEvidenceLog(Base):
+    """--evidence-log: request and response in the shared revvel-evidence/1 log (SYSTEM_REVIEW C5/M1)."""
+
+    OPERATOR = "Analyst B. Example"
+    DATE = "Fri, 16 Oct 2026 12:00:00 GMT"
+    TLS = A.sha256_bytes(b"fake peer certificate")  # hash of a fixed phrase, not a secret
+
+    def setUp(self):
+        super().setUp()
+        self.core = F.evidence_core()
+        os.environ.pop(self.core.ENV_OPERATOR, None)
+        self.log_dir = os.path.join(self.tmp, "case-log")
+        self.key = os.path.join(self.tmp, "op.key")
+        self.pub = os.path.join(self.tmp, "op.pub")
+        self.core.generate_keypair(self.key, self.pub)  # throwaway test key in a temp dir
+
+    def response(self, status=200, body=None):
+        r = FakeResponse(status, body if body is not None else {"results": [{"person_id": "P1"}]},
+                         {"Content-Type": "application/json", "Date": self.DATE})
+        r.peer_cert_sha256 = self.TLS
+        return r
+
+    def shared(self):
+        return F.open_evidence_log(self.log_dir, operator=self.OPERATOR, key_path=self.key)
+
+    def entries(self):
+        with open(os.path.join(self.log_dir, self.core.LOG_NAME), "rb") as f:
+            return [json.loads(line) for line in f.read().splitlines()]
+
+    def verify(self):
+        return self.core.verify_log(self.log_dir, public_key=self.core.load_public_key(self.pub))
+
+    def test_request_and_response_logged_with_full_metadata(self):
+        self.add_licensed()
+        res = self.adapter(FakeOpener(self.response()), evidence_log=self.shared()).call(
+            "people_search", CASE, PURPOSE, {"first_name": "Jane", "last_name": "Example"})
+        self.assertTrue(res["ok"], res["error"])
+        req, resp = self.entries()
+        self.assertEqual((req["kind"], resp["kind"]), ("records-request", "records-response"))
+        self.assertEqual(resp["status"], 200)
+        self.assertEqual(resp["server_date"], self.DATE)
+        self.assertEqual(resp["tls_cert_sha256"], self.TLS)
+        self.assertEqual(resp["operator"], self.OPERATOR)
+        self.assertEqual(resp["extra"]["case_id"], CASE)
+        self.assertEqual(resp["extra"]["purpose"], PURPOSE)
+        self.assertEqual(resp["extra"]["request_entry_hash"], req["entry_hash"])
+        self.assertEqual(resp["extra"]["legacy_manifest_sha256"], res["evidence"]["manifest_sha256"])
+        self.assertTrue(os.path.isdir(res["evidence"]["dir"]))  # legacy per-call directory still written
+        self.assertEqual(res["evidence"]["evidence_log"]["head"], resp["entry_hash"])
+        self.assertTrue(res["evidence"]["evidence_log"]["signed"])
+        result = self.audit()[-1]
+        self.assertEqual(result["evidence_log_head"], resp["entry_hash"])
+        self.assertTrue(A.ChainLog(self.audit_path).verify()["ok"])
+        self.assertTrue(self.verify()["ok"])
+
+    def test_secret_never_reaches_shared_log(self):
+        self.add_licensed()
+        echo = self.response(body={"echo_key": SECRET})
+        self.adapter(FakeOpener(echo), evidence_log=self.shared()).call(
+            "people_search", CASE, PURPOSE, {"first_name": "Jane", "last_name": "Example"})
+        self.assertNotIn(SECRET, self.all_written_text())
+        req, resp = self.entries()
+        self.assertEqual(resp["extra"]["secret_redactions"], 1)
+        self.assertNotEqual(resp["sha256"], resp["extra"]["sha256_as_received"])
+        with open(os.path.join(self.log_dir, req["file"]), encoding="utf-8") as f:
+            self.assertEqual(json.load(f)["headers"]["X-Api-Key"], R.REDACTED)
+        self.assertTrue(self.verify()["ok"])
+
+    def test_metadata_edit_detected_by_verify(self):
+        self.add_licensed()
+        self.adapter(FakeOpener(self.response()), evidence_log=self.shared()).call(
+            "people_search", CASE, PURPOSE, {"first_name": "Jane", "last_name": "Example"})
+        req, resp = self.entries()
+        resp["extra"]["purpose"] = "marketing"
+        with open(os.path.join(self.log_dir, self.core.LOG_NAME), "wb") as f:
+            f.write(self.core.canonical(req) + b"\n" + self.core.canonical(resp) + b"\n")
+        rep = self.verify()
+        self.assertFalse(rep["ok"])
+        self.assertTrue(any("entry edited" in p for p in rep["problems"]), rep["problems"])
+
+    def test_http_error_keeps_tls_fingerprint(self):
+        self.add_licensed()
+        err = urllib.error.HTTPError("https://api.example.com/v1/people/search", 503, "busy",
+                                     email.message.Message(), io.BytesIO(b'{"error":"busy"}'))
+        err.peer_cert_sha256 = self.TLS
+        res = self.adapter(FakeOpener(err), evidence_log=self.shared()).call(
+            "people_search", CASE, PURPOSE, {"first_name": "Jane", "last_name": "Example"})
+        self.assertFalse(res["ok"])
+        resp = self.entries()[1]
+        self.assertEqual((resp["status"], resp["tls_cert_sha256"]), (503, self.TLS))
+
+    def test_cli_operator_required_and_signing(self):
+        self.add_licensed()
+        base = ("call", "--provider-file", self.provider_path, "--endpoint", "people_search", "--case", CASE,
+                "--purpose", PURPOSE, "--ledger", self.ledger_path, "--audit-log", self.audit_path,
+                "--evidence-dir", self.evidence, "--param", "first_name=Jane", "--param", "last_name=Example",
+                "--evidence-log", self.log_dir)
+        op = FakeOpener(self.response())
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = R.main(list(base), opener=op, environ=ENV)
+        self.assertEqual(code, 2)
+        self.assertIn("operator", err.getvalue())
+        self.assertEqual(op.requests, [])
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = R.main(list(base) + ["--operator", self.OPERATOR, "--evidence-key", self.key],
+                          opener=op, environ=ENV)
+        self.assertEqual(code, 0, err.getvalue())
+        self.assertEqual(len(self.entries()), 2)
+        self.assertTrue(self.verify()["ok"])
 
 
 class TestRateLimiter(unittest.TestCase):

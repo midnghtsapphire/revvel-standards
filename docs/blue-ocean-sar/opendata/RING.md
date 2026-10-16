@@ -107,6 +107,43 @@ not prove anything about Ring's servers. Anyone who can rewrite the whole
 directory can rebuild a fresh chain, so keep a copy of the last `chain_hash`
 somewhere you don't control alone, such as a published post or a commit.
 
+### Shared evidence log (signed)
+
+`manifest.jsonl` records no operator and no signature, so anyone who can write
+the directory can rebuild it (SYSTEM_REVIEW C5). To add a signed record, give
+`download` a shared evidence log from [`../evidence`](../evidence/README.md):
+
+```sh
+# once, from docs/blue-ocean-sar/: make a key pair and keep the private key offline
+python3 -m evidence keygen --private ~/keys/me.key --public me.pub
+
+python3 ring_export.py download --token-file ~/.config/ring-token.json \
+    --ids 7301234567890123456 --out-dir ring-videos \
+    --evidence-log ring-evidence --operator "A. Owner" --evidence-key ~/keys/me.key
+python3 ring_export.py verify --out-dir ring-videos \
+    --evidence-log ring-evidence --public-key me.pub --expect-head <head>
+```
+
+- `manifest.jsonl` is still written and still decides which ids are already
+  downloaded. The shared log is an extra record of the same files.
+- Each recording becomes one `ring-recording` entry. The entry stores a copy of
+  the MP4 and hashes all of its metadata: operator (required, `--operator` or
+  `EVIDENCE_OPERATOR`), host, tool version and git commit, clock state, event
+  and device ids, `created_at_utc`, `retrieved_at_utc`, the file's sha256, and
+  the `manifest.jsonl` `chain_hash` it belongs to. Each entry chains to the
+  previous one, and `--evidence-key` signs it with Ed25519.
+- The operator, key and log are checked before Ring is contacted; a problem
+  exits `2`. A recording that reaches `manifest.jsonl` but not the shared log
+  is reported as a failure (exit `1`).
+- `ring_doorbell` makes the HTTPS requests, so this tool never sees Ring's
+  `Date` header or TLS certificate. Those fields are empty, and each entry says
+  why in `extra.transport`.
+- `download` prints the log head. Publish it, or record it somewhere else, and
+  pass it back with `--expect-head`. `--court` also requires that head or an
+  RFC 3161 token (`python3 -m evidence timestamp`).
+- Recordings downloaded before you used `--evidence-log` can be copied in
+  with `python3 -m evidence import ring-videos --into ring-evidence`.
+
 ## Exit codes
 
 | code | meaning |

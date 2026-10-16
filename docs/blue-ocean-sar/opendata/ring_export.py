@@ -24,7 +24,17 @@ Commands::
     events   --token-file PATH [--device ID] [--since ISO] [--until ISO]
              [--kind motion|ding|on_demand] --out events.csv|events.json
     download --token-file PATH --ids ID [ID ...] --out-dir DIR [--device ID]
-    verify   --out-dir DIR
+             [--evidence-log LOG --operator NAME [--evidence-key KEY]]
+    verify   --out-dir DIR [--evidence-log LOG [--public-key PUB] [--expect-head HEX] [--court]]
+
+Evidence: ``manifest.jsonl`` in --out-dir (the original format) is always
+written; ``download`` uses it to skip recordings it already has. With
+--evidence-log, each recording is also appended to the shared
+revvel-evidence/1 log in ../evidence (SYSTEM_REVIEW C5/M1): an operator is
+required (--operator or EVIDENCE_OPERATOR), every metadata field is hashed and
+chained, and --evidence-key signs each entry with Ed25519. The HTTPS download
+is done by ring_doorbell, so no server Date header or TLS fingerprint is
+available to this tool; the entry says so.
 
 Exit codes: 0 ok, 1 incomplete / verify failure, 2 bad input / auth error.
 
@@ -57,7 +67,11 @@ EXIT_INCOMPLETE = 1
 EXIT_BAD_INPUT = 2
 
 USER_AGENT = "revvel-ring-export/1.0"
+TOOL_VERSION = "1.1"
 MANIFEST_NAME = "manifest.jsonl"
+EVIDENCE_KIND = "ring-recording"
+NO_TRANSPORT_FACTS = ("downloaded by the ring_doorbell library; this tool does not see the HTTP Date header "
+                      "or the TLS certificate")
 GENESIS_HASH = "0" * 64
 EVENT_KINDS = ("motion", "ding", "on_demand")
 EVENT_FIELDS = (
@@ -563,6 +577,55 @@ def verify_dir(out_dir: Path) -> list[str]:
 
 
 # --------------------------------------------------------------------------
+# Shared evidence log (../evidence, revvel-evidence/1)
+# --------------------------------------------------------------------------
+
+
+def _fetch_module():
+    """opendata/fetch.py holds the shared --evidence-log helpers (works as a script or a package)."""
+    try:
+        from . import fetch as F  # type: ignore
+    except ImportError:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import fetch as F  # type: ignore
+    return F
+
+
+def open_evidence_log(args: argparse.Namespace):
+    """The shared EvidenceLog asked for on the command line, or None. Checked before Ring is contacted."""
+    try:
+        return _fetch_module().evidence_log_from_args(args, tool_name="ring_export", tool_version=TOOL_VERSION,
+                                                      tool_path=os.path.abspath(__file__))
+    except ValueError as exc:
+        raise ExportError(str(exc), EXIT_BAD_INPUT) from exc
+
+
+def log_recording(evidence_log: Any, path: Path, record: dict[str, Any], chain_hash: str) -> dict[str, Any]:
+    """Append one downloaded recording (bytes from disk) and its manifest record to the shared log."""
+    extra = dict(record)
+    extra.update(legacy_manifest=MANIFEST_NAME, legacy_chain_hash=chain_hash, transport=NO_TRANSPORT_FACTS)
+    source = f"ring:device/{record['device_id']}/event/{record['event_id']}"
+    return evidence_log.append(path=str(path), kind=EVIDENCE_KIND, source=source, extra=extra)
+
+
+def verify_evidence_log(args: argparse.Namespace) -> tuple[list[str], list[str], dict[str, Any]]:
+    """Run the shared library's verify_log on --evidence-log; returns (problems, warnings, report)."""
+    F = _fetch_module()
+    try:
+        core = F.evidence_core()
+        public_key = core.load_public_key(args.public_key) if args.public_key else None
+        rep = core.verify_log(args.evidence_log, public_key=public_key, expect_head=args.expect_head,
+                              court=args.court, tsa_cafile=args.tsa_ca)
+    except ImportError as exc:
+        raise ExportError(f"--evidence-log needs ../evidence and the 'cryptography' package ({exc})") from exc
+    except (OSError, ValueError) as exc:
+        raise ExportError(f"cannot verify {args.evidence_log}: {exc}") from exc
+    except Exception as exc:  # noqa: BLE001 - core.EvidenceError (no log there)
+        raise ExportError(f"cannot verify {args.evidence_log}: {exc}") from exc
+    return rep["problems"], rep["warnings"], rep
+
+
+# --------------------------------------------------------------------------
 # Commands
 # --------------------------------------------------------------------------
 
@@ -718,6 +781,7 @@ async def cmd_download(args: argparse.Namespace, lib: dict[str, Any], io: "IO") 
         )
     prev = existing[-1]["chain_hash"] if existing else GENESIS_HASH
     done = {str(r.get("event_id")) for r in existing}
+    evidence_log = open_evidence_log(args)  # operator/key/log problems stop us before Ring is contacted
 
     auth, ring = await open_session(Path(args.token_file), lib)
     failures: list[str] = []
@@ -749,26 +813,39 @@ async def cmd_download(args: argparse.Namespace, lib: dict[str, Any], io: "IO") 
                 continue
             _atomic_write_bytes(target, bytes(data))
             digest, size = sha256_file(target)
-            prev = append_manifest(
-                out_dir,
-                {
-                    "event_id": eid,
-                    "device_id": str(dev.id),
-                    "device_name": getattr(dev, "name", ""),
-                    "kind": entry.get("kind", ""),
-                    "created_at_utc": iso_z(created),
-                    "file": name,
-                    "sha256": digest,
-                    "bytes": size,
-                    "retrieved_at_utc": iso_z(utc_now()),
-                },
-                prev,
-            )
+            record = {
+                "event_id": eid,
+                "device_id": str(dev.id),
+                "device_name": getattr(dev, "name", ""),
+                "kind": entry.get("kind", ""),
+                "created_at_utc": iso_z(created),
+                "file": name,
+                "sha256": digest,
+                "bytes": size,
+                "retrieved_at_utc": iso_z(utc_now()),
+            }
+            # prev = append_manifest(out_dir, {...same fields as `record`...}, prev)
+            # Replaced: the record is built first so the shared evidence log can carry it too.
+            prev = append_manifest(out_dir, record, prev)
             written += 1
             io.out(f"{eid}\t{name}\t{size}\t{digest}")
+            if evidence_log is not None:
+                try:
+                    ev = log_recording(evidence_log, target, record, prev)
+                except Exception as exc:  # noqa: BLE001 - EvidenceError / OSError: capture not recorded
+                    failures.append(f"{eid}: in {MANIFEST_NAME} but not added to the evidence log ({exc}); "
+                                    "add it with: python3 -m evidence import OUT_DIR --into LOG")
+                    continue
+                if ev["sha256"] != digest:
+                    failures.append(f"{eid}: file changed between download and evidence capture")
+                io.out(f"{eid}\tevidence seq {ev['seq']}\t{ev['entry_hash']}")
     finally:
         await _close(auth)
     io.out(f"Downloaded {written}; already in manifest {len(wanted) - len(todo)}; failed {len(failures)}")
+    if evidence_log is not None:
+        count, head = evidence_log.head()
+        io.out(f"evidence log {evidence_log.dir}: {count} entries, head {head} "
+               "(record this head somewhere you do not control)")
     for f in failures:
         io.err(f"FAILED {f}")
     return EXIT_INCOMPLETE if failures else EXIT_OK
@@ -776,6 +853,16 @@ async def cmd_download(args: argparse.Namespace, lib: dict[str, Any], io: "IO") 
 
 def cmd_verify(args: argparse.Namespace, io: "IO") -> int:
     problems = verify_dir(Path(args.out_dir))
+    if args.evidence_log:
+        ev_problems, warnings, rep = verify_evidence_log(args)
+        problems += [f"evidence log: {p}" for p in ev_problems]
+        for w in warnings:
+            io.err(f"WARN evidence log: {w}")
+        if not ev_problems:
+            io.out(f"evidence log OK: {rep['count']} entr{'y' if rep['count'] == 1 else 'ies'}, head {rep['head']}"
+                   + (", signed" if rep["signed"] else ", unsigned"))
+    elif args.public_key or args.expect_head or args.court:
+        raise ExportError("--public-key, --expect-head and --court need --evidence-log")
     if problems:
         for p in problems:
             io.err(f"FAIL {p}")
@@ -860,9 +947,16 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--out-dir", required=True)
     sp.add_argument("--device")
     paging(sp)
+    _fetch_module().add_evidence_log_args(sp.add_argument_group("shared evidence log"))
 
     sp = sub.add_parser("verify", help="re-hash recordings and check the manifest chain")
     sp.add_argument("--out-dir", required=True)
+    g = sp.add_argument_group("shared evidence log")
+    g.add_argument("--evidence-log", metavar="DIR", help="also verify this revvel-evidence/1 log")
+    g.add_argument("--public-key", metavar="PEM", help="operator's Ed25519 public key (checks every signature)")
+    g.add_argument("--expect-head", metavar="HEX", help="head recorded outside this machine (detects truncation)")
+    g.add_argument("--court", action="store_true", help="also require --expect-head or a verified RFC 3161 token")
+    g.add_argument("--tsa-ca", metavar="PEM", help="CA bundle to verify RFC 3161 tokens")
     return p
 
 

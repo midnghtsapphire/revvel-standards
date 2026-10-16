@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
+from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -156,6 +157,28 @@ class CmrStac(unittest.TestCase):
         self.assertNotIn(TOKEN, err)
         self.assertNotIn("authorization", op.requests[0]["headers"])
         self.assertEqual(op.requests[1]["headers"]["authorization"], "Bearer " + TOKEN)
+
+
+class SharedEvidenceLog(unittest.TestCase):
+    def test_download_into_shared_log_without_token(self):
+        import fetch as F
+        core = F.evidence_core()
+        op = FakeOpener()
+        op.add("POST", CMRSTAC, (200, fixture_json("stac_cmr_lpcloud_p1.json")))
+        op.add("GET", "https://data.lpdaac.earthdatacloud.nasa.gov/", (200, b"\x89HDF\r\n\x1a\n" + b"0" * 100))
+        with mock.patch.dict(os.environ, {"EARTHDATA_TOKEN": TOKEN, core.ENV_OPERATOR: "Det. A. Example"}), \
+                tempfile.TemporaryDirectory() as d, tempfile.TemporaryDirectory() as ev:
+            log = os.path.join(ev, "case")
+            code, res, err = _run(["--catalog", "cmr-lpcloud", "--collections", "GEDI02_A_002", "--band", "data",
+                                   "--download-dir", d, "--evidence-log", log], op)
+            self.assertEqual(code, 0, err)
+            rep = core.verify_log(log)
+            self.assertTrue(rep["ok"], rep["problems"])
+            self.assertEqual(rep["count"], 2)  # the search response and the streamed download
+            for root, _, files in os.walk(ev):
+                for name in files:
+                    self.assertNotIn(TOKEN.encode(), read_bytes(os.path.join(root, name)))
+        self.assertNotIn("deprecated", err)  # only --evidence-dir warns
 
 
 class Cli(unittest.TestCase):

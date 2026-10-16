@@ -40,6 +40,18 @@ What changed
   SHA-256. ``manifest.json`` chains each file's SHA-256 into a running hash
   ``chain_i = sha256(chain_{i-1} + sha256_i)`` (hex strings, genesis = 64 zeros)
   so reordering or deletion of entries is detectable; ``--verify`` recomputes it.
+  That legacy chain covers only the file digests: URL, status, time and the
+  manifest's top-level fields can be edited undetected (SYSTEM_REVIEW C5).
+  It is still written on every run, for backward compatibility.
+* Shared evidence log (``--evidence-log DIR``, SYSTEM_REVIEW C5/M1): every raw
+  response, each layer summary and the run manifest are also appended to a
+  revvel-evidence/1 log (../evidence). Each entry hashes all of its metadata
+  (operator, host, tool and git commit, clock state, URL, HTTP status, the
+  server's ``Date`` header, the TLS peer-certificate SHA-256, case and run id)
+  into the chain, and ``--evidence-key`` signs it with Ed25519. The operator is
+  required (``--operator`` or ``EVIDENCE_OPERATOR``). One log can hold many
+  runs of one case. ``--verify DIR`` recognises such a log (``evidence.jsonl``)
+  and checks it with the library, including ``--public-key`` and ``--court``.
 
 CLI::
 
@@ -47,6 +59,8 @@ CLI::
     python columbus_records.py --layer building=5 --layer engineering=22 --max-records 500
     python columbus_records.py --list-layers
     python columbus_records.py --verify evidence/run_20261016T120000000000Z [--expect-head <hex>]
+    python columbus_records.py --evidence-log case-014 --operator "Det. J. Smith" [--evidence-key op.key]
+    python columbus_records.py --verify case-014 --public-key op.pub [--expect-head <hex>] [--court]
 
 Each collection run writes into a fresh ``<output>/run_<UTC stamp>/`` directory.
 
@@ -63,6 +77,7 @@ import datetime as dt
 import hashlib
 import http.client
 import json
+import os
 import pathlib
 import re
 import sys
@@ -90,6 +105,11 @@ CHAIN_ALGORITHM = "chain_i = sha256_hex(ascii(chain_{i-1} + sha256_i)); chain_0 
 EXIT_OK = 0
 EXIT_INCOMPLETE = 1
 EXIT_BAD_INPUT = 2
+
+TOOL_NAME = "columbus_records"
+TOOL_VERSION = "2.1"
+SHARED_LOG_NAME = "evidence.jsonl"  # evidence.core.LOG_NAME, without importing the library
+ENV_PASSPHRASE = "EVIDENCE_KEY_PASSPHRASE"  # same variable as `python3 -m evidence`
 
 STREET_RE = re.compile(r"[A-Z0-9 ]{2,40}")
 FIELD_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]{0,63}")
@@ -177,8 +197,49 @@ class AllowListRedirectHandler(urllib.request.HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
+def peer_cert_fingerprint(sock):
+    """SHA-256 (hex) of the TLS peer certificate (DER) on ``sock``, or None."""
+    try:
+        der = sock.getpeercert(binary_form=True)
+    except (AttributeError, ValueError, OSError):
+        return None
+    return hashlib.sha256(der).hexdigest() if der else None
+
+
+class _CertRecordingHTTPSConnection(http.client.HTTPSConnection):
+    """Remembers the TLS peer certificate's SHA-256 (behind an intercepting proxy: the proxy's)."""
+
+    peer_cert_sha256 = None
+
+    def connect(self):
+        super().connect()
+        self.peer_cert_sha256 = peer_cert_fingerprint(self.sock)
+
+
+class CertRecordingHTTPSHandler(urllib.request.HTTPSHandler):
+    """Sets ``peer_cert_sha256`` on each HTTPS response.
+
+    Same as opendata/fetch.py's handler; duplicated so this module stays
+    standard-library only and does not import from another folder.
+    """
+
+    def https_open(self, req):
+        conns = []
+
+        def factory(host, **kw):
+            conn = _CertRecordingHTTPSConnection(host, **kw)
+            conns.append(conn)
+            return conn
+
+        response = self.do_open(factory, req, context=self._context)
+        response.peer_cert_sha256 = conns[-1].peer_cert_sha256 if conns else None
+        return response
+
+
 def build_opener():
-    return urllib.request.build_opener(AllowListRedirectHandler())
+    # return urllib.request.build_opener(AllowListRedirectHandler())
+    # Replaced: the stock HTTPS handler drops the peer certificate, so the TLS fingerprint could not be kept.
+    return urllib.request.build_opener(AllowListRedirectHandler(), CertRecordingHTTPSHandler())
 
 
 def _is_retryable(error):
@@ -197,13 +258,21 @@ def _read_once(url, opener, timeout, max_bytes):
         except UnapprovedURL as error:
             raise UnapprovedURL(f"Unexpected redirect to {final_url!r}") from error
         status = getattr(response, "status", None) or response.getcode()
+        headers = getattr(response, "headers", None)
+        server_date = headers.get("Date") if hasattr(headers, "get") else None
+        tls = getattr(response, "peer_cert_sha256", None)
         body = response.read(max_bytes + 1)
     if len(body) > max_bytes:
         raise ResponseTooLarge(f"Response larger than {max_bytes} bytes from {url}")
     if status is None or not 200 <= int(status) < 300:
         raise urllib.error.HTTPError(url, int(status or 0), f"HTTP status {status}", None, None)
+    # return {"url": url, "final_url": final_url, "status": int(status), "retrieved_utc": retrieved,
+    #         "body": body, "sha256": digest(body), "bytes": len(body)}
+    # Replaced: also return the server Date header and TLS fingerprint for the shared evidence log.
     return {"url": url, "final_url": final_url, "status": int(status), "retrieved_utc": retrieved,
-            "body": body, "sha256": digest(body), "bytes": len(body)}
+            "body": body, "sha256": digest(body), "bytes": len(body),
+            "server_date": server_date if isinstance(server_date, str) else None,
+            "tls_cert_sha256": tls if isinstance(tls, str) and HEX64_RE.fullmatch(tls) else None}
 
 
 def fetch(url, opener=None, retries=3, timeout=30, max_bytes=MAX_BYTES, sleep=time.sleep):
@@ -531,8 +600,80 @@ def chain_step(previous, file_sha256):
     return digest((previous + file_sha256).encode("ascii"))
 
 
+def evidence_core():
+    """Import the shared evidence library (docs/blue-ocean-sar/evidence) from any working directory.
+
+    Lazy, so the legacy-only path stays standard-library only; the shared log
+    needs the ``cryptography`` package.
+    """
+    parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if parent not in sys.path:
+        sys.path.insert(0, parent)
+    from evidence import core  # noqa: E402
+    return core
+
+
+def _passphrase(passphrase_file=None):
+    if passphrase_file:
+        with open(passphrase_file, "rb") as handle:
+            value = handle.readline().rstrip(b"\r\n")
+        if not value:
+            raise InputError(f"passphrase file {passphrase_file} is empty")
+        return value
+    env = os.environ.get(ENV_PASSPHRASE, "")
+    return env.encode("utf-8") if env else None
+
+
+def open_shared_log(directory, operator=None, key_path=None, passphrase_file=None):
+    """Open (or start) a shared revvel-evidence/1 log; every problem is an InputError before any request.
+
+    Mirrors opendata/fetch.py open_evidence_log (kept separate so this module
+    does not import from another folder).
+    """
+    try:
+        core = evidence_core()
+    except ImportError as error:
+        raise InputError(f"--evidence-log needs ../evidence and the 'cryptography' package ({error})") from error
+    key = None
+    if key_path:
+        try:
+            key = core.load_private_key(key_path, _passphrase(passphrase_file))
+        except (OSError, ValueError, TypeError, core.EvidenceError) as error:
+            raise InputError(f"cannot load --evidence-key {key_path}: {error}") from error
+    log = core.EvidenceLog(directory, operator=operator, private_key=key,
+                           tool=core.tool_info(TOOL_NAME, TOOL_VERSION, os.path.abspath(__file__)))
+    if not log.operator:
+        raise InputError(f"--evidence-log needs an operator: --operator NAME or ${core.ENV_OPERATOR}")
+    try:
+        entries = log.read_entries()
+        core.chain_head(entries)
+    except (OSError, ValueError, core.EvidenceError) as error:
+        raise InputError(f"evidence log {directory} cannot be extended: {error}") from error
+    if entries and entries[-1].get("key_id") != log.key_id:
+        raise InputError(f"evidence log {directory} uses a different signing mode or key")
+    return log
+
+
+def verify_shared(directory, public_key=None, expect_head=None, court=False, tsa_ca=None):
+    """Verify a shared evidence log with the library; returns its report (report["ok"] is the verdict)."""
+    try:
+        core = evidence_core()
+    except ImportError as error:
+        raise InputError(f"verifying {SHARED_LOG_NAME} needs ../evidence and 'cryptography' ({error})") from error
+    try:
+        key = core.load_public_key(public_key) if public_key else None
+    except (OSError, ValueError, core.EvidenceError) as error:
+        raise InputError(f"cannot load --public-key {public_key}: {error}") from error
+    return core.verify_log(directory, public_key=key, expect_head=expect_head, court=court, tsa_cafile=tsa_ca)
+
+
 class EvidenceLog:
-    """Writes files exactly once (``xb``) and keeps the running hash chain."""
+    """Writes files exactly once (``xb``) and keeps the running hash chain.
+
+    Legacy format (manifest version 2), still written on every run. Its chain
+    covers file digests only; the shared log (``open_shared_log``) hashes all
+    metadata.
+    """
 
     def __init__(self, directory):
         self.directory = pathlib.Path(directory)
@@ -561,10 +702,15 @@ def _kind_of(url):
 
 
 class RecordingGetter:
-    """Wraps a getter so every raw body is written to disk before it is parsed."""
+    """Wraps a getter so every raw body is written to disk before it is parsed.
 
-    def __init__(self, log, layer, getter):
+    With ``shared`` (an evidence.core.EvidenceLog) each body is also appended
+    there, with its full metadata hashed into the shared chain.
+    """
+
+    def __init__(self, log, layer, getter, shared=None, context=None):
         self.log, self.layer, self.getter = log, layer, getter
+        self.shared, self.context = shared, dict(context or {})
 
     def __call__(self, url):
         response = self.getter(url)
@@ -579,13 +725,26 @@ class RecordingGetter:
                                url=response.get("url", url), final_url=response.get("final_url"),
                                status=response.get("status"), retrieved_utc=response.get("retrieved_utc"),
                                attempts=response.get("attempts"))
+        if self.shared is not None:
+            tls = response.get("tls_cert_sha256")
+            self.shared.append(
+                body, kind=f"arcgis-{kind}", source=response.get("final_url") or entry["url"],
+                status=response.get("status"), server_date=response.get("server_date"),
+                tls_cert_sha256=tls if isinstance(tls, str) and HEX64_RE.fullmatch(tls) else None,
+                extra=dict(self.context, layer=self.layer, url=entry["url"], final_url=response.get("final_url"),
+                           retrieved_utc=response.get("retrieved_utc"), attempts=response.get("attempts"),
+                           legacy_file=name, legacy_chain=entry["chain"]))
         out = dict(response)
         out.update(file=name, sha256=entry["sha256"], url=entry["url"])
         return out
 
 
 def run(output, number=1546, street="HIGH", start=2000, end=2010, collector=collect, getter=fetch,
-        layers=None, max_records=DEFAULT_MAX_RECORDS, case="CASE001"):
+        layers=None, max_records=DEFAULT_MAX_RECORDS, case="CASE001", evidence_log=None):
+    """Collect every layer into a fresh run directory (legacy manifest) and, if given, the shared log.
+
+    ``evidence_log`` is an evidence.core.EvidenceLog (see ``open_shared_log``).
+    """
     layers = dict(DEFAULT_LAYERS if layers is None else layers)
     street = validate_query(number, street, start, end, layers, max_records)
     stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
@@ -596,13 +755,21 @@ def run(output, number=1546, street="HIGH", start=2000, end=2010, collector=coll
               "query": {"number": number, "street": street, "start": start, "end": end,
                         "layers": layers, "max_records": max_records},
               "layers": [], "errors": [], "complete": False}
+    context = {"case": case, "run_id": stamp, "query": report["query"]}
     for layer in layers:
         try:
-            result = collector(layer, number, street, start, end, getter=RecordingGetter(log, layer, getter),
+            # result = collector(..., getter=RecordingGetter(log, layer, getter), ...)
+            # Replaced: the recording getter also feeds the shared evidence log when one is given.
+            recorder = RecordingGetter(log, layer, getter, shared=evidence_log, context=context)
+            result = collector(layer, number, street, start, end, getter=recorder,
                                layers=layers, max_records=max_records)
             data = json.dumps(result, indent=2, sort_keys=True).encode("utf-8")
             entry = log.write(f"{len(log.entries) + 1:03d}_{layer}_summary.json", data,
                               role="parsed_summary", layer=layer)
+            if evidence_log is not None:
+                evidence_log.append(data, kind="columbus-layer-summary", source=result["source"],
+                                    extra=dict(context, layer=layer, legacy_file=entry["name"],
+                                               legacy_chain=entry["chain"]))
             report["layers"].append({key: result[key] for key in (
                 "layer", "layer_id", "where", "year_filter", "server_count", "record_count",
                 "truncated", "complete", "issues")} | {"summary_file": entry["name"]})
@@ -617,6 +784,19 @@ def run(output, number=1546, street="HIGH", start=2000, end=2010, collector=coll
     (directory / MANIFEST).write_bytes(manifest_bytes)
     report.update(chain_head=log.head, file_count=len(log.entries), manifest_sha256=digest(manifest_bytes),
                   caution=CAUTION)
+    if evidence_log is not None:
+        # The legacy manifest's top-level fields (case, query, layers, errors, complete) were editable
+        # undetected; as an entry in the shared log its bytes are hashed, chained and (optionally) signed.
+        try:
+            final = evidence_log.append(manifest_bytes, kind="columbus-run-manifest", source=BASE,
+                                        extra=dict(context, complete=report["complete"], legacy_manifest=MANIFEST,
+                                                   legacy_chain_head=log.head, legacy_file_count=len(log.entries)))
+            report["evidence_log"] = {"dir": evidence_log.dir, "count": final["seq"] + 1,
+                                      "head": final["entry_hash"], "signed": final["signature"] is not None}
+        except Exception as error:  # EvidenceError / OSError: the run is not fully recorded
+            report["errors"].append({"layer": None, "error_type": type(error).__name__,
+                                     "message": f"run manifest not added to the evidence log: {error}"})
+            report["complete"] = False
     return report
 
 
@@ -707,6 +887,18 @@ def build_parser():
                         help="repeatable; replaces the default building=5 engineering=22")
     parser.add_argument("--max-records", type=int, default=DEFAULT_MAX_RECORDS)
     parser.add_argument("--case", default="CASE001")
+    shared = parser.add_argument_group("shared evidence log (revvel-evidence/1, ../evidence)")
+    shared.add_argument("--evidence-log", metavar="DIR",
+                        help="also append every response, summary and run manifest to this shared log")
+    shared.add_argument("--operator", help="who is collecting (required with --evidence-log; default "
+                                           "$EVIDENCE_OPERATOR)")
+    shared.add_argument("--evidence-key", metavar="PATH", help="Ed25519 private key (PEM, mode 0600) to sign "
+                                                               f"entries; passphrase from ${ENV_PASSPHRASE}")
+    shared.add_argument("--evidence-key-passphrase-file", metavar="PATH", help="file holding the key passphrase")
+    shared.add_argument("--public-key", metavar="PEM", help="with --verify on a shared log: check every signature")
+    shared.add_argument("--court", action="store_true",
+                        help="with --verify on a shared log: also require --expect-head or a verified RFC 3161 token")
+    shared.add_argument("--tsa-ca", metavar="PEM", help="with --verify on a shared log: CA for RFC 3161 tokens")
     return parser
 
 
@@ -725,13 +917,27 @@ def _print(obj):
     print(json.dumps(obj, indent=2))
 
 
+def _verify_shared_cli(args):
+    report = verify_shared(args.verify, args.public_key, args.expect_head, args.court, args.tsa_ca)
+    _print({"verified": report["ok"], "format": "revvel-evidence/1", "integrity_failures": report["problems"],
+            "warnings": report["warnings"], "count": report["count"], "head": report["head"],
+            "signed": report["signed"], "court": report["court"]})
+    return EXIT_OK if report["ok"] else EXIT_INCOMPLETE
+
+
 def main(argv=None, getter=None):
     args = build_parser().parse_args(argv)
     getter = getter or fetch
+    shared_log = None
     try:
         if args.verify:
             if args.expect_head is not None and not HEX64_RE.fullmatch(args.expect_head):
                 raise InputError("--expect-head must be 64 lowercase hex characters")
+            if (pathlib.Path(args.verify) / SHARED_LOG_NAME).is_file():
+                return _verify_shared_cli(args)
+            if args.public_key or args.court or args.tsa_ca:
+                raise InputError(f"--public-key, --court and --tsa-ca apply to a shared log ({SHARED_LOG_NAME}); "
+                                 f"{args.verify} is a legacy run directory")
             failures = verify(args.verify, args.expect_head)
             try:  # informational only: integrity can verify on a run that was itself incomplete
                 manifest = json.loads((pathlib.Path(args.verify) / MANIFEST).read_text(encoding="utf-8"))
@@ -751,11 +957,19 @@ def main(argv=None, getter=None):
         validate_query(args.number, args.street, args.start, args.end, layers, args.max_records)
         if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", args.case):
             raise InputError("--case must match ^[A-Za-z0-9_-]{1,64}$")
+        if args.evidence_log:
+            # Operator, key and log are checked before any request is sent.
+            shared_log = open_shared_log(args.evidence_log, args.operator, args.evidence_key,
+                                         args.evidence_key_passphrase_file)
+        elif args.evidence_key or args.evidence_key_passphrase_file:
+            raise InputError("--evidence-key needs --evidence-log")
     except InputError as error:
         print(f"error: {error}", file=sys.stderr)
         return EXIT_BAD_INPUT
+    # report = run(args.output, ..., case=args.case)
+    # Replaced: pass the shared evidence log through (None keeps the legacy-only behaviour).
     report = run(args.output, args.number, args.street, args.start, args.end, getter=getter,
-                 layers=layers, max_records=args.max_records, case=args.case)
+                 layers=layers, max_records=args.max_records, case=args.case, evidence_log=shared_log)
     _print(report)
     return EXIT_OK if report["complete"] else EXIT_INCOMPLETE
 

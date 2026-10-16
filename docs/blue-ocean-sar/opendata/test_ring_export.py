@@ -647,6 +647,94 @@ class DownloadTests(Base):
         self.assertIn("does not verify", cap.text)
 
 
+class SharedEvidenceLogTests(Base):
+    """download/verify --evidence-log: the shared revvel-evidence/1 log (SYSTEM_REVIEW C5/M1)."""
+
+    OPERATOR = "Owner A. Example"
+
+    def setUp(self):
+        super().setUp()
+        self.core = rx._fetch_module().evidence_core()
+        env = mock.patch.dict(os.environ, {})
+        env.start()
+        self.addCleanup(env.stop)
+        os.environ.pop(self.core.ENV_OPERATOR, None)
+        self.log = self.dir / "case-log"
+        self.key = self.dir / "keys" / "op.key"
+        self.pub = self.dir / "keys" / "op.pub"
+        self.key.parent.mkdir()
+        self.core.generate_keypair(str(self.key), str(self.pub))  # throwaway test key in a temp dir
+
+    def download(self, *ids, extra=()):
+        out = self.dir / "rec"
+        code, cap = self.run_cli(["download", "--token-file", str(self.token_file), "--ids", *ids,
+                                  "--out-dir", str(out), "--page-size", "25", *extra])
+        return code, cap, out
+
+    def signed_args(self):
+        return ["--evidence-log", str(self.log), "--operator", self.OPERATOR, "--evidence-key", str(self.key)]
+
+    def entries(self):
+        return [json.loads(line) for line in (self.log / self.core.LOG_NAME).read_text().splitlines()]
+
+    def verify(self, out, *extra):
+        return self.run_cli(["verify", "--out-dir", str(out), "--evidence-log", str(self.log), *extra])
+
+    def test_download_writes_signed_shared_log(self):
+        self.logged_in()
+        code, cap, out = self.download("5120", "9005", extra=self.signed_args())
+        self.assertEqual(code, 0, cap.text)
+        manifest = rx.read_manifest(out)
+        entries = self.entries()
+        self.assertEqual([e["extra"]["event_id"] for e in entries], ["5120", "9005"])
+        for rec, e in zip(manifest, entries):
+            self.assertEqual(e["sha256"], rec["sha256"])
+            self.assertEqual(e["extra"]["legacy_chain_hash"], rec["chain_hash"])
+            self.assertEqual(e["kind"], rx.EVIDENCE_KIND)
+            self.assertEqual(e["operator"], self.OPERATOR)
+            self.assertEqual(e["tool"]["name"], "ring_export")
+            self.assertIsNone(e["tls_cert_sha256"])  # ring_doorbell does the HTTPS; we say so instead
+            self.assertIn("ring_doorbell", e["extra"]["transport"])
+            self.assertIsNotNone(e["signature"])
+        head = entries[-1]["entry_hash"]
+        self.assertIn(head, cap.text)
+        code, cap = self.verify(out, "--public-key", str(self.pub), "--expect-head", head, "--court")
+        self.assertEqual(code, 0, cap.text)
+        self.assertIn("evidence log OK: 2 entries", cap.text)
+        self.assertIn("signed", cap.text)
+
+    def test_metadata_edit_detected_by_verify(self):
+        self.logged_in()
+        code, cap, out = self.download("5120", extra=self.signed_args())
+        self.assertEqual(code, 0, cap.text)
+        path = self.log / self.core.LOG_NAME
+        entry = self.entries()[0]
+        entry["extra"]["created_at_utc"] = "2020-01-01T00:00:00.000Z"
+        path.write_bytes(self.core.canonical(entry) + b"\n")
+        self.assertEqual(rx.verify_dir(out), [])  # the legacy manifest is untouched...
+        code, cap = self.verify(out, "--public-key", str(self.pub))
+        self.assertEqual(code, 1)  # ...but the shared log catches the edit
+        self.assertIn("entry edited", cap.text)
+
+    def test_operator_required_before_ring_is_contacted(self):
+        self.logged_in()
+        code, cap, out = self.download("5120", extra=["--evidence-log", str(self.log)])
+        self.assertEqual(code, 2)
+        self.assertIn("operator", cap.text)
+        self.assertEqual(FakeAuth.instances, [])
+        self.assertEqual(self.front.download_calls, [])
+        os.environ[self.core.ENV_OPERATOR] = self.OPERATOR
+        code, cap, out = self.download("5120", extra=["--evidence-log", str(self.log)])
+        self.assertEqual(code, 0, cap.text)
+        self.assertIsNone(self.entries()[0]["signature"])
+
+    def test_verify_flags_need_evidence_log(self):
+        self.logged_in()
+        _, _, out = self.download("5120")
+        code, cap = self.run_cli(["verify", "--out-dir", str(out), "--court"])
+        self.assertEqual(code, 2)
+
+
 class LibraryShapeTests(unittest.TestCase):
     """Optional: check the fakes still match the real library's signatures."""
 

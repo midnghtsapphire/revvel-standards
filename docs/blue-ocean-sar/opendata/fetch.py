@@ -12,9 +12,21 @@ all of them:
     exponential backoff on 429 / 5xx / network errors, honouring Retry-After;
   * a polite User-Agent that names the project (and the CONTACT_EMAIL
     environment variable when it is set);
-  * optional evidence capture: the raw response bytes are written to an
-    evidence directory with a JSON sidecar holding sha256, URL, UTC time and
-    status;
+  * optional evidence capture, two formats:
+      - evidence_log (CLI --evidence-log DIR): the shared revvel-evidence/1 log
+        from ../evidence (SYSTEM_REVIEW C5/M1). Each response becomes one
+        hash-chained entry that hashes all of its metadata: operator, host,
+        tool and git commit, clock state, URL, status, the server's Date
+        header, the TLS peer-certificate SHA-256 (captured by the default
+        opener), redacted response headers and request body hash. Entries can
+        be Ed25519-signed (--evidence-key) and stored under a unique
+        <seq>_<sha256>.bin name, so two captures in one second never collide.
+      - evidence_dir (CLI --evidence-dir DIR, DEPRECATED, kept unchanged for
+        backward compatibility): raw bytes plus a JSON sidecar holding sha256,
+        URL, UTC time and status. No chain, no operator, metadata not hashed,
+        and two identical responses in the same second share one name (the
+        second overwrites the first).
+    Both may be given at once;
   * secrets come only from environment variables or a file whose *path* is
     given on the command line. They are never accepted as argv values, never
     logged, are redacted from every saved or logged URL, and a response body
@@ -35,6 +47,7 @@ imports http.client) whenever this folder is on sys.path.
 import datetime as _dt
 import email.utils
 import hashlib
+import http.client
 import http.cookiejar
 import json
 import os
@@ -64,7 +77,11 @@ SENSITIVE_PARAMS = {
     "subscription-key", "x-api-key",
 }
 SENSITIVE_HEADERS = {"authorization", "ocp-apim-subscription-key", "x-api-key", "cookie"}
+# Response headers never copied into evidence metadata (session cookies and the like).
+SENSITIVE_RESPONSE_HEADERS = SENSITIVE_HEADERS | {"set-cookie", "proxy-authorization", "www-authenticate"}
 REDACTED = "REDACTED"
+ENV_EVIDENCE_PASSPHRASE = "EVIDENCE_KEY_PASSPHRASE"  # same variable as `python3 -m evidence`
+_HEX64 = re.compile(r"^[0-9a-f]{64}$")
 
 
 class FetchError(Exception):
@@ -82,7 +99,8 @@ class PolicyError(FetchError):
 class Response:
     """A completed response. `body` is bytes (None when streamed to a file)."""
 
-    def __init__(self, url, final_url, status, headers, body, sha256, nbytes, fetched_at, evidence=None):
+    def __init__(self, url, final_url, status, headers, body, sha256, nbytes, fetched_at, evidence=None,
+                 evidence_entry=None, tls_cert_sha256=None):
         self.url = url
         self.final_url = final_url
         self.status = status
@@ -91,7 +109,9 @@ class Response:
         self.sha256 = sha256
         self.nbytes = nbytes
         self.fetched_at = fetched_at
-        self.evidence = evidence
+        self.evidence = evidence  # legacy sidecar path (evidence_dir), or None
+        self.evidence_entry = evidence_entry  # shared-log entry dict (evidence_log), or None
+        self.tls_cert_sha256 = tls_cert_sha256
 
     def header(self, name, default=None):
         return self.headers.get(name.lower(), default)
@@ -212,17 +232,76 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
-def default_opener():
+def peer_cert_fingerprint(sock):
+    """SHA-256 (hex) of the TLS peer certificate (DER) on `sock`, or None."""
+    try:
+        der = sock.getpeercert(binary_form=True)
+    except (AttributeError, ValueError, OSError):
+        return None
+    return hashlib.sha256(der).hexdigest() if der else None
+
+
+class _CertRecordingHTTPSConnection(http.client.HTTPSConnection):
+    """HTTPSConnection that remembers the peer certificate's SHA-256 once TLS is up.
+
+    Through a CONNECT proxy this is the certificate presented inside the
+    tunnel; behind a TLS-intercepting proxy it is the proxy's certificate.
+    """
+
+    peer_cert_sha256 = None
+
+    def connect(self):
+        super().connect()
+        self.peer_cert_sha256 = peer_cert_fingerprint(self.sock)
+
+
+class CertRecordingHTTPSHandler(urllib.request.HTTPSHandler):
+    """HTTPSHandler that sets `peer_cert_sha256` on every response it returns."""
+
+    def https_open(self, req):
+        conns = []
+
+        def factory(host, **kw):
+            conn = _CertRecordingHTTPSConnection(host, **kw)
+            conns.append(conn)
+            return conn
+
+        resp = self.do_open(factory, req, context=self._context)
+        resp.peer_cert_sha256 = conns[-1].peer_cert_sha256 if conns else None
+        return resp
+
+
+def peer_cert_of(resp):
+    """The `peer_cert_sha256` an opener attached to a response (or HTTPError), if it is valid hex."""
+    for obj in (resp, getattr(resp, "fp", None)):
+        value = getattr(obj, "peer_cert_sha256", None) if obj is not None else None
+        if isinstance(value, str) and _HEX64.match(value):
+            return value
+    return None
+
+
+def default_opener(context=None, proxies=None):
     """Return an opener(request, timeout) that never follows redirects itself
     and returns HTTP error responses instead of raising, so fetch() sees every
     hop. A cookie jar is shared across the hops of one fetch (Earthdata Login
-    sets a session cookie during its redirect dance)."""
-    od = urllib.request.build_opener(_NoRedirect(), urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    sets a session cookie during its redirect dance). Each HTTPS response
+    carries `peer_cert_sha256` for the evidence log. `context` overrides the
+    TLS context (tests); `proxies` overrides the environment's proxies."""
+    # od = urllib.request.build_opener(_NoRedirect(), urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    # Replaced: the stock HTTPSHandler discards the peer certificate, so the TLS fingerprint
+    # (SYSTEM_REVIEW C5) could not be recorded. Lesson: capture provenance where the bytes arrive.
+    handlers = [_NoRedirect(), CertRecordingHTTPSHandler(context=context),
+                urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar())]
+    if proxies is not None:
+        handlers.append(urllib.request.ProxyHandler(proxies))
+    od = urllib.request.build_opener(*handlers)
 
     def _open(req, timeout):
         try:
             return od.open(req, timeout=timeout)
         except urllib.error.HTTPError as e:
+            if peer_cert_of(e) is not None:
+                e.peer_cert_sha256 = peer_cert_of(e)
             return e
 
     return _open
@@ -281,9 +360,19 @@ def _contains_secret(body, secrets):
 
 def save_evidence(evidence_dir, *, url, final_url, method, status, headers, body, sha256, nbytes,
                   fetched_at, secrets=(), request_body=None, body_path=None):
-    """Write <time>_<sha16>.bin (raw bytes) and .json (sidecar). Returns sidecar path."""
+    """DEPRECATED legacy format: <time>_<sha16>.bin (raw bytes) and .json (sidecar). Returns sidecar path.
+
+    Kept byte-for-byte unchanged so existing evidence directories, the cmr/stac
+    --evidence-dir runs and `python3 -m evidence import` (format
+    fetch-sidecars, whose tests pin this behaviour) keep working. Known flaw
+    (SYSTEM_REVIEW C5): the name has one-second resolution, so a second
+    identical response in the same second OVERWRITES the first. Use the shared
+    log instead (fetch(evidence_log=...), CLI --evidence-log), whose stored
+    names are <seq>_<sha256>.bin and never collide.
+    """
     os.makedirs(evidence_dir, exist_ok=True)
     stamp = fetched_at.replace(":", "").replace("-", "")
+    # Lesson: a time stamp is not an identifier. This name collides within a second; kept only for compatibility.
     base = os.path.join(evidence_dir, f"{stamp}_{sha256[:16]}")
     meta = {
         "url": redact_url(url, secrets),
@@ -313,6 +402,120 @@ def save_evidence(evidence_dir, *, url, final_url, method, status, headers, body
         json.dump(meta, f, indent=1, sort_keys=True)
         f.write("\n")
     return base + ".json"
+
+
+# -------------------------------------------------------------------------- shared evidence log
+
+
+def evidence_core():
+    """Import the shared evidence library (docs/blue-ocean-sar/evidence) from any working directory.
+
+    Imported lazily so the connectors still run without `cryptography` unless
+    --evidence-log is used.
+    """
+    parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if parent not in sys.path:
+        sys.path.insert(0, parent)
+    from evidence import core  # noqa: E402
+    return core
+
+
+def _evidence_passphrase(passphrase_file=None):
+    if passphrase_file:
+        with open(passphrase_file, "rb") as f:
+            value = f.readline().rstrip(b"\r\n")
+        if not value:
+            raise ValueError(f"passphrase file {passphrase_file} is empty")
+        return value
+    env = os.environ.get(ENV_EVIDENCE_PASSPHRASE, "")
+    return env.encode("utf-8") if env else None
+
+
+def open_evidence_log(directory, *, operator=None, key_path=None, passphrase_file=None,
+                      tool_name="opendata-fetch", tool_version=VERSION, tool_path=None):
+    """Open (or start) a shared revvel-evidence/1 log, checking everything before any network call.
+
+    operator: --operator value, else $EVIDENCE_OPERATOR (required).
+    key_path: optional Ed25519 private key (PKCS#8 PEM, mode 0600); the
+      passphrase, if any, comes from `passphrase_file` or $EVIDENCE_KEY_PASSPHRASE.
+    Raises ValueError (exit 2 in every CLI) on a missing operator, an
+    unreadable key, a broken log or a signing-mode mismatch with the log.
+    """
+    try:
+        core = evidence_core()
+    except ImportError as e:
+        raise ValueError(f"the evidence log needs ../evidence and the 'cryptography' package ({e})")
+    key = None
+    if key_path:
+        try:
+            key = core.load_private_key(key_path, _evidence_passphrase(passphrase_file))
+        except (OSError, ValueError, TypeError, core.EvidenceError) as e:
+            raise ValueError(f"cannot load evidence key {key_path}: {e}")
+    tool = core.tool_info(tool_name, tool_version, tool_path or os.path.abspath(__file__))
+    log = core.EvidenceLog(directory, operator=operator, private_key=key, tool=tool)
+    if not log.operator:
+        raise ValueError(f"the evidence log needs an operator: --operator NAME or ${core.ENV_OPERATOR}")
+    try:
+        entries = log.read_entries()
+        core.chain_head(entries)
+    except (OSError, ValueError, core.EvidenceError) as e:
+        raise ValueError(f"evidence log {directory} cannot be extended: {e}")
+    if entries and entries[-1].get("key_id") != log.key_id:
+        raise ValueError(f"evidence log {directory} is " + ("signed with another key" if entries[-1].get("key_id")
+                                                            else "unsigned") + "; use the same signing mode and key")
+    return log
+
+
+def redact_bytes(body, secrets=()):
+    """Replace each secret (and its URL-quoted forms) in `body` with REDACTED; returns (bytes, count)."""
+    n = 0
+    for s in secrets:
+        if not s or len(s) < 4:
+            continue
+        for form in {s, urllib.parse.quote(s, safe=""), urllib.parse.quote_plus(s)}:
+            fb = form.encode("utf-8")
+            n += body.count(fb)
+            body = body.replace(fb, REDACTED.encode("ascii"))
+    return body, n
+
+
+def evidence_headers(headers, secrets=()):
+    """Response headers for evidence metadata: sensitive ones dropped to REDACTED, secrets redacted."""
+    return {k: (REDACTED if k.lower() in SENSITIVE_RESPONSE_HEADERS else redact_text(v, secrets))
+            for k, v in sorted(headers.items())}
+
+
+def log_evidence(evidence_log, *, url, final_url, method, status, headers, body, sha256, nbytes, fetched_at,
+                 secrets=(), request_body=None, body_path=None, tls_cert_sha256=None, hops=(), legacy_sidecar=None):
+    """Append one response to a shared evidence log. Returns the entry. Raises FetchError if it cannot."""
+    extra = {
+        "url": redact_url(url, secrets), "final_url": redact_url(final_url, secrets), "method": method,
+        "redirects": [redact_url(h, secrets) for h in hops], "fetched_at_utc": fetched_at,
+        "content_type": headers.get("content-type"), "response_headers": evidence_headers(headers, secrets),
+        "user_agent": user_agent(), "sha256_as_received": sha256, "bytes_as_received": nbytes,
+    }
+    if request_body is not None:
+        extra["request_body_sha256"] = hashlib.sha256(request_body).hexdigest()
+        text = request_body.decode("utf-8", "replace")
+        if len(text) <= 65536:
+            extra["request_body"] = redact_text(text, secrets)
+    if legacy_sidecar:
+        extra["legacy_sidecar"] = os.path.basename(legacy_sidecar)
+    kw = dict(kind="http-response", source=redact_url(final_url, secrets), status=status,
+              server_date=headers.get("date"), tls_cert_sha256=tls_cert_sha256, extra=extra)
+    try:
+        if body_path is not None:
+            extra["streamed_to"] = os.path.abspath(body_path)
+            return evidence_log.append(path=body_path, **kw)
+        stored, nred = redact_bytes(body or b"", secrets)
+        if nred:
+            # Never store a secret: keep the redacted bytes and the as-received hash.
+            extra["secret_redactions"] = nred
+            extra["body_redacted"] = "response body contained a secret value; stored with it replaced"
+        return evidence_log.append(stored, **kw)
+    except Exception as e:  # EvidenceError, OSError: the capture postcondition does not hold
+        raise FetchError(f"evidence log append failed for {redact_url(final_url, secrets)}: "
+                         f"{redact_text(str(e), secrets)}", status)
 
 
 # --------------------------------------------------------------------------
@@ -356,7 +559,7 @@ def fetch(url, *, allowed_hosts, method="GET", params=None, data=None, json_body
           secrets=(), auth_hosts=None, timeout=DEFAULT_TIMEOUT, max_bytes=DEFAULT_MAX_BYTES,
           retries=DEFAULT_RETRIES, backoff=DEFAULT_BACKOFF, max_retry_wait=MAX_RETRY_WAIT,
           evidence_dir=None, opener=None, allow_http=False, same_host_redirects_only=False,
-          stream_to=None, accept_status=(200,), sleep=time.sleep, log=None):
+          stream_to=None, accept_status=(200,), sleep=time.sleep, log=None, evidence_log=None):
     """Fetch `url` under the module policy and return a Response.
 
     params: dict/list of query parameters appended to the URL.
@@ -365,6 +568,9 @@ def fetch(url, *, allowed_hosts, method="GET", params=None, data=None, json_body
       SENSITIVE_HEADERS are added automatically).
     auth_hosts: hosts allowed to receive SENSITIVE_HEADERS; default first host.
     accept_status: statuses returned as success; any other final status raises.
+    evidence_dir: DEPRECATED legacy sidecar directory (see save_evidence).
+    evidence_log: an evidence.core.EvidenceLog (see open_evidence_log); the
+      final response of every fetch, accepted or not, is appended to it.
     """
     log = log or (lambda m: None)
     opener = opener or default_opener()
@@ -393,6 +599,7 @@ def fetch(url, *, allowed_hosts, method="GET", params=None, data=None, json_body
     current, cur_method, cur_body = url, method.upper(), body
     attempt = 0
     hops = 0
+    hop_urls = []
     while True:
         host = check_url(current, allowed_hosts, allow_http)
         send_headers = {k: v for k, v in headers.items()
@@ -436,6 +643,7 @@ def fetch(url, *, allowed_hosts, method="GET", params=None, data=None, json_body
             if status == 303 or (status in (301, 302) and cur_method == "POST"):
                 cur_method, cur_body = "GET", None
             log(f"redirect {status} -> {redact_url(nxt, secrets)}")
+            hop_urls.append(current)
             current = nxt
             continue
 
@@ -455,20 +663,32 @@ def fetch(url, *, allowed_hosts, method="GET", params=None, data=None, json_body
 
         fetched_at = utc_now()
         ok = status in accept_status
+        tls_fp = peer_cert_of(resp)
         content, sha, n = _read_capped(resp, max_bytes, safe_url, stream_to if ok else None)
         ev = None
+        entry = None
         if evidence_dir:
             ev = save_evidence(evidence_dir, url=url, final_url=current, method=cur_method, status=status,
                                headers=rheaders, body=content, sha256=sha, nbytes=n, fetched_at=fetched_at,
                                secrets=secrets, request_body=cur_body,
                                body_path=stream_to if (ok and stream_to) else None)
+        if evidence_log is not None:
+            entry = log_evidence(evidence_log, url=url, final_url=current, method=cur_method, status=status,
+                                 headers=rheaders, body=content, sha256=sha, nbytes=n, fetched_at=fetched_at,
+                                 secrets=secrets, request_body=cur_body,
+                                 body_path=stream_to if (ok and stream_to) else None,
+                                 tls_cert_sha256=tls_fp, hops=hop_urls, legacy_sidecar=ev)
+            log(f"evidence seq {entry['seq']} entry_hash {entry['entry_hash'][:16]}")
         if not ok:
             snippet = ""
             if content:
                 snippet = redact_text(content[:300].decode("utf-8", "replace"), secrets).replace("\n", " ")
             raise FetchError(f"{cur_method} {safe_url} returned HTTP {status}: {snippet}", status)
         log(f"HTTP {status}, {n} bytes, sha256 {sha[:16]}")
-        return Response(url, current, status, rheaders, content, sha, n, fetched_at, ev)
+        # return Response(url, current, status, rheaders, content, sha, n, fetched_at, ev)
+        # Replaced: also return the shared-log entry and the TLS fingerprint to the caller.
+        return Response(url, current, status, rheaders, content, sha, n, fetched_at, ev,
+                        evidence_entry=entry, tls_cert_sha256=tls_fp)
 
 
 def fetch_json(url, **kw):
@@ -481,7 +701,11 @@ def fetch_json(url, **kw):
 
 def add_common_args(ap):
     g = ap.add_argument_group("network")
-    g.add_argument("--evidence-dir", help="save raw response bytes + sha256/URL/time/status sidecars here")
+    # g.add_argument("--evidence-dir", help="save raw response bytes + sha256/URL/time/status sidecars here")
+    # Replaced help text only: the sidecar format is now deprecated in favour of --evidence-log.
+    g.add_argument("--evidence-dir", help="DEPRECATED legacy format: raw bytes + unchained JSON sidecars "
+                                          "(sha256/URL/time/status); prefer --evidence-log")
+    add_evidence_log_args(g)
     g.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT, help="seconds per request")
     g.add_argument("--retries", type=int, default=DEFAULT_RETRIES, help="retries on 429/5xx/network errors")
     g.add_argument("--max-bytes", type=int, default=DEFAULT_MAX_BYTES, help="response size cap")
@@ -490,10 +714,42 @@ def add_common_args(ap):
     return ap
 
 
+def add_evidence_log_args(g):
+    """--evidence-log / --operator / --evidence-key / --evidence-key-passphrase-file (shared by every tool)."""
+    g.add_argument("--evidence-log", metavar="DIR",
+                   help="append every response to this shared revvel-evidence/1 log (hash-chained, all "
+                        "metadata hashed, server Date and TLS fingerprint); see ../evidence/README.md")
+    g.add_argument("--operator", help="who is capturing (required with --evidence-log; default $EVIDENCE_OPERATOR)")
+    g.add_argument("--evidence-key", metavar="PATH",
+                   help="Ed25519 private key (PEM, mode 0600) to sign each evidence entry; passphrase, if any, "
+                        f"from --evidence-key-passphrase-file or ${ENV_EVIDENCE_PASSPHRASE}")
+    g.add_argument("--evidence-key-passphrase-file", metavar="PATH", help="file holding the key passphrase")
+    return g
+
+
+def evidence_log_from_args(a, tool_name="opendata-fetch", tool_version=VERSION, tool_path=None):
+    """The EvidenceLog the CLI flags ask for, or None. Raises ValueError (exit 2) on bad input."""
+    if not getattr(a, "evidence_log", None):
+        for flag in ("evidence_key", "evidence_key_passphrase_file"):
+            if getattr(a, flag, None):
+                raise ValueError(f"--{flag.replace('_', '-')} needs --evidence-log")
+        return None
+    return open_evidence_log(a.evidence_log, operator=getattr(a, "operator", None),
+                             key_path=getattr(a, "evidence_key", None),
+                             passphrase_file=getattr(a, "evidence_key_passphrase_file", None),
+                             tool_name=tool_name, tool_version=tool_version, tool_path=tool_path)
+
+
 def common_kwargs(a, opener=None):
     if a.timeout <= 0 or a.retries < 0 or a.max_bytes <= 0:
         raise ValueError("--timeout and --max-bytes must be positive, --retries non-negative")
     kw = {"timeout": a.timeout, "retries": a.retries, "max_bytes": a.max_bytes, "evidence_dir": a.evidence_dir}
+    ev_log = evidence_log_from_args(a)
+    if ev_log is not None:
+        kw["evidence_log"] = ev_log
+    if a.evidence_dir:
+        print("warning: --evidence-dir writes the deprecated sidecar format (no chain, no operator, metadata "
+              "not hashed); use --evidence-log DIR --operator NAME", file=sys.stderr)
     if opener is not None:
         kw["opener"] = opener
     if a.verbose:
