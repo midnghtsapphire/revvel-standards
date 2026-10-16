@@ -194,7 +194,21 @@ def run_listener(host="127.0.0.1", port=8080, db_path="stage0_archive.db", **ser
         httpd.server_close()
 
 
-if __name__ == "__main__":
+def load_ground_truth(parser, args):
+    """Ground truth chosen on the command line, or None (the gate then abstains)."""
+    # Original: with both flags, the file silently won over --use-shaffer-default.
+    if args.ground_truth and args.use_shaffer_default:
+        parser.error("use --ground-truth or --use-shaffer-default, not both")
+    gt = None
+    if args.ground_truth:
+        with open(args.ground_truth, encoding="utf-8") as f:
+            gt = json.load(f)
+    elif args.use_shaffer_default:
+        gt = DEFAULT_VERIFIED_GROUND_TRUTH
+    return gt
+
+
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--host", default=os.environ.get("HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8080")))
@@ -204,13 +218,35 @@ if __name__ == "__main__":
                         help="judge records against the built-in Shaffer logs (Shaffer-only archives)")
     parser.add_argument("--tls-cert", help="PEM certificate; required with a non-loopback --host")
     parser.add_argument("--tls-key", help="PEM private key for --tls-cert")
-    args = parser.parse_args()
-    gt = None
-    if args.ground_truth:
-        with open(args.ground_truth, encoding="utf-8") as f:
-            gt = json.load(f)
-    elif args.use_shaffer_default:
-        gt = DEFAULT_VERIFIED_GROUND_TRUTH
-    # run_listener(args.host, args.port, args.db)
+    args = parser.parse_args(argv)
+    gt = load_ground_truth(parser, args)
     run_listener(args.host, args.port, args.db, ground_truth=gt, token=os.environ.get("SAR_LISTENER_TOKEN"),
                  tls_cert=args.tls_cert, tls_key=args.tls_key)
+
+
+# Original entry point, moved into main()/load_ground_truth() so the argument
+# checks can be tested without starting a server:
+# if __name__ == "__main__":
+#     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+#     parser.add_argument("--host", default=os.environ.get("HOST", "127.0.0.1"))
+#     parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8080")))
+#     parser.add_argument("--db", default=os.environ.get("DB_PATH", "stage0_archive.db"))
+#     parser.add_argument("--ground-truth", help="case ground-truth JSON for the Stage 2 gate")
+#     parser.add_argument("--use-shaffer-default", action="store_true",
+#                         help="judge records against the built-in Shaffer logs (Shaffer-only archives)")
+#     parser.add_argument("--tls-cert", help="PEM certificate; required with a non-loopback --host")
+#     parser.add_argument("--tls-key", help="PEM private key for --tls-cert")
+#     args = parser.parse_args()
+#     gt = None
+#     if args.ground_truth:
+#         with open(args.ground_truth, encoding="utf-8") as f:
+#             gt = json.load(f)
+#     elif args.use_shaffer_default:
+#         gt = DEFAULT_VERIFIED_GROUND_TRUTH
+#     # run_listener(args.host, args.port, args.db)
+#     run_listener(args.host, args.port, args.db, ground_truth=gt, token=os.environ.get("SAR_LISTENER_TOKEN"),
+#                  tls_cert=args.tls_cert, tls_key=args.tls_key)
+
+
+if __name__ == "__main__":
+    main()

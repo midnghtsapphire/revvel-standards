@@ -524,6 +524,42 @@ class RealtimeListener(unittest.TestCase):
         self.assertEqual(code, 400)  # authenticated; rejected only for the missing fields
 
 
+class ListenerCli(unittest.TestCase):
+    """The listener's command line, with run_listener mocked so no server starts."""
+
+    def setUp(self):
+        import realtime_validation_listener as rl
+        self.rl = rl
+        self.tmp = tempfile.TemporaryDirectory()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _gt_file(self, text):
+        p = os.path.join(self.tmp.name, "gt.json")
+        with open(p, "w") as f:
+            f.write(text)
+        return p
+
+    def _main(self, *argv):
+        import contextlib
+        import io
+        from unittest import mock
+        with mock.patch.object(self.rl, "run_listener") as run, contextlib.redirect_stderr(io.StringIO()):
+            self.rl.main(list(argv))
+        return run
+
+    def test_ground_truth_and_shaffer_default_together_rejected(self):
+        p = self._gt_file('{"case_id": "OTHER-CASE"}')
+        with self.assertRaises(SystemExit) as cm:
+            self._main("--ground-truth", p, "--use-shaffer-default")
+        self.assertEqual(cm.exception.code, 2)
+        run = self._main("--use-shaffer-default")
+        self.assertIs(run.call_args.kwargs["ground_truth"], self.rl.DEFAULT_VERIFIED_GROUND_TRUTH)
+        run = self._main("--ground-truth", p)
+        self.assertEqual(run.call_args.kwargs["ground_truth"], {"case_id": "OTHER-CASE"})
+
+
 class ServiceUnit(unittest.TestCase):
     def test_database_lives_in_a_state_directory_the_service_user_owns(self):
         unit = {}
