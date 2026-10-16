@@ -1,0 +1,189 @@
+{
+ "version": 0.6,
+ "generator": "Overpass API 0.7.62.1 084b4234",
+ "osm3s": {
+  "timestamp_osm_base": "2024-07-01T12:00:00Z",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+ },
+ "elements": [
+  {
+   "type": "node",
+   "id": 2201550001,
+   "lat": 39.9601,
+   "lon": -83.0011,
+   "tags": {
+    "man_made": "manhole",
+    "manhole": "drain"
+   }
+  },
+  {
+   "type": "way",
+   "id": 31000001,
+   "bounds": {
+    "minlat": 39.95,
+    "minlon": -83.01,
+    "maxlat": 39.97,
+    "maxlon": -83.0
+   },
+   "nodes": [
+    1,
+    2,
+    3
+   ],
+   "geometry": [
+    {
+     "lat": 39.95,
+     "lon": -83.01
+    },
+    {
+     "lat": 39.96,
+     "lon": -83.005
+    },
+    {
+     "lat": 39.97,
+     "lon": -83.0
+    }
+   ],
+   "tags": {
+    "waterway": "stream",
+    "name": "Alum Creek tributary"
+   }
+  },
+  {
+   "type": "way",
+   "id": 31000002,
+   "nodes": [
+    4,
+    5
+   ],
+   "geometry": [
+    {
+     "lat": 39.958,
+     "lon": -83.004
+    },
+    {
+     "lat": 39.9582,
+     "lon": -83.0035
+    }
+   ],
+   "tags": {
+    "waterway": "culvert",
+    "culvert": "yes",
+    "tunnel": "culvert"
+   }
+  },
+  {
+   "type": "way",
+   "id": 31000003,
+   "nodes": [
+    6,
+    7,
+    8,
+    9,
+    6
+   ],
+   "geometry": [
+    {
+     "lat": 39.96,
+     "lon": -83.0
+    },
+    {
+     "lat": 39.961,
+     "lon": -83.0
+    },
+    {
+     "lat": 39.961,
+     "lon": -82.999
+    },
+    {
+     "lat": 39.96,
+     "lon": -82.999
+    },
+    {
+     "lat": 39.96,
+     "lon": -83.0
+    }
+   ],
+   "tags": {
+    "natural": "water",
+    "water": "pond"
+   }
+  },
+  {
+   "type": "way",
+   "id": 31000004,
+   "nodes": [
+    10,
+    11
+   ],
+   "geometry": [
+    {
+     "lat": 39.962,
+     "lon": -83.002
+    },
+    {
+     "lat": 39.963,
+     "lon": -83.001
+    }
+   ],
+   "tags": {
+    "highway": "path",
+    "surface": "dirt"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 9100001,
+   "bounds": {
+    "minlat": 39.95,
+    "minlon": -83.02,
+    "maxlat": 39.97,
+    "maxlon": -82.99
+   },
+   "members": [
+    {
+     "type": "way",
+     "ref": 31000010,
+     "role": "",
+     "geometry": [
+      {
+       "lat": 39.95,
+       "lon": -83.02
+      },
+      {
+       "lat": 39.96,
+       "lon": -83.01
+      }
+     ]
+    },
+    {
+     "type": "way",
+     "ref": 31000011,
+     "role": "",
+     "geometry": [
+      {
+       "lat": 39.96,
+       "lon": -83.01
+      },
+      {
+       "lat": 39.97,
+       "lon": -82.99
+      }
+     ]
+    },
+    {
+     "type": "node",
+     "ref": 55,
+     "role": "spring",
+     "lat": 39.95,
+     "lon": -83.02
+    }
+   ],
+   "tags": {
+    "type": "waterway",
+    "waterway": "river",
+    "name": "Olentangy River"
+   }
+  }
+ ]
+}

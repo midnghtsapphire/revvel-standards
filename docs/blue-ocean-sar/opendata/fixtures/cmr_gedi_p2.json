@@ -1,0 +1,55 @@
+{
+ "feed": {
+  "updated": "2024-07-01T12:00:00.000Z",
+  "id": "https://cmr.earthdata.nasa.gov:443/search/granules.json?short_name=GEDI02_A",
+  "title": "ECHO granule metadata",
+  "entry": [
+   {
+    "producer_granule_id": "GEDI02_A_2022154035128_O19423_03_T05583_02_003_02_V002.h5",
+    "time_start": "2022-06-03T05:39:14.000Z",
+    "updated": "2022-08-12T20:09:51.207Z",
+    "dataset_id": "GEDI L2A Elevation and Height Metrics Data Global Footprint Level V002",
+    "data_center": "LPCLOUD",
+    "title": "GEDI02_A_2022154035128_O19423_03_T05583_02_003_02_V002.h5",
+    "coordinate_system": "GEODETIC",
+    "time_end": "2022-06-03T07:11:47.000Z",
+    "id": "G2384582413-LPCLOUD",
+    "original_format": "UMM_JSON",
+    "granule_size": "2851.17",
+    "browse_flag": false,
+    "polygons": [
+     [
+      "38.1 -91.2 51.6 -78.4 38.1 -91.2"
+     ]
+    ],
+    "collection_concept_id": "C2142771958-LPCLOUD",
+    "online_access_flag": true,
+    "day_night_flag": "UNSPECIFIED",
+    "links": [
+     {
+      "rel": "http://esipfed.org/ns/fedsearch/1.1/data#",
+      "title": "Download GEDI02_A_2022154035128_O19423_03_T05583_02_003_02_V002.h5",
+      "hreflang": "en-US",
+      "href": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/GEDI02_A.002/GEDI02_A_2022154035128_O19423_03_T05583_02_003_02_V002/GEDI02_A_2022154035128_O19423_03_T05583_02_003_02_V002.h5"
+     },
+     {
+      "rel": "http://esipfed.org/ns/fedsearch/1.1/s3#",
+      "hreflang": "en-US",
+      "href": "s3://lp-prod-protected/GEDI02_A.002/GEDI02_A_2022154035128_O19423_03_T05583_02_003_02_V002/GEDI02_A_2022154035128_O19423_03_T05583_02_003_02_V002.h5"
+     },
+     {
+      "rel": "http://esipfed.org/ns/fedsearch/1.1/metadata#",
+      "hreflang": "en-US",
+      "inherited": true,
+      "href": "https://lpdaac.usgs.gov/products/gedi02_av002/"
+     },
+     {
+      "rel": "http://esipfed.org/ns/fedsearch/1.1/data#",
+      "inherited": true,
+      "href": "https://search.earthdata.nasa.gov/search?q=C2142771958-LPCLOUD"
+     }
+    ]
+   }
+  ]
+ }
+}
