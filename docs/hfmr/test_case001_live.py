@@ -71,6 +71,24 @@ class TestLive(unittest.TestCase):
             saved = json.loads((Path(t) / "out" / "reconciliation.json").read_text())
             self.assertEqual(saved["truncated_layers"], ["building", "site_engineering"])
 
+    def test_short_page_with_transfer_limit_keeps_paging(self):
+        # The server caps pages at 100 rows and flags exceededTransferLimit until 250 rows are sent.
+        def op(req, timeout):
+            q = urllib.parse.parse_qs(urllib.parse.urlsplit(req.full_url).query)
+            start, n = int(q["resultOffset"][0]), int(q["resultRecordCount"][0])
+            ids = range(start, min(start + min(n, 100), 250))
+            body = {
+                "features": [{"attributes": {"OBJECTID": i}} for i in ids],
+                "exceededTransferLimit": start + 100 < 250,
+            }
+            return Response(req.full_url, body)
+
+        self.assertEqual(len(retrieve("building", "1=1", opener=op)["records"]), 250)
+        with tempfile.TemporaryDirectory() as t:
+            report = run(Path(t) / "out", opener=op)
+            self.assertTrue(report["retrieval_complete"])
+            self.assertEqual(report["records"], 500)
+
     def test_failed_source(self):
         def op(req, timeout):
             raise OSError("offline")

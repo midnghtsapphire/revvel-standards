@@ -100,7 +100,11 @@ def retrieve(layer, where, max_records=500, opener=None):
         batch = [x.get("attributes", {}) for x in data.get("features", [])]
         pages.append({"url": url, "sha256": digest, "returned": len(batch)})
         out += batch
-        if len(batch) < count:
+        # Original: if len(batch) < count:
+        #   a server whose maxRecordCount is below count returns a short page with
+        #   exceededTransferLimit=true; treating that as the last page dropped records while
+        #   retrieval_complete still reported true (matches columbus.query).
+        if not batch or (len(batch) < count and not data.get("exceededTransferLimit")):
             break
         offset += len(batch)
     return {
