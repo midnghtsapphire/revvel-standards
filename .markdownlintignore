@@ -14,6 +14,7 @@ coverage/**
 # Generated WR artifacts and pending research packets
 wr/issues/**
 wr/pending/**
+wr/research/**
 
 # Session audit prompts - documentation, not process docs
 docs/MASTER_AUDIT_PROMPTS/**
