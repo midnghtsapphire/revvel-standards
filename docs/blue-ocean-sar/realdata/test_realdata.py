@@ -404,6 +404,90 @@ class Sentinel2Change(unittest.TestCase):
         self.assertEqual(clusters[0]["pixels"], 9)
         self.assertLess(clusters[0]["mean_z"], -10)
 
+    # SYSTEM_REVIEW B6: red-edge indices.
+    def test_red_edge_index_formulas(self):
+        b = {k: np.array([v]) for k, v in
+             {"B03": 0.05, "B04": 0.05, "B08": 0.35, "B05": 0.10, "B07": 0.30, "B8A": 0.40}.items()}
+        idx = s2c.indices_from_reflectance(b)
+        self.assertAlmostEqual(idx["ndvi"][0], 0.75)
+        self.assertAlmostEqual(idx["ndre"][0], 0.60)
+        self.assertAlmostEqual(idx["cire"][0], 2.00)
+        self.assertAlmostEqual(idx["ndwi"][0], -0.75)
+
+    def test_loss_clusters_named_for_index(self):
+        d = np.zeros((30, 30)) + np.random.default_rng(1).normal(0, 0.01, (30, 30))
+        d[10:13, 10:13] = -0.3
+        clusters, stats = s2c.loss_clusters(d, np.ones_like(d, dtype=bool), -4.0, 4, index="ndre")
+        self.assertEqual(stats["index"], "ndre")
+        self.assertIn("median_dndre", stats)
+        self.assertIn("mean_dndre", clusters[0])
+
+    def test_default_grid_and_honest_interpretation(self):
+        self.assertEqual(s2c.default_grid("ndvi"), 10)
+        self.assertEqual(s2c.default_grid("ndre"), 20)
+        self.assertIn("not established", s2c.INTERPRETATION["limit"])
+        self.assertIn("never validated", s2c.INTERPRETATION["unvalidated_prior_claim"])
+
+    def test_change_maps_cover_all_indices(self):
+        pre = {k: np.full((2, 2), 0.5) for k in s2c.CHANGE_INDICES}
+        post = {k: np.full((2, 2), 0.2) for k in s2c.CHANGE_INDICES}
+        d = s2c.change_maps(pre, post)
+        self.assertEqual(set(d), {"ndvi", "ndre", "cire"})
+        self.assertTrue(np.allclose(d["ndre"], -0.3))
+
+    def _scene(self, tmp):
+        """Synthetic scene: 10 m bands 40x40, 20 m bands and SCL 20x20 on one origin.
+        Left half (20 m cols < 10) NDRE 0.6, right half NDRE 0.2."""
+        x0, y0 = 500000.0, 5640000.0
+        dn = {"B03": 500, "B04": 500, "B08": 3500}
+        for name, v in dn.items():
+            z = np.full((40, 40), v, dtype="uint16")
+            if name == "B04":
+                z[:, :20] = 300  # one 10 m column block differs so averaging shows
+            self._w(os.path.join(tmp, f"{name}.tif"), z, x0, y0, 10.0)
+        b05 = np.full((20, 20), 1000, dtype="uint16")
+        b8a = np.full((20, 20), 4000, dtype="uint16")
+        b8a[:, 10:] = 1500  # NDRE (1500-1000)/2500 = 0.2 on the right
+        self._w(os.path.join(tmp, "B05.tif"), b05, x0, y0, 20.0)
+        self._w(os.path.join(tmp, "B8A.tif"), b8a, x0, y0, 20.0)
+        self._w(os.path.join(tmp, "B07.tif"), np.full((20, 20), 3000, dtype="uint16"), x0, y0, 20.0)
+        self._w(os.path.join(tmp, "SCL.tif"), np.full((20, 20), 4, dtype="uint8"), x0, y0, 20.0)
+        return x0 + 200.0, y0 - 200.0
+
+    @staticmethod
+    def _w(path, z, x0, y0, res):
+        with rasterio.open(path, "w", driver="GTiff", height=z.shape[0], width=z.shape[1], count=1,
+                           dtype=z.dtype, crs="EPSG:32611", transform=from_origin(x0, y0, res, res)) as d:
+            d.write(z, 1)
+
+    def test_read_scene_on_20m_and_10m_grids(self):
+        orig = s2c.boa_offset
+        s2c.boa_offset = lambda base: (0.0, 5.0)
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                cx, cy = self._scene(tmp)
+                idx20, ok20, t20, _ = s2c.read_scene(tmp, cx, cy, 100.0, grid_m=20)
+                self.assertEqual(abs(t20.a), 20.0)
+                self.assertEqual(idx20["ndre"].shape, (10, 10))
+                self.assertTrue(ok20.all())
+                self.assertAlmostEqual(float(idx20["ndre"][0, 0]), 0.6, places=6)
+                self.assertAlmostEqual(float(idx20["ndre"][0, -1]), 0.2, places=6)
+                self.assertAlmostEqual(float(idx20["cire"][0, 0]), 2.0, places=6)
+                idx10, ok10, t10, _ = s2c.read_scene(tmp, cx, cy, 100.0, grid_m=10)
+                self.assertEqual(abs(t10.a), 10.0)
+                self.assertEqual(idx10["ndre"].shape, (20, 20))
+                # 20 m red edge copied into 2x2 blocks: the left/right split
+                # falls on the same ground position on both grids.
+                self.assertAlmostEqual(float(idx10["ndre"][0, 9]), 0.6, places=6)
+                self.assertAlmostEqual(float(idx10["ndre"][0, 10]), 0.2, places=6)
+                # NDVI at 10 m keeps the B04 split; at 20 m it is the 2x2 mean of reflectances.
+                self.assertAlmostEqual(float(idx10["ndvi"][0, 0]), (3500 - 300) / 3800, places=6)
+                self.assertAlmostEqual(float(idx20["ndvi"][0, -1]), (3500 - 500) / 4000, places=6)
+                with self.assertRaises(ValueError):
+                    s2c.read_scene(tmp, cx, cy, 100.0, grid_m=30)
+        finally:
+            s2c.boa_offset = orig
+
 
 class RealtimeListener(unittest.TestCase):
     """Runs the webhook server on a free local port; standard library only."""

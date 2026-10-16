@@ -715,3 +715,51 @@ points, as a KS-style distance D, and exits 5 when the fit is outside the
 tolerance. The age of the data is shown next to every ring.
 `distance_table.example.json` is fictional and is only there to show the
 format. No ISRID numbers are included, because they are licensed.
+
+## Red-edge indices in `s2_change.py`
+
+Every `s2_change.py` run now writes three change maps from the same Sentinel-2
+scenes:
+
+- NDVI;
+- NDRE = (B8A - B05) / (B8A + B05);
+- CIre = B07 / B05 - 1.
+
+`--index ndvi|ndre|cire` picks the map that drives the loss clusters.
+Red-edge runs use a 20 m grid by default; `--grid-m` changes the grid.
+Sources are Kalacska et al. 2009 and Leblanc, Kalacska and Soffer 2014 for
+mass-grave vegetation, and Gitelson for the indices.
+
+Detecting a single grave at 10-20 m pixels has not been established. A
+flagged cluster is a disturbance screen only. The earlier claim that a
+"SIPI chlorophyll flush" detects decomposition came from AI-generated
+material and was never validated, so it is not computed.
+
+I ran it at Sun Peaks (50.88, -119.89, 400 m radius), comparing July 2026
+scenes with mid-September 2026 scenes. It flagged three NDRE-loss clusters,
+of 2,000 to 7,200 m^2, between 316 and 383 m from the centre. These are
+screening anomalies to check on the ground, not findings.
+
+## River refloat timing (`refloat_timing.py`)
+
+This tool accumulates degree-days (ADD) from a daily water-temperature
+series. The series can be a CSV or USGS NWIS parameter 00010, read live
+or from a saved file. Days below about 7 C add nothing. From the ADD it
+gives the probability, day by day, that a body has refloated, and the
+window in which that probability passes 10%, 50% and 90%.
+
+The preset uses about 97 degree-days, the figure in the abstract of
+EGUsphere preprint egusphere-2026-5071 (Delhez et al., 2026). That preprint
+is not peer reviewed, and every output says so. The spread could not be
+verified, so you must supply it with `--add-log-sd` or `--add-iqr`. The
+log-normal shape and the 0 C base are assumptions and are recorded as such.
+For the over-65 note (`--over-65`), the abstract reports that older people
+are more likely to stay afloat.
+
+The output includes a block that `drift_envelope.py` can read later.
+
+```sh
+python refloat_timing.py --csv water_temp.csv --incident 2026-05-27 --preset egusphere-2026-5071 \
+    --add-iqr Q1 Q3 --out-dir out/refloat   # Q1 Q3: your own spread, in degree-days
+python -m unittest test_refloat_timing
+```
