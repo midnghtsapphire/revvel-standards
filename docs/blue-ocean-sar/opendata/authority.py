@@ -181,6 +181,10 @@ def _norm_purpose(p):
     return " ".join(str(p or "").split()).casefold()
 
 
+def _norm_reference(r):
+    return " ".join(str(r or "").split()).casefold()
+
+
 def canonical(obj):
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
@@ -195,6 +199,28 @@ def sha256_file(path):
         for chunk in iter(lambda: f.read(1 << 20), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def makedirs_private(path):
+    """Create path and any missing parents with mode 0700. Directories that already exist are left as they are.
+
+    os.makedirs(path, mode=0o700) applies the mode only to the last directory;
+    the parents it creates get the umask default (often 0755).
+    """
+    path = os.path.abspath(path)
+    missing = []
+    while not os.path.isdir(path):
+        missing.append(path)
+        parent = os.path.dirname(path)
+        if parent == path:
+            break
+        path = parent
+    for d in reversed(missing):
+        try:
+            os.mkdir(d, 0o700)
+        except FileExistsError:
+            if not os.path.isdir(d):
+                raise
 
 
 def entry_hash(entry):
@@ -230,7 +256,9 @@ class ChainLog:
     def append(self, body, now=None):
         """Append one entry (dict) and return it with seq, ts, prev and hash filled in."""
         d = os.path.dirname(os.path.abspath(self.path))
-        os.makedirs(d, exist_ok=True)
+        # os.makedirs(d, exist_ok=True)
+        # Replaced (review 2026-10-16): new directories for the ledger / audit log were created with the umask default.
+        makedirs_private(d)
         fd = os.open(self.path, os.O_RDWR | os.O_CREAT | os.O_APPEND, 0o600)
         with os.fdopen(fd, "r+", encoding="utf-8") as f:
             self._lock(f)
@@ -448,11 +476,13 @@ class Ledger:
         return out
 
     def find(self, source_class, case_id, subject, purpose, *, source_name=None, now=None,
-             require_countersign=False):
+             require_countersign=False, reference=None):
         """Return (covering authority or None, list of reasons nothing else covered it).
 
         Records written before SYSTEM_REVIEW H2 (no subjects, a LICENSED one with no
-        expiry, no recorded_by) never cover a call; re-record them.
+        expiry, no recorded_by) never cover a call; re-record them. reference, when
+        given, must equal the authority's recorded reference (warrant / order number),
+        so a call that names one document cannot be covered by another.
         """
         now = now or utc_now()
         subj = normalize_subject(subject)
@@ -486,6 +516,9 @@ class Ledger:
                 why.append(f"purpose {purpose!r} is not one it records ({', '.join(a['purposes'])})")
             if not source_in_scope(source_name, a["sources"]):
                 why.append(f"source {source_name!r} is outside its listed sources ({', '.join(a['sources'])})")
+            # Review 2026-10-16: the request's legal-process reference was not tied to the authority that allowed it.
+            if reference is not None and _norm_reference(reference) != _norm_reference(a.get("reference")):
+                why.append(f"reference {reference!r} is not this authority's ({a.get('reference')!r})")
             if not why:
                 return a, []
             reasons.append(f"{a['id']}: " + "; ".join(why))
@@ -558,12 +591,14 @@ class Gate:
         self._decide("refuse", source_class, case_id, subject, purpose, source_name, None, reason)
         raise AuthorityError(reason)
 
-    def require(self, source_class, case_id, subject, purpose, *, source_name=None, allowed_purposes=None):
+    def require(self, source_class, case_id, subject, purpose, *, source_name=None, allowed_purposes=None,
+                reference=None):
         """Return the covering authority (or a PUBLIC marker), or log the refusal and raise AuthorityError.
 
         allowed_purposes: optional list from the caller's own configuration (an
         endpoint's permissible purposes); a purpose outside it is refused before
-        the ledger is consulted.
+        the ledger is consulted. reference: the legal-process reference the call
+        will send; only an authority recording that same reference covers it.
         """
         sc = (source_class or "").strip().upper()
         case_id = (case_id or "").strip()
@@ -586,9 +621,14 @@ class Gate:
         if allowed_purposes is not None and _norm_purpose(purpose) not in {_norm_purpose(p) for p in allowed_purposes}:
             self.refuse(*args, f"purpose {purpose!r} is not permitted for this source "
                         f"(allowed: {', '.join(allowed_purposes) or 'none'})", source_name)
+        if reference is not None and not str(reference).strip():
+            self.refuse(*args, "an empty legal-process reference was given", source_name)
         try:
+            # auth, reasons = self.ledger.find(sc, case_id, subject, purpose, source_name=source_name,
+            #                                  now=self.clock(), require_countersign=self.require_countersign)
+            # Replaced (review 2026-10-16): pass the call's legal-process reference so the authority must match it.
             auth, reasons = self.ledger.find(sc, case_id, subject, purpose, source_name=source_name, now=self.clock(),
-                                             require_countersign=self.require_countersign)
+                                             require_countersign=self.require_countersign, reference=reference)
         except (LedgerIntegrityError, ValueError, KeyError) as e:
             self.refuse(*args, f"ledger unusable: {e}", source_name)
         if auth is None:
@@ -670,7 +710,12 @@ def _cmd_verify(a):
     led = ChainLog(a.ledger).verify(a.expect_ledger_head, a.expect_ledger_count)
     aud = ChainLog(a.audit_log).verify(a.expect_audit_head, a.expect_audit_count)
     out = {"ledger": led, "audit": aud}
-    if a.check_documents:
+    # if a.check_documents:
+    # Replaced (review 2026-10-16): folding a ledger that failed verification could crash on a tampered entry
+    # (exit 2 instead of 1); its documents cannot be trusted to name the right files anyway.
+    if a.check_documents and not led["ok"]:
+        out["documents"] = {"skipped": "the ledger failed verification, so its document records are not checked"}
+    elif a.check_documents:
         docs = []
         dirs = a.check_documents
         for rec in Ledger(a.ledger).authorities(verify=False).values():

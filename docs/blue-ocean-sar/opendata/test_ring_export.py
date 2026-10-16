@@ -126,12 +126,18 @@ class FakeDevice:
         self.subscribed = subscribed
         self.history_calls = []
         self.download_calls = []
+        self.max_limit = None  # a service-side cap on entries per page (review 2026-10-16)
+        self.ignore_older_than = False  # a misbehaving API that repeats the first page (review 2026-10-16)
 
     async def async_history(self, *, limit=30, older_than=None, **_):
         self.history_calls.append({"limit": limit, "older_than": older_than})
         items = self._history
-        if older_than is not None:
+        if older_than is not None and not self.ignore_older_than:
             items = [e for e in items if e["id"] < older_than]
+        # return [dict(e) for e in items[:limit]]
+        # Replaced (review 2026-10-16): the fake can now cap the page size like a real service limit.
+        if self.max_limit is not None:
+            limit = min(limit, self.max_limit)
         return [dict(e) for e in items[:limit]]
 
     async def async_recording_download(self, recording_id, filename=None, **_):
@@ -437,7 +443,9 @@ class EventsTests(Base):
         self.assertIsNone(calls[0]["older_than"])
         # each next page starts strictly older than the last id of the previous page
         self.assertEqual(calls[1]["older_than"], 5000 + 120 - 24)
-        self.assertEqual(len(calls), 5)  # 25+25+25+25+20
+        # self.assertEqual(len(calls), 5)  # 25+25+25+25+20
+        # Replaced (review 2026-10-16): a short page no longer ends paging; only the empty sixth page does.
+        self.assertEqual(len(calls), 6)  # 25+25+25+25+20+0
         # rate limiting: slept between pages
         self.assertGreaterEqual(len(self.sleeps), 4)
         self.assertTrue(all(s == 1.0 for s in self.sleeps))
@@ -487,6 +495,25 @@ class EventsTests(Base):
         self.assertEqual(code, 1)
         self.assertIn("INCOMPLETE", cap.text)
         self.assertEqual(len(json.loads(path.read_text())), 50)
+
+    def test_short_pages_from_a_service_cap_do_not_end_history(self):
+        # review 2026-10-16: Ring returning fewer than --page-size entries was taken as the end of history.
+        self.logged_in()
+        self.front.max_limit = 10
+        code, cap, path = self.events("--device", "101")
+        self.assertEqual(code, 0, cap.text)
+        self.assertEqual(len(json.loads(path.read_text())), 120)
+
+    def test_repeated_page_is_incomplete_without_duplicates(self):
+        # review 2026-10-16: a repeated page was processed again and reported as a complete history.
+        self.logged_in()
+        self.front.ignore_older_than = True
+        code, cap, path = self.events("--device", "101")
+        self.assertEqual(code, 1, cap.text)
+        self.assertIn("INCOMPLETE", cap.text)
+        rows = json.loads(path.read_text())
+        self.assertEqual(len(rows), 25)
+        self.assertEqual(len({r["event_id"] for r in rows}), 25)
 
     def test_bad_inputs_exit_2(self):
         self.logged_in()
@@ -637,6 +664,35 @@ class DownloadTests(Base):
         (self.dir / "empty").mkdir()
         self.assertEqual(self.verify(self.dir / "empty")[0], 1)
 
+    def test_download_finds_ids_past_short_capped_pages(self):
+        # review 2026-10-16: a short page from a service cap stopped the id search, so the id was "not found".
+        self.logged_in()
+        self.front.max_limit = 10
+        code, cap, out = self.download("5050")
+        self.assertEqual(code, 0, cap.text)
+        self.assertEqual([r["event_id"] for r in rx.read_manifest(out)], ["5050"])
+
+    def test_download_refuses_orphan_recordings_without_manifest(self):
+        # review 2026-10-16: with no manifest, a stray .mp4 let download succeed into a directory verify rejects.
+        self.logged_in()
+        out = self.dir / "rec"
+        out.mkdir()
+        (out / "stray.mp4").write_bytes(b"x")
+        code, cap, _ = self.download("5120")
+        self.assertEqual(code, 1)
+        self.assertIn("in no manifest", cap.text)
+        self.assertEqual(FakeAuth.instances, [], "refused before Ring is contacted")
+        self.assertFalse((out / rx.MANIFEST_NAME).exists())
+
+    def test_verify_reports_non_object_manifest_line(self):
+        # review 2026-10-16: a valid JSON line that is not an object crashed verify with AttributeError.
+        out = self._fresh()
+        mpath = out / rx.MANIFEST_NAME
+        mpath.write_text(mpath.read_text() + "[1, 2]\n")
+        code, cap = self.verify(out)
+        self.assertEqual(code, 1)
+        self.assertIn("not a JSON object", cap.text)
+
     def test_download_refuses_to_extend_broken_chain(self):
         out = self._fresh()
         f = out / rx.read_manifest(out)[0]["file"]
@@ -727,6 +783,34 @@ class SharedEvidenceLogTests(Base):
         code, cap, out = self.download("5120", extra=["--evidence-log", str(self.log)])
         self.assertEqual(code, 0, cap.text)
         self.assertIsNone(self.entries()[0]["signature"])
+
+    def test_verify_cross_checks_log_against_manifest(self):
+        # review 2026-10-16: a valid log of other recordings verified next to an unrelated directory.
+        self.logged_in()
+        code, cap, out = self.download("5120", extra=self.signed_args())
+        self.assertEqual(code, 0, cap.text)
+        other = self.dir / "other"
+        rx.write_token_file(self.token_file, REFRESH_1)
+        code, cap = self.run_cli(["download", "--token-file", str(self.token_file), "--ids", "5119",
+                                  "--out-dir", str(other), "--page-size", "25"])
+        self.assertEqual(code, 0, cap.text)
+        self.assertEqual(rx.verify_dir(other), [])
+        code, cap = self.verify(other, "--public-key", str(self.pub))
+        self.assertEqual(code, 1, cap.text)
+        self.assertIn("not in the evidence log", cap.text)
+        self.assertIn("WARN", cap.text)  # the log's 5120 entry is not in this manifest
+        code, cap = self.verify(out, "--public-key", str(self.pub))
+        self.assertEqual(code, 0, cap.text)
+        # a rebuilt manifest for the same event no longer matches the logged chain_hash
+        for p in out.iterdir():
+            p.unlink()
+        with mock.patch.object(rx, "utc_now", lambda: NOW + timedelta(days=1)):
+            rx.write_token_file(self.token_file, REFRESH_1)
+            code, cap, out = self.download("5120")
+        self.assertEqual(code, 0, cap.text)
+        code, cap = self.verify(out, "--public-key", str(self.pub))
+        self.assertEqual(code, 1, cap.text)
+        self.assertIn("disagrees on legacy_chain_hash", cap.text)
 
     def test_verify_flags_need_evidence_log(self):
         self.logged_in()

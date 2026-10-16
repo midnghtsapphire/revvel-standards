@@ -311,6 +311,85 @@ class TestGatedCalls(Base):
         with self.assertRaises(A.AuthorityError):
             ad.call("subscriber_records", CASE, lp_purpose, params)
 
+    def test_legal_process_reference_must_be_the_authoritys(self):
+        # review 2026-10-16: an authority for SW-1 allowed a request citing SW-2.
+        op = FakeOpener()
+        ad = self.adapter(op)
+        lp_purpose = "law-enforcement-legal-process"
+        self.add_warrant()  # reference SW-1
+        with self.assertRaises(A.AuthorityError) as cm:
+            ad.call("subscriber_records", CASE, lp_purpose, {"phone": "+1 555 0100", "legal_process_reference": "SW-2"})
+        self.assertIn("reference", str(cm.exception))
+        self.assertEqual(op.requests, [])
+        self.assertEqual(self.audit()[-1]["event"], "refuse")
+        res = ad.call("subscriber_records", CASE, lp_purpose,
+                      {"phone": "+1 555 0100", "legal_process_reference": "SW-1"})
+        self.assertTrue(res["ok"])
+        self.assertEqual(res["authority"]["reference"], "SW-1")
+
+    def test_legal_process_endpoint_needs_purposes(self):
+        # review 2026-10-16: without permissible_purposes the endpoint-specific purpose check was skipped.
+        cfg = example_cfg()
+        del cfg["endpoints"]["subscriber_records"]["permissible_purposes"]
+        self.write_provider(cfg)
+        with self.assertRaisesRegex(ValueError, "permissible_purposes"):
+            R.load_provider(self.provider_path)
+
+    def test_vehicle_subject_includes_state(self):
+        # review 2026-10-16: subject_params was ["plate"], so an authority for a plate covered every state.
+        op = FakeOpener()
+        ad = self.adapter(op)
+        dppa = "DPPA:2721(b)(1)"
+        self.add_licensed(purposes=[dppa], subjects=["ABC1234"])
+        with self.assertRaises(A.AuthorityError):
+            ad.call("vehicle_registration", CASE, dppa, {"plate": "ABC1234", "state": "OH"})
+        self.add_licensed(purposes=[dppa], subjects=["ABC1234 OH"])
+        with self.assertRaises(A.AuthorityError):
+            ad.call("vehicle_registration", CASE, dppa, {"plate": "ABC1234", "state": "TX"})
+        self.assertEqual(op.requests, [])
+        self.assertTrue(ad.call("vehicle_registration", CASE, dppa, {"plate": "ABC1234", "state": "OH"})["ok"])
+
+    def test_dot_segment_path_parameters_refused(self):
+        # review 2026-10-16: quote() leaves '..' as is, so the path could be normalised outside the endpoint.
+        self.add_licensed(subjects=["..", "."])
+        op = FakeOpener()
+        for value in ("..", ".", " .. "):
+            with self.subTest(value=value), self.assertRaisesRegex(ValueError, "'..'"):
+                self.adapter(op).call("address_history", CASE, PURPOSE, {"person_id": value})
+        self.assertEqual(op.requests, [])
+        self.assertEqual(self.audit(), [])
+
+    def test_response_withheld_when_result_entry_cannot_be_written(self):
+        # review 2026-10-16: the response was returned although its audit 'result' entry was never written.
+        self.add_licensed()
+        real_log = self.gate.log
+
+        def failing_log(event, **fields):
+            if event == "result":
+                raise OSError("disk full")
+            return real_log(event, **fields)
+
+        self.gate.log = failing_log
+        op = FakeOpener(FakeResponse(200, {"results": [{"person_id": "P1"}]}))
+        res = self.adapter(op).call("people_search", CASE, PURPOSE, {"first_name": "Jane", "last_name": "Example"})
+        self.assertEqual(len(op.requests), 1)
+        self.assertFalse(res["ok"])
+        self.assertIsNone(res["data"])
+        self.assertNotIn("text", res)
+        self.assertIn("withheld", res["error"])
+        with open(os.path.join(res["evidence"]["dir"], "response.body"), encoding="utf-8") as f:
+            self.assertIn("P1", f.read())  # kept as evidence
+
+    def test_new_evidence_directories_are_private(self):
+        # review 2026-10-16: evidence/ and evidence/<case>/ were created with the umask default (often 0755).
+        old = os.umask(0o022)
+        self.addCleanup(os.umask, old)
+        self.add_licensed()
+        res = self.adapter(FakeOpener()).call("people_search", CASE, PURPOSE,
+                                              {"first_name": "Jane", "last_name": "Example"})
+        for d in (self.evidence, os.path.dirname(res["evidence"]["dir"]), res["evidence"]["dir"]):
+            self.assertEqual(os.stat(d).st_mode & 0o777, 0o700, d)
+
     def test_public_endpoint_needs_no_authority(self):
         op = FakeOpener()
         res = self.adapter(op).call("public_court_index", "", "", {"name": "Jane Example"})

@@ -225,6 +225,18 @@ class TestLegalProcess(Base):
             A.build_authority(A.LEGAL_PROCESS, CASE, **lp_fields())
         self.assertTrue(self.gate_with().require_countersign)
 
+    def test_reference_binds_the_call_to_its_authority(self):
+        # review 2026-10-16: an authority for one warrant covered a call that cited another reference.
+        sw1 = self.add_lp(reference="SW-1")
+        msg = self.assertRefused(A.LEGAL_PROCESS, CASE, SUBJECT, "locate", reference="SW-2")
+        self.assertIn("reference", msg)
+        self.assertRefused(A.LEGAL_PROCESS, CASE, SUBJECT, "locate", reference="  ")
+        self.assertEqual(self.gate.require(A.LEGAL_PROCESS, CASE, SUBJECT, "locate", reference=" sw-1 ")["id"],
+                         sw1["id"])
+        sw2 = self.add_lp(reference="SW-2")
+        self.assertEqual(self.gate.require(A.LEGAL_PROCESS, CASE, SUBJECT, "locate", reference="SW-2")["id"],
+                         sw2["id"])
+
     def test_empty_document_is_not_a_warrant(self):
         with self.assertRaisesRegex(ValueError, "empty"):
             A.build_authority(A.LEGAL_PROCESS, CASE, **lp_fields(document_sha256=A.sha256_bytes(b"")))
@@ -483,6 +495,30 @@ class TestCLI(Base):
         self.assertEqual(json.loads(out)["countersigned_by"], "Sgt. C. Example")
         (code, _, err), _ = self.add_lp_cli("--countersign", ACTOR)
         self.assertEqual(code, 2, err)
+
+    def test_new_log_directories_are_private(self):
+        # review 2026-10-16: makedirs created missing parents of the ledger / audit log with the umask (0755).
+        old = os.umask(0o022)
+        self.addCleanup(os.umask, old)
+        path = os.path.join(self.tmp, "a", "b", "audit.jsonl")
+        A.ChainLog(path).append({"event": "x"})
+        for d in (os.path.join(self.tmp, "a"), os.path.join(self.tmp, "a", "b")):
+            self.assertEqual(os.stat(d).st_mode & 0o777, 0o700, d)
+
+    def test_verify_check_documents_on_tampered_ledger_exit_1(self):
+        # review 2026-10-16: folding a tampered 'add' entry raised KeyError (exit 2) instead of reporting exit 1.
+        (code, _, err), _ = self.add_lp_cli()
+        self.assertEqual(code, 0, err)
+        with open(self.ledger_path, encoding="utf-8") as f:
+            entry = json.loads(f.read().splitlines()[0])
+        del entry["authority"]
+        with open(self.ledger_path, "w", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + "\n")
+        code, out, err = self.run_cli("verify", "--check-documents", self.tmp)
+        self.assertEqual(code, 1, err)
+        res = json.loads(out)
+        self.assertFalse(res["ledger"]["ok"])
+        self.assertIn("skipped", res["documents"])
 
     def test_verify_detects_tamper_exit_1(self):
         lic = ("--purpose", PURPOSE, "--subject", "x", "--expires", self.dates()[1])

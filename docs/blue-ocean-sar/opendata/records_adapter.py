@@ -92,6 +92,8 @@ DEFAULT_MAX_BYTES = 20 * 1024 * 1024
 REDACTED = "[REDACTED]"
 ALWAYS_REDACT_HEADERS = {"authorization", "proxy-authorization", "cookie", "set-cookie"}
 USER_AGENT = "revvel-sar-records-adapter/0.1"
+# A LEGAL_PROCESS call that sends this parameter is covered only by the authority recording that same reference.
+LEGAL_PROCESS_REFERENCE_PARAM = "legal_process_reference"
 _NAME = re.compile(r"^[A-Za-z0-9_.-]+$")
 
 
@@ -140,8 +142,11 @@ def _validate_endpoint(name, ep):
         if extra:
             raise ValueError(f"{name}: {label} not in allowed_params: {', '.join(extra)}")
     purposes = ep.get("permissible_purposes")
-    if sc == A.LICENSED and not purposes:
-        raise ValueError(f"{name}: a LICENSED endpoint needs a non-empty permissible_purposes list")
+    # if sc == A.LICENSED and not purposes:
+    #     raise ValueError(f"{name}: a LICENSED endpoint needs a non-empty permissible_purposes list")
+    # Replaced (review 2026-10-16): a LEGAL_PROCESS endpoint without the list skipped the endpoint purpose check.
+    if sc != A.PUBLIC and not purposes:
+        raise ValueError(f"{name}: a {sc} endpoint needs a non-empty permissible_purposes list")
     loc = ep.get("param_location") or ("json" if method == "POST" else "query")
     if loc not in ("query", "json"):
         raise ValueError(f"{name}: param_location must be 'query' or 'json'")
@@ -275,7 +280,9 @@ class RateLimiter:
         self.clock, self.sleep = clock, sleep
 
     def acquire(self):
-        os.makedirs(os.path.dirname(self.path), mode=0o700, exist_ok=True)
+        # os.makedirs(os.path.dirname(self.path), mode=0o700, exist_ok=True)
+        # Replaced (review 2026-10-16): makedirs gave only the last directory 0700; evidence/ itself got the umask.
+        A.makedirs_private(os.path.dirname(self.path))
         fd = os.open(self.path, os.O_RDWR | os.O_CREAT, 0o600)
         with os.fdopen(fd, "r+", encoding="utf-8") as f:
             if fcntl is not None:
@@ -333,6 +340,11 @@ class RecordsAdapter:
         missing = [k for k in ep["required_params"] if not str(params.get(k, "")).strip()]
         if missing:
             raise ValueError(f"{ep['name']}: missing required parameter(s): {', '.join(missing)}")
+        # Review 2026-10-16: quote(..., safe="") leaves "." and ".." as they are, and a server that normalises the
+        # path would then answer for a different resource than the configured endpoint.
+        dots = sorted(k for k in _placeholders(ep["path"]) if str(params.get(k, "")).strip() in (".", ".."))
+        if dots:
+            raise ValueError(f"{ep['name']}: path parameter(s) may not be '.' or '..': {', '.join(dots)}")
         return {k: str(v) for k, v in params.items()}
 
     def build_request(self, ep, params, key):
@@ -383,8 +395,12 @@ class RecordsAdapter:
         key = self._key or read_key(self.p, self._key_file, self._environ)
         secrets = [key]
         subject = self._subject(ep, case_id, subject, purpose, params)
+        # auth = self.gate.require(ep["source_class"], case_id, subject, purpose, source_name=self.source_name(ep),
+        #                          allowed_purposes=ep["permissible_purposes"])
+        # Replaced (review 2026-10-16): a legal-process reference sent to the vendor must be the authority's own.
+        reference = params.get(LEGAL_PROCESS_REFERENCE_PARAM) if ep["source_class"] == A.LEGAL_PROCESS else None
         auth = self.gate.require(ep["source_class"], case_id, subject, purpose, source_name=self.source_name(ep),
-                                 allowed_purposes=ep["permissible_purposes"])
+                                 allowed_purposes=ep["permissible_purposes"], reference=reference)
         url, data, headers = self.build_request(ep, params, key)
         waited = self.limiter.acquire()
 
@@ -436,7 +452,14 @@ class RecordsAdapter:
                           evidence_manifest_sha256=ev["manifest_sha256"], evidence_dir=ev["dir"],
                           **log_fields, **self.gate.subject_fields(subject))
         except (OSError, ValueError, KeyError) as e:
-            error = (error + "; " if error else "") + f"audit result entry not written: {e}"
+            # error = (error + "; " if error else "") + f"audit result entry not written: {e}"
+            # Replaced (review 2026-10-16): the request was already sent and cannot be undone, but without its audit
+            # 'result' entry the response is not released; it stays only in the evidence directory.
+            unaudited = True
+            error = (error + "; " if error else "") + (f"audit result entry not written: {e}; response withheld "
+                                                       f"(kept only in {ev['dir']})")
+        else:
+            unaudited = False
 
         saved, _ = redact_bytes(body, secrets)
         parsed = None
@@ -444,6 +467,8 @@ class RecordsAdapter:
             parsed = json.loads(saved.decode("utf-8")) if saved else None
         except ValueError:
             parsed = None
+        if unaudited:  # Review 2026-10-16: fail closed on the result-entry postcondition.
+            parsed, saved = None, b""
         result = {"ok": error is None and status is not None and 200 <= status < 300, "status": status,
                   "provider": self.p["provider"], "endpoint": ep["name"], "case_id": case_id,
                   "authority": ref, "evidence": ev, "error": error, "data": parsed}
@@ -492,7 +517,10 @@ class RecordsAdapter:
         stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         d = os.path.join(self.evidence_dir, safe_component(case_id),
                          f"{stamp}-{self.p['provider']}-{ep['name']}-{uuid.uuid4().hex[:8]}")
-        os.makedirs(d, mode=0o700)
+        # os.makedirs(d, mode=0o700)
+        # Replaced (review 2026-10-16): the case directory above the call directory was created with the umask.
+        A.makedirs_private(os.path.dirname(d))
+        os.mkdir(d, 0o700)
         # saved, nred = redact_bytes(body, secrets)
         # req_bytes = ...; meta = {...}
         # Replaced: built once in _evidence_payload so the legacy files and the shared log hold identical content.

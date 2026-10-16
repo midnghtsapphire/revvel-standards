@@ -36,13 +36,13 @@
       "permissible_purposes": ["GLBA:6802(e)(8)", "DPPA:2721(b)(1)"]
     },
     "vehicle_registration": {
-      "owner_note": "OWNER NOTE: motor-vehicle records are covered by the DPPA. Only enable this if the vendor and the agency have confirmed a DPPA purpose applies to you for this case.",
+      "owner_note": "OWNER NOTE: motor-vehicle records are covered by the DPPA. Only enable this if the vendor and the agency have confirmed a DPPA purpose applies to you for this case. Replaced (review 2026-10-16): subject_params was [\"plate\"], so one authority covered the same plate in every state; the subject is now plate and state, recorded as e.g. --subject \"ABC1234 OH\".",
       "method": "GET",
       "path": "/v1/vehicles/{plate}",
       "source_class": "LICENSED",
       "allowed_params": ["plate", "state"],
       "required_params": ["plate", "state"],
-      "subject_params": ["plate"],
+      "subject_params": ["plate", "state"],
       "permissible_purposes": ["DPPA:2721(b)(1)"]
     },
     "subscriber_records": {
