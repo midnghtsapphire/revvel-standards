@@ -601,7 +601,10 @@ class ListenerCli(unittest.TestCase):
             self.assertEqual(cm.exception.code, 2, text)
         with self.assertRaises(ValueError):
             self.rl.make_server("127.0.0.1", 0, os.path.join(self.tmp.name, "x.db"), ground_truth=[])
-        self.rl.check_ground_truth(self.rl.DEFAULT_VERIFIED_GROUND_TRUTH)
+        # Replaced (SYSTEM_REVIEW C4): the listener no longer imports the removed
+        # Shaffer default; None (no ground truth) is still accepted.
+        # self.rl.check_ground_truth(self.rl.DEFAULT_VERIFIED_GROUND_TRUTH)
+        self.rl.check_ground_truth(None)
 
 
 class ServiceUnit(unittest.TestCase):

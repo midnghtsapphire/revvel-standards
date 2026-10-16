@@ -56,7 +56,9 @@ sys.path.insert(0, str(Path(__file__).parent))
 # except ImportError as e:
 #     logging.warning(f"Module import warning: {e}. Will attempt relative imports if running standalone.")
 from archive_collector_cli import init_database, normalize_record, save_record_to_db  # noqa: E402
-from stage2_validation_gate import DEFAULT_VERIFIED_GROUND_TRUTH, Stage2ValidationGate  # noqa: E402
+# Replaced (SYSTEM_REVIEW C4): the unsourced Shaffer default is no longer used here.
+# from stage2_validation_gate import DEFAULT_VERIFIED_GROUND_TRUTH, Stage2ValidationGate  # noqa: E402
+from stage2_validation_gate import Stage2ValidationGate  # noqa: E402
 
 MAX_BODY_BYTES = 1024 * 1024
 REQUIRED_FIELDS = ("source_origin", "archive_timestamp", "source_identifier", "raw_content")
