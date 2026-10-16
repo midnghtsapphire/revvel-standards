@@ -76,6 +76,19 @@ class DiscoveryTests(unittest.TestCase):
         )
         self.assertEqual(rows[0]["id"], "one")
 
+    def test_stac_datetime_uses_normalized_dates(self):
+        urls = []
+
+        def opener(req, timeout):
+            urls.append(req.full_url)
+            return FakeResponse(req.full_url, {"features": []})
+
+        bbox = [-83.02, 39.98, -83.00, 40.00]
+        stac_search("https://example.gov/stac/search", bbox, "1136203200000", "12/31/2006", opener=opener)
+        self.assertIn("datetime=2006-01-02T00%3A00%3A00Z%2F2006-12-31T23%3A59%3A59Z", urls[0])
+        with self.assertRaises(ValueError):
+            stac_search("https://example.gov/stac/search", bbox, "12/31/2007", "2006-01-01", opener=opener)
+
     def test_bad_bbox(self):
         with self.assertRaises(ValueError):
             stac_search("https://example.gov/search", [2, 3, 1, 4], "2005-01-01", "2007-01-01")

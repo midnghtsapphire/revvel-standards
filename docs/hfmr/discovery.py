@@ -71,7 +71,11 @@ def stac_search(endpoint, bbox, start_date, end_date, *, opener=None, limit=100)
     """Read public STAC /search via GET; explicitly preserve datetime and footprint."""
     if len(bbox) != 4 or not (-180 <= bbox[0] < bbox[2] <= 180 and -90 <= bbox[1] < bbox[3] <= 90):
         raise ValueError("Invalid lon/lat bounding box")
-    if not (date_value(start_date) and date_value(end_date) and start_date <= end_date):
+    # Original: if not (date_value(start_date) and date_value(end_date) and start_date <= end_date):
+    #   it validated the normalized dates but compared and formatted the raw inputs, so an
+    #   epoch-millisecond or MM/DD/YYYY value produced a malformed STAC datetime range.
+    start, end = date_value(start_date), date_value(end_date)
+    if not (start and end and start <= end):
         raise ValueError("Invalid date range")
     if not 1 <= limit <= 100:
         raise ValueError("Limit 1..100")
@@ -79,7 +83,8 @@ def stac_search(endpoint, bbox, start_date, end_date, *, opener=None, limit=100)
     if not p.path.rstrip("/").endswith("/search"):
         raise ValueError("Expected STAC /search")
     query = urllib.parse.urlencode(
-        {"bbox": ",".join(map(str, bbox)), "datetime": f"{start_date}T00:00:00Z/{end_date}T23:59:59Z", "limit": limit}
+        # Original: "datetime": f"{start_date}T00:00:00Z/{end_date}T23:59:59Z" (raw inputs; see above)
+        {"bbox": ",".join(map(str, bbox)), "datetime": f"{start}T00:00:00Z/{end}T23:59:59Z", "limit": limit}
     )
     url = endpoint + ("&" if "?" in endpoint else "?") + query
     data = _get_json(url, opener=opener, allowed_host=p.hostname)
