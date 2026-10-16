@@ -11,6 +11,7 @@ registry, logs) are not committed; the scripts regenerate them.
 | Script | Replaces | Real data source | Runs here? |
 | --- | --- | --- | --- |
 | `s2_ndvi.py` | NDVI values in `sentinel_wayback_satellite_math_matrix`, `multi_year_ndvi_signals` | Sentinel-2 L2A scenes, AWS open data (`sentinel-cogs`) | Yes |
+| `s2_change.py` | "brush clearing near the pond" and similar change claims in the Lindeman decks | Sentinel-2 L2A scenes, AWS open data (`sentinel-cogs`) | Yes |
 | `dem_terrain.py` | `run_county.py` random terrain; the slope/slide model in the Whisper deck; "LiDAR depression" claims | Copernicus GLO-30 (AWS), or your own DTM GeoTIFF | Yes |
 | `weather_history.py` | The temperature and snowfall figures in the slide decks | ERA5 reanalysis via Open-Meteo | No: host blocked here |
 | `image_phash.py` | The hard-coded hashes in `image_comparison_features.csv` | Your actual image files | Yes (offline) |
@@ -57,6 +58,7 @@ python build_case_registry.py --in UPLOADS_DIR --in extracted_zips/ --out-dir re
 ```sh
 python s2_ndvi.py --lat 36.62 --lon -94.41 --start 2026-09 --end 2026-10 --out lindeman.csv
 python s2_ndvi.py --lat 50.8782 --lon -119.9075 --start 2017-07 --end 2025-08 --months 7 8 --out shtuka.csv
+python s2_change.py --lat 36.6534 --lon -94.4418 --radius-m 1609 --before 2026-09-12 2026-09-12 --after 2026-09-17 2026-09-17 --out-dir out/lindeman_change
 python dem_terrain.py --lat 50.8782 --lon -119.9075 --radius-m 1500 --mu 0.3 0.45 0.6 --out-prefix out/td
 python dem_terrain.py --dem my_1m_dtm.tif --lat .. --lon .. --radius-m 200 --out-prefix out/site   # 1 m data
 python dem_terrain.py --before dtm_2018.tif --after dtm_2025.tif --lod-m 0.10 --out-prefix out/change

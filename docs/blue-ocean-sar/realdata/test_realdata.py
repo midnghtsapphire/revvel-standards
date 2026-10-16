@@ -24,6 +24,7 @@ if HAS_GEO:
     from rasterio.transform import from_origin
 
     import dem_terrain as dt
+    import s2_change as s2c
     import s2_ndvi as s2
 
 
@@ -303,6 +304,38 @@ class Registry(unittest.TestCase):
         self.assertEqual(s["confidence_pct_values"], [50.0, 93.0])
         self.assertEqual(s["depth_m_values"], [1.2])
         self.assertTrue(os.path.exists(os.path.join(out, "case_registry.sqlite")))
+
+
+@unittest.skipUnless(HAS_GEO, "numpy/scipy/rasterio not installed")
+class Sentinel2Change(unittest.TestCase):
+    def test_pond_found_and_sized(self):
+        ndwi = np.full((40, 40), -0.4)
+        ndwi[10:15, 20:24] = 0.3  # 20 water pixels
+        inside = np.ones_like(ndwi, dtype=bool)
+        ponds = s2c.find_ponds(ndwi, inside, px_m=10.0)
+        self.assertEqual(len(ponds), 1)
+        self.assertEqual(ponds[0]["pixels"], 20)
+        self.assertEqual(ponds[0]["area_m2"], 2000.0)
+        self.assertAlmostEqual(ponds[0]["row"], 12.0)
+
+    def test_pond_outside_radius_ignored(self):
+        ndwi = np.full((40, 40), -0.4)
+        ndwi[0:3, 0:3] = 0.3
+        inside = np.zeros_like(ndwi, dtype=bool)
+        inside[10:30, 10:30] = True
+        self.assertEqual(s2c.find_ponds(ndwi, inside, px_m=10.0), [])
+
+    def test_loss_judged_against_area_not_raw_drop(self):
+        # Whole area browns by 0.10 (senescence); one 3x3 patch drops 0.40.
+        rng = np.random.default_rng(0)
+        d = -0.10 + rng.normal(0, 0.02, (60, 60))
+        d[30:33, 30:33] = -0.40
+        inside = np.ones_like(d, dtype=bool)
+        clusters, stats = s2c.loss_clusters(d, inside, z_limit=-4.0, min_px=4)
+        self.assertAlmostEqual(stats["median_dndvi"], -0.10, places=2)
+        self.assertEqual(len(clusters), 1)
+        self.assertEqual(clusters[0]["pixels"], 9)
+        self.assertLess(clusters[0]["mean_z"], -10)
 
 
 if __name__ == "__main__":
