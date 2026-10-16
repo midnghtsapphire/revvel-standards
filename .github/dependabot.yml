@@ -39,7 +39,7 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
-      - "github-actions"
+      # - "github-actions"   # Removed 2026-10-16: not in config/labels-allowlist.yml, the canonical label list.
     commit-message:
       prefix: "ci"
     # 7-day cooldown blocks Dependabot from opening a bump PR the moment a

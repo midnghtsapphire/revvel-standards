@@ -10,8 +10,8 @@
  * not in the canonical allowlist (config/labels-allowlist.yml), which caps the
  * label set, so the fix removes it from the config instead of creating it.
  *
- * A label passes if it is in the allowlist, in .github/labels.yml (which
- * sync-labels.yml creates on the repo), or in KNOWN_REPO_LABELS below.
+ * A label passes if it is in the allowlist or in .github/labels.yml (which
+ * sync-labels.yml creates on the repo).
  */
 
 const fs = require('node:fs');
@@ -22,10 +22,11 @@ const YAML = require('yaml');
 
 const ROOT = path.join(__dirname, '..');
 
-// Labels that exist on the repo but are not (yet) in the allowlist.
-// "github-actions": Dependabot's error for the npm entries named only "npm"
-// as missing, while the github-actions entry applies this label without error.
-const KNOWN_REPO_LABELS = new Set(['github-actions']);
+// Labels that exist on the repo but are not in the allowlist. Empty on purpose:
+// the allowlist and .github/labels.yml are the only sources of valid labels.
+// const KNOWN_REPO_LABELS = new Set(['github-actions']);
+// Replaced 2026-10-16: "github-actions" was commented out of dependabot.yml instead.
+const KNOWN_REPO_LABELS = new Set();
 
 function readYaml(rel) {
   return YAML.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
@@ -51,4 +52,5 @@ test('every Dependabot label exists on the repository', () => {
 
 test('the check catches the label that broke Dependabot', () => {
   assert.equal(knownLabels().has('npm'), false);
+  assert.equal(knownLabels().has('github-actions'), false);
 });
