@@ -89,6 +89,32 @@ python3 -m hfmr analyze --case DEMO-001 --input hfmr/examples/synthetic_grid.csv
 `test_historical.py` needs `numpy` and `rasterio`. The other tests use the
 standard library only.
 
+## Modules 10–17 and the records-retrieval repo (merged 2026-10-16)
+
+Added from the uploads:
+
+- `case001_acquire*` (module 10)
+- `records_followup*` (module 11)
+- `evidence_engine.py` (modules 12–16)
+- `intake17.py` (module 17)
+- `auto_retrieve.py`, from the automated records repo, which is a superset of
+  module 17
+
+Notes on the merge:
+
+- Every file these uploads share with module 9 was byte-identical to it.
+- The two module 17 uploads were identical.
+- `test_auto_retrieve.py` moved from the repo's top-level `tests/` into the
+  package. Its absolute import and path hack are commented out next to the
+  relative import that replaces them.
+- The new modules' READMEs, the engineering audit and both GitHub workflows
+  are in `modules/`. The workflows are stored as `.yml.txt` so they don't run
+  in this repository. If they're used in their own repository,
+  `actions/checkout@v4`, `setup-python@v5` and `upload-artifact@v4` should be
+  pinned to commit SHAs first (CLAUDE.md gotcha 8).
+- `auto_retrieve.py` allows `gis.columbus.gov`, `arc.columbus.gov` and
+  `maps2.columbus.gov`, which settles the host mismatch below for that client.
+
 ### Open points found while merging
 
 - **Two different Columbus GIS hosts.** `columbus.py` (module 8) allows only
