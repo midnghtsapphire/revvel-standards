@@ -22,6 +22,7 @@ registry, logs) are not committed; the scripts regenerate them.
 | `stage2_validation_gate.py` | (your script, unchanged copy) | The stage-0 database | Yes |
 | `field_log.py` | `taphos_serial_parser.py` ("VALIDATED" for any value present, always ONLINE) | Your Taphos-Stick field log CSV | Yes (offline) |
 | `lab_readers.py` | GC-MS and 16S tabs of `ryverly_recon_app-v6.py` (typed-in peaks and abundances) | A lab's TIC export (CSV/mzML) and 16S feature table | Yes (offline) |
+| `fusion.py` | The "SFAI probability" and PMI decay curves in `ryverly_recon_app-v6.py` | Outputs of the tools above, with your weights | Yes (offline) |
 
 Fixes made to your scripts (the original lines are kept as comments):
 
@@ -173,6 +174,26 @@ cat ops-log.csv | python field_log.py - --out report.json
 ```sh
 python lab_readers.py gcms --sample eff.csv --control ctrl.csv --method my_method.json --out gcms.json
 python lab_readers.py 16s --table feature-table.tsv --sample EFF-A1 --control CTRL-A1 --rank family --out 16s.json
+```
+
+### `fusion.py`
+
+Ranks sites from layer values you supply: a CSV keyed by site ID, point
+features from `dem_terrain.py` or `s2_change.py` JSON (nearest within a set
+distance), or a GeoTIFF sampled at each site (needs rasterio). Each layer is
+normalised across the sites (robust z or rank percentile) and weighted by
+the weight in your config file.
+
+- **Traceable.** Every site lists each layer's raw value, source, normalised
+  value, weight and contribution, so the score can be recomputed by hand.
+- **No built-in weights.** There are no default weights and no time-decay
+  curves. If you want weights that depend on elapsed time, put them in the
+  config.
+- **Not a probability.** The score ranks these sites under these weights. It
+  does not say anything is buried at any of them.
+
+```sh
+python fusion.py --config fusion_config.json --out ranked_sites.json --csv ranked_sites.csv
 ```
 
 ## Limits that come with the data
