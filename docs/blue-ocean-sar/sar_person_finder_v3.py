@@ -119,9 +119,20 @@ class MultiBandSAREngine:
         with rasterio.open(raster_path) as src:
             transform = src.transform
             num_bands = src.count
+            # The output reads one value per configured band, so anything other
+            # than six bands crashed (fewer) or was mislabelled (more).
+            if num_bands != len(self.BAND_CONFIGS):
+                raise ValueError(
+                    f"{raster_path} has {num_bands} bands; this engine needs exactly {len(self.BAND_CONFIGS)} "
+                    f"in the order {', '.join(self.BAND_CONFIGS)}"
+                )
+            # Original: every map was grid_size x grid_size, so any raster of another
+            # size failed on the first band.
+            shape = (src.height, src.width)
 
             band_db_list = []
-            fused_anomaly_map = np.zeros((self.grid_size, self.grid_size), dtype=np.float32)
+            # fused_anomaly_map = np.zeros((self.grid_size, self.grid_size), dtype=np.float32)
+            fused_anomaly_map = np.zeros(shape, dtype=np.float32)
 
             band_keys = list(self.BAND_CONFIGS.keys())
 
@@ -150,11 +161,14 @@ class MultiBandSAREngine:
             fused_anomaly_map /= sum(c["weight"] for c in self.BAND_CONFIGS.values())
 
         # Target Motion Probability Model (LKP centered)
-        rows, cols = np.indices((self.grid_size, self.grid_size))
+        # rows, cols = np.indices((self.grid_size, self.grid_size))
+        rows, cols = np.indices(shape)
         xs, ys = rasterio.transform.xy(transform, rows, cols)
 
-        lons = np.array(xs).reshape((self.grid_size, self.grid_size))
-        lats = np.array(ys).reshape((self.grid_size, self.grid_size))
+        # lons = np.array(xs).reshape((self.grid_size, self.grid_size))
+        # lats = np.array(ys).reshape((self.grid_size, self.grid_size))
+        lons = np.array(xs).reshape(shape)
+        lats = np.array(ys).reshape(shape)
 
         dist_deg = np.sqrt((lats - self.lkp_lat) ** 2 + (lons - self.lkp_lon) ** 2)
         dist_km = dist_deg * 111.0

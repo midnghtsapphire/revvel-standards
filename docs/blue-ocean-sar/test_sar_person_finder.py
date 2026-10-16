@@ -179,6 +179,32 @@ class FinderV3(unittest.TestCase):
         inten = self.engine.process_multiband_sar(self.raster, sources=SYN)
         self.assertNotEqual(amp[0]["band_backscatter_db"], inten[0]["band_backscatter_db"])
 
+    def _write(self, name, bands, height, width):
+        import rasterio
+        from rasterio.transform import from_origin
+
+        path = os.path.join(self.tmp.name, name)
+        data = np.random.default_rng(3).gamma(2.0, 5.0, (bands, height, width)).astype("float32")
+        data[:, height // 2, width // 3] += 400.0
+        with rasterio.open(path, "w", driver="GTiff", height=height, width=width, count=bands, dtype="float32",
+                           crs="EPSG:4326", transform=from_origin(-122.95, 49.39, 0.0001, 0.0001)) as dst:
+            dst.write(data)
+        return path
+
+    def test_non_square_raster_of_other_size_is_processed(self):
+        path = self._write("wide.tif", 6, 80, 130)
+        targets = self.engine.process_multiband_sar(path, sources=SYN)
+        self.assertTrue(targets)
+        import rasterio
+
+        with rasterio.open(path) as src:
+            self.assertEqual(tuple(src.index(targets[0]["longitude"], targets[0]["latitude"])), (40, 43))
+
+    def test_wrong_band_count_rejected(self):
+        for bands in (4, 7):
+            with self.assertRaises(ValueError):
+                self.engine.process_multiband_sar(self._write(f"b{bands}.tif", bands, 100, 100), sources=SYN)
+
 
 if __name__ == "__main__":
     unittest.main()
