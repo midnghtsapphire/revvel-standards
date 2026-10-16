@@ -549,3 +549,42 @@ python -m unittest test_qpcr_assay
 
 Every result is labelled as an assay interpretation, not an identification.
 Sequencing is still needed to identify the source.
+
+## Case dossier (`dossier.py`)
+
+This builds a printable case dossier in the colour-banded style of the
+uploaded dossiers: section bands, case-ID strips, status chips, and a running
+header and footer with case ID, page x of y, generation time and a
+not-validated notice.
+
+Every value comes from a file one of these tools wrote:
+
+- `search_theory.py`
+- `optimal_search.py`
+- `lost_person_behavior.py`
+- `lost_person_sim.py`
+- `burial_signature.py`
+- `microtopo.py`
+- `evidence_scoring.py`
+- `qpcr_interpret.py` and `qpcr_assay.py`
+- `drift_envelope.py`
+
+Values are copied verbatim, and each tool's own caveats are quoted. A missing
+field shows "not provided".
+
+Each section gets a status chip:
+
+- **COMPUTED:** built from the tool's output.
+- **MISSING:** no output was given for that tool.
+- **FLAGGED:** the tool itself reported a limit, a residual or a hash
+  mismatch.
+
+An appendix lists every input file with its SHA-256. The HTML is
+self-contained and prints from Chrome or Edge with the running header and
+footer. If reportlab is installed, a PDF is also written directly.
+
+```sh
+python dossier.py --case case.json --search-theory st.json --optimal plan.json \
+    --lps out/sim --burial out/site --out dossier.html
+python -m unittest test_dossier
+```
