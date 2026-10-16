@@ -222,6 +222,42 @@ class Qpcr(unittest.TestCase):
         self.assertEqual(rows[0]["role"], "unknown")
         self.assertIsNone(rows[0]["ct"])
 
+    def _load_rows(self, *rows):
+        with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False) as f:
+            w = _csv.writer(f)
+            w.writerow(["sample_id", "role", "target", "ct"])
+            w.writerows(rows)
+        try:
+            return qi.load(f.name)
+        finally:
+            os.unlink(f.name)
+
+    def test_bad_ct_text_rejected_not_read_as_no_amplification(self):
+        for bad in ("3O.1", "#VALUE!", "nan", "inf", "-1"):
+            with self.assertRaises(ValueError, msg=bad):
+                self._load_rows(["S1", "unknown", "human", bad])
+        rows = self._load_rows(["S1", "unknown", "human", ""], ["S1", "unknown", "ipc", "28.2"])
+        self.assertIsNone(rows[0]["ct"])
+        self.assertEqual(rows[1]["ct"], 28.2)
+
+    def test_unsupported_role_or_target_rejected(self):
+        with self.assertRaises(ValueError):
+            self._load_rows(["S1", "unkown", "human", "30"])
+        with self.assertRaises(ValueError):
+            self._load_rows(["S1", "unknown", "humna", "30"])
+
+    def test_conflicting_roles_for_one_sample_rejected(self):
+        rows = self.plate(extra=[("POS1", "unknown", "ipc", 28.0)])
+        with self.assertRaises(ValueError):
+            self.calls(rows)
+
+    def test_missing_ntc_ipc_invalidates_run(self):
+        rows = [r for r in self.plate() if not (r["sample_id"] == "NTC1" and r["target"] == "ipc")]
+        res, c = self.calls(rows)
+        self.assertFalse(res["run_valid"])
+        self.assertTrue(any("IPC" in p for p in res["run_problems"]))
+        self.assertEqual(set(c.values()), {"RUN_INVALID"})
+
 
 class Weather(unittest.TestCase):
     def test_summary_from_saved_response(self):

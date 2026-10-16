@@ -27,17 +27,43 @@ identify a person; that needs a profile comparison done by the lab.
 import argparse
 import csv
 import json
+import math
 import statistics
 import sys
 from collections import defaultdict
 
 
+ROLES = ("unknown", "ntc", "positive", "extraction_blank")
+TARGETS = ("human", "ipc")
+NO_AMPLIFICATION = ("", "undetermined")
+
+
+# Original: any text that was not a number (a typo, "#VALUE!", "35,2") became
+# "no amplification", so a broken export could turn into a NOT_DETECTED call.
+# def _ct(v):
+#     try:
+#         x = float(v)
+#         return x if x > 0 else None
+#     except (TypeError, ValueError):
+#         return None
 def _ct(v):
-    try:
-        x = float(v)
-        return x if x > 0 else None
-    except (TypeError, ValueError):
+    """Ct value, or None for no amplification (blank, Undetermined, or the 0
+    some instruments write for it). Anything else that is not a finite
+    positive number is an error, not a negative result."""
+    if v is None:
         return None
+    if isinstance(v, str):
+        if v.strip().lower() in NO_AMPLIFICATION:
+            return None
+        try:
+            x = float(v)
+        except ValueError:
+            raise ValueError(f"Ct value {v!r} is not a number, blank or Undetermined") from None
+    else:
+        x = float(v)
+    if not math.isfinite(x) or x < 0:
+        raise ValueError(f"Ct value {v!r} is not a finite positive number")
+    return x if x > 0 else None
 
 
 def load(path):
@@ -46,10 +72,19 @@ def load(path):
     need = {"sample_id", "role", "target", "ct"}
     if not rows or not need <= set(rows[0]):
         raise ValueError(f"CSV needs columns {sorted(need)}")
-    for r in rows:
+    for i, r in enumerate(rows, start=2):
         r["role"] = r["role"].strip().lower()
         r["target"] = r["target"].strip().lower()
-        r["ct"] = _ct(r["ct"])
+        # Original: unsupported roles/targets were kept and then silently
+        # ignored (or read as a sample), so a typo still gave a valid result.
+        if r["role"] not in ROLES:
+            raise ValueError(f"line {i}: role {r['role']!r} is not one of {ROLES}")
+        if r["target"] not in TARGETS:
+            raise ValueError(f"line {i}: target {r['target']!r} is not one of {TARGETS}")
+        try:
+            r["ct"] = _ct(r["ct"])
+        except ValueError as e:
+            raise ValueError(f"line {i}: {e}") from None
     return rows
 
 
@@ -58,7 +93,11 @@ def interpret(rows, lod95_ct, loq_ct, pos_min, pos_max, ipc_shift=2.0, min_reps=
     roles = {}
     for r in rows:
         by[r["sample_id"]][r["target"]].append(r["ct"])
-        roles[r["sample_id"]] = r["role"]
+        # Original: the last row's role won, so a control could become a sample.
+        # roles[r["sample_id"]] = r["role"]
+        if roles.setdefault(r["sample_id"], r["role"]) != r["role"]:
+            raise ValueError(f"sample {r['sample_id']} has rows with roles "
+                             f"{roles[r['sample_id']]!r} and {r['role']!r}")
 
     problems = []
     for sid, role in roles.items():
@@ -74,6 +113,10 @@ def interpret(rows, lod95_ct, loq_ct, pos_min, pos_max, ipc_shift=2.0, min_reps=
 
     ref_ipc = [c for sid, role in roles.items() if role == "ntc" for c in by[sid]["ipc"] if c is not None]
     ipc_ref = statistics.mean(ref_ipc) if ref_ipc else None
+    # Without an IPC reference the inhibition check below was silently skipped
+    # and an inhibited sample could still be called.
+    if ipc_ref is None:
+        problems.append("no IPC reference: no NTC well has an amplified IPC, so inhibition cannot be checked")
 
     results = []
     for sid, role in roles.items():
