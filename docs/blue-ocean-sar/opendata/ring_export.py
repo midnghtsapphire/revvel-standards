@@ -415,6 +415,10 @@ async def iter_history(
         page = await device.async_history(**kwargs)
         if not page:
             return events, True
+        # Replaced (review 2026-10-16): a repeated page was processed again (duplicate events) and then reported as
+        # the end of history. It is now caught before its entries are used, and the export is marked incomplete.
+        if page[-1]["id"] in seen_cursor:
+            return events, False
         crossed = False
         for entry in page:
             created = to_utc(entry["created_at"])
@@ -429,13 +433,15 @@ async def iter_history(
         last_id = page[-1]["id"]
         if crossed:
             return events, True
-        if last_id in seen_cursor:
-            # API returned the same page again; stop rather than loop forever.
-            return events, True
+        # if last_id in seen_cursor:
+        #     # API returned the same page again; stop rather than loop forever.
+        #     return events, True
         seen_cursor.add(last_id)
         older_than = last_id
-        if len(page) < page_size:
-            return events, True
+        # if len(page) < page_size:
+        #     return events, True
+        # Replaced (review 2026-10-16): Ring may return fewer than --page-size entries (a service cap), so a short
+        # page is not the end of history; only an empty page is.
     return events, False
 
 
@@ -519,9 +525,14 @@ def read_manifest(out_dir: Path) -> list[dict[str, Any]]:
             if not line.strip():
                 continue
             try:
-                records.append(json.loads(line))
+                # records.append(json.loads(line))
+                # Replaced (review 2026-10-16): a valid JSON line that is not an object crashed verify at rec.get().
+                rec = json.loads(line)
             except ValueError as exc:
                 raise ExportError(f"{path}:{line_no}: not valid JSON", EXIT_INCOMPLETE) from exc
+            if not isinstance(rec, dict):
+                raise ExportError(f"{path}:{line_no}: not a JSON object", EXIT_INCOMPLETE)
+            records.append(rec)
     return records
 
 
@@ -625,6 +636,63 @@ def verify_evidence_log(args: argparse.Namespace) -> tuple[list[str], list[str],
     return rep["problems"], rep["warnings"], rep
 
 
+def cross_check_evidence_log(out_dir: Path, log_dir: str) -> tuple[list[str], list[str]]:
+    """Check that the shared log describes the recordings in this manifest (review 2026-10-16).
+
+    Each manifest record must have a matching entry in the log: a ``ring-recording``
+    entry with the same device and event, file name, sha256 and ``legacy_chain_hash``,
+    or an ``import:ring-manifest`` entry whose ``legacy_entry`` has the same chain_hash
+    and sha256. ``ring-recording`` entries for other recordings (a case log can serve
+    several directories) are reported as warnings.
+    Returns (problems, warnings).
+    """
+    try:
+        records = read_manifest(out_dir)
+    except ExportError:
+        return [], []  # verify_dir already reports an unreadable manifest
+    try:
+        entries = _fetch_module().evidence_core().EvidenceLog(log_dir).read_entries()
+    except Exception as exc:  # noqa: BLE001 - EvidenceError / OSError
+        return [f"cannot read entries to cross-check: {exc}"], []
+    problems: list[str] = []
+    used: set[int] = set()
+    for rec in records:
+        label = f"event {rec.get('event_id')} ({rec.get('file')})"
+        matches = []
+        for i, e in enumerate(entries):
+            extra = e.get("extra") if isinstance(e.get("extra"), dict) else {}
+            if e.get("kind") == EVIDENCE_KIND:
+                if (str(extra.get("event_id")), str(extra.get("device_id"))) == (
+                        str(rec.get("event_id")), str(rec.get("device_id"))):
+                    matches.append((i, e, extra))
+            elif str(e.get("kind", "")).startswith("import:ring-manifest"):
+                legacy = extra.get("legacy_entry")
+                if isinstance(legacy, dict) and legacy.get("chain_hash") == rec.get("chain_hash"):
+                    matches.append((i, e, extra))
+        if not matches:
+            problems.append(f"{label}: in {MANIFEST_NAME} but not in the evidence log")
+            continue
+        for i, e, extra in matches:
+            used.add(i)
+            if e.get("kind") == EVIDENCE_KIND:
+                bad = [name for name, got, want in (
+                    ("sha256", e.get("sha256"), rec.get("sha256")),
+                    ("file", extra.get("file"), rec.get("file")),
+                    ("legacy_chain_hash", extra.get("legacy_chain_hash"), rec.get("chain_hash")),
+                ) if got != want]
+            else:
+                legacy = extra["legacy_entry"]
+                bad = [n for n in ("sha256", "file", "event_id", "device_id") if legacy.get(n) != rec.get(n)]
+                if e.get("kind") == "import:ring-manifest" and e.get("sha256") != rec.get("sha256"):
+                    bad.append("sha256")
+            if bad:
+                problems.append(f"{label}: evidence log seq {e.get('seq')} disagrees on {', '.join(sorted(set(bad)))}")
+    warnings = [f"evidence log seq {e.get('seq')} (event {(e.get('extra') or {}).get('event_id')}) is a "
+                f"{EVIDENCE_KIND} entry not in this {MANIFEST_NAME} (another directory, or a removed record?)"
+                for i, e in enumerate(entries) if e.get("kind") == EVIDENCE_KIND and i not in used]
+    return problems, warnings
+
+
 # --------------------------------------------------------------------------
 # Commands
 # --------------------------------------------------------------------------
@@ -720,8 +788,11 @@ async def cmd_events(args: argparse.Namespace, lib: dict[str, Any], io: "IO") ->
     write_events(all_events, out)
     io.out(f"Wrote {len(all_events)} events to {out}")
     if incomplete:
+        # io.err("INCOMPLETE: --max-pages reached before the start of history/--since for device(s) " + ...)
+        # Replaced (review 2026-10-16): paging also stops incomplete when Ring repeats a page.
         io.err(
-            "INCOMPLETE: --max-pages reached before the start of history/--since for device(s) "
+            "INCOMPLETE: paging stopped (--max-pages reached, or Ring repeated a page) before the start of "
+            "history/--since for device(s) "
             + ", ".join(incomplete)
         )
         return EXIT_INCOMPLETE
@@ -750,7 +821,9 @@ async def _locate_events(devices, wanted: set[str], args) -> dict[str, tuple[Any
                 eid = str(entry["id"])
                 if eid in wanted and eid not in found:
                     found[eid] = (dev, entry)
-            if len(found) == len(wanted) or len(page) < args.page_size:
+            # if len(found) == len(wanted) or len(page) < args.page_size:
+            # Replaced (review 2026-10-16): a short page may be a service cap, not the end of history.
+            if len(found) == len(wanted):
                 break
             if page[-1]["id"] == older_than:
                 break
@@ -777,6 +850,15 @@ async def cmd_download(args: argparse.Namespace, lib: dict[str, Any], io: "IO") 
     if existing and verify_dir(out_dir):
         raise ExportError(
             f"{out_dir} does not verify; refusing to extend a broken chain (run 'verify')",
+            EXIT_INCOMPLETE,
+        )
+    # Review 2026-10-16: with no manifest records, a stray .mp4 was not checked, so a "successful" download left a
+    # directory that failed 'verify' straight away.
+    orphans = sorted(p.name for p in out_dir.glob("*.mp4")) if not existing else []
+    if orphans:
+        raise ExportError(
+            f"{out_dir} has recordings that are in no manifest ({', '.join(orphans[:5])}); "
+            "use an empty directory or move them out",
             EXIT_INCOMPLETE,
         )
     prev = existing[-1]["chain_hash"] if existing else GENESIS_HASH
@@ -856,6 +938,11 @@ def cmd_verify(args: argparse.Namespace, io: "IO") -> int:
     if args.evidence_log:
         ev_problems, warnings, rep = verify_evidence_log(args)
         problems += [f"evidence log: {p}" for p in ev_problems]
+        # Review 2026-10-16: the two chains were verified independently; a log of other recordings also passed.
+        if not ev_problems:
+            cross_problems, cross_warnings = cross_check_evidence_log(Path(args.out_dir), args.evidence_log)
+            problems += [f"evidence log: {p}" for p in cross_problems]
+            warnings = list(warnings) + cross_warnings
         for w in warnings:
             io.err(f"WARN evidence log: {w}")
         if not ev_problems:

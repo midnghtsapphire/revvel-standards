@@ -77,7 +77,10 @@ UTC.
 
 Paging options (`events`, `download`): `--page-size` (default 50),
 `--page-delay` seconds slept between API pages (default 1.0, the rate limit),
-and `--max-pages` (default 200).
+and `--max-pages` (default 200). Paging stops only at an empty page (Ring may
+return fewer entries than `--page-size`), at `--since`, or at `--max-pages`.
+If Ring returns the same page twice, `events` stops and exits `1`
+(incomplete) rather than repeating it.
 
 ### Manifest and verification
 
@@ -97,10 +100,25 @@ chain_hash)`, and the first line's `prev_hash` is 64 zeros. Re-running
 `download` into the same directory skips ids already in the manifest and
 extends the chain. It refuses to extend a directory that no longer verifies.
 
+<!-- Replaced (review 2026-10-16): "removed" was too broad; the chain has no external head, so cutting
+off the last lines together with their files still verifies.
 `verify` exits 1 if any file is missing, altered or resized, if any manifest
 line is edited, removed or reordered, or if an `.mp4` in the directory is not
 in the manifest. Publish `manifest.jsonl` (or its last `chain_hash`) alongside
 the videos so others can check them.
+-->
+`verify` exits 1 if any file is missing, altered or resized, if any manifest
+line is edited, reordered or removed from the middle of the chain, or if an
+`.mp4` in the directory is not in the manifest. It cannot see the *last* lines
+being cut off together with their `.mp4` files: the shortened manifest is
+still a valid chain. To catch that, compare the last `chain_hash` with one you
+recorded elsewhere, or use the shared evidence log below and pass the head you
+recorded with `verify --evidence-log LOG --expect-head HEX`. Publish
+`manifest.jsonl` (or its last `chain_hash`) alongside the videos so others can
+check them.
+
+`download` also refuses a directory that has `.mp4` files but no manifest
+records, since the result could never verify.
 
 The chain proves the files have not changed since you downloaded them. It does
 not prove anything about Ring's servers. Anyone who can rewrite the whole
@@ -143,6 +161,11 @@ python3 ring_export.py verify --out-dir ring-videos \
   RFC 3161 token (`python3 -m evidence timestamp`).
 - Recordings downloaded before you used `--evidence-log` can be copied in
   with `python3 -m evidence import ring-videos --into ring-evidence`.
+- `verify --evidence-log` also checks that the log describes this directory:
+  every manifest record needs a `ring-recording` entry (or an imported one)
+  with the same event, device, file, sha256 and `chain_hash`, or `verify`
+  exits `1`. A `ring-recording` entry that matches no record in the manifest
+  (another directory, or a record cut off the end) is printed as a warning.
 
 ## Exit codes
 

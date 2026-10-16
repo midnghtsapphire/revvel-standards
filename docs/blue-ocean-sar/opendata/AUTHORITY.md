@@ -56,8 +56,20 @@ first failure. A failure is logged and raises `AuthorityError` (CLI exit 3).
    - recorded for this source (when the authority lists sources such as
      `example-vendor` or `example-vendor:people_search`).
 
+<!-- Replaced (review 2026-10-16): the guarantee holds for the gate decision, not for the later result entry.
 If the audit log cannot be written, the call is refused: an access that cannot
 be logged does not happen.
+-->
+If the gate's `allow` / `refuse` entry cannot be written, the call is refused
+before anything is sent: an access that cannot be logged does not happen. The
+`result` entry is written after the provider has answered, so a failure there
+cannot undo the request. The adapter then reports the call as failed (exit 4)
+and withholds the response from its output; the response stays only in the
+evidence directory.
+
+For a `LEGAL_PROCESS` endpoint that sends `legal_process_reference`, only an
+authority whose `--reference` is that same reference covers the call, so a
+query cannot cite one warrant while being allowed under another.
 
 The adapter adds two more checks before the gate: every query parameter must be
 on the endpoint's `allowed_params` list, and when an endpoint lists
@@ -175,9 +187,20 @@ before the query, and write the answer in the authority's `--notes`.
 | `evidence/<case>/<time>-<provider>-<endpoint>-<id>/` | `request.json`, `response.body`, `response.meta.json`, `manifest.json` (`--evidence-dir`, env `RECORDS_EVIDENCE_DIR`). Always written. |
 | `<log>/evidence.jsonl`, `<log>/objects/` | Optional shared evidence log (`--evidence-log`, env `RECORDS_EVIDENCE_LOG`): one `records-request` and one `records-response` entry per call. See below. |
 
+<!-- Replaced (review 2026-10-16): the old sentence also covered parent directories and the shared log, which it did not.
 All files are created with mode `0600` (directories `0700`). They hold
 sensitive personal data: keep them on an encrypted disk, back them up, and
 follow the agency's direction on retention and destruction.
+-->
+The ledger, the audit log and the per-call evidence files are created with
+mode `0600`. Every directory these tools create for them (including a missing
+`evidence/` and `evidence/<case>/`) is created with mode `0700`; a directory
+that already exists keeps its mode. The optional shared evidence log is written
+by `../evidence`, which uses the process umask for `evidence.jsonl` and its
+directories and makes stored objects read-only (`0444`): run with `umask 077`
+or keep that log in a `0700` directory. All of these hold sensitive personal
+data: keep them on an encrypted disk, back them up, and follow the agency's
+direction on retention and destruction.
 
 Each audit entry records the UTC time, the actor, the source class and source
 name, the case id, the purpose, the covering authority id and reference, the
