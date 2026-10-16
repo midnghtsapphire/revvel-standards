@@ -53,6 +53,28 @@ class TestHFMR(unittest.TestCase):
         ok = infer([Observation("demo", 2.1, 0.1, "g", "a" * 64)], self.model())
         self.assertEqual(ok["decision"], "posterior")
 
+    def test_non_finite_calibrated_mean_rejected(self):
+        m = self.model()
+        for bad in (float("nan"), float("inf")):
+            means = {h: dict(m.means[h]) for h in HYPOTHESES}
+            means["void"]["demo"] = bad
+            model = CalibratedModel(means, m.intrinsic_sd, m.priors, "X")
+            with self.assertRaisesRegex(ValueError, "invalid calibrated mean"):
+                infer([Observation("demo", 1.0, 0.1, "g", "a" * 64)], model)
+
+    def test_invalid_ood_limit_rejected(self):
+        o = Observation("demo", 1e6, 0.1, "g", "a" * 64)
+        for bad in (float("nan"), float("inf"), -1.0, 0.0):
+            with self.assertRaisesRegex(ValueError, "ood_z_limit"):
+                infer([o], self.model(), ood_z_limit=bad)
+
+    def test_non_standard_json_constant_fails_verification(self):
+        with tempfile.TemporaryDirectory() as d:
+            ledger = Ledger(Path(d) / "ledger.jsonl")
+            line = '{"sequence": 0, "previous_hash": "%s", "event": {"x": NaN}, "entry_hash": "0"}\n' % ("0" * 64)
+            ledger.path.write_text(line)
+            self.assertFalse(ledger.verify())
+
     def test_unknown_sensor_is_value_error(self):
         with self.assertRaisesRegex(ValueError, "no calibration"):
             infer([Observation("other-sensor", 1.0, 0.1, "g", "a" * 64)], self.model())

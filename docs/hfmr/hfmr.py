@@ -66,6 +66,12 @@ class CalibratedModel:
         for table_name, table in (("means", self.means), ("intrinsic_sd", self.intrinsic_sd)):
             if set(table) != set(HYPOTHESES):
                 raise ValueError(f"{table_name} must define every hypothesis: {sorted(HYPOTHESES)}")
+        # A NaN or infinite calibrated mean would turn every likelihood, and so the whole
+        # posterior, into NaN; reject it before any arithmetic.
+        for h in HYPOTHESES:
+            for sensor, mu in self.means[h].items():
+                if not math.isfinite(mu):
+                    raise ValueError(f"invalid calibrated mean for {h!r}/{sensor!r}")
 
     def check_sensor(self, sensor: str):
         missing = [h for h in HYPOTHESES if sensor not in self.means[h] or sensor not in self.intrinsic_sd[h]]
@@ -83,6 +89,10 @@ def infer(observations: list[Observation], model: CalibratedModel, ood_z_limit: 
     are all tiny would otherwise report near-certainty for whichever is least bad.
     """
     model.validate()
+    # NaN makes `best_fit_z > ood_z_limit` always false (abstention disabled); a negative or
+    # zero limit forces abstention for every input. Neither is a usable calibration limit.
+    if not math.isfinite(ood_z_limit) or ood_z_limit <= 0:
+        raise ValueError("ood_z_limit must be a finite positive number")
     if not observations:
         raise ValueError("no observations: posterior would just restate the priors")
     groups = set()
@@ -173,7 +183,13 @@ class Ledger:
                 return False
             digest = entry.get("entry_hash")
             body = {k: v for k, v in entry.items() if k != "entry_hash"}
-            if entry.get("sequence") != i or entry.get("previous_hash") != prev or sha256(canonical(body)) != digest:
+            # Original: if entry.get("sequence") != i or entry.get("previous_hash") != prev or sha256(canonical(body)) != digest:  # noqa: E501
+            #   canonical() raises ValueError on NaN/Infinity, which json.loads accepts from a corrupt line.
+            try:
+                body_hash = sha256(canonical(body))
+            except ValueError:
+                return False  # a non-standard JSON constant is a failed verification, not a crash
+            if entry.get("sequence") != i or entry.get("previous_hash") != prev or body_hash != digest:
                 return False
             prev = digest
         return expected_head is None or prev == expected_head
