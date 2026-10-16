@@ -66,6 +66,10 @@ class MultiBandWaveEngineV2:
         if sif_stress is None:
             sif_stress = 0.85
             assumed["sif_stress"] = 0.85
+        # Both are normalised indices; values outside [0, 1] pushed the score past 100.
+        for name, value in (("swir_1720_reflectance", swir_1720_reflectance), ("sif_stress", sif_stress)):
+            if not isinstance(value, (int, float)) or not math.isfinite(value) or not 0.0 <= value <= 1.0:
+                raise ValueError(f"{name} must be a finite number in [0, 1], got {value!r}")
         sources = list(sources) if isinstance(sources, (list, tuple)) else ([sources] if sources else [])
         if assumed and sources:
             sources.append(DataSource("default values used for: " + ", ".join(sorted(assumed)), "estimate"))

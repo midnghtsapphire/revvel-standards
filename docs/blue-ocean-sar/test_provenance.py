@@ -59,6 +59,23 @@ class DefaultModeTests(unittest.TestCase):
         self.assertEqual(out["provenance"]["status"], provenance.LABEL_UNSOURCED)
         self.assertIn("sif_stress", out["assumed_inputs"])
 
+    def test_malformed_provenance_replaced_with_unsourced_block(self):
+        good = provenance_block([DataSource("t", "synthetic")])
+        bad_blocks = [
+            {"status": "TOTALLY VERIFIED"},
+            {"status": LABEL_SYNTHETIC},
+            dict(good, status="made up"),
+            dict(good, ground_verified="yes"),
+            dict(good, sources="a file"),
+            dict(good, sources=[{"kind": "synthetic"}]),
+        ]
+        for bad in bad_blocks:
+            out = require_provenance({"provenance": bad})
+            self.assertEqual(out["status"], provenance.LABEL_UNSOURCED, bad)
+            self.assertEqual(out["sources"], [])
+            self.assertIs(out["ground_verified"], False)
+        self.assertIs(require_provenance({"provenance": good}), good)
+
     def test_unknown_kind_still_rejected(self):
         with self.assertRaises(MissingSourceError):
             provenance_block([DataSource("x", "vibes")])
@@ -91,6 +108,10 @@ class ProvenanceTests(unittest.TestCase):
         self.assertEqual(provenance_block([m, e, s])["status"], LABEL_SYNTHETIC)
         self.assertFalse(provenance_block([m])["ground_verified"])
 
+    def test_malformed_provenance_refused_in_strict_mode(self):
+        with self.assertRaises(MissingSourceError):
+            require_provenance({"provenance": {"status": "TOTALLY VERIFIED", "sources": [{"x": 1}]}})
+
     def test_require_provenance(self):
         with self.assertRaises(MissingSourceError):
             require_provenance({"latitude": 1.0})
@@ -119,6 +140,17 @@ class MasterScriptTests(unittest.TestCase):
             2.5, -1.8, 1.2, 3.1, swir_1720_reflectance=0.12, sif_stress=0.92,
             sources=[DataSource("demo", "synthetic")])
         self.assertAlmostEqual(out["fused_probability"], 94.7, places=2)  # value from the unmodified script
+
+    def test_out_of_range_indices_rejected(self):
+        src = [DataSource("demo", "synthetic")]
+        for kw in ({"sif_stress": 5.0}, {"sif_stress": -0.1}, {"swir_1720_reflectance": -2.0},
+                   {"swir_1720_reflectance": float("nan")}, {"sif_stress": float("inf")}):
+            args = dict({"swir_1720_reflectance": 0.12, "sif_stress": 0.92}, **kw)
+            with self.assertRaises(ValueError, msg=kw):
+                self.engine.evaluate_multi_band_node(0, 0, 1.0, 3.1, sources=src, **args)
+        out = self.engine.evaluate_multi_band_node(0, 0, 1.0, 3.0, swir_1720_reflectance=0.0, sif_stress=1.0,
+                                                   sources=src)
+        self.assertLessEqual(out["fused_probability"], 100.0)
 
 
 if __name__ == "__main__":

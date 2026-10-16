@@ -111,6 +111,35 @@ def require_provenance(record):
         if not STRICT:
             return {"status": LABEL_UNSOURCED, "ground_verified": False, "sources": []}
         raise MissingSourceError("refusing to export a location with no provenance attached")
+    # A block with only some keys, or a status that is not one of the labels,
+    # used to pass in default mode; exporters then crashed on the missing keys
+    # or wrote the unchecked status out.
+    problem = _provenance_problem(prov)
+    if problem:
+        if not STRICT:
+            return {"status": LABEL_UNSOURCED, "ground_verified": False, "sources": []}
+        raise MissingSourceError(f"refusing to export a location with malformed provenance: {problem}")
     if STRICT and not prov.get("sources"):
         raise MissingSourceError("refusing to export a location with no provenance attached")
     return prov
+
+
+STATUS_LABELS = (LABEL_SYNTHETIC, LABEL_ESTIMATE, LABEL_MEASURED, LABEL_UNSOURCED)
+
+
+def _provenance_problem(prov):
+    """Why a provenance block is not the shape provenance_block() makes, or None."""
+    if not isinstance(prov, dict):
+        return "not a dict"
+    if prov.get("status") not in STATUS_LABELS:
+        return f"status {prov.get('status')!r} is not one of the standard labels"
+    if not isinstance(prov.get("ground_verified"), bool):
+        return "ground_verified is missing or not a boolean"
+    sources = prov.get("sources")
+    if not isinstance(sources, list):
+        return "sources is missing or not a list"
+    for src in sources:
+        if not isinstance(src, dict) or not isinstance(src.get("description"), str) \
+                or src.get("kind") not in SOURCE_KINDS:
+            return f"source {src!r} has no description or an unknown kind"
+    return None
