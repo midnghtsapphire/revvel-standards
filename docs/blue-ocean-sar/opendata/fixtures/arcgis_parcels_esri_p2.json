@@ -1,0 +1,79 @@
+{
+ "objectIdFieldName": "FID",
+ "geometryType": "esriGeometryPolyline",
+ "spatialReference": {
+  "wkid": 4326
+ },
+ "features": [
+  {
+   "attributes": {
+    "FID": 12,
+    "NAME": "Ditch"
+   },
+   "geometry": {
+    "paths": [
+     [
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       3,
+       1
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "FID": 13,
+    "NAME": "Braided"
+   },
+   "geometry": {
+    "paths": [
+     [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       1
+      ]
+     ],
+     [
+      [
+       5,
+       5
+      ],
+      [
+       6,
+       6
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "FID": 14,
+    "NAME": "Gauge"
+   },
+   "geometry": {
+    "x": -83.0,
+    "y": 39.9
+   }
+  },
+  {
+   "attributes": {
+    "FID": 15,
+    "NAME": "No geom"
+   }
+  }
+ ]
+}
