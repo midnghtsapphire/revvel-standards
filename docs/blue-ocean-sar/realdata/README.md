@@ -300,13 +300,20 @@ logger and the QGIS buffer panel.
 - **Run log.** `--log` adds one row per run to a SQLite file. Each row holds
   the time in UTC and the SHA-256 of every input file. No mock rows are
   written.
-- **What it does not do.** Nothing here scores a place as a burial site, and
-  no point is anchored on a named person's home.
+- **Your own anchor.** `--anchor offender_residence` or `--anchor custom`
+  centres the map on any point you choose. Give it as `--lat`/`--lon`, or as
+  `--address`, which uses the free US Census geocoder. `--radius-m` draws
+  rings of your own size, labelled as yours. `--pin LABEL LAT LON` marks other
+  places with their distance and bearing from the anchor.
+- **Remote DEMs.** `--dem` takes several files or COG URLs, for example USGS
+  3DEP 1 m tiles found with `microtopo.find_epochs`.
 
 ```sh
 python abduction_search.py --case-id fleming-1977 --lat .. --lon .. --out out/fleming
 python abduction_search.py --case-id fleming-1977 --lat .. --lon .. --dem my_1m_dtm.tif \
     --roads osm_roads.geojson --log out/runs.sqlite --out out/fleming
+python abduction_search.py --case-id fleming-1977 --anchor offender_residence \
+    --address "300 S Brevard Ave, Cocoa Beach, FL" --radius-m 402.336 1609.344 --out out/fleming
 python -m unittest test_abduction_search   # DEM test needs numpy, scipy and rasterio
 ```
 
