@@ -273,6 +273,47 @@ sample size and notes), plus `grid.geojson` with `--grid`. The tool exits 2
 for an unknown category. It exits 3 when the handbook has no distance table
 for the category; `summary.json` is still written in that case.
 
+## Missing people who may have been taken
+
+`abduction_search.py` is the search package for a case where foul play is
+possible. It is built from the three Keith Fleming uploads in
+`docs/case-files/fleming/`. Those were the DEM depression finder, the SQLite
+logger and the QGIS buffer panel.
+
+- **Rings.** Each ring is one published statistic from `abduction_prior.json`.
+  It is drawn around the point the statistic is measured from: the victim's
+  last known location, or a murder site if one is known. The two statistics
+  shipped come from the Washington State Attorney General's child abduction
+  murder research:
+  - the contact site is within 1/4 mile of the last known location in 80% of
+    cases;
+  - the body is under 200 ft from the murder site in 72% of cases.
+- **Unverified figures.** Both figures were copied from a search excerpt, not
+  from the printed report. They are marked `verified: false` and labelled
+  `[UNVERIFIED]` on the map. Check them against the report, then add the page
+  number and set `verified: true`. `--require-verified` exits 1 until then.
+- **Terrain.** With `--dem`, closed depressions inside the largest ring are
+  listed with depth, area, distance and bearing. The depressions come from
+  `dem_terrain.py` priority-flood, not the 5x5 filter in the upload.
+- **Roads.** With `--roads`, each depression gets its distance to the nearest
+  road or track in your GeoJSON.
+- **Run log.** `--log` adds one row per run to a SQLite file. Each row holds
+  the time in UTC and the SHA-256 of every input file. No mock rows are
+  written.
+- **What it does not do.** Nothing here scores a place as a burial site, and
+  no point is anchored on a named person's home.
+
+```sh
+python abduction_search.py --case-id fleming-1977 --lat .. --lon .. --out out/fleming
+python abduction_search.py --case-id fleming-1977 --lat .. --lon .. --dem my_1m_dtm.tif \
+    --roads osm_roads.geojson --log out/runs.sqlite --out out/fleming
+python -m unittest test_abduction_search   # DEM test needs numpy, scipy and rasterio
+```
+
+Outputs: `rings.geojson`, `rings.kml` (rings plus depressions),
+`depressions.csv` (with `--dem`) and `summary.json`. Exit codes: 0 written,
+1 for `--require-verified` with an unverified ring, 2 for bad input.
+
 ## Riverine recovery tools
 
 Built from `riverine_recovery_method.md`, `drift_modeling_note.md` and
