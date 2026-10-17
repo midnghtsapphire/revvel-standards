@@ -931,3 +931,23 @@ python civic_feeds.py arcgis https://gis.example.gov/arcgis/rest/services/Parcel
 OHGO_API_KEY=... python civic_feeds.py ohgo-cameras --region columbus --match I-70 High
 python -m unittest test_ea_lidar test_nws_rain test_civic_feeds
 ```
+
+## Eye-Dome Lighting for lidar (`edl_shade.py`)
+
+`edl_shade.py` applies Potree's Eye-Dome Lighting to a top-down view of any
+elevation grid. That can be a lidar DTM or DSM, USGS 3DEP, Environment Agency
+or Copernicus data. It also works on a LAS/LAZ point file, which it bins to a
+grid first.
+
+- **How it shades.** A cell is darker the more its neighbours sit above it, in
+  log depth. Steps, pits and cracks stand out with no sun direction, so nothing
+  is hidden by lying along the light.
+- **Settings.** `--strength` and `--radius` mean what they mean in Potree
+  (defaults 1.5 and 1.4).
+- **Viewing height.** By default the view is 100 cells above the highest point.
+- **Outputs.** A shade GeoTIFF on the input grid, a PNG and a manifest.
+
+```sh
+python edl_shade.py raster dtm.tif --out dtm_edl
+python edl_shade.py points tile.laz --res-m 0.5 --ground --crs EPSG:3857 --out tile_edl
+```
