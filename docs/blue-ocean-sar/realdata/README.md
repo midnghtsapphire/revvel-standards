@@ -300,13 +300,20 @@ logger and the QGIS buffer panel.
 - **Run log.** `--log` adds one row per run to a SQLite file. Each row holds
   the time in UTC and the SHA-256 of every input file. No mock rows are
   written.
-- **What it does not do.** Nothing here scores a place as a burial site, and
-  no point is anchored on a named person's home.
+- **Your own anchor.** `--anchor offender_residence` or `--anchor custom`
+  centres the map on any point you choose. Give it as `--lat`/`--lon`, or as
+  `--address`, which uses the free US Census geocoder. `--radius-m` draws
+  rings of your own size, labelled as yours. `--pin LABEL LAT LON` marks other
+  places with their distance and bearing from the anchor.
+- **Remote DEMs.** `--dem` takes several files or COG URLs, for example USGS
+  3DEP 1 m tiles found with `microtopo.find_epochs`.
 
 ```sh
 python abduction_search.py --case-id fleming-1977 --lat .. --lon .. --out out/fleming
 python abduction_search.py --case-id fleming-1977 --lat .. --lon .. --dem my_1m_dtm.tif \
     --roads osm_roads.geojson --log out/runs.sqlite --out out/fleming
+python abduction_search.py --case-id fleming-1977 --anchor offender_residence \
+    --address "300 S Brevard Ave, Cocoa Beach, FL" --radius-m 402.336 1609.344 --out out/fleming
 python -m unittest test_abduction_search   # DEM test needs numpy, scipy and rasterio
 ```
 
@@ -871,3 +878,76 @@ holds either GCPs or a geotransform and the output is already warped.
 
 Exit codes: 0 means written and verified. 1 means verification failed or the
 GCP fit failed `--max-rmse`. 2 means bad input.
+
+## Connectors for sources this machine cannot reach
+
+These three clients talk to services that are blocked from the build machine.
+They are tested against fake servers only. Run them where the hosts are
+reachable, and check the first real response before you rely on it.
+
+### England 1 m lidar (`ea_lidar.py`)
+
+- **What it fetches.** The Environment Agency LIDAR Composite DTM 1 m, a
+  bare-earth model, from the Defra OGC Web Coverage Service. The data is under
+  the Open Government Licence.
+- **How.** `capabilities` lists the coverage ids. `fetch` cuts a British
+  National Grid box into chunks, requests each chunk, mosaics them into one
+  GeoTIFF, and writes a manifest with each request URL and its SHA-256.
+- **Checks.** A response that is not a GeoTIFF is refused. The service sends
+  XML error reports with HTTP 200, and those are refused too.
+- **Not checked live.** The default service URL has not been called from
+  here, and no coverage id is built in. Run `capabilities` first, and pass
+  `--wcs-url` if the address has moved.
+
+### NWS rain (`nws_rain.py`)
+
+- **What it fetches.** Forecast rain for the next N hours and the rain
+  recorded at the nearest station over the past N hours, from
+  `api.weather.gov`.
+- **Clipping.** Forecast periods are clipped to the window, so a 30-hour
+  period counts only the part inside it.
+- **Missing station rain.** A station that reports no rain totals gives
+  `None`, not 0.
+- **Errors.** A failed lookup exits 2. It never returns a neutral multiplier.
+
+### Civic feeds (`civic_feeds.py`)
+
+- **What it fetches.** Socrata records, ArcGIS layers, RSS and Atom notices,
+  single DOT camera stills, and the OHGO public camera list.
+- **ArcGIS.** Layers come back as GeoJSON in EPSG:4326, paged until the
+  server says there is no more.
+- **Camera stills.** A still is saved only if the response is a real JPEG,
+  PNG or GIF, with an ending that matches. Every saved still gets a manifest
+  row.
+- **OHGO.** It needs the `OHGO_API_KEY` environment variable and sends the
+  key in a header, never in the URL. The field names come from the OHGO v1
+  documentation and have not been checked against the live API.
+
+```sh
+python ea_lidar.py capabilities
+python ea_lidar.py fetch --coverage ID --bbox 400100 403500 407600 407800 --out dtm.tif
+python nws_rain.py 39.9612 -82.9988 --hours 24 --contact you@example.org
+python civic_feeds.py arcgis https://gis.example.gov/arcgis/rest/services/Parcels/MapServer/0
+OHGO_API_KEY=... python civic_feeds.py ohgo-cameras --region columbus --match I-70 High
+python -m unittest test_ea_lidar test_nws_rain test_civic_feeds
+```
+
+## Eye-Dome Lighting for lidar (`edl_shade.py`)
+
+`edl_shade.py` applies Potree's Eye-Dome Lighting to a top-down view of any
+elevation grid. That can be a lidar DTM or DSM, USGS 3DEP, Environment Agency
+or Copernicus data. It also works on a LAS/LAZ point file, which it bins to a
+grid first.
+
+- **How it shades.** A cell is darker the more its neighbours sit above it, in
+  log depth. Steps, pits and cracks stand out with no sun direction, so nothing
+  is hidden by lying along the light.
+- **Settings.** `--strength` and `--radius` mean what they mean in Potree
+  (defaults 1.5 and 1.4).
+- **Viewing height.** By default the view is 100 cells above the highest point.
+- **Outputs.** A shade GeoTIFF on the input grid, a PNG and a manifest.
+
+```sh
+python edl_shade.py raster dtm.tif --out dtm_edl
+python edl_shade.py points tile.laz --res-m 0.5 --ground --crs EPSG:3857 --out tile_edl
+```
