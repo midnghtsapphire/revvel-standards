@@ -878,3 +878,56 @@ holds either GCPs or a geotransform and the output is already warped.
 
 Exit codes: 0 means written and verified. 1 means verification failed or the
 GCP fit failed `--max-rmse`. 2 means bad input.
+
+## Connectors for sources this machine cannot reach
+
+These three clients talk to services that are blocked from the build machine.
+They are tested against fake servers only. Run them where the hosts are
+reachable, and check the first real response before you rely on it.
+
+### England 1 m lidar (`ea_lidar.py`)
+
+- **What it fetches.** The Environment Agency LIDAR Composite DTM 1 m, a
+  bare-earth model, from the Defra OGC Web Coverage Service. The data is under
+  the Open Government Licence.
+- **How.** `capabilities` lists the coverage ids. `fetch` cuts a British
+  National Grid box into chunks, requests each chunk, mosaics them into one
+  GeoTIFF, and writes a manifest with each request URL and its SHA-256.
+- **Checks.** A response that is not a GeoTIFF is refused. The service sends
+  XML error reports with HTTP 200, and those are refused too.
+- **Not checked live.** The default service URL has not been called from
+  here, and no coverage id is built in. Run `capabilities` first, and pass
+  `--wcs-url` if the address has moved.
+
+### NWS rain (`nws_rain.py`)
+
+- **What it fetches.** Forecast rain for the next N hours and the rain
+  recorded at the nearest station over the past N hours, from
+  `api.weather.gov`.
+- **Clipping.** Forecast periods are clipped to the window, so a 30-hour
+  period counts only the part inside it.
+- **Missing station rain.** A station that reports no rain totals gives
+  `None`, not 0.
+- **Errors.** A failed lookup exits 2. It never returns a neutral multiplier.
+
+### Civic feeds (`civic_feeds.py`)
+
+- **What it fetches.** Socrata records, ArcGIS layers, RSS and Atom notices,
+  single DOT camera stills, and the OHGO public camera list.
+- **ArcGIS.** Layers come back as GeoJSON in EPSG:4326, paged until the
+  server says there is no more.
+- **Camera stills.** A still is saved only if the response is a real JPEG,
+  PNG or GIF, with an ending that matches. Every saved still gets a manifest
+  row.
+- **OHGO.** It needs the `OHGO_API_KEY` environment variable and sends the
+  key in a header, never in the URL. The field names come from the OHGO v1
+  documentation and have not been checked against the live API.
+
+```sh
+python ea_lidar.py capabilities
+python ea_lidar.py fetch --coverage ID --bbox 400100 403500 407600 407800 --out dtm.tif
+python nws_rain.py 39.9612 -82.9988 --hours 24 --contact you@example.org
+python civic_feeds.py arcgis https://gis.example.gov/arcgis/rest/services/Parcels/MapServer/0
+OHGO_API_KEY=... python civic_feeds.py ohgo-cameras --region columbus --match I-70 High
+python -m unittest test_ea_lidar test_nws_rain test_civic_feeds
+```
