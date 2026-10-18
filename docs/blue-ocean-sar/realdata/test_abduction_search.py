@@ -114,6 +114,60 @@ class Outputs(unittest.TestCase):
             self.assertEqual(rows, [("case-a", NOW.isoformat(), 1)] * 2)
 
 
+class Anchors(unittest.TestCase):
+    def test_offender_residence_with_your_radii_and_pins(self):
+        with tempfile.TemporaryDirectory() as d:
+            code, out, err = run(["--case-id", "t", "--anchor", "offender_residence", "--anchor-label", "residence",
+                                  "--lat", str(LAT), "--lon", str(LON), "--radius-m", "1609.344", "402.336",
+                                  "--pin", "north", str(LAT + 0.01), str(LON), "--out", d, "--require-verified"])
+            self.assertEqual(code, 0, err)
+            s = json.loads(read(os.path.join(d, "summary.json")))
+            self.assertEqual([r["distance_m"] for r in s["rings"]], [402.336, 1609.344])
+            self.assertEqual(s["rings"][1]["label"], "1609.34 m (1.00 mi) - your radius")
+            self.assertEqual(s["anchor"]["label"], "residence")
+            self.assertAlmostEqual(s["pins"][0]["distance_m"], 1112, delta=1)  # 0.01 deg on the mean sphere
+            self.assertAlmostEqual(s["pins"][0]["bearing_deg"], 0.0, places=3)
+            kml = read(os.path.join(d, "rings.kml"))
+            self.assertIn("north", kml)
+            self.assertIn("residence", kml)
+
+    def test_anchor_without_statistic_needs_a_radius(self):
+        with tempfile.TemporaryDirectory() as d:
+            base = ["--case-id", "t", "--anchor", "custom", "--lat", "1", "--lon", "1", "--out", d]
+            self.assertEqual(run(base)[0], 2)
+            self.assertEqual(run(base + ["--radius-m", "-5"])[0], 2)
+            self.assertEqual(run(base + ["--radius-m", "100", "--pin", "x", "99", "0"])[0], 2)
+
+    def test_address_is_geocoded_with_census(self):
+        seen = []
+
+        def opener(url, timeout):
+            seen.append(url)
+            body = {"result": {"addressMatches": [{"matchedAddress": "1 MAIN ST, X, FL",
+                                                   "coordinates": {"x": -80.6, "y": 28.3}}]}}
+            return io.BytesIO(json.dumps(body).encode())
+
+        with tempfile.TemporaryDirectory() as d:
+            out, err = io.StringIO(), io.StringIO()
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                code = ab.main(["--case-id", "t", "--anchor", "custom", "--address", "1 Main St, X, FL",
+                                "--radius-m", "100", "--out", d], now=NOW, opener=opener)
+            self.assertEqual(code, 0, err.getvalue())
+            self.assertIn("geocoding.geo.census.gov", seen[0])
+            s = json.loads(read(os.path.join(d, "summary.json")))
+            self.assertEqual((s["anchor"]["lat"], s["anchor"]["lon"]), (28.3, -80.6))
+            self.assertEqual(s["anchor"]["geocoded"]["matched"], "1 MAIN ST, X, FL")
+
+        def empty(url, timeout):
+            return io.BytesIO(b'{"result": {"addressMatches": []}}')
+
+        with tempfile.TemporaryDirectory() as d:
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                code = ab.main(["--case-id", "t", "--anchor", "custom", "--address", "nowhere",
+                                "--radius-m", "100", "--out", d], now=NOW, opener=empty)
+            self.assertEqual(code, 2)
+
+
 class Geometry(unittest.TestCase):
     def test_distance_to_road_segment(self):
         road = [[[LON - 0.01, LAT + 0.001], [LON + 0.01, LAT + 0.001]]]  # east-west line ~110.6 m north
