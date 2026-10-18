@@ -207,7 +207,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -281,7 +281,7 @@ jobs:
           done
 
           echo "count=$FOUND" >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: pdfs-${{ github.run_id }}
           path: dist/pdf/*.pdf
@@ -313,7 +313,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -357,12 +357,12 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - uses: actions/checkout@v7
-      - uses: docker/login-action@v4.4.0
+      - uses: docker/login-action@v4.6.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v7.3.0
+      - uses: docker/build-push-action@v7.4.0
         with:
           context: .
           push: true
@@ -388,7 +388,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -499,7 +499,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -514,7 +514,7 @@ jobs:
           else
             echo "recorded=false" >> $GITHUB_OUTPUT
           fi
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7.0.2
         if: steps.record.outputs.recorded == 'true'
         with:
           name: video-${{ github.run_id }}
@@ -624,7 +624,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -683,7 +683,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -800,7 +800,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -822,7 +822,7 @@ jobs:
           else
             echo "result=Spec found: $SPEC_FILE (install @redocly/cli for validation)" >> $GITHUB_OUTPUT
           fi
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7.0.2
         if: steps.openapi.outputs.result != '' && !contains(steps.openapi.outputs.result, 'SKIPPED')
         with:
           name: openapi-spec-${{ github.run_id }}
@@ -855,7 +855,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -932,7 +932,7 @@ jobs:
           *Auto-generated draft — human review required before submitting to store.*
           EOF
           echo "result=Listing draft generated in dist/marketplace/listing-draft.md" >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: marketplace-listing-${{ github.run_id }}
           path: dist/marketplace/
