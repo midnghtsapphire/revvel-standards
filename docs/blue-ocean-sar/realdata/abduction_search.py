@@ -26,6 +26,13 @@ Rings are drawn around the point each statistic is measured from:
   --anchor last_known_location   the victim's last known location
   --anchor murder_site           a confirmed (or hypothesised) site; rings
                                  around it are only as good as that site
+  --anchor offender_residence    a suspect's or offender's residence
+  --anchor custom                any point you choose
+
+The point is --lat/--lon, or --address (US addresses, geocoded with the free
+US Census Bureau geocoder). --radius-m adds rings of your own size around it,
+labelled as your choice rather than a published statistic, and --pin adds any
+other places to the map with their distance and bearing from the anchor.
 
 Optional inputs:
 
@@ -61,7 +68,8 @@ sys.path.insert(0, HERE)
 import lost_person_behavior as lpb  # noqa: E402
 
 PRIOR_PATH = os.path.join(HERE, "abduction_prior.json")
-ANCHORS = ("last_known_location", "murder_site")
+ANCHORS = ("last_known_location", "murder_site", "offender_residence", "custom")
+GEOCODER = "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress"
 NOTE = ("Rings are a planning prior from published case statistics, not a prediction of where this "
         "person is. Depressions are terrain features, not detections.")
 
@@ -101,8 +109,32 @@ def rings_for(anchor, data):
 
 
 def label(e):
+    if e.get("user"):
+        return f"{e['distance_m']:g} m ({e['distance_m'] / 1609.344:.2f} mi) - your radius"
     tag = "" if e["verified"] else " [UNVERIFIED]"
     return f"{e['percent']:g}% within {e['distance_m']:g} m ({e['measures_to']}){tag}"
+
+
+def user_rings(anchor, radii):
+    return [{"id": f"user_{r:g}m", "anchor": anchor, "percent": None, "distance_m": float(r),
+             "measures_to": "radius you chose", "printed": None, "source": "user", "source_url": None,
+             "page": None, "verified": True, "user": True} for r in radii]
+
+
+def geocode(address, opener=None):
+    """(lat, lon, matched_address) from the US Census Bureau one-line geocoder."""
+    import urllib.parse
+    import urllib.request
+
+    url = GEOCODER + "?" + urllib.parse.urlencode(
+        {"address": address, "benchmark": "Public_AR_Current", "format": "json"})
+    with (opener or urllib.request.urlopen)(url, timeout=30) as r:
+        body = json.load(r)
+    matches = (body.get("result") or {}).get("addressMatches") or []
+    if not matches:
+        raise ValueError(f"the Census geocoder found no match for {address!r}")
+    m = matches[0]
+    return float(m["coordinates"]["y"]), float(m["coordinates"]["x"]), m.get("matchedAddress", address)
 
 
 def bearing_deg(lat1, lon1, lat2, lon2):
@@ -112,9 +144,9 @@ def bearing_deg(lat1, lon1, lat2, lon2):
     return (math.degrees(math.atan2(y, x)) + 360.0) % 360.0
 
 
-def rings_geojson(anchor, lat, lon, rings, n_vertices=128):
+def rings_geojson(anchor, lat, lon, rings, n_vertices=128, anchor_label=None, pins=()):
     feats = [{"type": "Feature", "geometry": {"type": "Point", "coordinates": [lon, lat]},
-              "properties": {"name": anchor, "label": anchor.replace("_", " ")}}]
+              "properties": {"name": anchor, "label": anchor_label or anchor.replace("_", " ")}}]
     for e in rings:
         props = {k: e.get(k) for k in ("id", "percent", "distance_m", "measures_to", "printed", "source",
                                        "source_url", "page", "verified")}
@@ -122,6 +154,10 @@ def rings_geojson(anchor, lat, lon, rings, n_vertices=128):
         ring = lpb.geodesic_circle(lat, lon, e["distance_m"] / 1000.0, n_vertices)
         feats.append({"type": "Feature", "properties": props,
                       "geometry": {"type": "Polygon", "coordinates": [[list(p) for p in ring]]}})
+    for p in pins:
+        feats.append({"type": "Feature", "geometry": {"type": "Point", "coordinates": [p["lon"], p["lat"]]},
+                      "properties": {"name": "pin", "label": p["label"], "distance_m": p["distance_m"],
+                                     "bearing_deg": p["bearing_deg"]}})
     return {"type": "FeatureCollection", "name": f"abduction_{anchor}", "features": feats, "note": NOTE}
 
 
@@ -143,6 +179,10 @@ def rings_kml(gj, depressions=()):
     point(anchor["properties"]["label"], "anchor point", *anchor["geometry"]["coordinates"])
     for f in gj["features"][1:]:
         p = f["properties"]
+        if f["geometry"]["type"] == "Point":
+            point(p["label"], f"{p['distance_m']:.0f} m at {p['bearing_deg']:.0f} deg from the anchor",
+                  *f["geometry"]["coordinates"])
+            continue
         pm = ET.SubElement(doc, f"{{{ns}}}Placemark")
         ET.SubElement(pm, f"{{{ns}}}name").text = p["label"]
         ET.SubElement(pm, f"{{{ns}}}description").text = f"{p['source']}; page {p['page'] or 'not checked'}"
@@ -188,10 +228,15 @@ def distance_to_lines_m(lat, lon, lines):
     return best
 
 
-def find_depressions(dem, lat, lon, radius_m, res_m, min_depth_m, allow_partial=False):
+def is_url(path):
+    return path.startswith(("https://", "http://", "/vsicurl/"))
+
+
+def find_depressions(dems, lat, lon, radius_m, res_m, min_depth_m, allow_partial=False):
     import dem_terrain  # numpy / scipy / rasterio, only needed here
 
-    res = dem_terrain.analyse_point(lat, lon, radius_m, res_m, [dem], min_depth_m=min_depth_m,
+    dem_terrain._setup_gdal()
+    res = dem_terrain.analyse_point(lat, lon, radius_m, res_m, list(dems), min_depth_m=min_depth_m,
                                     allow_partial=allow_partial)
     out = []
     for d in res["depressions"]:
@@ -232,10 +277,15 @@ def build_parser():
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     p.add_argument("--case-id", required=True, help="your label for the case, stored in the outputs and log")
     p.add_argument("--anchor", choices=ANCHORS, default="last_known_location")
-    p.add_argument("--lat", type=float, required=True)
-    p.add_argument("--lon", type=float, required=True)
+    p.add_argument("--anchor-label", help="name shown on the anchor point")
+    p.add_argument("--lat", type=float)
+    p.add_argument("--lon", type=float)
+    p.add_argument("--address", help="US street address to geocode instead of --lat/--lon")
+    p.add_argument("--radius-m", type=float, nargs="+", default=[], help="rings of your own size, in metres")
+    p.add_argument("--pin", nargs=3, action="append", default=[], metavar=("LABEL", "LAT", "LON"),
+                   help="another place to mark (repeatable)")
     p.add_argument("--prior", default=PRIOR_PATH, help="distance statistics JSON (default: %(default)s)")
-    p.add_argument("--dem", help="your DTM GeoTIFF")
+    p.add_argument("--dem", nargs="+", help="DTM GeoTIFF file(s) or COG URL(s); later ones fill gaps in earlier ones")
     p.add_argument("--res-m", type=float, default=1.0, help="grid resolution for --dem (default 1 m)")
     p.add_argument("--min-depth-m", type=float, default=0.3)
     p.add_argument("--min-radius-m", type=float, default=200.0,
@@ -249,29 +299,50 @@ def build_parser():
     return p
 
 
-def main(argv=None, now=None):
+def main(argv=None, now=None, opener=None):
     a = build_parser().parse_args(argv)
     try:
+        geocoded = None
+        if a.address:
+            if a.lat is not None or a.lon is not None:
+                raise ValueError("give --address or --lat/--lon, not both")
+            try:
+                a.lat, a.lon, matched = geocode(a.address, opener)
+            except OSError as e:
+                raise ValueError(f"geocoding {a.address!r} failed: {e}")
+            geocoded = {"address": a.address, "matched": matched, "geocoder": GEOCODER}
+        if a.lat is None or a.lon is None:
+            raise ValueError("give --lat and --lon, or --address")
         if not (-90 < a.lat < 90 and -180 <= a.lon <= 180):
             raise ValueError(f"point out of range: {a.lat}, {a.lon}")
         if not a.case_id.strip():
             raise ValueError("--case-id is empty")
         if a.res_m <= 0 or a.min_depth_m <= 0 or a.min_radius_m <= 0:
             raise ValueError("--res-m, --min-depth-m and --min-radius-m must be > 0")
-        for f in (a.dem, a.roads):
-            if f and not os.path.isfile(f):
+        for f in (a.dem or []) + ([a.roads] if a.roads else []):
+            if not is_url(f) and not os.path.isfile(f):
                 raise ValueError(f"no such file: {f}")
         data = load_prior(a.prior)
-        rings = rings_for(a.anchor, data)
+        if any(r <= 0 for r in a.radius_m):
+            raise ValueError("--radius-m values must be > 0")
+        rings = sorted(rings_for(a.anchor, data) + user_rings(a.anchor, a.radius_m), key=lambda e: e["distance_m"])
         if not rings:
-            raise ValueError(f"{a.prior} has no statistic measured from {a.anchor}")
+            raise ValueError(f"{a.prior} has no statistic measured from {a.anchor}; add --radius-m")
+        pins = []
+        for lbl, la, lo in a.pin:
+            la, lo = float(la), float(lo)
+            if not (-90 < la < 90 and -180 <= lo <= 180):
+                raise ValueError(f"pin {lbl!r} out of range: {la}, {lo}")
+            pins.append({"label": lbl, "lat": la, "lon": lo,
+                         "distance_m": lpb.haversine_km(a.lat, a.lon, la, lo) * 1000.0,
+                         "bearing_deg": bearing_deg(a.lat, a.lon, la, lo)})
         roads = load_roads(a.roads) if a.roads else None
     except (ValueError, OSError, json.JSONDecodeError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
 
     os.makedirs(a.out, exist_ok=True)
-    gj = rings_geojson(a.anchor, a.lat, a.lon, rings)
+    gj = rings_geojson(a.anchor, a.lat, a.lon, rings, anchor_label=a.anchor_label, pins=pins)
     deps, filled = [], None
     if a.dem:
         radius = max(a.min_radius_m, rings[-1]["distance_m"])
@@ -298,12 +369,15 @@ def main(argv=None, now=None):
 
     unverified = [e["id"] for e in rings if not e["verified"]]
     inputs = {"prior": {"path": a.prior, "sha256": sha256(a.prior)}}
-    for k in ("dem", "roads"):
-        if getattr(a, k):
-            inputs[k] = {"path": getattr(a, k), "sha256": sha256(getattr(a, k))}
+    if a.dem:
+        inputs["dem"] = [{"url": f} if is_url(f) else {"path": f, "sha256": sha256(f)} for f in a.dem]
+    if a.roads:
+        inputs["roads"] = {"path": a.roads, "sha256": sha256(a.roads)}
     run_utc = (now or dt.datetime.now(dt.timezone.utc)).isoformat()
     summary = {
-        "case_id": a.case_id, "run_utc": run_utc, "anchor": {"kind": a.anchor, "lat": a.lat, "lon": a.lon},
+        "case_id": a.case_id, "run_utc": run_utc,
+        "anchor": {"kind": a.anchor, "label": a.anchor_label, "lat": a.lat, "lon": a.lon, "geocoded": geocoded},
+        "pins": pins,
         "rings": [dict(e, label=label(e)) for e in rings], "unverified_rings": unverified,
         "depressions": deps if a.dem else None, "dem_nodata_cells_filled": filled,
         "inputs": inputs, "note": NOTE,
