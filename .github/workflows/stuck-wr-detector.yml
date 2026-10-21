@@ -47,6 +47,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   scan:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0'
     name: Scan & heal stuck Work Requests
     runs-on: ubuntu-latest
     steps:

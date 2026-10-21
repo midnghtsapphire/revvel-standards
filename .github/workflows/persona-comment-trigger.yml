@@ -43,37 +43,8 @@ jobs:
     timeout-minutes: 15
     # Skip bot comments (avoid loops) and only run when a persona trigger is present.
     if: >-
-      github.event.comment.user.type != 'Bot' &&
-      (contains(github.event.comment.body, '/professor') ||
-       contains(github.event.comment.body, '/oaudrey') ||
-       contains(github.event.comment.body, '/mindmappr') ||
-       contains(github.event.comment.body, '/openrouter') ||
-       contains(github.event.comment.body, '/dragnet') ||
-       contains(github.event.comment.body, '/scaffold') ||
-       contains(github.event.comment.body, '/builder') ||
-       contains(github.event.comment.body, '/product-build') ||
-       contains(github.event.comment.body, '/orbit') ||
-       contains(github.event.comment.body, '/circleci') ||
-       contains(github.event.comment.body, '/circle-ci') ||
-       contains(github.event.comment.body, '/🪐') ||
-       contains(github.event.comment.body, '/⭕') ||
-       contains(github.event.comment.body, '/octo') ||
-       contains(github.event.comment.body, '/🐙') ||
-       contains(github.event.comment.body, '/octopus') ||
-       contains(github.event.comment.body, '/🐙') ||
-       contains(github.event.comment.body, '/mabl') ||
-       contains(github.event.comment.body, '/🧪') ||
-       contains(github.event.comment.body, '/🎓') ||
-       contains(github.event.comment.body, '/🧠') ||
-       contains(github.event.comment.body, '/🗺️') ||
-       contains(github.event.comment.body, '/🗺') ||
-       contains(github.event.comment.body, '/🔀') ||
-       contains(github.event.comment.body, '/🕵️') ||
-       contains(github.event.comment.body, '/🕵') ||
-       contains(github.event.comment.body, '/🔎') ||
-       contains(github.event.comment.body, '/🛠️') ||
-       contains(github.event.comment.body, '/🛠') ||
-       contains(github.event.comment.body, '/persona'))
+      (github.event.comment.user.type != 'Bot' && (contains(github.event.comment.body, '/professor') || contains(github.event.comment.body, '/oaudrey') || contains(github.event.comment.body, '/mindmappr') || contains(github.event.comment.body, '/openrouter') || contains(github.event.comment.body, '/dragnet') || contains(github.event.comment.body, '/scaffold') || contains(github.event.comment.body, '/builder') || contains(github.event.comment.body, '/product-build') || contains(github.event.comment.body, '/orbit') || contains(github.event.comment.body, '/circleci') || contains(github.event.comment.body, '/circle-ci') || contains(github.event.comment.body, '/🪐') || contains(github.event.comment.body, '/⭕') || contains(github.event.comment.body, '/octo') || contains(github.event.comment.body, '/🐙') || contains(github.event.comment.body, '/octopus') || contains(github.event.comment.body, '/🐙') || contains(github.event.comment.body, '/mabl') || contains(github.event.comment.body, '/🧪') || contains(github.event.comment.body, '/🎓') || contains(github.event.comment.body, '/🧠') || contains(github.event.comment.body, '/🗺️') || contains(github.event.comment.body, '/🗺') || contains(github.event.comment.body, '/🔀') || contains(github.event.comment.body, '/🕵️') || contains(github.event.comment.body, '/🕵') || contains(github.event.comment.body, '/🔎') || contains(github.event.comment.body, '/🛠️') || contains(github.event.comment.body, '/🛠') || contains(github.event.comment.body, '/persona'))) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_PERSONAS != '0')
     steps:
       - name: Checkout
         uses: actions/checkout@v7

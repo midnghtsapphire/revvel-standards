@@ -23,9 +23,9 @@ concurrency:
 jobs:
   review:
     name: AI PR review
-    if: |-
-      github.event_name == 'workflow_dispatch' || (github.event.pull_request.draft == false &&
-       !contains(github.event.pull_request.title, '[skip-review]'))
+    if: >-
+      (github.event_name == 'workflow_dispatch' || (github.event.pull_request.draft == false && !contains(github.event.pull_request.title, '[skip-review]'))) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0')
     runs-on: ubuntu-latest
     env:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

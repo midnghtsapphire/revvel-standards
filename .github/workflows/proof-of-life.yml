@@ -36,6 +36,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   proof-of-life:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     name: Proof of Life (${{ github.event.inputs.role }} → ${{ github.event.inputs.assignee }})
     runs-on: ubuntu-latest
     steps:

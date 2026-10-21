@@ -13,6 +13,7 @@ permissions:
 
 jobs:
   sweep:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_ROUTERS != '0'
     runs-on: self-hosted
     timeout-minutes: 60
     env:

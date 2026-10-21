@@ -78,6 +78,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   mabl-tests:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0'
     name: mabl Automated Tests
     runs-on: ubuntu-latest
     permissions:

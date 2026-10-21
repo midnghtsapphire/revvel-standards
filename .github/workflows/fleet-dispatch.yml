@@ -1,0 +1,165 @@
+# fleet-dispatch.yml: start any fleet with `/<fleet> [args]` or the bare fleet name
+# (proposed; not installed). Install path: revvel-standards/.github/workflows/fleet-dispatch.yml
+# Registry: .github/fleets.yml
+name: Fleet Dispatch
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      fleet:
+        description: "Fleet name or alias (see .github/fleets.yml)"
+        required: true
+        type: string
+      args:
+        description: "Free-text arguments passed to the fleet"
+        required: false
+        type: string
+      issue_number:
+        description: "Issue/PR number for context (optional)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: write        # needed to start workflow_dispatch targets
+  issues: write         # reactions + ack comments
+  pull-requests: write
+
+concurrency:
+  group: fleet-dispatch-${{ github.event.issue.number || github.run_id }}
+  cancel-in-progress: false   # never cancel a launch someone asked for
+
+jobs:
+  dispatch:
+    # Owner-only, human-only, and the comment must start with "/" or be a single word.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.comment.user.login == 'midnghtsapphire' &&
+       github.event.comment.user.type != 'Bot')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
+      # Untrusted text goes through env, never ${{ }} inside run: (CLAUDE.md gotcha #4).
+      COMMENT_BODY: ${{ github.event.comment.body }}
+      COMMENT_ID: ${{ github.event.comment.id }}
+      ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+      IN_FLEET: ${{ inputs.fleet }}
+      IN_ARGS: ${{ inputs.args }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/fleets.yml
+          sparse-checkout-cone-mode: false
+
+      - name: Parse command and resolve fleet
+        id: parse
+        run: |
+          python3 - <<'PY'
+          import os, re, sys, json, subprocess
+          try:
+              import yaml
+          except ImportError:
+              subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "pyyaml"])
+              import yaml
+          reg = yaml.safe_load(open(".github/fleets.yml"))["fleets"]
+          index = {}
+          for name, f in reg.items():
+              index[name.lower()] = name
+              for a in f.get("aliases", []) or []:
+                  index.setdefault(str(a).lower(), name)
+          if os.environ.get("IN_FLEET"):
+              word, args = os.environ["IN_FLEET"].strip().lstrip("/"), os.environ.get("IN_ARGS", "")
+          else:
+              first = (os.environ.get("COMMENT_BODY") or "").strip().splitlines()[0:1]
+              line = first[0].strip() if first else ""
+              m = re.match(r"^/([A-Za-z0-9][\w-]*)\s*(.*)$", line) or re.match(r"^([A-Za-z0-9][\w-]*)\s*$", line)
+              if not m:
+                  word, args = "", ""
+              else:
+                  word, args = m.group(1), (m.group(2) if m.lastindex and m.lastindex >= 2 else "")
+          fleet = index.get(word.lower()) if word else None
+          out = open(os.environ["GITHUB_OUTPUT"], "a")
+          if not fleet:
+              out.write("matched=false\n"); sys.exit(0)
+          f = reg[fleet]
+          issue = os.environ.get("ISSUE_NUMBER", "")
+          def fill(v):
+              return str(v).replace("{{issue}}", issue).replace("{{args}}", args[:500])
+          inputs = {k: fill(v) for k, v in (f.get("inputs") or {}).items() if fill(v) != ""}
+          wfs = f.get("workflows") or ([f["workflow"]] if f.get("workflow") else [])
+          out.write("matched=true\n")
+          out.write(f"fleet={fleet}\n")
+          out.write(f"route={f.get('route','dispatch')}\n")
+          out.write(f"cloud={'true' if f.get('cloud') else 'false'}\n")
+          out.write(f"model={f.get('model','')}\n")
+          out.write(f"command={f.get('command','')}\n")
+          out.write("workflows=" + json.dumps(wfs) + "\n")
+          out.write("inputs=" + json.dumps(inputs) + "\n")
+          PY
+
+      - name: React (eyes) to show the command was seen
+        if: steps.parse.outputs.matched == 'true' && github.event_name == 'issue_comment'
+        run: gh api "repos/$GH_REPO/issues/comments/$COMMENT_ID/reactions" -f content=eyes >/dev/null
+
+      - name: Spend gate
+        id: gate
+        if: steps.parse.outputs.matched == 'true'
+        run: |
+          if [ "${{ steps.parse.outputs.cloud }}" = "true" ] && [ "$ALLOW_CLOUD" != "1" ]; then
+            echo "blocked=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "blocked=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Launch
+        id: launch
+        if: steps.parse.outputs.matched == 'true' && steps.gate.outputs.blocked == 'false' && steps.parse.outputs.route == 'dispatch'
+        env:
+          WFS: ${{ steps.parse.outputs.workflows }}
+          INPUTS: ${{ steps.parse.outputs.inputs }}
+        run: |
+          set -euo pipefail
+          args=()
+          while IFS= read -r kv; do [ -n "$kv" ] && args+=(-f "$kv"); done < <(jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$INPUTS")
+          for wf in $(jq -r '.[]' <<<"$WFS"); do
+            gh workflow run "$wf" --ref main "${args[@]}"
+            echo "started $wf" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+      - name: Repository dispatch route
+        if: steps.parse.outputs.matched == 'true' && steps.gate.outputs.blocked == 'false' && steps.parse.outputs.route == 'repo_dispatch'
+        env:
+          FLEET: ${{ steps.parse.outputs.fleet }}
+          INPUTS: ${{ steps.parse.outputs.inputs }}
+        run: |
+          jq -n --arg t "fleet-$FLEET" --argjson p "$INPUTS" '{event_type:$t, client_payload:$p}' \
+            | gh api "repos/$GH_REPO/dispatches" --input -
+
+      - name: Acknowledge
+        if: steps.parse.outputs.matched == 'true' && env.ISSUE_NUMBER != ''
+        env:
+          FLEET: ${{ steps.parse.outputs.fleet }}
+          ROUTE: ${{ steps.parse.outputs.route }}
+          MODEL: ${{ steps.parse.outputs.model }}
+          CMD: ${{ steps.parse.outputs.command }}
+          BLOCKED: ${{ steps.gate.outputs.blocked }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ "$BLOCKED" = "true" ]; then
+            msg="⏸️ **$FLEET** not started: it uses cloud LLM credits and \`REVVEL_LLM_ALLOW_CLOUD\` is not \`1\`."
+          elif [ "$ROUTE" = "persona" ]; then
+            msg="🔀 **$FLEET** is handled by \`persona-comment-trigger.yml\`; your comment already summons it."
+          elif [ "$ROUTE" = "local" ]; then
+            msg="💻 **$FLEET** has no CI entry point. Run locally: \`$CMD\`"
+          else
+            msg="🚀 **$FLEET** started (model: $MODEL). Dispatcher run: $RUN_URL"
+          fi
+          gh issue comment "$ISSUE_NUMBER" --body "$msg"
+          if [ -n "${COMMENT_ID:-}" ]; then
+            gh api "repos/$GH_REPO/issues/comments/$COMMENT_ID/reactions" -f content=rocket >/dev/null || true
+          fi

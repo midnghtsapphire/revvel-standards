@@ -32,10 +32,8 @@ jobs:
     timeout-minutes: 15
     # Only for Work Requests whose long-form template selected the DRAGNET team.
     if: >-
-      github.event.issue.user.type != 'Bot' &&
-      contains(github.event.issue.body, 'dragnet-team') &&
-      (contains(github.event.issue.labels.*.name, 'work-request') ||
-       startsWith(github.event.issue.title, '[WR]'))
+      (github.event.issue.user.type != 'Bot' && contains(github.event.issue.body, 'dragnet-team') && (contains(github.event.issue.labels.*.name, 'work-request') || startsWith(github.event.issue.title, '[WR]'))) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_PERSONAS != '0')
     steps:
       - name: Checkout
         uses: actions/checkout@v7
