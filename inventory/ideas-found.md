@@ -24,3 +24,4 @@ All future products parked here. Never lost, never auto-promoted ahead of revenu
 
 ## Big bets (verify)
 - Universal-sar, Premolt, Mechatronopolis, Captivator
+- Forensic Finders — exploratory drone/LiDAR search and mapping workflow; feasibility and user need unvalidated; see [invention-flow note](invention-flows/forensic-finders-drone-lidar-swarm.md) and [WR #18172](https://github.com/midnghtsapphire/revvel-standards/issues/18172).
