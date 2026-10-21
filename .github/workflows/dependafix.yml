@@ -28,7 +28,9 @@ jobs:
     permissions:
       contents: write
     # Only run on Dependabot PRs — never on human-authored branches
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    if: >-
+      (github.event.pull_request.user.login == 'dependabot[bot]') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
 
     steps:
       - name: Checkout Code

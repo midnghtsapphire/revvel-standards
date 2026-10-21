@@ -24,6 +24,7 @@ concurrency:
 
 jobs:
   rebuild:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_PERSONAS != '0'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

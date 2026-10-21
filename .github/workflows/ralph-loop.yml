@@ -11,7 +11,9 @@ jobs:
   ralph-trigger:
     name: Ralph Loop — Trigger Fix
     runs-on: ubuntu-latest
-    if: github.event.check_suite.conclusion == 'failure'
+    if: >-
+      (github.event.check_suite.conclusion == 'failure') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
     steps:
       - name: Find matching open PR
         id: find-pr
@@ -168,9 +170,9 @@ jobs:
   ralph-unblock:
     name: Ralph Loop — Unblock on Pass
     runs-on: ubuntu-latest
-    if: |
-      github.event.check_suite.conclusion == 'success' ||
-      github.event.workflow_run.conclusion == 'success'
+    if: >-
+      (github.event.check_suite.conclusion == 'success' || github.event.workflow_run.conclusion == 'success') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
     steps:
       - name: Find matching open PR
         id: find-pr

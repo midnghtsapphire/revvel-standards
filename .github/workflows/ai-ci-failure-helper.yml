@@ -15,6 +15,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   ai-helper:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0'
     name: AI failure helper
     runs-on: ubuntu-latest
     env:
