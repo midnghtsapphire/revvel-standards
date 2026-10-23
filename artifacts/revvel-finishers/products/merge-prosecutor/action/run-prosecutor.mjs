@@ -367,7 +367,7 @@ export function detectUnimplementedSuggestions(diffText, comments) {
  * Word-bounded dismissive phrases. Bare `leave it` without boundaries matched
  * "leave items" / "leave iteration". Keep the original intent (punt language).
  */
-export const DISMISSIVE_REGEX = /\bnot my (error|bug|problem)\b|\bleave it\b|\bout of scope\b/i;
+export const DISMISSIVE_REGEX = /\bnot my (error|bug|problem|fault|code)\b|\bleave it\b|\bignore (it|this)\b|\bwon't fix\b|\bout of scope\b/i;
 
 export function isDismissiveComment(body) {
   return Boolean(body) && DISMISSIVE_REGEX.test(body);
