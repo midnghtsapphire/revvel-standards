@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ML asset catalog",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "assets"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "generated": {
+      "type": "string"
+    },
+    "source_repo": {
+      "type": "string"
+    },
+    "suggested_path": {
+      "type": "string"
+    },
+    "count": {
+      "type": "integer"
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "slug",
+          "name",
+          "category",
+          "url",
+          "license",
+          "what",
+          "why",
+          "determinism",
+          "effort",
+          "priority",
+          "access_date"
+        ],
+        "properties": {
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "enum": [
+              "reproducibility",
+              "constrained-decoding",
+              "architectures",
+              "local-models",
+              "evals",
+              "methods"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "extra_urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "license": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "loop": {
+            "enum": [
+              "Generative",
+              "Agentic",
+              "Deterministic"
+            ]
+          },
+          "what": {
+            "type": "string"
+          },
+          "why": {
+            "type": "string"
+          },
+          "determinism": {
+            "type": "string"
+          },
+          "effort": {
+            "type": "string"
+          },
+          "priority": {
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "adopt": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "access_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    }
+  }
+}
