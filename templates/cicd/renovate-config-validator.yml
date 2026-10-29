@@ -57,7 +57,9 @@ jobs:
 
       - name: Validate Renovate Configuration
         # v2.1.0 — pin SHA; retagging upstream must not silently change CI.
-        uses: suzuki-shunsuke/github-action-renovate-config-validator@ee9f69e1f683ed0d08225086482b34fc9abe9300 # v2.1.0
+        # uses: suzuki-shunsuke/github-action-renovate-config-validator@ee9f69e1f683ed0d08225086482b34fc9abe9300 # v2.1.0
+        # Replaced 2026-10-16: mirror the production workflow, which Dependabot (#18071) moved to v2.4.1.
+        uses: suzuki-shunsuke/github-action-renovate-config-validator@1e1604219a6b38ae9a10aff42a28a3656322c31a # v2.4.1
         with:
           # CONFIGURE: point at your Renovate config file (one path, or multi-line).
           config_file_path: .github/renovate.json5
