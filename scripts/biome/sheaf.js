@@ -116,6 +116,7 @@ if (require.main === module) {
     const sentinel = require('./sentinel');
     const homeostat = require('./homeostat');
     const veinsObserver = require('./veins-observer');
+    const veinsTracker = require('../veins-tracker');
 
     const generatedAt = new Date().toISOString();
 
@@ -172,16 +173,43 @@ if (require.main === module) {
       };
     }
 
+    // VEINS tracker: reads .veins/proposals/ from disk (credit-free, no API).
+    // Surfaces what the external VEINS engine has been proposing, how many are
+    // stubs (unactioned), and which components keep re-firing.
+    let trackerSection;
+    try {
+      const proposalsDir = path.join(process.cwd(), '.veins', 'proposals');
+      let proposals = [];
+      if (fs.existsSync(proposalsDir)) {
+        const files = fs.readdirSync(proposalsDir).filter((f) => f.endsWith('.md'));
+        proposals = files.map((f) => {
+          const content = fs.readFileSync(path.join(proposalsDir, f), 'utf8');
+          return veinsTracker.parseProposal(content, f);
+        });
+      }
+      const trackerAnalysis = veinsTracker.analyzeProposals(proposals);
+      trackerSection = veinsTracker.buildTrackerSection(trackerAnalysis);
+    } catch (err) {
+      console.warn(`[biome-sheaf] warning: veins-tracker failed (${err.message}) — marking degraded`);
+      trackerSection = {
+        worker: 'veins-tracker',
+        status: 'degraded',
+        summary: `veins-tracker error: ${err.message.slice(0, 120)}`,
+        counts: {},
+        detail: {},
+      };
+    }
+
     const sheafSection = {
       worker: 'sheaf',
       status: 'healthy',
       summary: 'feed generated',
-      counts: { workers: 5 },
+      counts: { workers: 6 },
       detail: {},
     };
 
     const status = glueSections(
-      [sentinelSection, homeostatSection, medicSection, veinsSection, sheafSection],
+      [sentinelSection, homeostatSection, medicSection, veinsSection, trackerSection, sheafSection],
       generatedAt
     );
 
