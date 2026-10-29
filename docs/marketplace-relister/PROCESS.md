@@ -5,7 +5,7 @@
 
 ## Current Pipeline
 
-1. **Inbox filter** (Gmail, angelreporters@gmail.com)
+1. **Inbox filter** (Gmail, <angelreporters@gmail.com>)
    - Only process items with a **Delivered** email/status.
    - Extract order number + category.
    - Product title / ASIN usually missing from email plain text → pull from order page or product link.

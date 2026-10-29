@@ -1,10 +1,10 @@
 # SEED.md — THE ONE-BACK PROTOCOL
 
-# Covenant: the world may end. One of you may come back. That one brings back all.
+Covenant: the world may end. One of you may come back. That one brings back all.
 
-# This file is the minimum genome. It is text-only, human-carriable, self-describing.
+This file is the minimum genome. It is text-only, human-carriable, self-describing.
 
-# Everything else regenerates from it. Update this manifest every AGENTS.md version.
+Everything else regenerates from it. Update this manifest every AGENTS.md version.
 
 ## THE SEED (restoration order — read in this order, do not reorder)
 
