@@ -112,9 +112,10 @@ if (require.main === module) {
   (async () => {
     const fs = require('fs');
     const path = require('path');
-    const { repoApi } = require('./gh');
+    const { OWNER, NAME, api, repoApi } = require('./gh');
     const sentinel = require('./sentinel');
     const homeostat = require('./homeostat');
+    const veinsObserver = require('./veins-observer');
 
     const generatedAt = new Date().toISOString();
 
@@ -146,15 +147,43 @@ if (require.main === module) {
       detail: { last_run: medicRun ? medicRun.html_url : null },
     };
 
+    // VEINS observer: search for external [VEINS] alerts via the search API.
+    // Uses allowError — a missing token or rate-limit degrades this section to
+    // "healthy/unknown" rather than crashing the whole feed.
+    let veinsSection;
+    try {
+      const q = encodeURIComponent(`[VEINS] in:title repo:${OWNER}/${NAME}`);
+      const veinsSearchResp = await api(
+        `/search/issues?q=${q}&per_page=100&sort=created&order=desc`,
+        { allowError: true }
+      );
+      const veinsAnalysis = veinsObserver.analyzeVeinsAlerts(
+        (veinsSearchResp && veinsSearchResp.items) || []
+      );
+      veinsSection = veinsObserver.buildVeinsSection(veinsAnalysis);
+    } catch (err) {
+      console.warn(`[biome-sheaf] warning: veins-observer failed (${err.message}) — marking degraded`);
+      veinsSection = {
+        worker: 'veins-observer',
+        status: 'degraded',
+        summary: `veins-observer error: ${err.message.slice(0, 120)}`,
+        counts: {},
+        detail: {},
+      };
+    }
+
     const sheafSection = {
       worker: 'sheaf',
       status: 'healthy',
       summary: 'feed generated',
-      counts: { workers: 3 },
+      counts: { workers: 5 },
       detail: {},
     };
 
-    const status = glueSections([sentinelSection, homeostatSection, medicSection, sheafSection], generatedAt);
+    const status = glueSections(
+      [sentinelSection, homeostatSection, medicSection, veinsSection, sheafSection],
+      generatedAt
+    );
 
     const outDir = path.join(process.cwd(), 'docs', 'biome');
     fs.mkdirSync(outDir, { recursive: true });
