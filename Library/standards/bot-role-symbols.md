@@ -38,14 +38,28 @@ These rules apply to every fleet, team, and solo bot:
 |---|---|
 | GitHub fleet | Bright blue cat |
 | MoneyCrew | Bright-green heart with a white $ |
-| Linear A fleet | Gold labrys on navy |
+| Linear A fleet | Gold labrys on navy | (superseded 2026-10-30: see Background rule)
 
 ### Examples (Linear A fleet)
 
 | File | Shows |
 |---|---|
-| [`logo-examples/base_labrys.png`](logo-examples/base_labrys.png) | Fleet base only: gold labrys on navy |
-| [`logo-examples/corpusbot_logo.png`](logo-examples/corpusbot_logo.png) | CorpusBot: labrys + 🔍 Researcher badge (lower-left, white circle) + grid personal touch (lower-right) |
-| [`logo-examples/decipherer_logo.jpg`](logo-examples/decipherer_logo.jpg) | Decipherer: labrys + 🔍 Researcher badge (lower-left, white circle) + network personal touch (lower-right) |
+| [`logo-examples/base_labrys.png`](logo-examples/base_labrys.png) | Fleet base only: gold labrys on navy | (superseded 2026-10-30: see Background rule)
+| [`logo-examples/corpusbot_logo.png`](logo-examples/corpusbot_logo.png) | CorpusBot: labrys + 🔍 Researcher badge (lower-left, white circle) + grid personal touch (lower-right) | (superseded 2026-10-30: see Background rule)
+| [`logo-examples/decipherer_logo.jpg`](logo-examples/decipherer_logo.jpg) | Decipherer: labrys + 🔍 Researcher badge (lower-left, white circle) + network personal touch (lower-right) | (superseded 2026-10-30: see Background rule)
 
-Note: in these early examples the lower-right personal-touch circle is navy with a white ring (CorpusBot) or teal (Decipherer), not white. New logos should use a white circle per the rule above; these files are kept unchanged as historical examples.
+Note: in these early examples the lower-right personal-touch circle is navy with a white ring (CorpusBot) or teal (Decipherer), not white. New logos should use a white circle per the rule above; these files are kept unchanged as historical examples. (superseded 2026-10-30: see Background rule)
+
+## Background rule
+
+Logo background is white by default; a fleet may pick one pale tint instead. Symbols must be dark and outlined so they pop at small sizes, and every non-text element needs at least 3:1 contrast with the background, aiming for 4.5:1 or higher.
+
+- Reason: Audrey can't see dark backgrounds at small avatar sizes.
+- The Linear A navy background and every dark-background example above are superseded. The example files are kept unchanged as history; new Linear A logos use a white or pale background.
+- Where this conflicts with "bright" wording above, this rule wins: dark, outlined symbols on white or pale.
+
+### Locked fleet colors
+
+| Fleet | Background | Colors |
+|---|---|---|
+| HearingCrew | White | Deep orange #C2410C, dark teal #0F766E |
