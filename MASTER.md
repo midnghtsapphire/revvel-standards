@@ -70,6 +70,8 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 - **MASTER.md** (this file) — system of record; pipeline order; conflict tie-breaker.
 - **UPREV_METHOD.md** — the method definition (one iteration, max over minimum, self-healing).
 - **WR_RESEARCH_MANDATE.md** — research-first WR; runs before any build/fix; SEM/SEO discovery rules.
+- **standards/PRODUCT_INCUBATION_STANDARD.md** — new products incubate in `products/<name>/`, off the public docs site, under oaudrey.com or freedomangelcorps.com; graduate to their own repo only after testing and only if needed.
+- **standards/LEDGER_STANDARD.md** — every project keeps a root `LEDGER.md` play-by-play/handoff record (who, when, files, decisions, sources) used for AI crediting; template included.
 
 ### WR/PR machinery (in .github/ + workflows/)
 - **.github/ISSUE_TEMPLATE/work_request.yml** — canonical WR form/schema (the target Jules normalizes into).
