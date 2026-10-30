@@ -70,6 +70,8 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 - **MASTER.md** (this file) — system of record; pipeline order; conflict tie-breaker.
 - **UPREV_METHOD.md** — the method definition (one iteration, max over minimum, self-healing).
 - **WR_RESEARCH_MANDATE.md** — research-first WR; runs before any build/fix; SEM/SEO discovery rules.
+- `REPO_LIBRARY_STANDARD.md`: every new repo must have a root `Library/` folder for its sources.
+- `WRITE_AS_YOU_GO_STANDARD.md`: agents update the ledger, CHANGELOG, and Library in the same commit as their work.
 - **standards/PRODUCT_INCUBATION_STANDARD.md** — new products incubate in `products/<name>/`, off the public docs site, under oaudrey.com or freedomangelcorps.com; graduate to their own repo only after testing and only if needed.
 - **standards/LEDGER_STANDARD.md** — every project keeps a root `LEDGER.md` play-by-play/handoff record (who, when, files, decisions, sources) used for AI crediting; template included.
 
