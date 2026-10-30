@@ -30,6 +30,8 @@ HearingCrew is the hearing fleet, led by HearingOrchestrator. Members: HearingOr
 - **Fleet base symbol:** a deep orange human ear, shaded with a smooth gradient from #C2410C (upper-left) to #7C2D12 (lower-right), with a thick black outline and thick dark teal sound waves, on a plain white background. Navy was dropped because it was unreadable at tiny avatar sizes.
 - **Colors (approximate hex, contrast against white):** deep orange #C2410C (5.2:1), dark brown-orange #7C2D12 (9.4:1, ear gradient end), dark teal #0F766E (5.5:1), black #000000 (21:1), MedicalEar red #B91C1C (6.5:1). All pass the 4.5:1 rule, and both ear gradient ends are at least 5:1. Avoid bright orange such as #FF5722 (3.2:1, fails).
 - **Badges:** large, inside black-outlined circles. Personal touches are also black-outlined.
+- **Dark gray (AidInventor gear):** #595B5A (6.8:1 on white, passes).
+- **Unique personal touch rule:** a personal touch can't reuse any symbol already used in another HearingCrew logo. Symbols already used: ear, sound waves, mixing console, conductor's baton, star, lightbulb, gear, stethoscope, audiogram chart, magnifying glass, medical cross.
 - **Role badge:** lower-left corner.
 - **Personal touch:** lower-right corner.
 
@@ -38,7 +40,7 @@ Each bot description below is written out in full for screen readers. Every desc
 | Bot | Role badge | Personal touch |
 | --- | --- | --- |
 | HearingOrchestrator | 🎛️ Orchestrator (mixing console) | Dark teal conductor's baton with a deep orange star |
-| AidInventor | 🔨 Builder and Inventor (hammer) | Lightbulb |
+| AidInventor | 💡 Inventor (white lightbulb in a solid black circle) | Dark gray gear (#595B5A) with a white center |
 | Audiologist | 🩺 Clinical (stethoscope) | Audiogram chart (a hearing test chart) |
 | MedicalEar | 🔍 Researcher (magnifying glass) | Red medical cross |
 
@@ -50,9 +52,9 @@ Logo alt text: A square picture with a plain white background. In the center is 
 
 ### AidInventor
 
-AidInventor is the Builder and Inventor of HearingCrew, the hearing fleet led by HearingOrchestrator. The other HearingCrew members are HearingOrchestrator, Audiologist, and MedicalEar. AidInventor designs and invents hearing aids. Its role badge is the hammer (Builder). Its personal touch is a lightbulb, for new ideas and inventions.
+AidInventor is the Inventor of HearingCrew, the hearing fleet led by HearingOrchestrator. The other HearingCrew members are HearingOrchestrator, Audiologist, and MedicalEar. AidInventor designs and invents hearing aids. Its role badge is a white lightbulb in a solid black circle (Inventor). Its personal touch is a dark gray gear with a white center, for engineering, building working devices, and making ideas real.
 
-Logo alt text: A square picture with a plain white background. In the center is a large deep orange human ear, shaded from orange to dark brown-orange, with a thick black outline. Three thick, curved dark teal sound waves rise to the right of the ear, showing sound being heard. In the lower-left corner is the large role badge: a white circle with a thick black outline, holding a dark teal hammer. It stands for the Builder and Inventor. In the lower-right corner is the personal touch: a deep orange lightbulb with a dark teal base and a black outline. It stands for inventing new hearing aids. Colors are white, deep orange, dark teal, and black only. Every shape has a thick black outline. High contrast, simple shapes, and no text.
+Logo alt text: A square picture with a plain white background. In the center is a large deep orange human ear, shaded from orange to dark brown-orange, with a thick black outline. Three thick, curved dark teal sound waves rise to the right of the ear, showing sound being heard. In the lower-left corner is the large role badge: a solid black circle holding a white lightbulb. It stands for the Inventor. In the lower-right corner is the personal touch: a dark gray gear with a thick black outline and a white center. It stands for engineering, building working devices, and making ideas real. Colors are white, deep orange, dark brown-orange, dark teal, dark gray, and black only. Every shape has a thick black outline. High contrast, simple shapes, and no text.
 
 ### Audiologist
 
