@@ -3,13 +3,14 @@
 Default role symbols (use from day one; fleet/product logo can be added first or last later if desired):
 
 - 🎛️ Orchestrator
-- 🔨 Builder
+- 🔨 Builder (builders only; the hammer is never used for an inventor role)
 - 🧪 Tester
 - 💻 Coder
 - 🎨 Designer
 - 🔍 Researcher
 - 📝 Writer
 - 🏗️ Architect
+- 💡 Inventor (applies across all fleets: every inventor bot in any fleet uses the lightbulb as its role badge, never the hammer)
 
 Note: Defaults keep every bot readable in navigation. Creative fleet logos optional.
 
