@@ -311,3 +311,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DEFAULT_APP_TEMPLATE.md` established.
 - Initial CI/CD templates and scripts created in `templates/cicd/`.
 - Corporate entity hierarchy and SEO strategy defined.
+
+## 2026-10-30
+
+- 2026-10-30 — GitHubOrchestrator — added default bot role-symbol table at `Library/standards/bot-role-symbols.md`
