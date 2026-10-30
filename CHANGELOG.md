@@ -317,3 +317,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 2026-10-30 — GitHubOrchestrator — added default bot role-symbol table at `Library/standards/bot-role-symbols.md`
 - 2026-10-30 — GitHubOrchestrator — recorded design constraint: GitHub is not a hard dependency; Gitee (midnghtsapphire) approved as alternative primary or mirror.
 - 2026-10-30 — GitHubOrchestrator — added permanent three-layer logo format to `Library/standards/bot-role-symbols.md`
+- 2026-10-30 — GitHubOrchestrator — recorded design constraint: GitHub is not a hard dependency. GitLab and Gitee (midnghtsapphire) are approved alternative primaries or mirrors. `Library/standards/bot-role-symbols.md` (from e1fe176) should be mirrored/available on GitLab when ready.
