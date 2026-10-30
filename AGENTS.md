@@ -3,6 +3,8 @@
 This document provides guidance for AI agents (Cursor, Claude, GPT, etc.) working in this repository.
 
 > ⚡ **Call chain (what starts → what runs next):**  
+> **All bots:** follow [`Library/standards/agent-honesty-patterns.md`](./Library/standards/agent-honesty-patterns.md) (honesty & trust rules, maintained by PromptCrew).
+>
 > Read **[`START_HERE_CALL_CHAIN.md`](./START_HERE_CALL_CHAIN.md)** before changing workflows or claiming a step is “done.”  
 > Do not invent a second pipeline; do not edit random folders for UI color — see that file’s “Where to change” table.
 >
