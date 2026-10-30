@@ -66,13 +66,12 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 
 ## 2. FILE REGISTRY (what each doc is, and when it governs)
 
-- `REPO_LIBRARY_STANDARD.md`: every new repo must have a root `Library/` folder for its sources.
-- `WRITE_AS_YOU_GO_STANDARD.md`: agents update the ledger, CHANGELOG, and Library in the same commit as their work.
-
 ### Method & governance
 - **MASTER.md** (this file) — system of record; pipeline order; conflict tie-breaker.
 - **UPREV_METHOD.md** — the method definition (one iteration, max over minimum, self-healing).
 - **WR_RESEARCH_MANDATE.md** — research-first WR; runs before any build/fix; SEM/SEO discovery rules.
+- `REPO_LIBRARY_STANDARD.md`: every new repo must have a root `Library/` folder for its sources.
+- `WRITE_AS_YOU_GO_STANDARD.md`: agents update the ledger, CHANGELOG, and Library in the same commit as their work.
 
 ### WR/PR machinery (in .github/ + workflows/)
 - **.github/ISSUE_TEMPLATE/work_request.yml** — canonical WR form/schema (the target Jules normalizes into).
