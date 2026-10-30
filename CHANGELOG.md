@@ -315,3 +315,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DEFAULT_APP_TEMPLATE.md` established.
 - Initial CI/CD templates and scripts created in `templates/cicd/`.
 - Corporate entity hierarchy and SEO strategy defined.
+
+## 2026-10-30
+
+- 2026-10-30 — GitHubOrchestrator — added default bot role-symbol table at `Library/standards/bot-role-symbols.md`
+- 2026-10-30 — GitHubOrchestrator — recorded design constraint: GitHub is not a hard dependency; Gitee (midnghtsapphire) approved as alternative primary or mirror.
+- 2026-10-30 — GitHubOrchestrator — added permanent three-layer logo format to `Library/standards/bot-role-symbols.md`
+- 2026-10-30 — GitHubOrchestrator — recorded design constraint: GitHub is not a hard dependency. GitLab and Gitee (midnghtsapphire) are approved alternative primaries or mirrors. `Library/standards/bot-role-symbols.md` (from e1fe176) should be mirrored/available on GitLab when ready.
+- 2026-10-30 — GitHubOrchestrator — recorded HUSK (elisymlabs/husk) integration requirements as proposed, pending Audrey's confirmation of repo identity; no code changes.
