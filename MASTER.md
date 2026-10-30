@@ -66,6 +66,8 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 
 ## 2. FILE REGISTRY (what each doc is, and when it governs)
 
+- `REPO_LIBRARY_STANDARD.md`: every new repo must have a root `Library/` folder for its sources.
+
 ### Method & governance
 - **MASTER.md** (this file) — system of record; pipeline order; conflict tie-breaker.
 - **UPREV_METHOD.md** — the method definition (one iteration, max over minimum, self-healing).
