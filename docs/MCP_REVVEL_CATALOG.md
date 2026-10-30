@@ -30,7 +30,7 @@ All repos in Group B follow the naming convention `MCP-<DOMAIN>` (uppercase), us
 | **Language** | TypeScript (Node.js) |
 | **Transport** | stdio |
 | **Database** | SQLite (`rvvel-affiliate-links.db`, local) |
-| **Run** | `npx rvvel-affiliate-links-mcp` |
+| **Run** | ~~`npx rvvel-affiliate-links-mcp`~~ ❌ NOT LIVE (verified 2026-10-30: not on npm — `npx` will fail; run from a local clone) |
 | **MCP Status** | ✅ Production-ready |
 
 **What it does:**  

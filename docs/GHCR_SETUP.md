@@ -10,7 +10,7 @@ Docs: [Working with the Container registry](https://docs.github.com/en/packages/
 
 ## Live test page
 
-▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/ghcr-console/)**
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/ghcr-console/)** _(⚠️ NOT LIVE — verified 2026-10-30: https://revvel-standards.vercel.app returns HTTP 402)_
 
 ## What “wired” means here
 

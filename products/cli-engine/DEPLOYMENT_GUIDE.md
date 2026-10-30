@@ -28,7 +28,7 @@ npm run dev   # http://localhost:3008
 3. Framework preset: **Next.js** (auto-detected).
 4. Click **Deploy**.
 
-Vercel will assign a preview URL such as `https://cli-engine.vercel.app` on first deploy.
+Vercel will assign a preview URL such as `https://cli-engine.vercel.app` on first deploy. _(⚠️ NOT LIVE — verified 2026-10-30: https://cli-engine.vercel.app returns HTTP 404)_
 
 ## Environment Variables
 

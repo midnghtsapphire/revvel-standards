@@ -352,7 +352,7 @@ import PlausibleProvider from 'next-plausible'
 4. Deploy
 
 **Expected URLs:**
-- **Production:** `https://neurooz.vercel.app`
+- **Production:** `https://neurooz.vercel.app` _(⚠️ NOT LIVE — verified 2026-10-30: https://neurooz.vercel.app returns HTTP 402)_
 - **Preview:** `https://neurooz-[branch].vercel.app`
 
 ---
@@ -368,11 +368,11 @@ import PlausibleProvider from 'next-plausible'
 
 | Feature | Status | URL |
 |--------|--------|-----|
-| Homepage | ⏳ Pending | https://neurooz.vercel.app |
-| Dashboard | ⏳ Pending | https://neurooz.vercel.app/dashboard |
-| Financial Guardian | ⏳ Pending | https://neurooz.vercel.app/finances |
-| AI Coach | ⏳ Pending | https://neurooz.vercel.app/coach |
-| API Health | ⏳ Pending | https://neurooz.vercel.app/api/health |
+| Homepage | ⏳ Pending | https://neurooz.vercel.app | _(⚠️ NOT LIVE — verified 2026-10-30: https://neurooz.vercel.app returns HTTP 402)_
+| Dashboard | ⏳ Pending | https://neurooz.vercel.app/dashboard | _(⚠️ NOT LIVE — verified 2026-10-30: https://neurooz.vercel.app returns HTTP 402)_
+| Financial Guardian | ⏳ Pending | https://neurooz.vercel.app/finances | _(⚠️ NOT LIVE — verified 2026-10-30: https://neurooz.vercel.app returns HTTP 402)_
+| AI Coach | ⏳ Pending | https://neurooz.vercel.app/coach | _(⚠️ NOT LIVE — verified 2026-10-30: https://neurooz.vercel.app returns HTTP 402)_
+| API Health | ⏳ Pending | https://neurooz.vercel.app/api/health | _(⚠️ NOT LIVE — verified 2026-10-30: https://neurooz.vercel.app returns HTTP 402)_
 ```
 
 ### Deployment Section
@@ -382,8 +382,8 @@ import PlausibleProvider from 'next-plausible'
 ```markdown
 ## Deployment
 
-**Production:** https://neurooz.vercel.app  
-**Preview:** https://neurooz-dev.vercel.app  
+**Production:** https://neurooz.vercel.app   _(⚠️ NOT LIVE — verified 2026-10-30: https://neurooz.vercel.app returns HTTP 402)_
+**Preview:** https://neurooz-dev.vercel.app   _(⚠️ NOT LIVE — verified 2026-10-30: https://neurooz-dev.vercel.app returns HTTP 404)_
 **Status:** ![Vercel](https://vercelbadge.vercel.app/api/midnghtsapphire/neurooz)
 ```
 

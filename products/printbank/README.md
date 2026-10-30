@@ -3,7 +3,7 @@
 ## Live Deployment / Test
 
 Preview (this branch, Vercel — verified Ready):
-<https://revvel-standards-git-claude-printable-p-88dfed-oaudrey-projects.vercel.app/products/printbank/public/>
+<https://revvel-standards-git-claude-printable-p-88dfed-oaudrey-projects.vercel.app/products/printbank/public/> _(⚠️ NOT LIVE — verified 2026-10-30: https://revvel-standards-git-claude-printable-p-88dfed-oaudrey-projects.vercel.app returns HTTP 402)_
 
 The app is a static single-page site (`products/printbank/public/`, no build
 step). Open the preview to browse the print bank, download an SVG, export a
