@@ -37,7 +37,7 @@ Each bot description below is written out in full for screen readers. Every desc
 | --- | --- | --- |
 | HearingOrchestrator | 🎛️ Orchestrator (mixing console) | Teal conductor's baton with a gold star |
 | AidInventor | 🔨 Builder and Inventor (hammer) | Lightbulb |
-| Audiologist | 🔍 Researcher (magnifying glass) | Audiogram chart (a hearing test chart) |
+| Audiologist | 🩺 Clinical (stethoscope) | Audiogram chart (a hearing test chart) |
 | MedicalEar | 🔍 Researcher (magnifying glass) | Red medical cross |
 
 ### HearingOrchestrator
@@ -54,9 +54,9 @@ Logo alt text: A square picture with a solid deep navy blue background. In the c
 
 ### Audiologist
 
-Audiologist is a Researcher in HearingCrew, the hearing fleet led by HearingOrchestrator. The other HearingCrew members are HearingOrchestrator, AidInventor, and MedicalEar. Audiologist interprets clinical hearing tests. Its role badge is the magnifying glass (Researcher). Its personal touch is an audiogram chart, which is the chart a hearing test produces.
+Audiologist is the Clinical interpreter of HearingCrew, the hearing fleet led by HearingOrchestrator. The other HearingCrew members are HearingOrchestrator, AidInventor, and MedicalEar. Audiologist interprets clinical hearing tests. Its role badge is the stethoscope (Clinical), meaning clinical interpretation. Its personal touch is an audiogram chart, which is the chart a hearing test produces.
 
-Logo alt text: A square picture with a solid deep navy blue background. In the center is a large, bright golden-yellow human ear. Three curved teal sound waves rise to the right of the ear, showing sound being heard. In the lower-left corner is the role badge: a golden-yellow circle holding a small magnifying glass. It stands for the Researcher. In the lower-right corner is the personal touch: a small square chart with grid lines and a teal line of dots that slopes downward, like a hearing test chart. It stands for reading hearing tests. Colors are deep navy, golden yellow, and teal only. High contrast, simple shapes, and no text.
+Logo alt text: A square picture with a solid deep navy blue background. In the center is a large, bright golden-yellow human ear. Three curved teal sound waves rise to the right of the ear, showing sound being heard. In the lower-left corner is the role badge: a golden-yellow circle holding a small teal stethoscope. It stands for clinical interpretation of hearing tests. In the lower-right corner is the personal touch: a small square chart with grid lines and a teal line of dots that slopes downward, like a hearing test chart. It stands for reading hearing tests. Colors are deep navy, golden yellow, and teal only. High contrast, simple shapes, and no text.
 
 ### MedicalEar
 
@@ -64,6 +64,6 @@ MedicalEar is a Researcher in HearingCrew, the hearing fleet led by HearingOrche
 
 Logo alt text: A square picture with a solid deep navy blue background. In the center is a large, bright golden-yellow human ear. Three curved teal sound waves rise to the right of the ear, showing sound being heard. In the lower-left corner is the role badge: a golden-yellow circle holding a small magnifying glass. It stands for the Researcher. In the lower-right corner is the personal touch: a bright red medical cross with a thin white outline. It stands for medical guidance. Colors are deep navy, golden yellow, teal, and one red accent. High contrast, simple shapes, and no text.
 
-### Open question
+### Decision: Audiologist badge
 
-Audiologist and MedicalEar share the Researcher badge (magnifying glass). Audrey may assign Audiologist its own clinical badge so the two bots can be told apart by badge, not only by personal touch.
+Audrey decided that Audiologist gets its own role badge: 🩺 stethoscope, meaning clinical interpretation. Audiologist no longer uses the Researcher magnifying glass. MedicalEar keeps the Researcher badge, so the two bots now differ by badge as well as by personal touch.
