@@ -14,6 +14,8 @@ Default role symbols (use from day one; fleet/product logo can be added first or
 
 Note: Defaults keep every bot readable in navigation. Creative fleet logos optional.
 
+Rule (all fleets): any symbol used as a role badge in the default list above can never be used as any bot's personal touch.
+
 ## Permanent logo format
 
 Every bot logo has three layers, and this format never changes even if symbols or roles change:
