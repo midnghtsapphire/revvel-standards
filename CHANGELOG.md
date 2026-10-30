@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-04-30
 
 ### Added
-- `Library/standards/bot-role-symbols.md` — HearingCrew fleet section (HearingOrchestrator, AidInventor, Audiologist, MedicalEar) with screen-reader descriptions and full logo alt text. Audiologist uses the 🩺 stethoscope (Clinical) badge. Logo base changed to white background, black-outlined deep orange ear, dark teal waves (navy unreadable at small avatar sizes); all alt text updated.
+- `Library/standards/bot-role-symbols.md` — HearingCrew fleet section (HearingOrchestrator, AidInventor, Audiologist, MedicalEar) with screen-reader descriptions and full logo alt text. Audiologist uses the 🩺 stethoscope (Clinical) badge. Logo base changed to white background, black-outlined deep orange ear, dark teal waves (navy unreadable at small avatar sizes); all alt text updated. Ear shaded with a gradient from #C2410C to #7C2D12 (both at least 5:1 on white).
 - `GOAP.md` — New top-level Goap agent system hub and SSOT index. Defines the Goap persona, 
   the six high-level goals, current #1 priority (Reese-Reviews), key standards, self-healing 
   memory loop instructions, and a complete file map linking all SSOT documents 
