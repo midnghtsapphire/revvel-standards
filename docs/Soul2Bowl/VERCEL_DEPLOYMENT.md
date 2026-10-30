@@ -1,6 +1,6 @@
 # Soul2Bowl — Vercel Staging Deployment
 
-**Staging URL:** [https://soul2bowl.vercel.app](https://soul2bowl.vercel.app)  
+**Staging URL:** [https://soul2bowl.vercel.app](https://soul2bowl.vercel.app)   _(⚠️ NOT LIVE — verified 2026-10-30: https://soul2bowl.vercel.app returns HTTP 402)_
 **Production URL:** [https://soul2bowl.com](https://soul2bowl.com) (DigitalOcean App Platform)  
 **Repository:** `midnghtsapphire/Soul2Bowl`
 
@@ -42,7 +42,7 @@ Open the Vercel project → **Settings → Environment Variables** and add every
 | `STRIPE_WEBHOOK_SECRET` | ✅ | Stripe dashboard → Webhooks |
 | `DATABASE_URL` | ✅ | Connection string to your staging PostgreSQL database |
 | `RESEND_API_KEY` | ✅ | Resend dashboard → API Keys |
-| `NEXT_PUBLIC_APP_URL` | ✅ | Set to `https://soul2bowl.vercel.app` for staging |
+| `NEXT_PUBLIC_APP_URL` | ✅ | Set to `https://soul2bowl.vercel.app` for staging | _(⚠️ NOT LIVE — verified 2026-10-30: https://soul2bowl.vercel.app returns HTTP 402)_
 | `OPENROUTER_API_KEY` | optional | AI alt-text generation |
 
 Set each variable for **Preview** (and optionally **Production**) environments.
@@ -104,7 +104,7 @@ To run a manual health check:
 ```bash
 gh workflow run "Deployment Health Check" \
   --repo midnghtsapphire/revvel-standards \
-  -f url=https://soul2bowl.vercel.app
+  -f url=https://soul2bowl.vercel.app _(⚠️ NOT LIVE — verified 2026-10-30: https://soul2bowl.vercel.app returns HTTP 402)_
 ```
 
 ---

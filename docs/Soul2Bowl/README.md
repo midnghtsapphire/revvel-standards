@@ -4,7 +4,7 @@
 
 **Repository:** `midnghtsapphire/Soul2Bowl`  
 **Website:** [soul2bowl.com](https://soul2bowl.com)  
-**Staging:** [soul2bowl.vercel.app](https://soul2bowl.vercel.app) — auto-deploys from `main`  
+**Staging:** [soul2bowl.vercel.app](https://soul2bowl.vercel.app) — auto-deploys from `main`   _(⚠️ NOT LIVE — verified 2026-10-30: https://soul2bowl.vercel.app returns HTTP 402)_
 **Status:** Pre-Build — Documentation Complete  
 **Version:** 1.0.0  
 **Parent Organization:** Freedom Angel Corp (EIN: 86-1209156)  
@@ -159,7 +159,7 @@ npm run test:e2e
 
 | Environment | Platform | URL | Trigger |
 |---|---|---|---|
-| Staging | Vercel | [soul2bowl.vercel.app](https://soul2bowl.vercel.app) | Every push to `main` |
+| Staging | Vercel | [soul2bowl.vercel.app](https://soul2bowl.vercel.app) | Every push to `main` | _(⚠️ NOT LIVE — verified 2026-10-30: https://soul2bowl.vercel.app returns HTTP 402)_
 | Production | DigitalOcean App Platform | [soul2bowl.com](https://soul2bowl.com) | Manual / tagged release |
 
 See [VERCEL_DEPLOYMENT.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/VERCEL_DEPLOYMENT.md) for the full Vercel setup guide (env vars, secrets, monitoring).

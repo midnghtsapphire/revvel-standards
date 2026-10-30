@@ -2,7 +2,7 @@
 
 ## Live Deployment
 
-▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/ghcr-console/)**
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/ghcr-console/)** _(⚠️ NOT LIVE — verified 2026-10-30: https://revvel-standards.vercel.app returns HTTP 402)_
 
 ## What It Is
 

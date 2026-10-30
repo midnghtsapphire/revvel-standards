@@ -129,7 +129,7 @@ This WR outlines the integration of the "Shock-Reset & Structural Glitch" mechan
 
 ### Platform Defaults & Website Requirements
 
-- **Website in Test:** <https://music-video-creator.vercel.app>
+- **Website in Test:** <https://music-video-creator.vercel.app> _(⚠️ NOT LIVE — verified 2026-10-30: https://music-video-creator.vercel.app returns HTTP 404)_
 - **Integration runtime:** Vercel (Next.js app)
 - **Admin surface:** not required
 - **User auth:** not required
