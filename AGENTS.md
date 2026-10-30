@@ -2,6 +2,16 @@
 
 This document provides guidance for AI agents (Cursor, Claude, GPT, etc.) working in this repository.
 
+## OWNER RULE — NEVER DELETE, NEVER REWRITE (Audrey Evans, 2026-10-30)
+This rule overrides any conflicting text in this repo, including the `allow-destroy` line in docs/DEFINITION_OF_DONE.md and the "code they cannot justify" wording in standards/COMMENT-DONT-DELETE.md.
+1. Before touching anything, read and follow everything in revvel-standards.
+2. NEVER delete files, code, docs, or rules. No label, flag, or agent judgment permits deletion.
+3. NEVER rewrite or overwrite existing work wholesale. Replacing a file's content with your own version destroys history and is forbidden. (Knocking down the pyramids to build apartments is not allowed.)
+4. To retire something, COMMENT IT OUT in place with a dated note (date, agent, reason, WR/PR). Commenting out is how human developers keep history, and it is allowed.
+5. Make changes as additions next to the existing work. Keep the original visible.
+6. All changes go through a draft PR for owner review. Agents never merge their own PRs.
+7. Calling LLM providers (for example OpenRouter) directly is allowed. Where older text here says otherwise, this rule supersedes it; the older text stays in place for history.
+
 > ⚡ **Call chain (what starts → what runs next):**  
 > Read **[`START_HERE_CALL_CHAIN.md`](./START_HERE_CALL_CHAIN.md)** before changing workflows or claiming a step is “done.”  
 > Do not invent a second pipeline; do not edit random folders for UI color — see that file’s “Where to change” table.

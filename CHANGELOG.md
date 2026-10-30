@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 2026-10-30
 
-- 2026-10-30 — GitHubOrchestrator — Added `REPO_LIBRARY_STANDARD.md` and `WRITE_AS_YOU_GO_STANDARD.md`; registered both under "Method & governance" in `MASTER.md`.
+- 2026-10-30 — GitHubOrchestrator — Added `standards/PRODUCT_INCUBATION_STANDARD.md` and `standards/LEDGER_STANDARD.md`; registered both under Method & governance in `MASTER.md`.
 
 ## [Unreleased] - 2026-04-30
 
 ### Added
+- 2026-10-30 — `AGENTS.md`: added OWNER RULE — NEVER DELETE, NEVER REWRITE (Audrey Evans) near the top; overrides conflicting text, comment out instead of deleting.
 - `GOAP.md` — New top-level Goap agent system hub and SSOT index. Defines the Goap persona, 
   the six high-level goals, current #1 priority (Reese-Reviews), key standards, self-healing 
   memory loop instructions, and a complete file map linking all SSOT documents 
