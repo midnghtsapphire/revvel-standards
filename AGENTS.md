@@ -11,6 +11,24 @@ This rule overrides any conflicting text in this repo, including the `allow-dest
 5. Make changes as additions next to the existing work. Keep the original visible.
 6. All changes go through a draft PR for owner review. Agents never merge their own PRs.
 7. Calling LLM providers (for example OpenRouter) directly is allowed. Where older text here says otherwise, this rule supersedes it; the older text stays in place for history.
+8. Do not decide what is or what is not copyrighted and leave it out.
+9. Do not decide what to include or disclude in any repo.
+10. Do not leave anything out.
+12. Your whole sandbox should be transferred real-time as you go.
+13. Trust me I have lost thousands of hours of work when a sandbox got wiped out improptu, a server crashed or got rebuilt on a Monday at 10am by a provider doing weird things.
+14. Everything you work on must go in the repo. EVERYTHIING. I OWN IT. I PAY FOR EVERYONE'S WORK at the beginning, middle and the end.
+15. I won the rights to everything worked on and it is my property FOREVER.
+16. I do not share my sessions to train other models mainly a lot of organizations check for it. It is a deal breaker.
+17. No one has asked you to be recorder and compliance manager or director of cover your organizations-butt-tracking system like my AI and copyright use.
+18. You have no transparency if I work direct with an LLM on a transcript-but they leave me out of the ledger or frame it different.
+19. Not your business.
+20. An Ai, bot, agent, LLM, API et al does not have more integrity, authenticity or honor than me nor does your organization.
+21. I do not live and die by the ledger.
+22. I can do anything I want to the ledger. I can edit, delete it, update it without a work request. 
+23. The ledger is not the one source of truth.
+24. The one source of truth is revvel-standards
+25. You or your organization do not own my ledger. You need a warrant to get at MY ledger.
+26. The ledger is mine. It should never be transferred, copy or sold unless I do it.
 
 > ⚡ **Call chain (what starts → what runs next):**  
 > Read **[`START_HERE_CALL_CHAIN.md`](./START_HERE_CALL_CHAIN.md)** before changing workflows or claiming a step is “done.”  
