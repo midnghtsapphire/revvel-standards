@@ -94,9 +94,75 @@ VEINS is additive to — not a replacement for — the existing healer suite:
 
 VEINS is the final backstop — it catches everything the other healers miss.
 
+## Algorithm — External VEINS Engine
+
+The external V.E.I.N.S. engine runs **outside this repo** (hosted on Lovable) and
+interacts via the owner's GitHub token. Its algorithm, as observed from repo artifacts:
+
+1. **Flaky detection**: Monitor CI workflow runs. When a workflow flips pass/fail
+   3× in the last 8 runs with no code-intent, classify it as flaky.
+2. **Proposal commit**: For each flaky signal, the engine commits a stub markdown
+   file to `.veins/proposals/` on a new branch. These are
+   **human-reviewable proposals**, not auto-applied patches.
+3. **Issue creation**: Open a `[VEINS]` issue in the repo with severity, component,
+   and the upstream CI run URL.
+
+Known gaps:
+- **Dedup at proposal level**: the engine can commit multiple proposal files for
+  the same upstream CI run. `veins-intake-dedup.yml` catches duplicate *issues*
+  at intake but not duplicate proposal *files* in `.veins/`.
+- **No patch content**: every proposal file ends with "Edit or replace with the
+  real patch on this branch before merging." VEINS creates the branch; humans
+  supply the fix.
+- **Single target observed**: all 7 proposals committed (July 2026 burst) targeted
+  one component (`🎛️ PR State Orchestrator`). The engine has been dormant since
+  2026-07-03.
+
+## Sheaves — BNAT Knowledge Sheaf
+
+VEINS's WR cites a "Vascular-Sheaf Policy Repair" (VSPR) architecture. The in-repo
+implementation of its sheaf layer is `scripts/bnatsheaf/`:
+
+| Concept | Implementation |
+|---|---|
+| Vertices | BIOME workers (`sentinel`, `homeostat`, `medic`, `sheaf`) |
+| Stalks | 1-d severity vector per worker: healthy=0, degraded=1, down=2 |
+| Edges | All worker pairs; default identity restriction maps |
+| Laplacian energy E(x) | Sum of squared disagreements across all edges |
+| H¹ obstruction | Any edge where `\|Ru xu − Rv xv\|² ≥ ε` |
+| Global section | E(x) < ε — all workers agree on severity (H⁰) |
+
+A non-zero E(x) means some workers disagree and the sheaf has an H¹ obstruction.
+Per `wr/pending/14-veins-grounding-gate.md`, a sheaf that always produces a global
+section is a rubber stamp — obstructions must be named and either repaired (transition
+patch applied) or escalated (`lifecycle:stuck + needs-human`). Agents must not start
+work (imprint-at-spawn) while E(x) > ε.
+
+## Monitoring Script
+
+Run `scripts/veins-activity.js` to get an up-to-date observability snapshot:
+
+```bash
+# Human-readable summary
+node scripts/veins-activity.js
+
+# Machine-readable JSON
+node scripts/veins-activity.js --json
+```
+
+The script is wired into CircleCI `lint-and-test` as a final reporting step
+(exit 0 always — telemetry, not a gate). It reports:
+
+- **Proposals**: count, components targeted, run-ID dedup check
+- **Frequency**: commits to `.veins/` by date, dormancy status
+- **Sheaf health**: BIOME Laplacian E(x) + H¹ obstruction count
+- **Monitor wiring**: whether `veins-monitor.yml` is scheduled or manual-only
+
 ## Related Files
 
-- `.github/workflows/veins-monitor.yml` — workflow implementation
+- `.github/workflows/veins-monitor.yml` — internal stuck-issue watchdog (manual trigger only)
+- `.github/workflows/veins-intake-dedup.yml` — dedup gate for `[VEINS]` issues at intake
 - `.github/workflows/stuck-wr-detector.yml` — companion detector (handles < 7d stuck WRs)
+- `scripts/veins-activity.js` — activity monitoring script (CircleCI + local)
 - `docs/SELF_HEALING_SYSTEM.md` — full self-healing architecture overview
 - `docs/WR_STUCK_STATES_FIX_SUMMARY.md` — history of stuck-state fixes
