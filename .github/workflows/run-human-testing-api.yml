@@ -37,6 +37,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   human-testing:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     name: Run Human Testing API
     runs-on: ubuntu-latest
     permissions:

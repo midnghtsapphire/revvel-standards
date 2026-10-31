@@ -25,6 +25,7 @@ env:
 jobs:
   # Check agent instantiation status
   check-agent-health:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:

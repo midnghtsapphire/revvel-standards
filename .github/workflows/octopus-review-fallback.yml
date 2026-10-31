@@ -64,17 +64,9 @@ jobs:
     # issue_comment lane: only PR comments from octopus-review[bot] whose body
     # looks like the quota banner. Other lanes pass straight through; the
     # script re-checks everything (healthy-review + dedupe guards) anyway.
-    if: >
-      github.event_name != 'issue_comment' ||
-      (
-        github.event.issue.pull_request != null &&
-        github.event.comment.user.login == 'octopus-review[bot]' &&
-        (
-          contains(github.event.comment.body, 'add your own API keys') ||
-          contains(github.event.comment.body, 'usage limit') ||
-          contains(github.event.comment.body, 'quota')
-        )
-      )
+    if: >-
+      (github.event_name != 'issue_comment' || ( github.event.issue.pull_request != null && github.event.comment.user.login == 'octopus-review[bot]' && ( contains(github.event.comment.body, 'add your own API keys') || contains(github.event.comment.body, 'usage limit') || contains(github.event.comment.body, 'quota') ) )) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
