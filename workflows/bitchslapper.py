@@ -245,9 +245,22 @@ async def main():
         "product": REPO + " / Bitchslapper and owned execution",
         "soft_time_limit_minutes": 35,
         "phases": [
-            {"title": "Architecture contract", "labels": ["Enterprise architecture and admission contract"]},
-            {"title": "Parallel implementation", "labels": [lane["label"] for lane in LANES]},
-            {"title": "Integrate and verify", "labels": ["Governed integration and acceptance tests"]},
+            # REVVEL-DISABLED: AGENT=Devin; MODEL=not exposed; DATE=2026-11-01;
+            # WR=https://app.devin.ai/sessions/a54fa3608b1d4772be10f3683cfbc4bd;
+            # STATUS=superseded; REASON=runtime requires nonempty phase detail.
+            # Restore only if the runtime makes detail optional; use entries below otherwise.
+            # {"title": "Architecture contract", "labels": ["Enterprise architecture and admission contract"]},
+            # {"title": "Parallel implementation", "labels": [lane["label"] for lane in LANES]},
+            # {"title": "Integrate and verify", "labels": ["Governed integration and acceptance tests"]},
+            {"title": "Architecture contract",
+             "detail": "Define SQL ownership, governed admission and executable shared interfaces.",
+             "labels": ["Enterprise architecture and admission contract"]},
+            {"title": "Parallel implementation",
+             "detail": "Build review graphs, database controls, local workers and tool-value evidence in isolated scopes.",
+             "labels": [lane["label"] for lane in LANES]},
+            {"title": "Integrate and verify",
+             "detail": "Wire all contributions, verify postconditions locally and open one owner-reviewed draft PR.",
+             "labels": ["Governed integration and acceptance tests"]},
         ],
     })
     log("Architecture stage: establish SQL ownership, admission and shared adapter contracts before parallel writes.")
