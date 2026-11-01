@@ -1,0 +1,7 @@
+
+> revvel-standards@2.0.0 test
+> node --test 'tests/**/*.test.js' && bash tests/social_post_formatter.test.sh
+
+Could not find '/home/ubuntu/repos/revvel-standards/tests/**/*.test.js'
+
+EXIT=1

@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "owned-execution-contracts"
+version = "1.0.0"
+description = "Stateless Bitchslapper cross-lane execution contracts"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["owned_execution_contracts*"]

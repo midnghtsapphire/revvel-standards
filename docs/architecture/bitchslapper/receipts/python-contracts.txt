@@ -1,0 +1,40 @@
+test_ack_required_before_capabilities (test_contracts.Contracts) ... ok
+test_deterministic_db_priority (test_contracts.Contracts) ... ok
+test_device_pairing_defaults_to_no_access (test_contracts.Contracts) ... ok
+test_idempotency_canonicalizes_order_but_rejects_changed_body (test_contracts.Contracts) ... ok
+test_identity_workspace_and_tenant_isolation (test_contracts.Contracts) ... ok
+test_local_lm_studio_or_owned_unpaid_is_eligible (test_contracts.Contracts) ... ok
+test_local_only_denies_paid_owned_paid_external_and_unknown (test_contracts.Contracts) ... ok
+test_new_governance_invalidates_old_ack_version_and_hash (test_contracts.Contracts) ... ok
+test_no_provider_preserves_job_not_success (test_contracts.Contracts) ... ok
+test_paid_is_only_eligible_in_authorized_mode_after_admission (test_contracts.Contracts) ... ok
+test_receipts_need_matching_live_fence_worker_and_evidence (test_contracts.Contracts) ... ok
+test_retry_and_lease_bounds (test_contracts.Contracts) ... ok
+test_revoked_expired_and_action_denied (test_contracts.Contracts) ... ok
+test_switch_health_capability_route_and_quota_rechecked (test_contracts.Contracts) ... ok
+test_unknown_mode_denies (test_contracts.Contracts) ... ok
+test_ack_required_before_capabilities (test_contracts.Preservation) ... ok
+test_additive_patch_preserves_original (test_contracts.Preservation) ... ok
+test_deterministic_db_priority (test_contracts.Preservation) ... ok
+test_device_pairing_defaults_to_no_access (test_contracts.Preservation) ... ok
+test_idempotency_canonicalizes_order_but_rejects_changed_body (test_contracts.Preservation) ... ok
+test_identity_workspace_and_tenant_isolation (test_contracts.Preservation) ... ok
+test_local_lm_studio_or_owned_unpaid_is_eligible (test_contracts.Preservation) ... ok
+test_local_only_denies_paid_owned_paid_external_and_unknown (test_contracts.Preservation) ... ok
+test_new_governance_invalidates_old_ack_version_and_hash (test_contracts.Preservation) ... ok
+test_no_provider_preserves_job_not_success (test_contracts.Preservation) ... ok
+test_paid_is_only_eligible_in_authorized_mode_after_admission (test_contracts.Preservation) ... ok
+test_receipts_need_matching_live_fence_worker_and_evidence (test_contracts.Preservation) ... ok
+test_rejects_deletion_and_wholesale_rewrite (test_contracts.Preservation) ... ok
+test_rejects_escape_symlinks_binary_and_scope (test_contracts.Preservation) ... ok
+test_retirement_requires_complete_in_place_metadata (test_contracts.Preservation) ... ok
+test_retry_and_lease_bounds (test_contracts.Preservation) ... ok
+test_revoked_expired_and_action_denied (test_contracts.Preservation) ... ok
+test_strict_json_original_not_commented (test_contracts.Preservation) ... ok
+test_switch_health_capability_route_and_quota_rechecked (test_contracts.Preservation) ... ok
+test_unknown_mode_denies (test_contracts.Preservation) ... ok
+
+----------------------------------------------------------------------
+Ran 35 tests in 0.003s
+
+OK

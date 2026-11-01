@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://revvel.dev/schemas/owned-execution/1.0.0",
+  "title": "Bitchslapper shared execution messages (source schema, not runtime inventory)",
+  "oneOf": [
+    {"$ref": "#/$defs/Job"}, {"$ref": "#/$defs/Switch"},
+    {"$ref": "#/$defs/Claim"}, {"$ref": "#/$defs/Receipt"},
+    {"$ref": "#/$defs/Provider"}, {"$ref": "#/$defs/PatchSubmission"}
+  ],
+  "$defs": {
+    "Id": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"},
+    "Hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "Time": {"type": "number", "minimum": 0},
+    "Identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["tenant_id", "workspace_id", "principal_id"],
+      "properties": {"tenant_id": {"$ref": "#/$defs/Id"}, "workspace_id": {"$ref": "#/$defs/Id"}, "principal_id": {"$ref": "#/$defs/Id"}}
+    },
+    "Job": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "contract_version", "tenant_id", "workspace_id", "idempotency_key", "expected_revision", "admission_id", "capability", "action", "max_attempts", "payload"],
+      "properties": {
+        "kind": {"const": "job"}, "contract_version": {"const": "1.0.0"},
+        "tenant_id": {"$ref": "#/$defs/Id"}, "workspace_id": {"$ref": "#/$defs/Id"},
+        "idempotency_key": {"type": "string", "minLength": 1, "maxLength": 128},
+        "expected_revision": {"type": "integer", "minimum": 0},
+        "admission_id": {"$ref": "#/$defs/Id"},
+        "capability": {"type": "string", "minLength": 1, "maxLength": 128},
+        "action": {"type": "string", "minLength": 1, "maxLength": 128},
+        "max_attempts": {"type": "integer", "minimum": 1, "maximum": 10},
+        "payload": {"type": "object", "maxProperties": 100}
+      }
+    },
+    "Switch": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "contract_version", "tenant_id", "workspace_id", "idempotency_key", "expected_revision", "resource_id", "enabled", "running_action", "reason"],
+      "properties": {
+        "kind": {"const": "switch"}, "contract_version": {"const": "1.0.0"},
+        "tenant_id": {"$ref": "#/$defs/Id"}, "workspace_id": {"$ref": "#/$defs/Id"},
+        "idempotency_key": {"type": "string", "minLength": 1, "maxLength": 128},
+        "expected_revision": {"type": "integer", "minimum": 1},
+        "resource_id": {"$ref": "#/$defs/Id"}, "enabled": {"type": "integer", "enum": [0, 1]},
+        "running_action": {"enum": ["drain", "revoke"]},
+        "reason": {"type": "string", "minLength": 1, "maxLength": 4096}
+      }
+    },
+    "Provider": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "contract_version", "resource_id", "tenant_id", "workspace_id", "enabled", "route_enabled", "health", "probed_at", "health_ttl_seconds", "locality", "billing_class", "capabilities", "route_priority", "inflight", "max_inflight"],
+      "properties": {
+        "kind": {"const": "provider"}, "contract_version": {"const": "1.0.0"},
+        "resource_id": {"$ref": "#/$defs/Id"}, "tenant_id": {"$ref": "#/$defs/Id"}, "workspace_id": {"$ref": "#/$defs/Id"},
+        "enabled": {"type": "integer", "enum": [0, 1]}, "route_enabled": {"type": "integer", "enum": [0, 1]},
+        "health": {"enum": ["healthy", "unhealthy", "unknown"]},
+        "probed_at": {"$ref": "#/$defs/Time"}, "health_ttl_seconds": {"type": "integer", "minimum": 1, "maximum": 300},
+        "locality": {"enum": ["local", "owned", "external"]}, "billing_class": {"enum": ["unpaid", "paid", "unknown"]},
+        "capabilities": {"type": "array", "uniqueItems": true, "maxItems": 100, "items": {"type": "string", "minLength": 1, "maxLength": 128}},
+        "route_priority": {"type": "integer"}, "inflight": {"type": "integer", "minimum": 0},
+        "max_inflight": {"type": "integer", "minimum": 1, "maximum": 10000}
+      }
+    },
+    "Claim": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "contract_version", "identity", "job_id", "worker_id", "provider_id", "lease_token", "fence", "policy_revision", "expires_at", "attempt"],
+      "properties": {
+        "kind": {"const": "claim"}, "contract_version": {"const": "1.0.0"}, "identity": {"$ref": "#/$defs/Identity"},
+        "job_id": {"$ref": "#/$defs/Id"}, "worker_id": {"$ref": "#/$defs/Id"}, "provider_id": {"$ref": "#/$defs/Id"},
+        "lease_token": {"type": "string", "minLength": 32, "maxLength": 256},
+        "fence": {"type": "integer", "minimum": 1}, "policy_revision": {"type": "integer", "minimum": 1},
+        "expires_at": {"$ref": "#/$defs/Time"}, "attempt": {"type": "integer", "minimum": 1, "maximum": 10}
+      }
+    },
+    "Artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "uri", "sha256", "size_bytes", "source_commit", "attribution_ref"],
+      "properties": {
+        "kind": {"type": "string", "minLength": 1, "maxLength": 64},
+        "uri": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "sha256": {"$ref": "#/$defs/Hash"}, "size_bytes": {"type": "integer", "minimum": 0, "maximum": 1073741824},
+        "source_commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+        "attribution_ref": {"type": "string", "minLength": 1, "maxLength": 1024}
+      }
+    },
+    "Receipt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "contract_version", "identity", "job_id", "fence", "proposed_by", "executed_by", "provider_id", "model_ref", "route_ref", "status", "duration_ms", "score", "evidence", "artifacts"],
+      "properties": {
+        "kind": {"const": "receipt"}, "contract_version": {"const": "1.0.0"}, "identity": {"$ref": "#/$defs/Identity"},
+        "job_id": {"$ref": "#/$defs/Id"}, "fence": {"type": "integer", "minimum": 1},
+        "proposed_by": {"$ref": "#/$defs/Id"}, "executed_by": {"$ref": "#/$defs/Id"}, "provider_id": {"$ref": "#/$defs/Id"},
+        "model_ref": {"type": "string", "minLength": 1, "maxLength": 255}, "route_ref": {"type": "string", "minLength": 1, "maxLength": 255},
+        "status": {"enum": ["succeeded", "failed", "blocked"]}, "duration_ms": {"type": "integer", "minimum": 0},
+        "score": {"type": ["number", "null"]}, "evidence": {"type": "array", "maxItems": 100, "items": {"type": "string", "minLength": 1, "maxLength": 1024}},
+        "artifacts": {"type": "array", "maxItems": 100, "items": {"$ref": "#/$defs/Artifact"}}
+      },
+      "if": {"properties": {"status": {"const": "succeeded"}}},
+      "then": {"properties": {"evidence": {"minItems": 1}}}
+    },
+    "PatchSubmission": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "contract_version", "tenant_id", "workspace_id", "idempotency_key", "expected_revision", "admission_id", "baseline_sha256", "artifact_sha256", "patch_uri"],
+      "properties": {
+        "kind": {"const": "patch"}, "contract_version": {"const": "1.0.0"},
+        "tenant_id": {"$ref": "#/$defs/Id"}, "workspace_id": {"$ref": "#/$defs/Id"},
+        "idempotency_key": {"type": "string", "minLength": 1, "maxLength": 128},
+        "expected_revision": {"type": "integer", "minimum": 1}, "admission_id": {"$ref": "#/$defs/Id"},
+        "baseline_sha256": {"$ref": "#/$defs/Hash"}, "artifact_sha256": {"$ref": "#/$defs/Hash"},
+        "patch_uri": {"type": "string", "minLength": 1, "maxLength": 1024}
+      }
+    }
+  }
+}
