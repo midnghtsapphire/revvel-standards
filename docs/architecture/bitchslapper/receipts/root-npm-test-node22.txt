@@ -4024,7 +4024,7 @@ not ok 654 - the markdown gate lint-md.yml runs is green
     products/printbank/README.md:20:69 error MD049/emphasis-style Emphasis style [Expected: underscore; Actual: asterisk]
     wr/repos/neurooz.md:355:85 error MD034/no-bare-urls Bare URL used [Context: "https://neurooz.vercel.app"]
     + actual - expected
-    
+
     + [
     +   'AGENTS.md:17:1 error MD029/ol-prefix Ordered list item prefix [Expected: 11; Actual: 12; Style: 1/2/3]',
     +   'AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 12; Actual: 13; Style: 1/2/3]',
@@ -4063,7 +4063,7 @@ not ok 654 - the markdown gate lint-md.yml runs is green
     +   'wr/repos/neurooz.md:355:85 error MD034/no-bare-urls Bare URL used [Context: "https://neurooz.vercel.app"]'
     + ]
     - []
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected:
@@ -5649,17 +5649,17 @@ not ok 880 - baseline gate exits 0 against the committed baseline (no new debt)
     stdout:
     stderr:flake8 baseline gate FAILED — 4 path::CODE count(s) above baseline.
     New debt is not allowed. Fix the new findings or (only after a real cleanup) lower the baseline.
-    
+
       schemas/owned-execution/owned_execution_contracts/preservation.py::E501: 1 (baseline 0, +1)
       schemas/owned-execution/owned_execution_contracts/types.py::E704: 4 (baseline 0, +4)
       workflows/bitchslapper.py::E501: 4 (baseline 0, +4)
       workflows/bitchslapper.py::F821: 9 (baseline 0, +9)
-    
+
     See docs/PYTHON_FLAKE8_LINT.md for the developer workflow.
-    
-    
+
+
     1 !== 0
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected: 0

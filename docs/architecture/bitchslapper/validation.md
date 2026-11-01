@@ -52,6 +52,9 @@ No browser/UI tests, paid calls, new services, secrets, PR or merge occurred.
 Legacy BNAT named imprint remains known=false/imprinted=false, distinct from
 its passing energy-0 consistency check at epsilon 1e-9.
 
+Blank whitespace-only lines in captured root test output were normalized to
+empty lines for the cumulative diff whitespace gate; diagnostic text is retained.
+
 Authoritative migration SHA-256:
 
 ```text
