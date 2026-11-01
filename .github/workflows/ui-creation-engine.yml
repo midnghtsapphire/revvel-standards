@@ -42,12 +42,9 @@ jobs:
   ui-creation:
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.sender.type != 'Bot' && (
-        (github.event_name == 'issues' && github.event.label.name == 'ui-creation') ||
-        (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@copilot ui-engine'))))
-    
+    if: >-
+      (github.event_name == 'workflow_dispatch' || (github.event.sender.type != 'Bot' && ( (github.event_name == 'issues' && github.event.label.name == 'ui-creation') || (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@copilot ui-engine'))))) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7

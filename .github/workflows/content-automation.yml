@@ -35,23 +35,9 @@ permissions:
 jobs:
   trigger-content-automation:
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'issues' && github.event.action == 'opened' && (
-        contains(github.event.issue.labels.*.name, 'content-automation') ||
-        contains(github.event.issue.labels.*.name, 'content') ||
-        contains(github.event.issue.labels.*.name, 'writing') ||
-        contains(github.event.issue.labels.*.name, 'blog') ||
-        contains(github.event.issue.labels.*.name, 'seo-content')
-      )) ||
-      (github.event_name == 'issues' && github.event.action == 'labeled' && (
-        github.event.label.name == 'content-automation' ||
-        github.event.label.name == 'content' ||
-        github.event.label.name == 'writing' ||
-        github.event.label.name == 'blog' ||
-        github.event.label.name == 'seo-content'
-      )) ||
-      github.event_name == 'schedule' ||
-      github.event_name == 'workflow_dispatch'
+    if: >-
+      ((github.event_name == 'issues' && github.event.action == 'opened' && ( contains(github.event.issue.labels.*.name, 'content-automation') || contains(github.event.issue.labels.*.name, 'content') || contains(github.event.issue.labels.*.name, 'writing') || contains(github.event.issue.labels.*.name, 'blog') || contains(github.event.issue.labels.*.name, 'seo-content') )) || (github.event_name == 'issues' && github.event.action == 'labeled' && ( github.event.label.name == 'content-automation' || github.event.label.name == 'content' || github.event.label.name == 'writing' || github.event.label.name == 'blog' || github.event.label.name == 'seo-content' )) || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7

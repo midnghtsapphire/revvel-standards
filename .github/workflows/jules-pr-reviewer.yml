@@ -36,6 +36,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   review:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0'
     name: Jules PR review
     runs-on: ubuntu-latest
     env:

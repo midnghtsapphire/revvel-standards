@@ -42,28 +42,9 @@ jobs:
   health-check:
     name: Check agent availability
     runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      inputs.issue_number ||
-      (github.event_name == 'issues' &&
-       github.event.issue.pull_request == null &&
-       ((github.event.action == 'opened' &&
-         (contains(github.event.issue.labels.*.name, 'agent-fallback') ||
-          contains(github.event.issue.labels.*.name, 'wr:code') ||
-          contains(github.event.issue.labels.*.name, 'wr:auto'))) ||
-        (github.event.action == 'labeled' &&
-         (github.event.label.name == 'agent-fallback' ||
-          github.event.label.name == 'wr:code' ||
-          github.event.label.name == 'wr:auto')))) ||
-      (github.event_name == 'pull_request_target' &&
-       github.event.pull_request.draft == false &&
-       (github.event.pull_request.author_association == 'MEMBER' ||
-        github.event.pull_request.author_association == 'OWNER' ||
-        github.event.pull_request.author_association == 'COLLABORATOR') &&
-       (github.event.action == 'opened' ||
-        github.event.action == 'reopened' ||
-        github.event.action == 'ready_for_review' ||
-        (github.event.action == 'labeled' && github.event.label.name == 'agent-fallback')))
+    if: >-
+      (github.event_name == 'workflow_dispatch' || inputs.issue_number || (github.event_name == 'issues' && github.event.issue.pull_request == null && ((github.event.action == 'opened' && (contains(github.event.issue.labels.*.name, 'agent-fallback') || contains(github.event.issue.labels.*.name, 'wr:code') || contains(github.event.issue.labels.*.name, 'wr:auto'))) || (github.event.action == 'labeled' && (github.event.label.name == 'agent-fallback' || github.event.label.name == 'wr:code' || github.event.label.name == 'wr:auto')))) || (github.event_name == 'pull_request_target' && github.event.pull_request.draft == false && (github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'OWNER' || github.event.pull_request.author_association == 'COLLABORATOR') && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'ready_for_review' || (github.event.action == 'labeled' && github.event.label.name == 'agent-fallback')))) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
     outputs:
       OpenHands_available: ${{ steps.check.outputs.OpenHands_available }}
       openrouter_available: ${{ steps.check.outputs.openrouter_available }}
@@ -133,6 +114,7 @@ jobs:
           echo "📊 Recommended agent: ${RECOMMENDED}"
     timeout-minutes: 30
   execute:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0'
     name: Execute task with fallback
     needs: health-check
     runs-on: ubuntu-latest

@@ -120,7 +120,9 @@ jobs:
   fill:
     name: Fill blanks on WR #${{ matrix.issue }}
     needs: discover
-    if: fromJson(needs.discover.outputs.issues || '[]')[0] != null
+    if: >-
+      (fromJson(needs.discover.outputs.issues || '[]')[0] != null) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_ROUTERS != '0')
     strategy:
       fail-fast: false
       max-parallel: 4
