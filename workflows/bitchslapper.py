@@ -1,6 +1,21 @@
 """Governed, database-driven Bitchslapper delivery; executed by Devin workflows."""
 import asyncio
 import json
+from typing import Any, Awaitable, Callable
+from typing import TYPE_CHECKING, cast
+
+
+agent: Callable[..., Awaitable[dict[str, Any]]]
+parallel: Callable[..., Awaitable[list[dict[str, Any]]]]
+register_workflow: Callable[..., Awaitable[None]]
+log: Callable[[str], None]
+
+# Runtime injection supplies these functions; static declarations never execute.
+if TYPE_CHECKING:
+    agent = cast(Callable[..., Awaitable[dict[str, Any]]], None)
+    parallel = cast(Callable[..., Awaitable[list[dict[str, Any]]]], None)
+    register_workflow = cast(Callable[..., Awaitable[None]], None)
+    log = cast(Callable[[str], None], None)
 
 
 REPO = "midnghtsapphire/revvel-standards"
@@ -139,7 +154,13 @@ adapter interface so the integrator can wire it without guessing.""",
     {
         "label": "Database control and governance admission",
         "suffix": "control",
-        "scope": "engines/owned-control/, its tests, and additive schemas/migrations in the contract's assigned control scope",
+        # REVVEL-DISABLED: AGENT=Devin; MODEL=not exposed; DATE=2026-11-01;
+        # WR=https://app.devin.ai/sessions/a54fa3608b1d4772be10f3683cfbc4bd;
+        # STATUS=superseded; REASON=source line length, not a changed contract.
+        # Restore original lines below only if line-length limits change.
+        # "scope": "engines/owned-control/, its tests, and additive schemas/migrations in the contract's assigned control scope",  # noqa: E501
+        "scope": ("engines/owned-control/, its tests, and additive schemas/migrations "
+                  "in the contract's assigned control scope"),
         "task": """Implement the architecture contract's real SQL-backed control
 plane in Python. Reuse existing domain models/adapters rather than a second
 independent product pipeline. Agents/tools/skills/providers/capabilities/routes/
@@ -192,7 +213,10 @@ or GPU test. State scalability evidence versus architecture goals precisely.""",
     {
         "label": "Tool capabilities, FOSS alternatives and bill-value gate",
         "suffix": "value",
-        "scope": "engines/tool-value/, docs/tool-evaluation/, Library/tool-evaluation/, its tests, and skills/subscription-value-review/ only",
+        # REVVEL-DISABLED: same source-formatting metadata and restoration instructions as control scope above.
+        # "scope": "engines/tool-value/, docs/tool-evaluation/, Library/tool-evaluation/, its tests, and skills/subscription-value-review/ only",  # noqa: E501
+        "scope": ("engines/tool-value/, docs/tool-evaluation/, Library/tool-evaluation/, "
+                  "its tests, and skills/subscription-value-review/ only"),
         "task": """Enumerate the real paid/trial tools from data/subscriptions.yml
 and connected tools from config/connections.yml. Cover all subscription entries
 plus CircleCI, Jules, cubic, Bito, Cursor, Octopus, RecurseML, n8n/Gumloop and
@@ -241,7 +265,11 @@ async def specialist(lane, architecture):
 async def main():
     await register_workflow({
         "name": "Bitchslapper: governed database-driven autonomy",
-        "description": "Architecture contract -> four source/implementation specialists -> integration and locally evidenced verification; preserves historical code and removes GitHub execution dependence.",
+        # REVVEL-DISABLED: same source-formatting metadata and restoration instructions as control scope above.
+        # "description": "Architecture contract -> four source/implementation specialists -> integration and locally evidenced verification; preserves historical code and removes GitHub execution dependence.",  # noqa: E501
+        "description": ("Architecture contract -> four source/implementation specialists -> "
+                        "integration and locally evidenced verification; preserves historical "
+                        "code and removes GitHub execution dependence."),
         "product": REPO + " / Bitchslapper and owned execution",
         "soft_time_limit_minutes": 35,
         "phases": [
@@ -256,7 +284,10 @@ async def main():
              "detail": "Define SQL ownership, governed admission and executable shared interfaces.",
              "labels": ["Enterprise architecture and admission contract"]},
             {"title": "Parallel implementation",
-             "detail": "Build review graphs, database controls, local workers and tool-value evidence in isolated scopes.",
+             # REVVEL-DISABLED: same source-formatting metadata and restoration instructions as control scope above.
+             # "detail": "Build review graphs, database controls, local workers and tool-value evidence in isolated scopes.",  # noqa: E501
+             "detail": ("Build review graphs, database controls, local workers and "
+                        "tool-value evidence in isolated scopes."),
              "labels": [lane["label"] for lane in LANES]},
             {"title": "Integrate and verify",
              "detail": "Wire all contributions, verify postconditions locally and open one owner-reviewed draft PR.",
