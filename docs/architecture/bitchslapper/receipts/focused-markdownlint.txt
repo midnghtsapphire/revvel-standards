@@ -1,0 +1,4 @@
+markdownlint-cli2 v0.22.1 (markdownlint v0.40.0)
+Finding: docs/architecture/bitchslapper/*.md schemas/owned-execution/README.md
+Linting: 6 file(s)
+Summary: 0 error(s)

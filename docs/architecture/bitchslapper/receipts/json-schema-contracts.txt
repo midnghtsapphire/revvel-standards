@@ -1,0 +1,36 @@
+TAP version 13
+# /home/ubuntu/repos/revvel-standards/node_modules/ajv/dist/compile/index.js:120
+#         throw e;
+#         ^
+# Error: strict mode: missing type "array" for keyword "minItems" at "https://revvel.dev/schemas/owned-execution/1.0.0\#/then/properties/evidence" (strictTypes)
+#     at checkStrictMode (/home/ubuntu/repos/revvel-standards/node_modules/ajv/dist/compile/util.js:174:15)
+#     at strictTypesError (/home/ubuntu/repos/revvel-standards/node_modules/ajv/dist/compile/validate/index.js:285:32)
+#     at checkKeywordTypes (/home/ubuntu/repos/revvel-standards/node_modules/ajv/dist/compile/validate/index.js:261:17)
+#     at checkStrictTypes (/home/ubuntu/repos/revvel-standards/node_modules/ajv/dist/compile/validate/index.js:233:5)
+#     at schemaKeywords (/home/ubuntu/repos/revvel-standards/node_modules/ajv/dist/compile/validate/index.js:189:9)
+#     at typeAndKeywords (/home/ubuntu/repos/revvel-standards/node_modules/ajv/dist/compile/validate/index.js:128:5)
+#     at subSchemaObjCode (/home/ubuntu/repos/revvel-standards/node_modules/ajv/dist/compile/validate/index.js:115:5)
+#     at subschemaCode (/home/ubuntu/repos/revvel-standards/node_modules/ajv/dist/compile/validate/index.js:91:13)
+#     at KeywordCxt.subschema (/home/ubuntu/repos/revvel-standards/node_modules/ajv/dist/compile/validate/index.js:438:9)
+#     at applyPropertySchema (/home/ubuntu/repos/revvel-standards/node_modules/ajv/dist/vocabularies/applicator/properties.js:45:17)
+# Node.js v20.18.1
+# Subtest: /home/ubuntu/repos/revvel-standards/schemas/owned-execution/tests/schema.test.cjs
+not ok 1 - /home/ubuntu/repos/revvel-standards/schemas/owned-execution/tests/schema.test.cjs
+  ---
+  duration_ms: 132.442699
+  location: '/home/ubuntu/repos/revvel-standards/schemas/owned-execution/tests/schema.test.cjs:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: 1
+  signal: ~
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 139.992989

@@ -1,0 +1,9 @@
+flake8 baseline gate FAILED — 2 path::CODE count(s) above baseline.
+New debt is not allowed. Fix the new findings or (only after a real cleanup) lower the baseline.
+
+  workflows/bitchslapper.py::E501: 4 (baseline 0, +4)
+  workflows/bitchslapper.py::F821: 9 (baseline 0, +9)
+
+See docs/PYTHON_FLAKE8_LINT.md for the developer workflow.
+
+EXIT=1

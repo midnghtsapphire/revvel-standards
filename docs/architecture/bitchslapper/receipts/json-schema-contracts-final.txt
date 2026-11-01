@@ -1,0 +1,30 @@
+TAP version 13
+# Subtest: accepts a bounded versioned job without caller-supplied actor authority
+ok 1 - accepts a bounded versioned job without caller-supplied actor authority
+  ---
+  duration_ms: 3.248282
+  ...
+# Subtest: rejects unsupported version, cross-wire extra fields, missing admission and unbounded retries
+ok 2 - rejects unsupported version, cross-wire extra fields, missing admission and unbounded retries
+  ---
+  duration_ms: 1.137624
+  ...
+# Subtest: switch is numeric 0/1 with explicit drain/revoke and a required revision
+ok 3 - switch is numeric 0/1 with explicit drain/revoke and a required revision
+  ---
+  duration_ms: 1.037027
+  ...
+# Subtest: successful receipt requires evidence, executor and bounded artifact provenance
+ok 4 - successful receipt requires evidence, executor and bounded artifact provenance
+  ---
+  duration_ms: 1.950233
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 170.772342

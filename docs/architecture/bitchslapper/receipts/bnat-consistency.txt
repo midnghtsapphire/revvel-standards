@@ -1,0 +1,6 @@
+{
+  "energy": 0,
+  "epsilon": 1e-9,
+  "consistent": true,
+  "obstructions": []
+}

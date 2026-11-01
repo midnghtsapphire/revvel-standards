@@ -58,6 +58,9 @@ def validate_patch(
         if not preserved_literally:
             require(file.path.endswith(".json") is False, "strict_json_retirement_denied")
             required = ("date", "agent", "reason", "reference", "replacement", "restoration")
-            require(metadata is not None and all(metadata.get(key, "").strip() for key in required), "retirement_metadata_missing")
+            require(
+                metadata is not None and all(metadata.get(key, "").strip() for key in required),
+                "retirement_metadata_missing",
+            )
             require("REVVEL-DISABLED" in file.after, "retirement_marker_missing")
             require(all(value in file.after for value in metadata.values()), "retirement_metadata_not_in_place")

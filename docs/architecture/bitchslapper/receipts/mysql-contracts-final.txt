@@ -1,0 +1,18 @@
+test_ack_hash_cannot_reference_an_unknown_version (mysql_contract.MySQLContracts) ... ok
+test_admission_after_ack_succeeds (mysql_contract.MySQLContracts) ... ok
+test_admission_fk_rejects_unacknowledged_governance (mysql_contract.MySQLContracts) ... ok
+test_admission_scope_cannot_escape_tenant (mysql_contract.MySQLContracts) ... ok
+test_cross_tenant_resource_fk_rejected (mysql_contract.MySQLContracts) ... ok
+test_enabled_is_database_constrained (mysql_contract.MySQLContracts) ... ok
+test_job_idempotency_is_unique_per_tenant_workspace (mysql_contract.MySQLContracts) ... ok
+test_job_retry_bound_is_enforced_by_mysql (mysql_contract.MySQLContracts) ... ok
+test_lease_bound_is_enforced_by_mysql (mysql_contract.MySQLContracts) ... ok
+test_new_agent_is_disabled_db_registration (mysql_contract.MySQLContracts) ... ok
+test_paid_comparison_requires_alternative_or_honest_gap (mysql_contract.MySQLContracts) ... ok
+test_patch_record_cannot_reference_another_tenant_admission (mysql_contract.MySQLContracts) ... ok
+test_price_requires_evidence_date_and_currency (mysql_contract.MySQLContracts) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 2.210s
+
+OK

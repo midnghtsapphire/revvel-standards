@@ -1,0 +1,9 @@
+{
+  "agent": "bitchslapper-contract",
+  "known": false,
+  "restriction": null,
+  "globalEnergy": 0,
+  "h1ApproxZero": true,
+  "imprinted": false,
+  "obstructions": []
+}

@@ -15,6 +15,17 @@ not a baked-in inventory. MCP uses the same service methods/auth context via
 authenticated HTTP or local stdio bound to an explicit identity. CLI uses those
 same methods, not privileged direct SQL shortcuts.
 
+Bearer JWT claims are `iss`, `sub`, `aud="bitchslapper-control"`, `exp`, `nbf`,
+`jti` (DB session ID), `tenant_id` and `workspace_ids` (array of IDs). Lifetime is
+at most 15 minutes; validate an explicit configured RS256/EdDSA algorithm and
+pinned issuer keys, never `none`, token-provided key URLs or algorithm inference.
+DB session hash/expiry/revocation, principal status, memberships and grants must
+still match. Token workspace claims can narrow DB membership, never create it.
+Transport-authenticated worker identity maps to `worker_id` by a DB registration;
+Claim/Receipt `identity` is the original job/admission identity, not permission
+for a worker to impersonate that visitor. Control verifies the authenticated
+worker owns the live claim. Lease tokens are random 32+ bytes; store hashes only.
+
 Every effectful request includes `contract_version`, `tenant_id`, `workspace_id`,
 `idempotency_key` and `expected_revision`. Authenticated principal membership
 must match the tenant/workspace; body IDs do not grant access. Writes reject stale

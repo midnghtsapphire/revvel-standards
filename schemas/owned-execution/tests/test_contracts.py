@@ -70,8 +70,11 @@ class Contracts(unittest.TestCase):
         self.assertEqual(self.route([replace(self.provider, locality="owned")]).status, "dispatch")
 
     def test_paid_is_only_eligible_in_authorized_mode_after_admission(self):
-        self.assertEqual(self.route([replace(self.provider, billing_class="paid")],
-                                   policy=replace(self.policy, mode="AUTHORIZED")).status, "dispatch")
+        decision = self.route(
+            [replace(self.provider, billing_class="paid")],
+            policy=replace(self.policy, mode="AUTHORIZED"),
+        )
+        self.assertEqual(decision.status, "dispatch")
 
     def test_switch_health_capability_route_and_quota_rechecked(self):
         for values in ({"enabled": 0}, {"enabled": "1"}, {"enabled": True},
@@ -122,7 +125,9 @@ class Contracts(unittest.TestCase):
         self.deny("idempotency_conflict", require_idempotent_body, digest, {"a": 3})
 
 
-class Preservation(Contracts):
+class Preservation(unittest.TestCase):
+    deny = Contracts.deny
+
     def check(self, file):
         validate_patch((file,), ("products/demo",))
 
