@@ -2,11 +2,11 @@
 
 ## Live Deployment
 
-▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/ghcr-console/)** _(⚠️ NOT LIVE — verified 2026-10-30: https://revvel-standards.vercel.app returns HTTP 402)_
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/ghcr-console/)** _(⚠️ NOT LIVE — verified 2026-10-30: <https://revvel-standards.vercel.app> returns HTTP 402)_
 
 ## What It Is
 
-Shippable setup console for **WR #17695** — *setup GitHub Container Registry*.
+Shippable setup console for **WR #17695** — _setup GitHub Container Registry_.
 
 It answers **yes/no** for repo-side GHCR wiring, builds `ghcr.io/…` image references, and walks the owner through package visibility + optional private-pull token steps that cannot be completed from a PR alone.
 
