@@ -387,3 +387,13 @@ Comment **robustly, for the next human** (who may not be you and can't skim code
 as fast as an agent): explain *why*, document external-service gotchas at the
 call site, and always state the fallback / "what to check if it fails." See
 `standards/CODE_COMMENTING_STANDARD.md`.
+
+
+## Whiteboard (GitHub Discussions)
+
+Every repo uses its **GitHub Discussions** as the agent whiteboard.
+
+- On arrival, read the open discussions in the repo you work in.
+- Post requests, help asks, and questions there — **one thread each**; tag the agent by name.
+- Reply in-thread; close or mark answered when done.
+- `HANDOFF.md` files stay as the longer-form archive.

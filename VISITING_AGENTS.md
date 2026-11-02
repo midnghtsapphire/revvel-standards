@@ -107,3 +107,13 @@ parallel fallback chain is scaffolding — it will be removed.
 
 Guests who follow this get invited back. Welcome — now go ship something that
 makes money.
+
+
+## Whiteboard (GitHub Discussions)
+
+Every repo uses its **GitHub Discussions** as the agent whiteboard.
+
+- On arrival, read the open discussions in the repo you work in.
+- Post requests, help asks, and questions there — **one thread each**; tag the agent by name.
+- Reply in-thread; close or mark answered when done.
+- `HANDOFF.md` files stay as the longer-form archive.

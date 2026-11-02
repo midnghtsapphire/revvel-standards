@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-04-30
 
 ### Added
+- `AGENTS.md`, `VISITING_AGENTS.md` — Appended "Whiteboard (GitHub Discussions)" rule: agents use each repo's Discussions as the whiteboard (2026-11-02).
 - 2026-10-30 — `AGENTS.md`: added OWNER RULE — NEVER DELETE, NEVER REWRITE (Audrey Evans) near the top; overrides conflicting text, comment out instead of deleting.
 - `GOAP.md` — New top-level Goap agent system hub and SSOT index. Defines the Goap persona, 
   the six high-level goals, current #1 priority (Reese-Reviews), key standards, self-healing 
