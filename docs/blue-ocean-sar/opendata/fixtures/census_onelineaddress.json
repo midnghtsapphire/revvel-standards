@@ -1,0 +1,83 @@
+{
+ "result": {
+  "input": {
+   "address": {
+    "address": "1600 Pennsylvania Ave NW, Washington, DC 20500"
+   },
+   "vintage": {
+    "vintageName": "Current_Current",
+    "id": "4"
+   },
+   "benchmark": {
+    "benchmarkName": "Public_AR_Current",
+    "id": "4"
+   }
+  },
+  "addressMatches": [
+   {
+    "tigerLine": {
+     "side": "L",
+     "tigerLineId": "76225813"
+    },
+    "geographies": {
+     "States": [
+      {
+       "GEOID": "11",
+       "NAME": "District of Columbia",
+       "STUSAB": "DC",
+       "CENTLAT": "+38.9041031",
+       "CENTLON": "-077.0172290"
+      }
+     ],
+     "Counties": [
+      {
+       "GEOID": "11001",
+       "NAME": "District of Columbia",
+       "BASENAME": "District of Columbia",
+       "CENTLAT": "+38.9041031",
+       "CENTLON": "-077.0172290"
+      }
+     ],
+     "Census Tracts": [
+      {
+       "GEOID": "11001006202",
+       "NAME": "Census Tract 62.02",
+       "BASENAME": "62.02",
+       "TRACT": "006202",
+       "CENTLAT": "+38.8809933",
+       "CENTLON": "-077.0363219"
+      }
+     ],
+     "2020 Census Blocks": [
+      {
+       "GEOID": "110010062021031",
+       "NAME": "Block 1031",
+       "BLOCK": "1031",
+       "CENTLAT": "+38.8977450",
+       "CENTLON": "-077.0365310"
+      }
+     ]
+    },
+    "coordinates": {
+     "x": -77.03518753691,
+     "y": 38.89869893252
+    },
+    "addressComponents": {
+     "zip": "20500",
+     "streetName": "PENNSYLVANIA",
+     "preType": "",
+     "city": "WASHINGTON",
+     "preDirection": "",
+     "suffixDirection": "NW",
+     "fromAddress": "1600",
+     "state": "DC",
+     "suffixType": "AVE",
+     "toAddress": "1698",
+     "suffixQualifier": "",
+     "preQualifier": ""
+    },
+    "matchedAddress": "1600 PENNSYLVANIA AVE NW, WASHINGTON, DC, 20500"
+   }
+  ]
+ }
+}

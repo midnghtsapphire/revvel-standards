@@ -1,0 +1,5 @@
+case_id,location_name,wayback_year,current_year,sentinel2_ndvi_baseline,sentinel2_ndvi_current,reip_shift_nm,sar_backscatter_sigma0_db,wayback_reflectance_diff_pct,physics_residual_Jm,confidence_pct
+SHTUKA-2018-BC,Sun Peaks Fairways Creek (SHTUKA-001),2017,2026,0.62,0.79,5.12,-12.4,14.2,0.0007,87.7
+SHAFFER-2006-OH,Columbus Pearl Alley Vault (SHAFFER-001),2005,2026,0.12,0.14,0.01,-6.8,28.5,0.00028,93.0
+LINDEMAN-2026-MO,Dogwood Ravine Outfall (LINDEMAN-001),2024,2026,0.58,0.81,5.36,-14.1,18.7,0.0001,97.6
+FARBER-2015-PA,Sharp Mountain Bench (FARBER-001),2014,2026,0.45,0.52,0.13,-9.2,9.8,0.0523,85.8

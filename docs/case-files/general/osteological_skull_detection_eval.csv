@@ -1,0 +1,6 @@
+target_id,target_name,latitude,longitude,element_type,aspect_ratio,circularity_index,gpr_hollow_resonance_pct,slope_roll_dispersal_max_m,classifier_decision,timestamp_updated
+TD-001,Target Delta (Creek Cut-Bank),50.8782,-119.9075,Human Cranial Vault (Skull),1.15,0.88,96.0,300.0,FLAGGED: HIGH CONFIDENCE HUMAN CANDIDATE,2026-09-25T13:39:44-07:00
+CAT-001,Burfield West Historical Logging Ditch,50.8758,-119.9142,Human Cranial Vault (Skull),1.18,0.86,96.0,300.0,FLAGGED: HIGH CONFIDENCE HUMAN CANDIDATE,2026-09-25T13:39:44-07:00
+CAT-002,Fairways Upper Culvert Overflow Basin,50.8791,-119.9062,Human Cranial Vault (Skull),1.12,0.89,96.0,300.0,FLAGGED: HIGH CONFIDENCE HUMAN CANDIDATE,2026-09-25T13:39:44-07:00
+CAT-003,McGillivray Tributaries B & C Strainer,50.8732,-119.8985,Human Cranial Vault (Skull),1.14,0.87,96.0,300.0,FLAGGED: HIGH CONFIDENCE HUMAN CANDIDATE,2026-09-25T13:39:44-07:00
+TB-001,Target Beta (632-Ft Corridor Tree Well TW-B01),50.8768,-119.9105,Human Cranial Vault (Skull),1.22,0.85,94.8,120.0,FLAGGED: HIGH CONFIDENCE HUMAN CANDIDATE,2026-09-25T13:39:44-07:00

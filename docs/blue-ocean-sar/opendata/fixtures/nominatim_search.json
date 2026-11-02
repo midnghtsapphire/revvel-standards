@@ -1,0 +1,32 @@
+[
+ {
+  "place_id": 301234567,
+  "licence": "Data (c) OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+  "osm_type": "way",
+  "osm_id": 46012345,
+  "lat": "39.9431002",
+  "lon": "-83.0060513",
+  "category": "leisure",
+  "type": "park",
+  "place_rank": 24,
+  "importance": 0.31,
+  "addresstype": "park",
+  "name": "Scioto Audubon Metro Park",
+  "display_name": "Scioto Audubon Metro Park, Whittier Street, Columbus, Franklin County, Ohio, 43206, United States",
+  "address": {
+   "leisure": "Scioto Audubon Metro Park",
+   "city": "Columbus",
+   "county": "Franklin County",
+   "state": "Ohio",
+   "postcode": "43206",
+   "country": "United States",
+   "country_code": "us"
+  },
+  "boundingbox": [
+   "39.9367",
+   "39.9502",
+   "-83.0123",
+   "-82.9989"
+  ]
+ }
+]

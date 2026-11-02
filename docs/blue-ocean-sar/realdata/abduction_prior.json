@@ -1,0 +1,33 @@
+{
+  "about": "Distance priors for planning a search when a missing person may have been taken (abduction / foul play). Each entry is one published statistic, drawn as a ring around the point it is measured from. An entry with verified=false has NOT been checked against the printed report page; check it and set verified=true with the page number before relying on it.",
+  "entries": [
+    {
+      "id": "lkl_to_contact_site",
+      "anchor": "last_known_location",
+      "measures_to": "initial contact site (where the offender first approached the victim)",
+      "percent": 80,
+      "distance_m": 402.336,
+      "printed": "within 1/4 mile of the victim's last known location in 80% of cases",
+      "population": "US child abduction murder cases",
+      "source": "Washington State Attorney General's Office child abduction murder research (Keppel et al.)",
+      "source_url": "https://www.ojp.gov/pdffiles1/Digitization/201316NCJRS.pdf",
+      "page": null,
+      "verified": false,
+      "verification_note": "Figure taken from a web-search excerpt on 2026-10-17; the PDF host was not reachable from the build machine."
+    },
+    {
+      "id": "murder_site_to_body_recovery",
+      "anchor": "murder_site",
+      "measures_to": "body recovery site",
+      "percent": 72,
+      "distance_m": 60.96,
+      "printed": "less than 200 feet in 72% of cases",
+      "population": "US child abduction murder cases",
+      "source": "Washington State Attorney General's Office child abduction murder research (Keppel et al.)",
+      "source_url": "https://www.ojp.gov/pdffiles1/Digitization/201316NCJRS.pdf",
+      "page": null,
+      "verified": false,
+      "verification_note": "Figure taken from a web-search excerpt on 2026-10-17; the PDF host was not reachable from the build machine."
+    }
+  ]
+}

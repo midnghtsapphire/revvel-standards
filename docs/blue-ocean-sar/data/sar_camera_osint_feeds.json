@@ -1,0 +1,57 @@
+{
+  "module": "Blue Ocean Camera & Historical OSINT Engine",
+  "timestamp": "2026-10-15T04:45:15.343184+00:00",
+  "status": "SAMPLE_UNVALIDATED",
+  "validation_status": "SAMPLE_UNVALIDATED",
+  "is_sample": true,
+  "sample_note": "Example data, not a live field feed: no channel below has been connected to or checked. The states the sample was written with are kept under claimed_* keys.",
+  "claimed_operational_status": "ACTIVE_OPERATIONAL",
+  "ingestion_channels": [
+    {
+      "channel_id": "CAM-LIVE-001",
+      "name": "Mountain Pass Public Traffic Cam #4",
+      "latitude": 49.3815,
+      "longitude": -122.9418,
+      "stream_type": "Public RTSP / H.264",
+      "endpoint": "rtsp://public-cam-stream.local/live/pass4",
+      "status": "SAMPLE_UNVALIDATED",
+      "claimed_status": "STREAMING_LIVE",
+      "motion_detected": false
+    },
+    {
+      "channel_id": "CAM-HIST-002",
+      "name": "Trailhead Visitor Center Historic Webcam",
+      "latitude": 49.3811,
+      "longitude": -122.9423,
+      "stream_type": "Wayback Machine Archived Snapshots",
+      "archive_period": "2026-10-01 to 2026-10-14",
+      "snapshots_reprocessed": 142,
+      "bitemporal_anomaly_found": true,
+      "anomaly_details": "Vehicle parked at trailhead starting 2026-10-13 14:20 UTC",
+      "status": "SAMPLE_UNVALIDATED"
+    },
+    {
+      "channel_id": "CAM-TACTICAL-003",
+      "name": "Field Unit OpenIPC Tactical IP Cam",
+      "latitude": 49.3812,
+      "longitude": -122.9421,
+      "stream_type": "OpenIPC / Thingino Field RTSP",
+      "endpoint": "rtsp://192.168.1.105:554/stream0",
+      "status": "SAMPLE_UNVALIDATED",
+      "claimed_status": "ONLINE_FIELD_LINK",
+      "motion_detected": true
+    }
+  ],
+  "historical_archive_tools": [
+    "waybackpy",
+    "waybackpack",
+    "WaybackDownloader",
+    "SavePageNow API"
+  ],
+  "camera_osint_frameworks": [
+    "WebcamExplorer (Shodan / Dork Indexing)",
+    "ipcrawl (Public Webcam Catalog)",
+    "videowall (Multi-Cam Geolocation Dashboard)",
+    "OpenIPC / Thingino (Open-Source Firmware)"
+  ]
+}

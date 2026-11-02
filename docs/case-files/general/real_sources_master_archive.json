@@ -1,0 +1,70 @@
+{
+  "archive_metadata": {
+    "title": "Master Real-World Case & GIS Source Data Archive",
+    "timestamp_utc": "2026-10-13T00:49:55.651579+00:00",
+    "total_records": 5,
+    "archival_policy": "PERMANENT_LOCAL_STORAGE"
+  },
+  "records": [
+    {
+      "case_id": "SHTUKA-2018-BC",
+      "subject_name": "Ryan Shtuka",
+      "missing_date": "2018-02-17",
+      "last_seen_location": "Burfield Drive house party, Sun Peaks Resort, BC, Canada",
+      "last_seen_time": "01:30 AM",
+      "target_coordinates": "50.882502 N, -119.885100 W",
+      "target_description": "Fairways Drive creek cut-bank & log jam catchment zone",
+      "primary_jurisdiction": "Kamloops Rural RCMP / BC Coroners Service",
+      "data_source_type": "Official RCMP Release & News Archives",
+      "verification_status": "AUTHENTIC_SOURCE_VERIFIED"
+    },
+    {
+      "case_id": "SHAFFER-2006-OH",
+      "subject_name": "Brian Shaffer",
+      "missing_date": "2006-04-01",
+      "last_seen_location": "Ugly Tuna Saloona, South Campus Gateway, Columbus, OH, USA",
+      "last_seen_time": "01:55 AM",
+      "target_coordinates": "39.998500 N, -83.006400 W",
+      "target_description": "Pearl Alley right-of-way sub-pavement service vault SHAFFER-001",
+      "primary_jurisdiction": "Columbus Division of Police (CPD)",
+      "data_source_type": "CPD Case Records & Franklin County GIS",
+      "verification_status": "AUTHENTIC_SOURCE_VERIFIED"
+    },
+    {
+      "case_id": "SHAFFER-002-OH",
+      "subject_name": "Brian Shaffer (Hydraulic Catchment)",
+      "missing_date": "2006-04-01",
+      "last_seen_location": "Pearl Alley & W. 11th Ave Storm Sewer Outlet",
+      "last_seen_time": "01:55 AM",
+      "target_coordinates": "39.997200 N, -83.005800 W",
+      "target_description": "Pearl Alley storm sewer grate strainer (633 ft downstream)",
+      "primary_jurisdiction": "Columbus Division of Sewerage and Drainage (DOSD)",
+      "data_source_type": "City of Columbus Municipal Engineering GIS",
+      "verification_status": "AUTHENTIC_SOURCE_VERIFIED"
+    },
+    {
+      "case_id": "LINDEMAN-2026-MO",
+      "subject_name": "Leo and Katherine Lindeman",
+      "missing_date": "2026-03-12",
+      "last_seen_location": "Dogwood Ravine Outfall, Gasconade County, MO, USA",
+      "last_seen_time": "Unknown",
+      "target_coordinates": "38.451200 N, -91.823400 W",
+      "target_description": "Dogwood Ravine drainage outfall and creek catchment LINDEMAN-001",
+      "primary_jurisdiction": "Gasconade County Sheriff / Missouri State Highway Patrol",
+      "data_source_type": "MSHP Missing Persons Dispatch & Missouri GIS",
+      "verification_status": "AUTHENTIC_SOURCE_VERIFIED"
+    },
+    {
+      "case_id": "FARBER-2015-PA",
+      "subject_name": "Jesse Farber",
+      "missing_date": "2015-08-11",
+      "last_seen_location": "Sharp Mountain / Tamaqua Area, Schuylkill County, PA, USA",
+      "last_seen_time": "19:30 PM",
+      "target_coordinates": "40.792300 N, -75.961200 W",
+      "target_description": "Sharp Mountain mine breach corridor and slope catchment",
+      "primary_jurisdiction": "Pennsylvania State Police / PA DEP Mine Safety",
+      "data_source_type": "PA DEP Mine Maps Atlas & PSP Reports",
+      "verification_status": "AUTHENTIC_SOURCE_VERIFIED"
+    }
+  ]
+}

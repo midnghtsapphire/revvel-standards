@@ -1,0 +1,19 @@
+[Unit]
+Description=Self-hosted CI dispatcher (runs .github/workflows with act)
+After=network-online.target docker.service
+Requires=docker.service
+
+[Service]
+User=shci
+Group=shci
+WorkingDirectory=/home/shci/revvel-standards/ops/self-hosted-ci
+EnvironmentFile=/etc/shci/shci.env
+ExecStart=/usr/bin/node dispatcher.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

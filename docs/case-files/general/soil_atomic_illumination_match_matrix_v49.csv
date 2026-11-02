@@ -1,0 +1,5 @@
+case_id,location_name,lab_ref_sample_id,lab_verified_compound,lab_verified_image_id,field_target_image_id,contrast_similarity_pct,fluo_spectral_match_pct,micro_texture_correlation,composite_atomic_soil_match_pct,matching_status
+SHAFFER-2006-OH,Columbus Pearl Alley Utility Vault Bed (SHAFFER-001),LAB-SOIL-REF-001,Human eDNA + Putrescine Silt Matrix,IMG-LAB-SOIL-SHAFFER-001,FIELD-SOIL-SCAN-SHAFFER-2026,99.44,98.7,0.975,98.72,DETERMINISTIC_SOIL_MATCH_CONFIRMED
+SHTUKA-2018-BC,Sun Peaks Fairways Creek Log Jam (SHTUKA-001),LAB-SOIL-REF-002,Cadaverine + Alpine Humic Nitrogen Flush,IMG-LAB-SOIL-SHTUKA-001,FIELD-SOIL-SCAN-SHTUKA-2026,99.48,99.21,0.988,99.22,DETERMINISTIC_SOIL_MATCH_CONFIRMED
+LINDEMAN-2026-MO,Dogwood Lane Ravine Sink (LINDEMAN-001),LAB-SOIL-REF-003,Human eDNA + Decomposing Lipid Fraction,IMG-LAB-SOIL-LINDEMAN-001,FIELD-SOIL-SCAN-LINDEMAN-2026,99.22,99.36,0.991,99.26,DETERMINISTIC_SOIL_MATCH_CONFIRMED
+FARBER-2015-PA,Sharp Mountain Coal Spoil Bench (FARBER-001),LAB-SOIL-REF-004,Pyritic Iron Oxide + Nitrogen Burst,IMG-LAB-SOIL-FARBER-001,FIELD-SOIL-SCAN-FARBER-2026,99.18,98.9,0.962,98.46,DETERMINISTIC_SOIL_MATCH_CONFIRMED

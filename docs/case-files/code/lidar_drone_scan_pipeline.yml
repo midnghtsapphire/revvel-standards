@@ -1,0 +1,81 @@
+name: Automated Drone LiDAR Point Cloud & Blue Ocean eDNA Scan Pipeline
+
+on:
+  push:
+    paths:
+      - '**/*.las'
+      - '**/*.laz'
+  pull_request:
+    paths:
+      - '**/*.las'
+      - '**/*.laz'
+  workflow_dispatch:
+    inputs:
+      target_lat:
+        description: 'Target GPS Latitude'
+        required: false
+        default: '50.8825'
+      target_lon:
+        description: 'Target GPS Longitude'
+        required: false
+        default: '-119.8851'
+      search_radius_m:
+        description: 'Search Radius (meters)'
+        required: false
+        default: '50.0'
+
+jobs:
+  lidar-pointcloud-scan:
+    name: Process Point Cloud & Run Blue Ocean Scanner
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install System GIS & Point Cloud Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pdal gdal-bin libgdal-dev
+          pip install --upgrade pip
+          pip install laspy[laszip] rasterio numpy scipy geopandas shapely requests
+
+      - name: Execute LAS/LAZ to Bare-Earth DTM Conversion
+        run: |
+          python3 las_to_dtm_converter.py
+
+      - name: Execute Blue Ocean DNA & LiDAR Spatial Scanner
+        env:
+          TARGET_LAT: ${{ github.event.inputs.target_lat || '50.8825' }}
+          TARGET_LON: ${{ github.event.inputs.target_lon || '-119.8851' }}
+          SEARCH_RADIUS: ${{ github.event.inputs.search_radius_m || '50.0' }}
+        run: |
+          python3 blue_ocean_dna_lidar_scanner.py
+
+      - name: Run Master Pipeline Verification Pass (v6.0)
+        run: |
+          python3 master_field_sar_microscopy_pipeline-v3.py
+
+      - name: Upload Scan Artifacts (KML, WebAR Config & GeoTIFF)
+        uses: actions/upload-artifact@v4
+        with:
+          name: blue-ocean-target-pack
+          path: |
+            bare_earth_dtm.tif
+            blue_ocean_target.kml
+            blue_ocean_webar_config.json
+            realtime_alerts.json
+
+      - name: Dispatch Outbound Webhook Alert
+        if: always()
+        env:
+          WEBHOOK_URL: ${{ secrets.OUTBOUND_WEBHOOK_URL }}
+        run: |
+          if [ -n "$WEBHOOK_URL" ] && [ -f "blue_ocean_webar_config.json" ]; then
+            curl -X POST -H "Content-Type: application/json" -d @blue_ocean_webar_config.json "$WEBHOOK_URL" || true
+          fi

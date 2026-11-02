@@ -7,6 +7,10 @@
 products/ghcr-console/node_modules
 products/ghcr-console/.next
 products/ghcr-console/tests
+# Self-hosted CI dispatcher image (ops/self-hosted-ci/Dockerfile, built on Railway).
+!ops/
+!ops/self-hosted-ci/
+!ops/self-hosted-ci/**
 **/.git
 **/node_modules
 **/.next

@@ -734,21 +734,20 @@ async function reportTriageFailure({ kind, detail }) {
 }
 
 // Always-fall-back triage cascade. Returns { text, lane, model }.
-// Cascades through all 6 lanes in cost-governed order; lane 6 (static
-// rule-based) never throws, so this function always returns successfully.
-//   1. OpenRouter SSOT triage profile — cheap primary + explicit fallback.
-//   2. GitHub Models — gpt-4o-mini via Azure; uses GITHUB_TOKEN.
-//   3. Keyless Perplexity bridge — needs no API key (python3 + perplexity-ai).
-//   4. OpenRouter free-tier models — cheap but still account/key dependent.
+// Cascades through all 6 lanes; lane 6 (static rule-based) never throws.
+// Priority (owner rule): no-key Perplexity FIRST for everything and search.
+//   1. Keyless Perplexity bridge — no API key (python3 + perplexity-ai). Runs first.
+//   2. OpenRouter SSOT triage profile — paid models when credits available.
+//   3. GitHub Models — gpt-4o-mini via Azure; uses GITHUB_TOKEN.
+//   4. OpenRouter free-tier models — when paid credits exhausted.
 //   5. Explicit OpenRouter backup models — no auto/fusion hidden routing.
 //   6. Static rule-based fallback — never throws; keyword-only output so that
 //      every issue always receives some triage result.
 // Lane 6 never fails, so triageWithFallback always returns a result.
 //
-// WR-4481 / WR-4474: HTTP 402/429 on the primary OpenRouter lane is an
-// *explicit* trigger (config/routing-failover.yml) to jump straight to the
-// keyless Perplexity tier-2 target — not a prose "try something else" note.
-// Credit exhaustion must never stall triage waiting on a funded key.
+// WR-4481 / WR-4474: HTTP 402/429 on OpenRouter is an explicit trigger
+// (config/routing-failover.yml) to prefer keyless Perplexity.
+// Credit exhaustion must never stall triage.
 async function triageWithFallback(systemPrompt, userPrompt) {
   const {
     extractStatusCode,
@@ -757,7 +756,15 @@ async function triageWithFallback(systemPrompt, userPrompt) {
   } = require("./lane-failover");
   const { appendFailureLedger } = require("./failure-ledger");
 
-  // Lane 1: OpenRouter SSOT triage profile.
+  // Lane 1: Keyless Perplexity — runs first for everything and search.
+  try {
+    const text = await callPerplexityNoKey(systemPrompt, userPrompt);
+    return { text, lane: "Perplexity (keyless)", model: "perplexity/sonar" };
+  } catch (err) {
+    console.log(`::warning::Lane 1 (Perplexity keyless) failed (${err.message}). Trying lane 2.`);
+  }
+
+  // Lane 2: OpenRouter SSOT triage profile (paid models when credits available).
   if (OPENROUTER_API_KEY) {
     try {
       const text = await callOpenRouter(systemPrompt, userPrompt);
@@ -766,71 +773,33 @@ async function triageWithFallback(systemPrompt, userPrompt) {
       const status = extractStatusCode(err);
       const decision = decideFailover({ status });
       console.log(
-        `::warning::Lane 1 (OpenRouter) failed (${err.message}). ` +
+        `::warning::Lane 2 (OpenRouter) failed (${err.message}). ` +
           `WR-4481 decision=${decision.action} trigger=${decision.trigger}.`,
       );
-
-      // Explicit 402/429 (and configured failover triggers): skip intermediate
-      // funded lanes and go to keyless Perplexity immediately.
       const creditOrRate =
         status === 402 ||
         status === 429 ||
         decision.action === "failover" ||
         decision.action === "backoff_then_failover";
-
-      if (creditOrRate && decision.toLane && decision.toLane.keyless) {
-        try {
-          appendFailureLedger({
-            agent: "openrouter-triage",
-            class: status === 402 ? "lane-402" : status === 429 ? "lane-429" : "lane-failover",
-            trigger: String(status || decision.trigger || "unknown"),
-            lane: `openrouter→${decision.toLane.provider}`,
-            repo: GITHUB_REPOSITORY,
-            task_ref: ISSUE_NUMBER ? `#${ISSUE_NUMBER}` : undefined,
-            summary: `Primary OpenRouter ${status}: failover to keyless ${decision.toLane.id}`,
-            root_cause: decision.reason,
-          });
-        } catch (ledgerErr) {
-          console.log(`::warning::FAILURE-LEDGER write failed: ${ledgerErr.message}`);
-        }
-
-        try {
-          const text = await callPerplexityNoKey(systemPrompt, userPrompt);
-          return {
-            text,
-            lane: "Perplexity (keyless) [WR-4481 402/429 failover]",
-            model: "perplexity/sonar",
-            failover: decision,
-            keylessFailoverWired: hasExplicitKeylessFailover(),
-          };
-        } catch (pplxErr) {
-          console.log(
-            `::warning::Keyless Perplexity failover failed (${pplxErr.message}). Continuing cascade.`,
-          );
-        }
+      if (creditOrRate) {
+        appendFailureLedger({
+          agent: "openrouter-triage",
+          class: status === 402 ? "credit_exhausted" : "rate_limit",
+          detail: err.message,
+        });
       }
     }
-  } else {
-    console.log("::warning::OPENROUTER_API_KEY not configured — skipping lane 1.");
   }
 
-  // Lane 2: GitHub Models (gpt-4o-mini via Azure; always available in Actions)
+  // Lane 3: GitHub Models.
   try {
     const text = await callGitHubModels(systemPrompt, userPrompt);
     return { text, lane: "GitHub Models", model: "gpt-4o-mini" };
   } catch (err) {
-    console.log(`::warning::Lane 2 (GitHub Models) failed (${err.message}). Trying lane 3.`);
+    console.log(`::warning::Lane 3 (GitHub Models) failed (${err.message}). Trying lane 4.`);
   }
 
-  // Lane 3: Keyless Perplexity bridge
-  try {
-    const text = await callPerplexityNoKey(systemPrompt, userPrompt);
-    return { text, lane: "Perplexity (keyless)", model: "perplexity/sonar" };
-  } catch (err) {
-    console.log(`::warning::Lane 3 (Perplexity keyless) failed (${err.message}). Trying lane 4.`);
-  }
-
-  // Lane 4: OpenRouter free-tier models.
+  // Lane 4: OpenRouter free-tier models (when paid credits exhausted).
   if (OPENROUTER_API_KEY) {
     try {
       const text = await callOpenRouterFreeModels(systemPrompt, userPrompt);
@@ -854,6 +823,7 @@ async function triageWithFallback(systemPrompt, userPrompt) {
   const text = callStaticFallback(systemPrompt, userPrompt);
   return { text, lane: "static-fallback", model: "rule-based" };
 }
+
 
 async function main() {
   if (!GITHUB_TOKEN) {

@@ -154,3 +154,25 @@ test('the pinned flake8 matches the gate fallback pin (no split-brain versions)'
       + 'the same code could pass one lane and fail the other on rule changes.',
   );
 });
+
+// Regression (PR #18128): the changed-Markdown step passed every changed .md
+// file to markdownlint-cli2 and ignored .markdownlintignore, so a PR adding
+// files under an ignored path (docs/case-files/**) failed lint-and-test while
+// lint-md.yml and `npm run lint` both passed it. The step must hand the same
+// "#glob" negations to markdownlint-cli2 that scripts/markdownlint-repo.mjs
+// builds, so all three gates agree on scope.
+test('lint-changed-markdown.sh excludes exactly the .markdownlintignore globs', async () => {
+  const { spawnSync } = require('node:child_process');
+  const script = fs.readFileSync(
+    path.join(ROOT, '.circleci', 'scripts', 'lint-changed-markdown.sh'), 'utf8');
+  const line = script.split('\n').find((l) => l.includes('IGNORE_GLOBS < <('));
+  assert.ok(line, 'script must derive IGNORE_GLOBS from .markdownlintignore');
+  assert.match(script, /markdownlint-cli2 "\$\{MARKDOWN_FILES\[@\]\}" "\$\{IGNORE_GLOBS\[@\]\}"/);
+  const cmd = line.trim().replace(/^mapfile -t IGNORE_GLOBS < <\(/, '').replace(/\)$/, '');
+  const res = spawnSync('bash', ['-c', cmd], { cwd: ROOT, encoding: 'utf8' });
+  assert.equal(res.status, 0, res.stderr);
+  const fromScript = res.stdout.split('\n').filter(Boolean);
+  const { ignoreGlobs } = await import(path.join(ROOT, 'scripts', 'markdownlint-repo.mjs'));
+  assert.deepEqual(fromScript, ignoreGlobs(ROOT));
+  assert.ok(fromScript.includes('#docs/case-files/**'));
+});

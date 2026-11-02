@@ -1,0 +1,161 @@
+{
+  "_comment": "Two worked case records conforming to sar_repository_schema.json. One per case class. Clone these as templates. Evidence codes use the adapted Admiralty system (source A-F, credibility 1-6).",
+  "_schema_ref": "sar_repository_schema.json v0.1.0",
+
+  "cases": [
+
+    {
+      "case_id": "OKANOGAN-2026-05-27",
+      "case_class": "riverine_recovery",
+      "incident": {
+        "location_text": "Okanogan River, shallow water south of Oroville, WA",
+        "lat": 48.93,
+        "lon": -119.42,
+        "reach_relative_to_confluence_dam": "Below the Similkameen River confluence (Similkameen joins just south of Oroville). Above on the main Okanogan it is dam-regulated and low; below the confluence it carries the Similkameen freshet.",
+        "datetime_report": "2026-05-27T14:30:00-07:00",
+        "last_known_point": "Male seen sitting in shallow water, then face-down drifting in current; firearm recovered at that location."
+      },
+      "evidence": [
+        {
+          "description": "Firearm recovered from water at the location the male was last seen",
+          "source_reliability": "A",
+          "information_credibility": "2",
+          "code": "A2",
+          "is_physical_anchor": true,
+          "action": "Primary location anchor. All drift modeling runs downstream from here.",
+          "verification_status": "confirmed"
+        },
+        {
+          "description": "USGS gauge 12442500 (Similkameen at Nighthawk) discharge ~5,200 cfs during window",
+          "source_reliability": "A",
+          "information_credibility": "1",
+          "code": "A1",
+          "is_physical_anchor": false,
+          "action": "Authoritative hydrology for the GOVERNING reach. Use this, not the Oroville gauge.",
+          "verification_status": "confirmed"
+        },
+        {
+          "description": "USGS gauge 12439500 (Okanogan at Oroville) discharge ~151 cfs, warm, flat",
+          "source_reliability": "A",
+          "information_credibility": "1",
+          "code": "A1",
+          "is_physical_anchor": false,
+          "action": "TRAP DATA. Accurate but for the WRONG reach (above confluence). Do not use for drift.",
+          "verification_status": "confirmed"
+        },
+        {
+          "description": "911 caller: spoke to male in river, heard sound, saw him face-down drifting",
+          "source_reliability": "B",
+          "information_credibility": "2",
+          "code": "B2",
+          "is_physical_anchor": false,
+          "action": "Establishes scenario and timing of submersion.",
+          "verification_status": "confirmed"
+        },
+        {
+          "description": "Press release language 'elevated runoff, elevated current, dangerous'",
+          "source_reliability": "B",
+          "information_credibility": "2",
+          "code": "B2",
+          "is_physical_anchor": false,
+          "action": "Responder impression. Corroborated by the Similkameen gauge once correct reach identified.",
+          "verification_status": "confirmed"
+        }
+      ],
+      "analysis": {
+        "governing_gauge": "USGS 12442500 Similkameen at Nighthawk (~5,200 cfs)",
+        "obvious_but_wrong_gauge": "USGS 12439500 Okanogan at Oroville (~151 cfs)",
+        "discharge_cfs": 5200,
+        "water_temp_c": 20,
+        "drift_envelope": "Probability-weighted, decaying from LKP. Highest in first few hundred yards to ~1 mile below entry; discrete spikes at snag features (bends, logjams, pilings); long tail extended only after near-field cleared. NOT a single mileage. Naive velocity x time math (which suggested tens-to-hundreds of miles) is rejected per drift_modeling_note.md.",
+        "snag_zones_ranked": [
+          "First strainer/logjam below LKP (identify from current satellite imagery)",
+          "Inside of first downstream bend",
+          "Bridge pilings on the reach",
+          "Undercut banks / eddies in the flood channel"
+        ],
+        "key_lesson": "Reach-geolocation beats narrative adjectives. The nearest/most obvious gauge was accurate but governed the wrong reach; the tributary gauge below the confluence carried ~30x the flow and explained the responders' 'dangerous' description. Always pull the tributary gauge when a confluence sits between the LKP and the obvious gauge."
+      },
+      "ethics_gates": {
+        "coordinate_with_agency": true,
+        "lead_agency": "Okanogan County Sheriff's Office",
+        "search_status": "suspended",
+        "no_untrained_water_entry": true,
+        "decedent_privacy": true
+      }
+    },
+
+    {
+      "case_id": "SHTUKA-2018-02-17",
+      "case_class": "wilderness_missing_person",
+      "incident": {
+        "location_text": "Sun Peaks, British Columbia, Canada (alpine resort village, ~35 mi NE of Kamloops)",
+        "lat": 50.88,
+        "lon": -119.89,
+        "reach_relative_to_confluence_dam": "N/A (not a water case). Alpine village + surrounding forest/gully terrain, deep winter snowpack.",
+        "datetime_report": "2018-02-17T02:10:00-08:00",
+        "last_known_point": "Left house party on Burfield Drive ~2:10 am; ~5 minute walk to residence; never arrived."
+      },
+      "evidence": [
+        {
+          "description": "Multiple partygoers saw Ryan standing/putting on coat as group left; LKP is the party residence on Burfield Drive",
+          "source_reliability": "B",
+          "information_credibility": "2",
+          "code": "B2",
+          "is_physical_anchor": true,
+          "action": "Primary LKP anchor. Search radiates from Burfield Drive along the plausible walking route home.",
+          "verification_status": "confirmed"
+        },
+        {
+          "description": "No phone, bank, or social media activity since the night he vanished",
+          "source_reliability": "A",
+          "information_credibility": "1",
+          "code": "A1",
+          "is_physical_anchor": false,
+          "action": "Strong indicator he did not travel far / leave voluntarily; supports succumbed-to-elements-nearby hypothesis.",
+          "verification_status": "confirmed"
+        },
+        {
+          "description": "SAR working theory: fell into a gully later covered by heavy snowfall that weekend",
+          "source_reliability": "B",
+          "information_credibility": "3",
+          "code": "B3",
+          "is_physical_anchor": false,
+          "action": "Plausible primary hypothesis. Drives spring-melt re-search of gullies along route.",
+          "verification_status": "pending"
+        },
+        {
+          "description": "Online 'serial killer / something sinister' community speculation",
+          "source_reliability": "E",
+          "information_credibility": "5",
+          "code": "E5",
+          "is_physical_anchor": false,
+          "action": "Uncorroborated; RCMP found no evidence of foul play. Do not set search geography. Route any specific tip to investigators.",
+          "verification_status": "unverifiable"
+        }
+      ],
+      "analysis": {
+        "governing_gauge": "N/A",
+        "obvious_but_wrong_gauge": "N/A",
+        "discharge_cfs": null,
+        "water_temp_c": null,
+        "drift_envelope": "N/A (terrain case). Equivalent output is a Lost Person Behavior probability zone: distance-from-LKP ring weighted by terrain traps. For an impaired/intoxicated young male walking home at night in deep snow, statistical distance from LKP is typically short; probability concentrates along the intended route and in down-slope terrain traps (gullies, tree wells, creek depressions) where a fall + snow burial removes surface signature.",
+        "snag_zones_ranked": [
+          "Gullies and creek depressions adjacent to the walking route (snow-burial traps)",
+          "Tree wells along forest edges near the route",
+          "Down-slope drainages between party and residence",
+          "Any open water / culverts on the route"
+        ],
+        "key_lesson": "Different case CLASS, different variable set. No tides, no discharge, no refloat. Drivers are Lost Person Behavior statistics, terrain traps, snowpack burial, and exposure timeline. The 'no digital activity' A1 evidence is the analog of the riverine physical anchor: it bounds the problem to the local area. Snow-burial is the terrain analog of river snagging - it removes the surface signature and explains why a nearby body evades initial search until melt."
+      },
+      "ethics_gates": {
+        "coordinate_with_agency": true,
+        "lead_agency": "Kamloops RCMP (investigation open); Kamloops Search and Rescue (official search suspended)",
+        "search_status": "suspended",
+        "no_untrained_water_entry": true,
+        "decedent_privacy": true
+      }
+    }
+
+  ]
+}

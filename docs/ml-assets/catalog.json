@@ -1,0 +1,530 @@
+{
+  "schema_version": "1.0.0",
+  "generated": "2026-10-26",
+  "source_repo": "midnghtsapphire/revvel-standards",
+  "suggested_path": "docs/ml-assets/",
+  "count": 25,
+  "assets": [
+    {
+      "slug": "llama-cpp-gbnf",
+      "name": "llama.cpp GBNF grammars + JSON-Schema-to-grammar",
+      "category": "constrained-decoding",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/grammars/README.md",
+      "extra_urls": [
+        "https://github.com/ggml-org/llama.cpp"
+      ],
+      "license": "MIT",
+      "kind": "inference engine + grammar format",
+      "loop": "Deterministic",
+      "what": "GBNF is llama.cpp's grammar format for constraining token sampling. It includes a converter from JSON Schema to GBNF. This is the engine underneath LM Studio's GGUF structured output.",
+      "why": "For outputs that JSON Schema can't express well (WR titles like `[WR] <title>`, conventional-commit lines `feat:|fix:|docs:|chore:`, enum labels), a grammar enforces the house format at decode time. wr-lint.mjs then becomes a confirmation, not a correction.",
+      "determinism": "Grammar constraints are exact (invalid tokens are masked). Combine with greedy decoding and a fixed seed for repeatable content on a fixed build.",
+      "effort": "medium",
+      "priority": "high",
+      "adopt": [
+        "Keep a small `grammars/` set (for example conventional-commit.gbnf, wr-title.gbnf) and use them via llama-server or LM Studio."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "lmstudio-structured-output",
+      "name": "LM Studio Structured Output (json_schema)",
+      "category": "constrained-decoding",
+      "url": "https://lmstudio.ai/docs/developer/openai-compat/structured-output",
+      "extra_urls": [],
+      "license": "Docs: proprietary site, free to read. LM Studio app: proprietary freeware. lmstudio-python SDK: MIT",
+      "kind": "official docs",
+      "loop": "Deterministic",
+      "what": "LM Studio's OpenAI-compatible /v1/chat/completions accepts `response_format: {type: json_schema, ...}`. For GGUF models it enforces the schema with llama.cpp grammar-based sampling, and for MLX models with Outlines.",
+      "why": "LM Studio is already Layer 0 (docs/LOCAL_LLM_SETUP.md; scripts/local_llm.py default `http://127.0.0.1:1234/v1`). Passing a JSON Schema from schemas/ means local replies are schema-valid by construction. Today scripts/python_cuda/probabilistic_validator.py validates after the fact and retries.",
+      "determinism": "Structural validity is guaranteed by the sampler. Content still depends on sampling, so set temperature 0 and a seed. The docs warn that models under 7B may struggle.",
+      "effort": "low",
+      "priority": "high",
+      "adopt": [
+        "Add an optional `schema=` argument to scripts/local_llm.py that sends `response_format` for the LM Studio and Ollama lanes.",
+        "Keep probabilistic_validator as the second gate (defense in depth)."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "ollama-structured-outputs-seed",
+      "name": "Ollama structured outputs (`format` JSON Schema) + `seed` option",
+      "category": "constrained-decoding",
+      "url": "https://docs.ollama.com/capabilities/structured-outputs",
+      "extra_urls": [
+        "https://ollama.com/blog/structured-outputs",
+        "https://github.com/ollama/ollama"
+      ],
+      "license": "MIT",
+      "kind": "official docs + runtime",
+      "loop": "Deterministic",
+      "what": "Ollama accepts a JSON Schema in the `format` field to constrain output, and an `options.seed` integer. Its Modelfile docs say a fixed seed makes the model generate the same text for the same prompt.",
+      "why": "Ollama is the second Layer 0 lane in scripts/local_llm.py (OLLAMA_ENDPOINT, default model gemma3). Same win as LM Studio: schema-valid local output, plus a seed to record in the provenance ledger.",
+      "determinism": "Seed + temperature 0 + the same model digest and hardware gives repeatable output in practice. Not guaranteed across Ollama versions or hardware (see batch-invariant-ops).",
+      "effort": "low",
+      "priority": "high",
+      "adopt": [
+        "Send `format=<schema>` and `options:{seed, temperature:0}` from local_llm.py. Log the model digest from /api/tags with each call."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "promptfoo",
+      "name": "promptfoo",
+      "category": "evals",
+      "url": "https://github.com/promptfoo/promptfoo",
+      "extra_urls": [
+        "https://www.promptfoo.dev/docs/intro/",
+        "https://www.promptfoo.dev/docs/providers/ollama/",
+        "https://www.promptfoo.dev/docs/providers/openrouter/"
+      ],
+      "license": "MIT",
+      "kind": "eval + red-team CLI (Node)",
+      "loop": "Deterministic",
+      "what": "Node CLI for declarative prompt, agent and RAG tests with deterministic assertions (equals, contains, regex, is-json, JSON schema, JavaScript) plus model-graded checks. It has Ollama and OpenRouter providers.",
+      "why": "The repo already ships templates/cicd/prompt-eval.yml for promptfoo, and the stack is Node. Drift found: that template's header says it uses 'Claude Sonnet 4 via OpenRouter as primary model', but MODEL_CONFIG.md denylists the Sonnet family. Re-point it to allowed profiles or to the Ollama provider on a self-hosted runner.",
+      "determinism": "Deterministic assertions (is-json, regex, schema) are exact. Model-graded assertions are not, so use them only as soft signals or with a jury.",
+      "effort": "low",
+      "priority": "high",
+      "adopt": [
+        "Fix prompt-eval.yml's model to an allowed profile.",
+        "Add schema assertions that reuse schemas/*.schema.json.",
+        "Run a local-lane suite via the Ollama provider on a self-hosted runner."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "qwen3-4b-instruct-2507",
+      "name": "Qwen3-4B-Instruct-2507",
+      "category": "local-models",
+      "url": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507",
+      "extra_urls": [
+        "https://ollama.com/library/qwen3"
+      ],
+      "license": "Apache-2.0",
+      "kind": "open-weight model",
+      "loop": "Generative",
+      "what": "4.0B-parameter instruct model, non-thinking mode only (no <think> blocks), 262,144-token native context, with improved instruction following and tool use (per model card).",
+      "why": "Fits the 'load a 7B-8B instruct model' Layer 0 advice in LOCAL_LLM_SETUP.md, but is smaller, so it suits a laptop. No think-blocks means cleaner structured output for WR rewrite and triage. Apache-2.0 allows commercial products, which matters for the revenue goals.",
+      "determinism": "Run with a fixed seed, temperature 0 and a pinned file hash. The Qwen3 family appears on vLLM's batch-invariance validated list (Qwen3-1.7B/8B listed; this exact checkpoint is not).",
+      "effort": "low",
+      "priority": "high",
+      "adopt": [
+        "Candidate default LMSTUDIO_MODEL/OLLAMA_MODEL for triage and cheap_summary-style local work. Benchmark it against the current gemma3 default with promptfoo."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "mt-bench-llm-judge",
+      "name": "Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena + FastChat llm_judge",
+      "category": "methods",
+      "url": "https://arxiv.org/abs/2306.05685",
+      "extra_urls": [
+        "https://github.com/lm-sys/FastChat/tree/main/fastchat/llm_judge",
+        "https://huggingface.co/datasets/lmsys/mt_bench_human_judgments"
+      ],
+      "license": "Paper: arXiv preprint (read and cite). Code: FastChat, Apache-2.0. Human-judgment dataset: CC-BY-4.0.",
+      "kind": "paper + open-source judge harness + dataset",
+      "loop": "Agentic",
+      "what": "Zheng et al. (Jun 2023, NeurIPS 2023 Datasets and Benchmarks Track) study the usage and limits of LLM-as-a-judge, including position, verbosity and self-enhancement biases. They report that strong judges like GPT-4 reach over 80% agreement with human preferences, the same level as agreement between humans. The open FastChat llm_judge harness (gen_judgment.py) supports single-answer grading and pairwise modes, and releases the MT-bench questions, 3K expert votes and 30K human-preference conversations.",
+      "why": "It names self-enhancement bias, the failure WR-4483 R1 guards against with distinct model FAMILIES, and it ships something runnable: an Apache-2.0 judge harness plus a CC-BY-4.0 human-vote set to calibrate each judge in a 2-3 family panel (WR-4486) against people before trusting its scores.",
+      "determinism": "Judge prompts, questions and the human-vote set are fixed and versioned, so agreement-with-human numbers are reproducible for a pinned judge. Judge sampling is not deterministic unless run on seeded local lanes; report dispersion across judges as WR-4483 requires.",
+      "effort": "medium",
+      "priority": "high",
+      "adopt": [
+        "Cite it in WR-4483/WR-4486 as the source for self-enhancement and position bias.",
+        "Swap answer order in pairwise judging (the paper's position-bias mitigation) and require both orders to agree.",
+        "Score each candidate judge family (for example Qwen3, Granite, Phi) against mt_bench_human_judgments; keep only judges above an agreed agreement threshold."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "batch-invariant-ops",
+      "name": "Defeating Nondeterminism in LLM Inference + batch_invariant_ops",
+      "category": "reproducibility",
+      "url": "https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/",
+      "extra_urls": [
+        "https://github.com/thinking-machines-lab/batch_invariant_ops"
+      ],
+      "license": "Blog: all rights reserved (read and cite only). Code repo: MIT",
+      "kind": "research write-up + reference code",
+      "loop": "Deterministic",
+      "what": "Horace He et al., Thinking Machines Lab (Sep 10, 2025). Shows that temperature-0 LLM nondeterminism in servers comes mainly from a lack of batch invariance (kernel reduction order changes with batch size), not just 'concurrency + floating point'. In their experiment, 1000 temperature-0 completions of one prompt on Qwen3-235B-A22B-Instruct-2507 produced 80 unique outputs. The repo provides batch-invariant matmul, RMSNorm and attention kernels plus a vLLM deterministic-inference example.",
+      "why": "This is the root-cause explanation for why 'temperature 0' is not a control. It supports the repo's 'a marker is a claim' rule (RVS-VERIFY-001) and the Deterministic loop in llms.txt. Use it to document why judge and lint gates must not assume identical LLM output on reruns, even locally.",
+      "determinism": "Kernels are batch-invariant, so output does not depend on concurrent load. Requires control of the serving stack, which is not available through OpenRouter or hosted APIs.",
+      "effort": "low (cite) / high (run own GPU server)",
+      "priority": "high",
+      "adopt": [
+        "Cite this in a standards note: 'temperature=0 is not determinism; hosted lanes are treated as nondeterministic'.",
+        "Make gates compare structured fields or hashes of parsed output instead of raw text equality."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "pytorch-reproducibility",
+      "name": "PyTorch Reproducibility notes + torch.use_deterministic_algorithms",
+      "category": "reproducibility",
+      "url": "https://docs.pytorch.org/docs/stable/notes/randomness.html",
+      "extra_urls": [
+        "https://docs.pytorch.org/docs/stable/generated/torch.use_deterministic_algorithms.html",
+        "https://github.com/pytorch/pytorch"
+      ],
+      "license": "BSD-3-Clause (PyTorch LICENSE file; GitHub API reports NOASSERTION)",
+      "kind": "official docs",
+      "loop": "Deterministic",
+      "what": "The official checklist for reproducible PyTorch runs: seeding (torch.manual_seed, NumPy, Python random), cuDNN benchmark/deterministic flags, torch.use_deterministic_algorithms(True) (raises on ops without a deterministic implementation), SDPA attention-backend determinism, and DataLoader worker seeding.",
+      "why": "Any Python ML script added under scripts/ (for example the scripts/python_cuda/ validation layer or a future fine-tune or classifier) needs one canonical seeding preamble. This page is the primary source for it, so the repo can cite a method instead of folklore, as WR-4482 (evidence-first) requires.",
+      "determinism": "Gives bitwise repeatability on the same hardware, software versions and config. PyTorch states: 'Completely reproducible results are not guaranteed across PyTorch releases, individual commits, or different platforms', nor between CPU and GPU. Pass warn_only=False, since warn_only=True still runs nondeterministic fused attention backward paths. Deterministic mode raises an error on ops that have no deterministic implementation, which is the fail-loud behavior VERIFY_THE_POSTCONDITION wants.",
+      "effort": "low",
+      "priority": "high",
+      "adopt": [
+        "Add a `seed_everything()` helper (Python stdlib + optional torch import) that sets every RNG and calls `torch.use_deterministic_algorithms(True)` when torch is present.",
+        "Log seed, torch version, CUDA/cuDNN versions and device into the run ledger (JSONL) so a rerun can be checked."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "llguidance",
+      "name": "llguidance (guidance-ai)",
+      "category": "constrained-decoding",
+      "url": "https://github.com/guidance-ai/llguidance",
+      "extra_urls": [
+        "https://github.com/guidance-ai/llguidance/blob/main/docs/syntax.md"
+      ],
+      "license": "MIT",
+      "kind": "Rust library",
+      "loop": "Deterministic",
+      "what": "Fast constrained-decoding engine (Rust) supporting JSON Schema, regex and a Lark-like CFG syntax. Integrated into several inference stacks, including llama.cpp as an optional build.",
+      "why": "An alternative grammar engine with a richer grammar syntax than GBNF. Useful if the repo standardizes grammars as Lark files that are portable across engines.",
+      "determinism": "Exact token masking. Content determinism depends on the engine and seed.",
+      "effort": "medium",
+      "priority": "medium",
+      "adopt": [
+        "Evaluate alongside GBNF. Pick one grammar dialect for the repo and document it in a standard."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "openrouter-structured-outputs",
+      "name": "OpenRouter Structured Outputs",
+      "category": "constrained-decoding",
+      "url": "https://openrouter.ai/docs/guides/features/structured-outputs",
+      "extra_urls": [],
+      "license": "Docs: proprietary site, free to read (service terms apply)",
+      "kind": "official docs",
+      "loop": "Deterministic",
+      "what": "OpenRouter's `response_format: {type: 'json_schema', json_schema: {..., strict: true}}` support on models that offer it.",
+      "why": "OpenRouter is the repo's only cloud lane (REVVEL_LLM_ALLOW_CLOUD=1). Using the same json_schema payload on every lane keeps one schema per contract (schemas/agent-contract.schema.json etc.) and means fewer self-correction retries, which saves spend.",
+      "determinism": "Structure is enforced only on providers that support it. Check per-model support before relying on it. Content is nondeterministic (hosted).",
+      "effort": "low",
+      "priority": "medium",
+      "adopt": [
+        "Send the same `response_format` from the cloud lane, and keep the post-hoc validator for providers that ignore it."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "outlines",
+      "name": "Outlines (dottxt-ai)",
+      "category": "constrained-decoding",
+      "url": "https://github.com/dottxt-ai/outlines",
+      "extra_urls": [
+        "https://dottxt-ai.github.io/outlines/"
+      ],
+      "license": "Apache-2.0",
+      "kind": "Python library",
+      "loop": "Deterministic",
+      "what": "Python library for structured generation: JSON Schema / Pydantic, regex, and context-free grammars across several backends. LM Studio uses it for MLX models.",
+      "why": "The best fit if a Python script in the repo needs regex- or Pydantic-typed outputs from a locally loaded model (probabilistic_validator already optionally uses Pydantic).",
+      "determinism": "Constraint-exact structure. Content determinism depends on the backend and seed.",
+      "effort": "medium (adds a Python dependency; repo prefers stdlib)",
+      "priority": "medium",
+      "adopt": [
+        "Use only in optional extras or requirements, not in stdlib-only CI paths."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "xgrammar",
+      "name": "XGrammar",
+      "category": "constrained-decoding",
+      "url": "https://github.com/mlc-ai/xgrammar",
+      "extra_urls": [
+        "https://arxiv.org/abs/2411.15100",
+        "https://xgrammar.mlc.ai/docs/"
+      ],
+      "license": "Apache-2.0",
+      "kind": "library + paper",
+      "loop": "Deterministic",
+      "what": "Fast CFG/JSON structured-generation engine (paper: 'XGrammar: Flexible and Efficient Structured Generation Engine for Large Language Models', arXiv 2411.15100, Nov 2024). Used as a structured-output backend in serving engines such as vLLM.",
+      "why": "Matters if the repo self-hosts vLLM (see vllm-batch-invariance). Then you get batch-invariant and grammar-constrained output from one server.",
+      "determinism": "Exact token masking. Content determinism is inherited from the serving engine.",
+      "effort": "medium",
+      "priority": "medium",
+      "adopt": [
+        "No direct integration needed. Select it as the guided-decoding backend when running vLLM."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "inspect-ai",
+      "name": "Inspect AI (UK AI Security Institute)",
+      "category": "evals",
+      "url": "https://github.com/UKGovernmentBEIS/inspect_ai",
+      "extra_urls": [
+        "https://inspect.aisi.org.uk/"
+      ],
+      "license": "MIT",
+      "kind": "Python eval framework",
+      "loop": "Agentic",
+      "what": "Framework for LLM and agent evaluations (datasets, solvers, scorers, tool-use sandboxes, logged transcripts), from the UK AI Security Institute.",
+      "why": "Fits the agent-fleet evaluations the repo already writes up by hand (`docs/*_EVAL_*.md`, `scripts/evaluate-claude-fleets.js`). It produces structured, replayable eval logs, which supports the 'provenance is the product' rule.",
+      "determinism": "Logs every sample, so results are auditable. Model calls stay nondeterministic unless you use local seeded lanes.",
+      "effort": "medium",
+      "priority": "medium",
+      "adopt": [
+        "Pilot one agent eval (for example WR-rewrite quality) and store the logs as artifacts."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "jsonschemabench",
+      "name": "JSONSchemaBench",
+      "category": "evals",
+      "url": "https://huggingface.co/datasets/epfl-dlab/JSONSchemaBench",
+      "extra_urls": [
+        "https://arxiv.org/abs/2501.10868",
+        "https://github.com/guidance-ai/jsonschemabench"
+      ],
+      "license": "Dataset: MIT (HF card). GitHub repo: no LICENSE file found as of 2026-10-26",
+      "kind": "benchmark dataset + paper",
+      "loop": "Deterministic",
+      "what": "About 10k real-world JSON Schemas for evaluating constrained-decoding engines on coverage, compliance and efficiency (paper: 'JSONSchemaBench: A Rigorous Benchmark of Structured Outputs for Language Models', arXiv 2501.10868, Jan 2025).",
+      "why": "Gives evidence-first (WR-4482) data for picking a grammar engine or lane instead of guessing, and shows which JSON Schema features engines commonly drop, so the repo's schemas/ can avoid them.",
+      "determinism": "Static dataset, so results are reproducible when engine, model and seed are pinned.",
+      "effort": "medium",
+      "priority": "medium",
+      "adopt": [
+        "Run a small subset against each Layer 0 lane and record the pass rate in a docs/*_EVAL_YYYY-MM-DD.md report."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "granite-4-0-micro",
+      "name": "IBM Granite-4.0-Micro",
+      "category": "local-models",
+      "url": "https://huggingface.co/ibm-granite/granite-4.0-micro",
+      "extra_urls": [
+        "https://ollama.com/library/granite4"
+      ],
+      "license": "Apache-2.0",
+      "kind": "open-weight model",
+      "loop": "Agentic",
+      "what": "3B-parameter long-context instruct model with tool-calling support, trained on permissively licensed and synthetic data (per model card). Supports 12 languages.",
+      "why": "Its permissive data provenance fits the repo's license-and-legal-first reasoning rule (llms.txt) and the compliance/ work. It is a small tool-caller for agentic Layer 0 tasks.",
+      "determinism": "Seed + temperature 0 + pinned weights.",
+      "effort": "low",
+      "priority": "medium",
+      "adopt": [
+        "Alternate Layer 0 model for tool-use tasks. Evaluate against Qwen3-4B on the same promptfoo suite."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "nomic-embed-text-v1-5",
+      "name": "nomic-embed-text-v1.5",
+      "category": "local-models",
+      "url": "https://huggingface.co/nomic-ai/nomic-embed-text-v1.5",
+      "extra_urls": [],
+      "license": "Apache-2.0",
+      "kind": "open-weight embedding model",
+      "loop": "Deterministic",
+      "what": "Text embedding model with Matryoshka (resizable) dimensions. It requires task prefixes such as `search_query:` and `search_document:` (per model card).",
+      "why": "LOCAL_LLM_SETUP.md already names `text-embedding-nomic-embed-text-v1.5` as the embedding model loaded in LM Studio. This documents correct use (prefixes!) for dedupe of WRs/issues, retrieval (docs/hfmr/) and duplicate-risk detection in the formal verifier.",
+      "determinism": "Embedding a fixed input with a fixed model and runtime is effectively deterministic (no sampling). Small float differences across hardware are possible, so compare with a tolerance, not exact equality.",
+      "effort": "low",
+      "priority": "medium",
+      "adopt": [
+        "Document the prefix convention. Store embedding model ID + revision alongside cached vectors."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "phi-4-mini-instruct",
+      "name": "Microsoft Phi-4-mini-instruct",
+      "category": "local-models",
+      "url": "https://huggingface.co/microsoft/Phi-4-mini-instruct",
+      "extra_urls": [],
+      "license": "MIT",
+      "kind": "open-weight model",
+      "loop": "Generative",
+      "what": "3.8B-parameter model with 128K context, focused on reasoning-dense synthetic data, with a function-calling format (per model card).",
+      "why": "A third model family for the WR-4483 / WR-4486 requirement that judges come from distinct model families. The family is not vendor-correlated with Qwen or Granite, and it runs locally for free.",
+      "determinism": "Seed + temperature 0 + pinned weights.",
+      "effort": "low",
+      "priority": "medium",
+      "adopt": [
+        "Use as one local judge in a cross-family jury (see mt-bench-llm-judge)."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "self-consistency",
+      "name": "Self-Consistency (Wang et al.)",
+      "category": "methods",
+      "url": "https://arxiv.org/abs/2203.11171",
+      "extra_urls": [],
+      "license": "arXiv preprint (read and cite)",
+      "kind": "paper",
+      "loop": "Generative",
+      "what": "Sample several reasoning paths and take the majority answer. This improves chain-of-thought accuracy ('Self-Consistency Improves Chain of Thought Reasoning in Language Models', Mar 2022).",
+      "why": "A named, validated method (WR-4482 tier 2) for turning nondeterministic samples into a stable answer plus an agreement rate. That rate is a confidence signal that could feed probabilistic_validator's ConfidenceScore.",
+      "determinism": "With seeded samples the vote is reproducible. Agreement rate is an honest uncertainty measure.",
+      "effort": "low",
+      "priority": "medium",
+      "adopt": [
+        "For enum or short-answer tasks: N seeded local samples, majority vote, log the agreement rate."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "semantic-entropy",
+      "name": "Detecting hallucinations in LLMs using semantic entropy (Nature 2024)",
+      "category": "methods",
+      "url": "https://www.nature.com/articles/s41586-024-07421-0",
+      "extra_urls": [],
+      "license": "Open access article (Nature). Check the article's CC license before reproducing figures",
+      "kind": "paper",
+      "loop": "Deterministic",
+      "what": "Farquhar et al., Nature (2024). Estimate uncertainty over meanings (cluster sampled answers by bidirectional entailment) to detect confabulations.",
+      "why": "Upgrades the 'Factuality / Heuristics' layer of scripts/python_cuda/probabilistic_validator.py from heuristics to a published method. This directly supports the repo's honesty theme (for example 'models lie beautifully' chapters, the evidence-first directive).",
+      "determinism": "The clustering and entropy computation is deterministic given the samples. Sampling is seeded locally.",
+      "effort": "medium",
+      "priority": "medium",
+      "adopt": [
+        "Prototype: sample 5 local answers, cluster with an NLI or embedding similarity threshold, flag high-entropy answers for human review."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "safetensors",
+      "name": "safetensors",
+      "category": "reproducibility",
+      "url": "https://huggingface.co/docs/safetensors/index",
+      "extra_urls": [
+        "https://github.com/safetensors/safetensors"
+      ],
+      "license": "Apache-2.0",
+      "kind": "file format + library",
+      "loop": "Deterministic",
+      "what": "A simple, safe format for storing tensors (no arbitrary-code execution, unlike pickle) with zero-copy loading. It is the default weights format on Hugging Face.",
+      "why": "It pairs with the repo's supply-chain and attestation rules (hash + signature before execution in llms.txt; SECURITY standard). Pinning model files by file hash plus HF revision makes 'which weights ran' answerable.",
+      "determinism": "The format is static data, so the same file gives the same hash and the same weights. It removes the pickle code-execution risk.",
+      "effort": "low",
+      "priority": "medium",
+      "adopt": [
+        "Policy: only load .safetensors or GGUF weights. Record SHA-256 and HF revision of any model file in a manifest."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "vllm-batch-invariance",
+      "name": "vLLM batch invariance mode (VLLM_BATCH_INVARIANT=1)",
+      "category": "reproducibility",
+      "url": "https://docs.vllm.ai/en/latest/features/batch_invariance.html",
+      "extra_urls": [
+        "https://github.com/vllm-project/vllm"
+      ],
+      "license": "Apache-2.0",
+      "kind": "official docs + inference engine",
+      "loop": "Deterministic",
+      "what": "Beta vLLM feature that makes outputs independent of batch size and request order. It uses deterministic kernels and a fixed reduction order. Supported on NVIDIA compute capability 8.0+, some AMD Instinct GPUs, and Intel XPU (Triton). The docs list validated models, including Qwen3 and Granite 3.1.",
+      "why": "If the repo ever self-hosts a GPU lane (for example a self-hosted runner with a GPU), this gives an OpenAI-compatible endpoint whose outputs are reproducible with a fixed seed. That fits the existing OpenAI-compatible Layer 0 client in scripts/local_llm.py.",
+      "determinism": "Deterministic given the same model, seed and stack, even at temperature > 0 with a seed. Marked beta, and there are documented tensor-parallel caveats. It costs some throughput.",
+      "effort": "high (needs Linux + supported GPU)",
+      "priority": "medium",
+      "adopt": [
+        "Optional future Layer 0 lane: `VLLM_BATCH_INVARIANT=1 vllm serve <model>` behind the same /v1 interface."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "nanochat",
+      "name": "nanochat",
+      "category": "architectures",
+      "url": "https://github.com/karpathy/nanochat",
+      "extra_urls": [],
+      "license": "MIT",
+      "kind": "reference implementation (full stack)",
+      "loop": "Generative",
+      "what": "End-to-end small-chat-model pipeline (tokenizer, pretraining, mid-training, SFT, RL, eval, inference and web UI) in one minimal codebase. The README tagline is 'The best ChatGPT that $100 can buy'.",
+      "why": "A reference for the full lifecycle if the repo ever trains a house micro-model (for example a WR-triage classifier). It is useful as a cost-bounded blueprint consistent with the spend-gate rules.",
+      "determinism": "Seedable scripts. GPU determinism is not guaranteed by default.",
+      "effort": "high",
+      "priority": "low",
+      "adopt": [
+        "Reference only, unless a training WR is approved."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "nanogpt",
+      "name": "nanoGPT",
+      "category": "architectures",
+      "url": "https://github.com/karpathy/nanoGPT",
+      "extra_urls": [],
+      "license": "MIT",
+      "kind": "reference implementation",
+      "loop": "Generative",
+      "what": "Minimal, readable GPT training and fine-tuning code (a rewrite of minGPT). A widely used reference for the GPT decoder architecture. The README (Nov 2025 update) says it is 'now very old and deprecated' and points to nanochat.",
+      "why": "A compact, auditable reference for any 'exact architecture' claim in docs or books (for example the CH12/CH13 model chapters). Also a teaching asset for ELI5 handoff docs.",
+      "determinism": "Seedable. Full GPU determinism still needs the PyTorch reproducibility settings (see pytorch-reproducibility).",
+      "effort": "low (read) / medium (train)",
+      "priority": "low",
+      "adopt": [
+        "Link it as a readable architecture reference only. Prefer nanochat for anything current. Do not vendor it."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "lm-evaluation-harness",
+      "name": "EleutherAI lm-evaluation-harness",
+      "category": "evals",
+      "url": "https://github.com/EleutherAI/lm-evaluation-harness",
+      "extra_urls": [],
+      "license": "MIT",
+      "kind": "Python eval framework",
+      "loop": "Deterministic",
+      "what": "Standard few-shot benchmark harness for language models, supporting HF, vLLM and OpenAI-compatible local endpoints.",
+      "why": "For picking Layer 0 models on public benchmarks with a pinned, citable harness instead of vendor leaderboards (evidence-first).",
+      "determinism": "Supports fixed seeds and greedy generation. Results are reproducible when harness version, model revision and backend are pinned.",
+      "effort": "medium",
+      "priority": "low",
+      "adopt": [
+        "Optional: run on candidate local models before changing LMSTUDIO_MODEL defaults."
+      ],
+      "access_date": "2026-10-26"
+    },
+    {
+      "slug": "jax-prng",
+      "name": "JAX explicit PRNG keys (jax.random)",
+      "category": "reproducibility",
+      "url": "https://docs.jax.dev/en/latest/random-numbers.html",
+      "extra_urls": [
+        "https://github.com/jax-ml/jax"
+      ],
+      "license": "Apache-2.0",
+      "kind": "official docs + framework",
+      "loop": "Deterministic",
+      "what": "JAX passes random state around explicitly as keys (`jax.random.key`, `split`) instead of using a hidden global RNG, so randomness is a pure function of the key.",
+      "why": "Reference design pattern, not a dependency. The repo's stack is Node + stdlib Python. The explicit-key idea maps directly onto making any sampled or randomized step (judge order, shuffles, sampling for ensembles) take a recorded seed argument instead of global state.",
+      "determinism": "With explicit keys, the same key and program give the same random stream. Floating-point results on GPU or TPU can still vary by backend and version.",
+      "effort": "low (pattern) / high (adopting JAX itself)",
+      "priority": "low",
+      "adopt": [
+        "Use as a design reference: every randomized function in scripts/ takes `seed` or `rng` explicitly, and the value is logged."
+      ],
+      "access_date": "2026-10-26"
+    }
+  ]
+}

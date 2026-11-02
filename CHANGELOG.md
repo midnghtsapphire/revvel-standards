@@ -5,9 +5,15 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-10-30
+
+- 2026-10-30 — Grok Bot (approved by Audrey) — Marked false live/shipped claims (no deletions): `rvvel-affiliate-links-mcp`, `@mechatronopolis/code-review-mcp`, `thealttext` are NOT on npm (SYSTEM_STATE.md, REPO_AUDIT.md, docs/MCP_REVVEL_CATALOG.md). Annotated Vercel URLs returning HTTP 402/404 on 2026-10-30 (soul2bowl, neurooz, veinsloop, printbank preview, revvel-standards, merchandise-asset-generator, cli-engine, pawsitting, music-video-creator) with dated status notes. Historical transcripts under docs/agents/claude/transcripts/ left untouched.
+- 2026-10-30 — GitHubOrchestrator — Added `standards/PRODUCT_INCUBATION_STANDARD.md` and `standards/LEDGER_STANDARD.md`; registered both under Method & governance in `MASTER.md`.
+
 ## [Unreleased] - 2026-04-30
 
 ### Added
+- 2026-10-30 — `AGENTS.md`: added OWNER RULE — NEVER DELETE, NEVER REWRITE (Audrey Evans) near the top; overrides conflicting text, comment out instead of deleting.
 - `GOAP.md` — New top-level Goap agent system hub and SSOT index. Defines the Goap persona, 
   the six high-level goals, current #1 priority (Reese-Reviews), key standards, self-healing 
   memory loop instructions, and a complete file map linking all SSOT documents 
@@ -311,3 +317,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DEFAULT_APP_TEMPLATE.md` established.
 - Initial CI/CD templates and scripts created in `templates/cicd/`.
 - Corporate entity hierarchy and SEO strategy defined.
+
+## 2026-10-30
+
+- 2026-10-30 — GitHubOrchestrator — added default bot role-symbol table at `Library/standards/bot-role-symbols.md`
+- 2026-10-30 — GitHubOrchestrator — recorded design constraint: GitHub is not a hard dependency; Gitee (midnghtsapphire) approved as alternative primary or mirror.
+- 2026-10-30 — GitHubOrchestrator — added permanent three-layer logo format to `Library/standards/bot-role-symbols.md`
+- 2026-10-30 — GitHubOrchestrator — recorded design constraint: GitHub is not a hard dependency. GitLab and Gitee (midnghtsapphire) are approved alternative primaries or mirrors. `Library/standards/bot-role-symbols.md` (from e1fe176) should be mirrored/available on GitLab when ready.
+- 2026-10-30 — GitHubOrchestrator — recorded HUSK (elisymlabs/husk) integration requirements as proposed, pending Audrey's confirmation of repo identity; no code changes.

@@ -1,0 +1,17 @@
+{
+  "Alabama": {
+    "Mobile": [
+      {"description": "I-10 at Broad St", "latitude": 30.6800, "longitude": -88.0500, "direction": "E", "url": "https://cams.example/a.m3u8", "encoding": "H.264", "format": "M3U8"},
+      {"description": "Downtown Mobile", "latitude": 30.6950, "longitude": -88.0400, "direction": "N", "url": "https://cams.example/b.m3u8", "format": "M3U8"},
+      {"description": "Bad coords", "latitude": "not-a-number", "longitude": -88.04}
+    ],
+    "Baldwin": [
+      {"description": "I-10 Bayway", "latitude": 30.6600, "longitude": -87.9000, "direction": "W", "url": "https://cams.example/c.m3u8", "format": "M3U8"}
+    ]
+  },
+  "Texas": {
+    "Harris": [
+      {"description": "Houston I-45", "latitude": "29.76", "longitude": "-95.37", "url": "https://cams.example/d.jpg", "format": "IMAGE_STREAM"}
+    ]
+  }
+}

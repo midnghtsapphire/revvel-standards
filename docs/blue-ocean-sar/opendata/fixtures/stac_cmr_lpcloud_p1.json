@@ -1,0 +1,52 @@
+{
+ "type": "FeatureCollection",
+ "stac_version": "1.0.0",
+ "numberMatched": 1,
+ "numberReturned": 1,
+ "features": [
+  {
+   "type": "Feature",
+   "stac_version": "1.0.0",
+   "id": "GEDI02_A_2022152053914_O19422_03_T05584_02_003_02_V002",
+   "collection": "GEDI02_A_002",
+   "bbox": [
+    -91.2,
+    38.1,
+    -78.4,
+    51.6
+   ],
+   "geometry": null,
+   "properties": {
+    "datetime": "2022-06-01T05:39:14.000Z",
+    "start_datetime": "2022-06-01T05:39:14.000Z",
+    "end_datetime": "2022-06-01T07:11:47.000Z"
+   },
+   "assets": {
+    "data": {
+     "href": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/GEDI02_A.002/GEDI02_A_2022152053914_O19422_03_T05584_02_003_02_V002/GEDI02_A_2022152053914_O19422_03_T05584_02_003_02_V002.h5",
+     "title": "Download GEDI02_A_2022152053914_O19422_03_T05584_02_003_02_V002.h5",
+     "roles": [
+      "data"
+     ]
+    },
+    "data1": {
+     "href": "s3://lp-prod-protected/GEDI02_A.002/GEDI02_A_2022152053914_O19422_03_T05584_02_003_02_V002/GEDI02_A_2022152053914_O19422_03_T05584_02_003_02_V002.h5",
+     "roles": [
+      "data"
+     ]
+    },
+    "metadata": {
+     "href": "https://cmr.earthdata.nasa.gov/search/concepts/G2384582418-LPCLOUD.xml",
+     "type": "application/xml"
+    }
+   },
+   "links": []
+  }
+ ],
+ "links": [
+  {
+   "rel": "self",
+   "href": "https://cmr.earthdata.nasa.gov/stac/LPCLOUD/search"
+  }
+ ]
+}

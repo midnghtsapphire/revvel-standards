@@ -37,10 +37,20 @@ const path = require('node:path');
 const WORKFLOW_DIR = path.join(__dirname, '..', '.github', 'workflows');
 
 /** Workflows explicitly permitted to run on a schedule. Empty by decision. */
-const ALLOWED_SCHEDULED = [];
+// const ALLOWED_SCHEDULED = [];
+// Replaced 2026-10-16: the repository owner asked for the blue-ocean-sar data
+// sources to be checked "24/7" so downloads switch to a working mirror and a
+// dead source raises an alarm. One allowance, at 4 runs/day (~120/month), each
+// a few HTTP probes taking about a minute on ubuntu-latest. Remove this entry
+// and the cron line in the workflow to stop it.
+const ALLOWED_SCHEDULED = [
+  'blue-ocean-sar-source-health.yml', // 17 */6 * * *, 4/day, owner request 2026-10-16
+];
 
 /** Budget ceiling. Derived below; asserted so a drift shows up as a number. */
-const MAX_SCHEDULED_RUNS_PER_DAY = 0;
+// const MAX_SCHEDULED_RUNS_PER_DAY = 0;
+// Replaced 2026-10-16 to admit blue-ocean-sar-source-health.yml (4/day) and nothing else.
+const MAX_SCHEDULED_RUNS_PER_DAY = 4;
 
 const NAMES = {
   SUN: 0, MON: 1, TUE: 2, WED: 3, THU: 4, FRI: 5, SAT: 6,
