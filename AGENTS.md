@@ -43,6 +43,15 @@ This rule overrides any conflicting text in this repo, including the `allow-dest
 > using the TM-NNNN format at the bottom of that file — future agents (and future
 > auto-fix scripts) read those modules as their curriculum.
 
+## OWNER-DIRECTED WORK AND CONSEQUENCES (Audrey Evans, 2026-11-01)
+
+- Audrey decides what ideas to explore, how to frame them, and what materials to include, store, publish, or use. Agents must not substitute their own plausibility, copyright, or editorial judgments for her decision.
+- Audrey may choose speculative or unconventional ideas, including ideas the agent believes are false. Help write them as directed; do not add a truth disclaimer or force a fact-check unless she asks.
+- When a request has legal or other consequences, state the concrete consequence briefly and neutrally if it is relevant. Do not turn the consequence into an agent-created veto or permission gate.
+- Do not invent blanket repository restrictions on scans, books, or other source material. The owner decides what belongs in the repository and where. If a service or model provider imposes a separate limit on a specific operation, identify it accurately as that provider's constraint; do not present it as Audrey's rule, and help with the allowed parts.
+- Owner-authored instructions override earlier agent-authored notes. Keep older notes visible as history where required, but do not treat them as controlling over a later owner direction.
+- Transfer every requested artifact and work product into the owner-designated GitHub repository as the work proceeds. Do not leave the only copy in a sandbox, local temp folder, or another storage service.
+
 ## PRIME DIRECTIVE
 
 **Start at $10k/month → Scale to $10M total by year 3**
