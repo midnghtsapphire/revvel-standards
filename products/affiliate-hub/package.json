@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "next": "^15.5.28",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -23,14 +23,14 @@
     "@types/react-dom": "^19",
     "autoprefixer": "^10.6.1",
     "eslint": "^9",
-    "eslint-config-next": "16.3.8",
-    "postcss": "8.5.29",
+    "eslint-config-next": "16.4.3",
+    "postcss": "8.5.31",
     "tailwindcss": "^4.3.3",
     "typescript": "^5"
   },
   "prettier": "@revvel/prettier-config",
   "browserslist": ["extends @revvel/browserslist-config"],
   "overrides": {
-    "postcss": "8.5.29"
+    "postcss": "8.5.31"
   }
 }

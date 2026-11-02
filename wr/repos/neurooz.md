@@ -352,7 +352,7 @@ import PlausibleProvider from 'next-plausible'
 4. Deploy
 
 **Expected URLs:**
-- **Production:** `https://neurooz.vercel.app` _(⚠️ NOT LIVE — verified 2026-10-30: https://neurooz.vercel.app returns HTTP 402)_
+- **Production:** `https://neurooz.vercel.app` _(⚠️ NOT LIVE — verified 2026-10-30: <https://neurooz.vercel.app> returns HTTP 402)_
 - **Preview:** `https://neurooz-[branch].vercel.app`
 
 ---
