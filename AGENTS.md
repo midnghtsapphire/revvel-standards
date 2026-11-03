@@ -388,7 +388,6 @@ as fast as an agent): explain *why*, document external-service gotchas at the
 call site, and always state the fallback / "what to check if it fails." See
 `standards/CODE_COMMENTING_STANDARD.md`.
 
-
 ## Whiteboard (GitHub Discussions)
 
 Every repo uses its **GitHub Discussions** as the agent whiteboard.
