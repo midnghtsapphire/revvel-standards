@@ -92,7 +92,11 @@ jobs:
 
           if [ -n "${OPENHANDS_API_KEY}" ]; then
             OpenHands_AVAILABLE="true"
-            echo "✅ OpenHands API key configured"
+            # Says "present", not "working": this tests length only. A revoked
+            # key is non-empty and reads as available here, then 401s at the
+            # call. scripts/call-openhands-api.sh prints the proxy's body so
+            # that failure is legible.
+            echo "✅ OPENHANDS_API_KEY is present (not validated)"
           else
             echo "⚠️  OpenHands API key not configured"
           fi
