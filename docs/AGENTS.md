@@ -750,6 +750,14 @@ the note is missing.
 - **For a verbatim source file** — a transcription, an extraction, a quoted text — put the note in a clearly marked header block and **prove the body below it is unchanged** (hash the file from the first content line and compare before/after). A note must never corrupt the thing it explains.
 - **Still write the log entry.** This rule adds a second place; it does not replace the first.
 
+**What goes IN the note — err long, not short:**
+
+- **The reasoning, not the conclusion.** Capture the substance of the discussion that produced the decision — what was being weighed, what the trade-off actually was. A conclusion with no reasoning gets overturned by the first person with a different intuition.
+- **What was considered and rejected, and why.** The rejected option is precisely the one someone will propose again in six months. Name it and close it.
+- **WHAT HAPPENS IF YOU TAKE IT OUT.** State the consequence of reversing the decision: what breaks, what is lost, what can no longer be proved. **This is the part that actually prevents silent reversal.** "Why this is here" is a weaker guard than "here is what goes wrong when it is gone."
+- **Who raised it and who decided.** If the point came out of a conversation with an AI assistant, say so and say what it argued — the argument is the useful part, and it will not be in anyone's memory later.
+- **Length is not a defect.** A note that ran long has cost nothing. A note that ran short costs the decision. **When in doubt, put the whole discussion in.**
+
 **Why this is a standard and not a preference:** three years of work is only
 provable if the reasoning survives next to the evidence. A decision recorded only
 in a log that nobody opens is a decision that did not get recorded.
