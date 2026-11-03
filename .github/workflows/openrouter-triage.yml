@@ -40,7 +40,9 @@ jobs:
   # stuck WR never restarted under the assignee-only path (WR #17736).
   targeted-triage:
     name: Targeted triage for issue #${{ inputs.issue_number }}
-    if: github.event_name == 'workflow_dispatch' && inputs.issue_number != ''
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.issue_number != '') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_ROUTERS != '0')
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -103,7 +105,9 @@ jobs:
 
   route-new:
     name: Route and triage new issue/PR
-    if: github.event_name == 'issues' || github.event_name == 'pull_request_target'
+    if: >-
+      (github.event_name == 'issues' || github.event_name == 'pull_request_target') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_ROUTERS != '0')
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -265,7 +269,9 @@ jobs:
     name: Sweep cost-governed triage
     # Runs whenever there are queued items — even with no OpenRouter key, the
     # script cuts over to GitHub Models, keyless Perplexity, and static fallback.
-    if: needs.sweep-discover.outputs.count != '0'
+    if: >-
+      (needs.sweep-discover.outputs.count != '0') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_ROUTERS != '0')
     needs: sweep-discover
     runs-on: ubuntu-latest
     # Per-item concurrency: match the group used by route-new so a sweep job and

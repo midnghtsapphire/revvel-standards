@@ -20,6 +20,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   route-needs-action:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_ROUTERS != '0'
     name: Route needs-action item to OpenRouter
     runs-on: ubuntu-latest
     steps:
