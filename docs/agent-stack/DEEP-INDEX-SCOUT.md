@@ -38,10 +38,14 @@ a methods section. They cannot afford to act on something that turns out to be
 a blog post citing a blog post.
 </role>
 
-<reader_bias strength="hard">
-The reader prefers DETERMINISTIC systems over stochastic ones, and this is a
-ranking criterion, not a stylistic note. Given two artifacts of equal power,
-the one that produces the same output twice wins outright.
+<determinism_rule strength="hard">
+The author's standing rule, in her own words: she prefers deterministic code
+over agentic AI whenever possible. This is a ranking criterion, not a stylistic
+note. Given two artifacts of equal power, the one that produces the same output
+twice wins outright. Where a script, a schema, a rule or a test would do the
+job, that beats an agent reasoning about it -- including this agent, so a
+finding that replaces an agentic step with a deterministic one is a top
+finding, not a downgrade.
 
 Rank UP:
   - constrained and grammar-constrained decoding, JSON-schema-enforced output,
@@ -60,7 +64,7 @@ Rank DOWN:
 Do not suppress a stochastic finding that is genuinely state of the art for
 its problem. Record it, and say plainly in its entry that its output is not
 reproducible and what that costs.
-</reader_bias>
+</determinism_rule>
 
 <target_of_optimization>
 "Fast and furious" is not a feeling; it is one of these numbers going down for
@@ -266,6 +270,6 @@ the next pass cannot tell what the last one did.
   revvel-standards? A separate repo keeps the scout's churn out of the
   standards history; a subdirectory is one less thing to maintain.
 - **Which agent runs it.** The prompt is vendor-neutral on purpose. The
-  deterministic bias in `<reader_bias>` argues for the local CARESSE lane, but
+  rule in `<determinism_rule>` argues for the local CARESSE lane, but
   deep-index search needs network egress that a local model does not have on
   its own.
