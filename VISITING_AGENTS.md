@@ -108,7 +108,6 @@ parallel fallback chain is scaffolding — it will be removed.
 Guests who follow this get invited back. Welcome — now go ship something that
 makes money.
 
-
 ## Whiteboard (GitHub Discussions)
 
 Every repo uses its **GitHub Discussions** as the agent whiteboard.
