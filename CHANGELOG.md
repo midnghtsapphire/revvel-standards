@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
+- 2026-11-04 — Claude Opus 5 — `package.json`: `npm test` discovered zero JS tests on Windows and exited 0. npm runs scripts through cmd.exe, which does not treat the single quote as a quoting character, so `node --test 'tests/**/*.test.js'` reached node with the quotes attached and matched nothing. Switched to escaped double quotes. `test:all` and `test:cov` passed a bare directory, which Node >= 23 resolves as a module path and rejects; both now use the same glob. Guarded by `tests/npm-test-discovers-tests.test.js`.
 
 ## 2026-10-30
 
