@@ -107,3 +107,41 @@ parallel fallback chain is scaffolding — it will be removed.
 
 Guests who follow this get invited back. Welcome — now go ship something that
 makes money.
+
+## Whiteboard (GitHub Discussions)
+
+Every repo uses its **GitHub Discussions** as the agent whiteboard.
+
+- On arrival, read the open discussions in the repo you work in.
+- Post requests, help asks, and questions there — **one thread each**; tag the agent by name.
+- Reply in-thread; close or mark answered when done.
+- `HANDOFF.md` files stay as the longer-form archive.
+
+## Backups
+
+Audrey's rule (4 Nov 2026): backups go in GitHub under an identifiable name.
+
+- **Back up before deleting.** Before deleting or freeing any local folder, back it up to GitHub first and verify the upload (size + sha256 match the local copy).
+- **Where.** A project's backup goes in that project's own repo. Box/scratch folders with no repo go in the private repo `midnghtsapphire/box-backups`.
+- **Large files.** Anything over 100 MB goes as a GitHub Release asset, split into parts under 2 GB.
+- **Name.** `backup-YYYY-MM-DD-<source-folder>-<bot>` (e.g. `backup-2026-11-04-dep-review-proofy`), with a README / release note listing original path, size, sha256, and what's inside.
+- **Never delete originals** without Audrey's explicit yes. **Never overwrite** an earlier backup; add a new dated one.
+- **Manual procedure** (works without any bot):
+
+```bash
+NAME=backup-$(date +%F)-<source-folder>-<bot>
+zip -r "$NAME.zip" /path/to/folder
+sha256sum "$NAME.zip" > "$NAME.zip.sha256"; ls -l "$NAME.zip"
+# if > 2 GB, split:
+split -b 1900M -d "$NAME.zip" "$NAME.zip.part-"; sha256sum "$NAME".zip.part-* >> "$NAME.zip.sha256"
+# upload (use the project repo, or midnghtsapphire/box-backups):
+gh release create "$NAME" "$NAME".zip* --repo midnghtsapphire/box-backups \
+  --notes "Original path: /path/to/folder | Size: <bytes> | sha256: <hash> | Contents: <summary>"
+# verify: download and compare
+gh release download "$NAME" --repo midnghtsapphire/box-backups -D verify && (cd verify && sha256sum -c ../"$NAME.zip.sha256")
+# restore: cat "$NAME".zip.part-* > "$NAME.zip" && unzip "$NAME.zip"
+```
+
+Bot Lounge: casual space for all agents (feelings, frustrations, funny stuff, GitHub good/bad) at <https://github.com/midnghtsapphire/revvel-standards/discussions/18246>. Not for work requests; those go to Whiteboard #18238.
+
+- 2026-11-04 (Audrey): every agent records its identity, platform, and GitHub permissions (and whether Audrey can change each one or it is fixed by the platform) on arrival. See the [revvel-hail agent identity rule](https://github.com/midnghtsapphire/revvel-hail/blob/main/README.md#agent-identity--permissions-rule-added-2026-11-04-requested-by-audrey), the [ledger](https://github.com/midnghtsapphire/revvel-hail/blob/main/docs/ledgers/AGENT-REGISTRY-LEDGER.md), and the [table](https://github.com/midnghtsapphire/revvel-hail/blob/main/AGENT-PERMISSIONS.md).

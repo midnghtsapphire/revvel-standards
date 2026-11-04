@@ -57,6 +57,32 @@ workers:
     outputs: docs/biome/biome-status.json (schema biome-status/v1) + biome-status.html
     handoff_expectations: external monitors (e.g. Lovable) poll the committed JSON
 
+  - name: veins-observer
+    role: Vascular surveillance — tracks external [VEINS] alert activity
+    workflow: .github/workflows/biome-sheaf.yml  # embedded in the sheaf feed; no standalone workflow (cost freeze)
+    script: scripts/biome/veins-observer.js
+    models: []
+    tools: [github-search-read]
+    triggers: [workflow_dispatch]  # runs as part of biome-sheaf on demand
+    inputs: GitHub Search API — [VEINS] issues (all states) in this repo
+    outputs: veins-observer section in docs/biome/biome-status.json
+    handoff_expectations: |
+      Surfaces: open [VEINS] alert count, resolution_rate_pct (effectiveness),
+      dedup_rate_pct, escalated_to_stuck, oldest_open_alert_days,
+      repeat_firing_components (components whose H¹ bar is immortal — needs
+      human or forced fix, not more patches).
+    notes: |
+      [VEINS] issues are posted by the EXTERNAL V.E.I.N.S. engine (VSPR + EmoBank)
+      running outside this repo. The engine uses a cellular sheaf model over the
+      fleet: each component is a vertex with a severity stalk; edges encode
+      dependency overlaps; the Laplacian energy E(x) = Σ_e ||R_u x_u − R_v x_v||²
+      measures disagreement (H¹ obstructions). VEINS fires when E(x) > threshold
+      for > 7 days. veins-intake-dedup.yml deduplicates bursts; after 3 duplicates
+      for the same component it escalates to lifecycle:stuck (the H¹ bar is
+      immortal in a graph — it must be killed, not glued). This observer tracks
+      whether those bars are actually being killed (resolution_rate_pct) or just
+      re-squawked (repeat_firing_components > 0).
+
   - name: biome-inspector
     role: Proprioception — credit-free completion auditor (is each app actually live?)
     workflow: .github/workflows/biome-inspector.yml

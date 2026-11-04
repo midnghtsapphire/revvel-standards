@@ -78,6 +78,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   mabl-tests:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0'
     name: mabl Automated Tests
     runs-on: ubuntu-latest
     permissions:
@@ -88,7 +89,7 @@ jobs:
         uses: actions/checkout@v7
       - name: Generate GitHub App Token
         id: app-token
-        uses: actions/create-github-app-token@v3.2.0
+        uses: actions/create-github-app-token@v3.3.0
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}

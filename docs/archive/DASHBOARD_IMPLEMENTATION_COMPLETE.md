@@ -137,12 +137,12 @@ npm run dashboard urls
 🔗 Test URLs
 Found 37 URLs
 
-1. https://soul2bowl-staging.vercel.app
+1. https://soul2bowl-staging.vercel.app _(⚠️ NOT LIVE — verified 2026-10-30: https://soul2bowl-staging.vercel.app returns HTTP 404)_
    Project: Soul2Bowl
    Type: vercel
    Source: /Soul2Bowl/README.md
 
-2. https://pawsitting.vercel.app
+2. https://pawsitting.vercel.app _(⚠️ NOT LIVE — verified 2026-10-30: https://pawsitting.vercel.app returns HTTP 404)_
    Project: Pawsitting
    Type: vercel
    Source: /Pawsitting/README.md

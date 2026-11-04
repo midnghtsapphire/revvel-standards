@@ -64,6 +64,7 @@ env:
 
 jobs:
   check:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_INFRA != '0'
     name: Check markdown image alt-text
     runs-on: ubuntu-latest
     timeout-minutes: 15

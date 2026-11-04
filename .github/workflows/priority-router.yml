@@ -41,6 +41,7 @@ env:
     priority — backlog"}]'
 jobs:
   route-priority:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_ROUTERS != '0'
     name: Route priority
     runs-on: ubuntu-latest
     env:

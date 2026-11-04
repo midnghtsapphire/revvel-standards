@@ -3,7 +3,7 @@
 ## Live Deployment / Test
 
 Preview (this branch, Vercel — verified Ready):
-<https://revvel-standards-git-claude-printable-p-88dfed-oaudrey-projects.vercel.app/products/printbank/public/>
+<https://revvel-standards-git-claude-printable-p-88dfed-oaudrey-projects.vercel.app/products/printbank/public/> _(⚠️ NOT LIVE — verified 2026-10-30: <https://revvel-standards-git-claude-printable-p-88dfed-oaudrey-projects.vercel.app> returns HTTP 402)_
 
 The app is a static single-page site (`products/printbank/public/`, no build
 step). Open the preview to browse the print bank, download an SVG, export a
@@ -14,10 +14,10 @@ A "print bank" for printable wall art, inspired by the top-selling Etsy
 advantages those bundles don't have:
 
 1. **True vector prints.** Every design in the bank is generated as SVG, so a
-   single download prints losslessly at *any* size — 4×6″ up to A0. No blurry
+   single download prints losslessly at _any_ size — 4×6″ up to A0. No blurry
    upscales, no "which JPG do I use for 18×24?" folder archaeology.
 2. **Your own photography, print-ready.** Upload a photo and PrintBank grades
-   it against every standard print size by *effective DPI after crop*, then
+   it against every standard print size by _effective DPI after crop_, then
    exports a correctly-sized, correctly-cropped print file — entirely
    client-side (photos never leave the browser).
 
