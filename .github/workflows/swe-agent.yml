@@ -20,10 +20,9 @@ jobs:
   preflight:
     name: Check SWE-agent credentials
     runs-on: ubuntu-latest
-    if: |-
-      (github.event_name == 'workflow_dispatch') || (github.event_name == 'issues' &&
-       github.event.label.name == 'swe-fix' &&
-       github.event.issue.user.login != 'github-actions[bot]')
+    if: >-
+      ((github.event_name == 'workflow_dispatch') || (github.event_name == 'issues' && github.event.label.name == 'swe-fix' && github.event.issue.user.login != 'github-actions[bot]')) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
     outputs:
       configured: ${{ steps.check.outputs.configured }}
       issue_number: ${{ steps.check.outputs.issue_number }}
@@ -50,7 +49,9 @@ jobs:
     name: Notify when credentials are missing
     needs: preflight
     runs-on: ubuntu-latest
-    if: needs.preflight.outputs.configured == 'false'
+    if: >-
+      (needs.preflight.outputs.configured == 'false') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
     steps:
       - name: Post one-time setup-needed notice
         uses: actions/github-script@v9.0.0
@@ -112,7 +113,9 @@ jobs:
     name: Run SWE-Agent
     needs: preflight
     runs-on: ubuntu-latest
-    if: needs.preflight.outputs.configured == 'true'
+    if: >-
+      (needs.preflight.outputs.configured == 'true') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
     env:
       ISSUE_NUMBER: ${{ needs.preflight.outputs.issue_number }}
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

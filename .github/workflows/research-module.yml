@@ -28,6 +28,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   research:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_RESEARCH != '0'
     name: Run AI Research Module
     runs-on: ubuntu-latest
     permissions:

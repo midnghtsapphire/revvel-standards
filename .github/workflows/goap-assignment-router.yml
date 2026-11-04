@@ -20,6 +20,7 @@ env:
 
 jobs:
   route-goap-assignment:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0'
     name: Route GOAP/OpenRouter/Jules assignments
     runs-on: ubuntu-latest
     timeout-minutes: 15

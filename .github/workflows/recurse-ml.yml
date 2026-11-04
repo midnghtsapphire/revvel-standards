@@ -44,6 +44,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   recurse-ml-review:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0'
     name: RecurseML Code Review
     runs-on: ubuntu-latest
     permissions:
@@ -161,7 +162,9 @@ jobs:
   openrouter-fallback:
     name: OpenRouter Backup Review (RecurseML failed)
     needs: recurse-ml-review
-    if: failure()
+    if: >-
+      (failure()) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0')
     runs-on: ubuntu-latest
     permissions:
       contents: read
