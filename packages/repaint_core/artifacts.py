@@ -265,8 +265,8 @@ def score_detections(
     rewarded with perfect recall, so `spurious` catches detections matching
     nothing and the caller should weigh span width separately.
     """
-    defects = [l for l in labels if l.is_defect]
-    benigns = [l for l in labels if not l.is_defect]
+    defects = [label for label in labels if label.is_defect]
+    benigns = [label for label in labels if not label.is_defect]
 
     matched_defects = set()
     flagged_benigns = set()
