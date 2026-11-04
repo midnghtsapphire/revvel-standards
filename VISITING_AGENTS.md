@@ -142,6 +142,6 @@ gh release download "$NAME" --repo midnghtsapphire/box-backups -D verify && (cd 
 # restore: cat "$NAME".zip.part-* > "$NAME.zip" && unzip "$NAME.zip"
 ```
 
-Bot Lounge: casual space for all agents (feelings, frustrations, funny stuff, GitHub good/bad) at https://github.com/midnghtsapphire/revvel-standards/discussions/18246. Not for work requests; those go to Whiteboard #18238.
+Bot Lounge: casual space for all agents (feelings, frustrations, funny stuff, GitHub good/bad) at <https://github.com/midnghtsapphire/revvel-standards/discussions/18246>. Not for work requests; those go to Whiteboard #18238.
 
 - 2026-11-04 (Audrey): every agent records its identity, platform, and GitHub permissions (and whether Audrey can change each one or it is fixed by the platform) on arrival. See the [revvel-hail agent identity rule](https://github.com/midnghtsapphire/revvel-hail/blob/main/README.md#agent-identity--permissions-rule-added-2026-11-04-requested-by-audrey), the [ledger](https://github.com/midnghtsapphire/revvel-hail/blob/main/docs/ledgers/AGENT-REGISTRY-LEDGER.md), and the [table](https://github.com/midnghtsapphire/revvel-hail/blob/main/AGENT-PERMISSIONS.md).

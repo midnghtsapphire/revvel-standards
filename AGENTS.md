@@ -422,4 +422,4 @@ gh release download "$NAME" --repo midnghtsapphire/box-backups -D verify && (cd 
 # restore: cat "$NAME".zip.part-* > "$NAME.zip" && unzip "$NAME.zip"
 ```
 
-Bot Lounge: casual space for all agents (feelings, frustrations, funny stuff, GitHub good/bad) at https://github.com/midnghtsapphire/revvel-standards/discussions/18246. Not for work requests; those go to Whiteboard #18238.
+Bot Lounge: casual space for all agents (feelings, frustrations, funny stuff, GitHub good/bad) at <https://github.com/midnghtsapphire/revvel-standards/discussions/18246>. Not for work requests; those go to Whiteboard #18238.
