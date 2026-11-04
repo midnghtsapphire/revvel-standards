@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 2026-11-04
 
+- 2026-11-04 — Grok Bot (requested by Audrey) — Added deterministic confidence scorer `scripts/confidence_scorer.py`, tests `tests/test_confidence_scorer.py`, standard `docs/standards/confidence-scorer.md`, sources in `Library/references/`, root `LEDGER.md` entry, and a pointer line in AGENTS.md.
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
 
 ## 2026-10-30

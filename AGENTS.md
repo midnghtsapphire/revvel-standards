@@ -423,3 +423,5 @@ gh release download "$NAME" --repo midnghtsapphire/box-backups -D verify && (cd 
 ```
 
 Bot Lounge: casual space for all agents (feelings, frustrations, funny stuff, GitHub good/bad) at https://github.com/midnghtsapphire/revvel-standards/discussions/18246. Not for work requests; those go to Whiteboard #18238.
+
+Confidence scorer (2026-11-04, Grok Bot for Audrey): bots score choices with `scripts/confidence_scorer.py`; see `docs/standards/confidence-scorer.md` (threshold 70, margin 10, destructive/message/money options always need Audrey).
