@@ -22,7 +22,7 @@ artifacts tab to track trends across builds.
 
 ## Live snapshot — 2026-11-04
 
-```
+```text
 Overall: 🔴 DOWN  |  Effectiveness index: 0/100
 
 ── 1. WHAT IS VEINS CHANGING? ──────────────────────────────────
@@ -85,7 +85,7 @@ event (`FLAKY-<hash>`).
 
 Each proposal is a markdown stub committed on a branch and opened as a PR:
 
-```
+```markdown
 **Title:** Flaky workflow candidate: <workflow-name>
 **Severity:** `low` / `medium` / `high`
 **Source:** `workflow_run` — <GitHub Actions run URL>
@@ -178,7 +178,7 @@ VEINS de-duplicates comments: it only posts once per 6-hour window per issue.
 | `docs/biome/bnat-fingerprint.json` | Sheaf topology snapshot (run BNAT CLI to refresh) |
 
 CircleCI artifact chain:
-```
+```text
 Every push → veins-monitor job → veins-snapshot.js --json
            → CircleCI artifact: veins-monitor/veins-snapshot.json
 ```
