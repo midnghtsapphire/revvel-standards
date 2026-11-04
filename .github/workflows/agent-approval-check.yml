@@ -36,7 +36,7 @@ permissions:
   statuses: write
 
 concurrency:
-  group: agent-approval-check-${{ github.event.pull_request.number || github.event.issue.number || inputs.pr_number }}
+  group: agent-approval-check-${{ github.event.pull_request.number || github.event.issue.number || github.event.inputs.pr_number }}
   cancel-in-progress: false
 
 jobs:
