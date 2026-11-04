@@ -1,0 +1,16 @@
+[
+  {"id": "a-publish-draft", "title": "Open a draft PR with the new page",
+   "evidence": {"web": 8, "google_drive": 0.9, "seo_sem": 0.7, "social": 4},
+   "source_agreement": 0.9, "reversibility": 1.0, "cost": 0.05, "risk": 0.1,
+   "flags": {"destructive": false, "sends_message": false, "spends_money": false},
+   "sub_choices": [
+     {"id": "a1-title-short", "title": "Short title", "evidence": {"seo_sem": 0.9, "web": 6},
+      "source_agreement": 0.8, "reversibility": 1, "cost": 0, "risk": 0.05},
+     {"id": "a2-title-long", "title": "Long title", "evidence": {"seo_sem": 0.4, "web": 2},
+      "source_agreement": 0.5, "reversibility": 1, "cost": 0, "risk": 0.05}
+   ]},
+  {"id": "b-email-list", "title": "Email the mailing list",
+   "evidence": {"web": 3, "social": 0.6},
+   "source_agreement": 0.6, "reversibility": 0.0, "cost": 0.2, "risk": 0.5,
+   "flags": {"sends_message": true}}
+]
