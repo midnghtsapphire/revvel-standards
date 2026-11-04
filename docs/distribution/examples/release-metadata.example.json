@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "release": {
+    "title": "Weatherproof",
+    "release_artist": "Revvel Hail",
+    "spotify_artist_uri": "spotify:artist:4gzpq5DPGxSnKTe4SA8HAU",
+    "release_date": "2026-12-05",
+    "upc": "850012345678",
+    "isrc_registrant": {
+      "code": "RVH",
+      "owned": true
+    },
+    "sound_recordings": [
+      {
+        "sequence": 1,
+        "title": "Weatherproof",
+        "isrc": "USRVH2600001",
+        "duration_s": 212.4
+      },
+      {
+        "sequence": 2,
+        "title": "Hard Frost",
+        "isrc": "USRVH2600002",
+        "duration_s": 187.9,
+        "instrumental": true
+      }
+    ]
+  },
+  "ai_disclosure": {
+    "release": {
+      "contains_ai": "Partly",
+      "human_contribution": "All lyrics written by Audrey Evans; lead vocal on track 1 performed by Audrey Evans."
+    },
+    "artwork": {
+      "contains_ai": "All"
+    },
+    "lyrics": {
+      "contains_ai": "None",
+      "human_contribution": "Written by Audrey Evans, no generative assistance."
+    },
+    "sound_recordings": [
+      {
+        "isrc": "USRVH2600001",
+        "contains_ai": "Partly",
+        "human_contribution": "Lead vocal performed by Audrey Evans over a generated instrumental bed."
+      },
+      {
+        "isrc": "USRVH2600002",
+        "contains_ai": "All"
+      }
+    ],
+    "ai_contributors": [
+      {
+        "system": "ACE-Step",
+        "system_version": "1.0",
+        "role": "GenerativeAI",
+        "contribution": ["instrumental", "production"]
+      },
+      {
+        "system": "Matchering",
+        "system_version": "2.0",
+        "role": "GenerativeAI",
+        "contribution": ["mastering"]
+      }
+    ]
+  }
+}
