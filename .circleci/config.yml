@@ -88,6 +88,32 @@ jobs:
           # js-yaml pinned so this gate is reproducible (no floating npx fetch).
           command: npx --yes js-yaml@4.1.0 skills/SKILLS_INDEX.yml > /dev/null && echo "SKILLS_INDEX.yml ok"
 
+  # VEINS monitoring snapshot — answers the three standing questions about the
+  # external V.E.I.N.S. self-healing engine: what is it changing, how frequently,
+  # and are the proposals doing anything? Runs on every push; never fails the
+  # pipeline (exit code swallowed with || true) — this is an observer, not a
+  # gate. Output is stored as a CircleCI artifact for trend tracking.
+  # Scripts: scripts/veins-snapshot.js, scripts/veins-tracker.js
+  # Doc: docs/VEINS_MONITORING_REPORT.md
+  veins-monitor:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: VEINS Activity Snapshot (human-readable)
+          command: node scripts/veins-snapshot.js || true
+      - run:
+          name: VEINS Activity Snapshot (JSON artifact)
+          command: |
+            mkdir -p /tmp/veins-artifacts
+            node scripts/veins-snapshot.js --json \
+              > /tmp/veins-artifacts/veins-snapshot.json || true
+      - store_artifacts:
+          path: /tmp/veins-artifacts
+          destination: veins-monitor
+
   # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
   # and that every REVVEL-DISABLED block in changed files has all required
   # metadata fields (AGENT, MODEL, WR, DATE, STATUS).
@@ -134,6 +160,10 @@ workflows:
           filters:
             branches:
               ignore: main
+      - veins-monitor:
+          filters:
+            branches:
+              ignore: main
 
   # Run on main.
   main-workflow:
@@ -147,6 +177,10 @@ workflows:
             branches:
               only: main
       - policy-check:
+          filters:
+            branches:
+              only: main
+      - veins-monitor:
           filters:
             branches:
               only: main
