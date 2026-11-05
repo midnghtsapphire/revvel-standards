@@ -4,6 +4,8 @@ Source: Audrey via Pedal + 1-Git-Triage, 2026-11-05. Exact lock: "Make sure the 
 
 Tracking: Refs [#18269](https://github.com/midnghtsapphire/revvel-standards/issues/18269). This note implements the RulesSteward encode on that process WR. Issue #18269 stays open. Secret's Whiteboard and hooks half for #18266 stays on #18269. Drafts #18262, #18263, and #18267 stay untouched. Merged #18264 and #18266 stay as they are.
 
+Draft: [#18272](https://github.com/midnghtsapphire/revvel-standards/pull/18272) into `daily/2026-11-05`. Stays draft. Agents do not merge it.
+
 Canonical rule: [`docs/governance/SILENT_MERGE.md`](../../docs/governance/SILENT_MERGE.md).
 
 ## Three gates

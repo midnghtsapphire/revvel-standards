@@ -46,4 +46,4 @@ This file is the standing rule. It survives a metal-spine archive of `AGENTS.md`
 
 ## Tracking
 
-Refs #18269. This file is the RulesSteward encode of that process WR. Issue #18269 stays open. Secret's Whiteboard and hooks half stays on the issue.
+Refs #18269. This file is the RulesSteward encode of that process WR. Issue #18269 stays open. Secret's Whiteboard and hooks half stays on the issue. Draft record: #18272 into `daily/2026-11-05`. Stays draft. Agents do not merge it.
