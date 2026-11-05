@@ -1,3 +1,5 @@
+> **Archived 2026-11-05.** Kernel renamed HUSK → HULL per Audrey via Proofy: "HULL for the METAL kernel". This is the pre-rename snapshot of `Library/references/husk-oaudrey-2026-11-05.md`, archive-renamed (not deleted, not git-rm). It is not the canonical pointer. Canonical pointer: `Library/references/hull-oaudrey-2026-11-05.md`. Public product name stays METAL. Home repo stays `midnghtsapphire/oaudrey`.
+
 # METAL (public) / HUSK (kernel) → oaudrey pointer — 2026-11-05
 
 Agent: Grok Bot (Audrey-directed via TriageChief). Additive governance pointer only; no deletes; no merges.
