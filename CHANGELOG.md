@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-05
+
+- 2026-11-05 — Grok Bot (Audrey-directed via TriageChief) — HUSK governance pointer: added `Library/references/husk-oaudrey-2026-11-05.md`; appended `wr/memory/decisions.jsonl` decision that HUSK (HTTP Universal Skill Kernel) runtime + governance spine lives in midnghtsapphire/oaudrey; openaudrey = brand umbrella; elisymlabs/husk is historical pointer only; metal AGENTS/VISITING in revvel-standards remain visitor rules for the oaudrey bot. Additive only; no deletes; no Actions YAML; draft into daily/2026-11-05.
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
