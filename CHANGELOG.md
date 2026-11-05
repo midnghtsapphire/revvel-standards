@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-05
+
+- 2026-11-05 — RulesSteward (Grok Bot, for Audrey) — Added `standards/AGENT_SECURITY_BOUNDARIES.md` (token role is the boundary; Triage-only untrusted agents, Workflows perm off; one writer, loop cap 3; rotate-then-purge, Gitleaks on CircleCI/self-hosted). Read-only collaborator checks recorded. Refs Freedom-Angel-Corp/brain-dump#14.
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
