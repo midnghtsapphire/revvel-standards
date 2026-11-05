@@ -1024,3 +1024,5 @@ issue N" over "X will fix this."
 `.github/workflows/openrouter-triage.yml`,
 `docs/playbooks/wr-manual-processes.md` §1–§2, CLAUDE.md gotcha #6,
 `standards/VERIFY_THE_POSTCONDITION.md`.
+
+- 2026-11-05 — Grok Bot — Never-delete / lock-in audit (brain-dump#4): no deletions since 2026-10-30; pre-rule deletion candidates d3732059/#17891 and Claude-authored ad7e476a (#17789, actual removal in 327c320f1/#17769); CLAUDE.md omits the OWNER RULE; Claude transcript for session 01KFMv… missing. See `docs/governance/incidents/2026-11-never-delete-and-lock-in-audit.md`.
