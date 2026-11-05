@@ -183,15 +183,23 @@ function buildSnapshot(proposals, commitDates, fingerprint, snapshotAt) {
       repeat_firing:   analysis.repeat_firing,
     },
 
-    sheaf_topology: fingerprint ? {
-      dim_H0:       fingerprint.dim_H0,
-      dim_H1:       fingerprint.dim_H1,
-      energy:       fingerprint.energy,
-      consistent:   fingerprint.consistent,
-      obstruction:  fingerprint.obstruction,
-      long_lived_h1_count: fingerprint.long_lived_h1_count,
-      generated_at: fingerprint.generated_at,
-    } : null,
+    sheaf_topology: fingerprint ? (() => {
+      const fpAgeDays = fingerprint.generated_at
+        ? Math.round((Date.now() - new Date(fingerprint.generated_at)) / 86400000)
+        : null;
+      return {
+        dim_H0:              fingerprint.dim_H0,
+        dim_H1:              fingerprint.dim_H1,
+        energy:              fingerprint.energy,
+        consistent:          fingerprint.consistent,
+        obstruction:         fingerprint.obstruction,
+        long_lived_h1_count: fingerprint.long_lived_h1_count,
+        generated_at:        fingerprint.generated_at,
+        fingerprint_age_days: fpAgeDays,
+        // Stale > 30 days: topology data may not reflect current fleet state.
+        fingerprint_stale:   fpAgeDays !== null && fpAgeDays > 30,
+      };
+    })() : null,
   };
 }
 
@@ -270,6 +278,10 @@ function renderReport(snap) {
     lines.push(`  Long-lived H¹ bars: ${st.long_lived_h1_count}  (as of ${st.generated_at})`);
     if (st.long_lived_h1_count > 0) {
       lines.push('  ⚠️  Long-lived H¹ bars detected — persistent fleet disagreement must be resolved, not glued.');
+    }
+    if (st.fingerprint_stale) {
+      lines.push(`  ⚠️  Sheaf fingerprint is ${st.fingerprint_age_days} days old — topology data is stale.`);
+      lines.push('      Re-run: node scripts/bnatsheaf/cli.js imprint_agent --agent <name>');
     }
     lines.push('');
   }

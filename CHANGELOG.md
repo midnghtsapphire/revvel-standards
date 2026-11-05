@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-05
+
+- 2026-11-05 — Grok Bot (for Audrey) — Ported PR #18255: `scripts/veins-snapshot.js` adds sheaf fingerprint staleness fields and a stale-topology warning; tests in `tests/veins-snapshot.test.js`; appended a dated 2026-11-05 update section to `docs/VEINS_MONITORING_REPORT.md` (earlier dated sections left intact).
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
