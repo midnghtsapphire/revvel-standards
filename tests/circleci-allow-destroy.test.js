@@ -1,26 +1,15 @@
 'use strict';
 
 /**
- * The `allow-destroy` label must be able to ratify a deletion in CircleCI
- * (WR #17829).
+ * CircleCI archival policy: allow-destroy is DEAD / fail CLOSED.
  *
- * RVS-AGENT-001 §7 reserves deletion to a human, and the sanctioned way for a
- * human to take it is the `allow-destroy` label. `no-destroy-guard.yml` reads
- * that label. CircleCI's `policy-check` hardcoded
+ * 2026-11-05 Audrey Evans (via TriageChief): "ya not lets get rid of that."
+ * ("that" = allow-destroy label bypass). Bypass path is COMMENTED OUT in
+ * check-archival-policy.sh (visible but dead). AGENTS.md OWNER RULE
+ * (2026-10-30): no label may permit deletion.
  *
- *     ALLOW_DESTROY: "false"
- *
- * in `.circleci/config.yml`, with a comment saying the label "is not available
- * in CircleCI context" — so the one sanctioned path had a required check that
- * could never turn green. A ratified deletion could not merge, and #17790's
- * Option A was blocked on a hardcoded string.
- *
- * The label IS reachable: `CIRCLE_PULL_REQUEST` carries the PR URL on every PR
- * build. It needs a token, because this repository is private.
- *
- * These tests drive the SHIPPED script in a throwaway git repo with a stubbed
- * `curl` on PATH, so they exercise the resolution as it will run rather than a
- * re-implementation of it.
+ * #18261 runtime-ignored the bypass; this suite asserts the stronger
+ * comment-out / fail-closed behaviour.
  */
 
 const { test } = require('node:test');
@@ -33,10 +22,6 @@ const { execFileSync, spawnSync } = require('node:child_process');
 const ROOT = path.join(__dirname, '..');
 const SCRIPT = path.join(ROOT, '.circleci', 'scripts', 'check-archival-policy.sh');
 
-/**
- * A repo whose HEAD deletes a tracked file, so the deletion gate has something
- * to fire on. Returns the repo path.
- */
 function repoWithADeletion() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'allow-destroy-'));
   const git = (...args) =>
@@ -53,12 +38,10 @@ function repoWithADeletion() {
   fs.rmSync(path.join(dir, 'doomed.txt'));
   git('add', '-A');
   git('commit', '-qm', 'delete it');
-  // The script diffs against origin/main; give it one without a remote.
   git('update-ref', 'refs/remotes/origin/main', 'main');
   return dir;
 }
 
-/** A `curl` on PATH that ignores its arguments and prints `body`. */
 function stubCurl(dir, { body = null, exitCode = 0 } = {}) {
   const bin = path.join(dir, 'stub-bin');
   fs.mkdirSync(bin, { recursive: true });
@@ -87,7 +70,8 @@ function run(dir, env, { bin } = {}) {
 const LABELLED = JSON.stringify({ labels: [{ name: 'bug' }, { name: 'allow-destroy' }] });
 const UNLABELLED = JSON.stringify({ labels: [{ name: 'bug' }] });
 
-test('the allow-destroy label ratifies a deletion', () => {
+test('the allow-destroy label is IGNORED — deletions still fail closed (bypass dead)', () => {
+  // Bypass resolver is commented out; even a labelled PR response cannot ratify.
   const dir = repoWithADeletion();
   const bin = stubCurl(dir, { body: LABELLED });
   const r = run(dir, {
@@ -96,8 +80,9 @@ test('the allow-destroy label ratifies a deletion', () => {
     CIRCLE_PROJECT_USERNAME: 'o',
     CIRCLE_PROJECT_REPONAME: 'r',
   }, { bin });
-  assert.equal(r.status, 0, `expected the label to ratify:\n${r.stdout}\n${r.stderr}`);
-  assert.match(r.stderr, /allow-destroy label found on PR #1234/);
+  assert.equal(r.status, 1, `label must not ratify; expected fail-closed:\n${r.stdout}\n${r.stderr}`);
+  assert.match(r.stderr, /Deleted files detected/);
+  assert.match(r.stderr, /allow-destroy is dead|OWNER RULE|Audrey 2026-11-05/i);
 });
 
 test('a PR without the label is still blocked', () => {
@@ -114,8 +99,6 @@ test('a PR without the label is still blocked', () => {
 });
 
 test('the label must be a label, not a word in the PR body', () => {
-  // Matching the string anywhere in the response would let a PR ratify itself
-  // by mentioning the label in its own title or description.
   const dir = repoWithADeletion();
   const bin = stubCurl(dir, {
     body: JSON.stringify({
@@ -133,17 +116,14 @@ test('the label must be a label, not a word in the PR body', () => {
   assert.equal(r.status, 1, 'a PR must not ratify itself by naming the label');
 });
 
-test('no token fails CLOSED, and names what is missing', () => {
-  // An unreadable label is not permission. But a check that just says "no" is
-  // how the old hardcoded `false` stayed unnoticed, so it has to say WHY.
+test('no token fails CLOSED (bypass dead — no live label lookup)', () => {
   const dir = repoWithADeletion();
   const r = run(dir, { CIRCLE_PULL_REQUEST: 'https://github.com/o/r/pull/1234' });
   assert.equal(r.status, 1);
-  assert.match(r.stderr, /no GITHUB_TOKEN in this job/);
-  assert.match(r.stderr, /Add GITHUB_TOKEN/);
+  assert.match(r.stderr, /Deleted files detected/);
 });
 
-test('an API failure fails CLOSED', () => {
+test('an API failure cannot open a bypass (resolver is commented out)', () => {
   const dir = repoWithADeletion();
   const bin = stubCurl(dir, { exitCode: 22 });
   const r = run(dir, {
@@ -153,13 +133,15 @@ test('an API failure fails CLOSED', () => {
     CIRCLE_PROJECT_REPONAME: 'r',
   }, { bin });
   assert.equal(r.status, 1);
-  assert.match(r.stderr, /allow-destroy lookup failed/);
+  assert.match(r.stderr, /Deleted files detected/);
 });
 
-test('an explicit ALLOW_DESTROY still wins', () => {
+test('an explicit ALLOW_DESTROY is IGNORED — deletions still fail closed', () => {
   const dir = repoWithADeletion();
   const r = run(dir, { ALLOW_DESTROY: 'true' });
-  assert.equal(r.status, 0, 'an explicit setting is a decision already taken');
+  assert.equal(r.status, 1, 'explicit ALLOW_DESTROY must not bypass deletion gate');
+  assert.match(r.stderr, /ALLOW_DESTROY=true is IGNORED|OWNER RULE|Audrey 2026-11-05/i);
+  assert.match(r.stderr, /Deleted files detected/);
 });
 
 test('outside a PR build the gate stays strict', () => {
@@ -168,37 +150,40 @@ test('outside a PR build the gate stays strict', () => {
   assert.equal(r.status, 1);
 });
 
-test('config.yml does not hardcode ALLOW_DESTROY back to false', () => {
-  // The deadlock lived in the workflow config, not the script. Fixing the
-  // script while leaving the hardcode would change nothing.
+test('config.yml does not hardcode ALLOW_DESTROY back to a live bypass', () => {
   const cfg = fs.readFileSync(path.join(ROOT, '.circleci', 'config.yml'), 'utf8')
     .split('\n')
     .filter((l) => !/^\s*#/.test(l))
     .join('\n');
   assert.doesNotMatch(
     cfg,
-    /ALLOW_DESTROY:/,
-    'setting it in config.yml overrides the resolution and restores the deadlock',
+    /ALLOW_DESTROY:\s*["']?true["']?/,
+    'config must not revive ALLOW_DESTROY=true',
   );
 });
 
-test('the token never reaches argv', () => {
-  // CLAUDE.md gotcha #4: `curl -H "Authorization: Bearer $T"` puts the secret
-  // in the process list for anything that can read /proc.
+test('live (non-comment) script code never puts the token on argv', () => {
   const src = fs.readFileSync(SCRIPT, 'utf8');
-  assert.match(src, /curl --config -/, 'the header must come from stdin');
+  const live = src.split('\n').filter((l) => !/^\s*#/.test(l)).join('\n');
   assert.doesNotMatch(
-    src.split('\n').filter((l) => !/^\s*#/.test(l)).join('\n'),
+    live,
     /-H ["'][^"']*Bearer/,
     'a Bearer header on the command line leaks the token to `ps`',
   );
+  // Dead bypass may still show curl --config - inside comments; that is fine.
+  assert.match(src, /allow-destroy|ALLOW_DESTROY/, 'dated dead bypass must remain visible');
 });
 
-// Regression (PR #18128): the REVVEL-DISABLED scan read every changed file
-// line by line, several greps per line. A PR adding a large binary archive
-// ran until CircleCI killed policy-check. Binary files and files that never
-// mention the token must be skipped, while a bad block in a text file is
-// still reported.
+test('bypass resolver is commented out (visible but dead)', () => {
+  const src = fs.readFileSync(SCRIPT, 'utf8');
+  assert.match(src, /SUPERSEDED 2026-11-05/);
+  assert.match(src, /ya not lets get rid of that/);
+  // Live code must not call resolve_allow_destroy
+  const live = src.split('\n').filter((l) => !/^\s*#/.test(l)).join('\n');
+  assert.doesNotMatch(live, /resolve_allow_destroy/);
+  assert.doesNotMatch(live, /ALLOW_DESTROY="\$\(resolve_allow_destroy\)"/);
+});
+
 test('policy scan skips binaries and token-free files but still flags bad blocks', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'archival-scan-'));
   const git = (...args) =>
@@ -210,7 +195,6 @@ test('policy scan skips binaries and token-free files but still flags bad blocks
   git('add', '-A');
   git('commit', '-qm', 'base');
   git('checkout', '-q', '-b', 'work');
-  // ~200k lines of text without the token, plus a binary blob.
   fs.writeFileSync(path.join(dir, 'big.txt'), 'plain line\n'.repeat(200000));
   const bin = Buffer.alloc(4 * 1024 * 1024);
   bin[0] = 0;
@@ -229,8 +213,6 @@ test('policy scan skips binaries and token-free files but still flags bad blocks
   assert.ok(elapsed < 30000, `scan took ${elapsed} ms`);
 });
 
-// Review follow-up: the token pre-scan must not be bypassable with a NUL byte
-// or a file name that starts with "-".
 test('policy scan still flags bad blocks in files with NUL bytes or dash-leading names', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'archival-scan-edge-'));
   const git = (...args) =>

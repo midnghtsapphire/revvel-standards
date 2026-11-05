@@ -2,8 +2,11 @@ name: No-Destroy Guard
 
 # Fails a PR that deletes existing apps/products or strips large amounts of code
 # from protected paths (the failure that wiped two finished apps under a PR that
-# claimed to "add a research WR"). Override an intentional removal with the
-# `allow-destroy` label. See scripts/no-destroy-guard.js.
+# claimed to "add a research WR"). See scripts/no-destroy-guard.js.
+#
+# SUPERSEDED 2026-11-05 — allow-destroy bypass KILLED (Audrey Evans):
+# "ya not lets get rid of that." AGENTS.md OWNER RULE: no label permits deletion.
+# Surgical comment-out of the bypass wiring only — do not expand Actions.
 
 on:
   pull_request:
@@ -26,5 +29,9 @@ jobs:
       - name: Block destructive diffs
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          ALLOW_DESTROY: ${{ contains(github.event.pull_request.labels.*.name, 'allow-destroy') }}
+          # SUPERSEDED 2026-11-05 — allow-destroy bypass COMMENTED OUT (Audrey):
+          # "ya not lets get rid of that." Label must not wire a bypass.
+          # ALLOW_DESTROY: ${{ contains(github.event.pull_request.labels.*.name, 'allow-destroy') }}
+          # Force false so even a stale caller cannot revive the bypass.
+          ALLOW_DESTROY: "false"
         run: node scripts/no-destroy-guard.js
