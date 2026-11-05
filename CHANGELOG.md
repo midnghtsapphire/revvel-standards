@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 2026-11-05
 
 - 2026-11-05 — RulesSteward (Grok Bot, for Audrey) — Added `standards/AGENT_SECURITY_BOUNDARIES.md` (token role is the boundary; Triage-only untrusted agents, Workflows perm off; one writer, loop cap 3; rotate-then-purge, Gitleaks on CircleCI/self-hosted). Read-only collaborator checks recorded. Refs Freedom-Angel-Corp/brain-dump#14.
+- 2026-11-05 — Grok Bot (Audrey via Proofy / TriageChief) — METAL (public) / HULL (kernel) governance pointer. Audrey's exact words: "HULL for the METAL kernel". Public brand stays METAL (public provenance face). Kernel renamed HUSK → HULL (protective kernel, linked to METAL and separable). No backronym assigned to HULL. Home stays midnghtsapphire/oaudrey; openaudrey stays brand-only. Archive-renamed `Library/references/husk-oaudrey-2026-11-05.md` to `docs/archive/2026-11-05/Library/references/husk-oaudrey-2026-11-05.md` (snapshot kept; not deleted; not git-rm). Canonical pointer: `Library/references/hull-oaudrey-2026-11-05.md`. Appended `wr/memory/decisions.jsonl` (`metal-public-hull-kernel`); earlier HUSK lines left in place. elisymlabs/husk remains a historical repo pointer only. Lowercase "metal" in #18263 is terse writing style, not the product name; that draft was not edited. No Actions YAML. Draft into daily/2026-11-05.
 
 ## 2026-11-04
 
