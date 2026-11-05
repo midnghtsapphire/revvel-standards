@@ -1,18 +1,24 @@
-# HUSK → oaudrey pointer — 2026-11-05
+# METAL (public) / HUSK (kernel) → oaudrey pointer — 2026-11-05
 
 Agent: Grok Bot (Audrey-directed via TriageChief). Additive governance pointer only; no deletes; no merges.
 
 ## Product
 
-**HUSK** = **HTTP Universal Skill Kernel**.
+- **METAL** = public product name (Audrey's pick, 2026-11-05).
+- **HUSK** = **HTTP Universal Skill Kernel**, the kernel underneath METAL.
+- Home repo for both: `midnghtsapphire/oaudrey` (unchanged).
 
 ## Where it lives
 
 | Role | Repo |
 | --- | --- |
-| HUSK runtime + governance spine | [`midnghtsapphire/oaudrey`](https://github.com/midnghtsapphire/oaudrey) (private) |
+| METAL / HUSK runtime + governance spine | [`midnghtsapphire/oaudrey`](https://github.com/midnghtsapphire/oaudrey) (private) |
 | Brand umbrella | [`midnghtsapphire/openaudrey`](https://github.com/midnghtsapphire/openaudrey) |
 | Visitor / agent metal rules the oaudrey bot must read | `AGENTS.md` + `VISITING_AGENTS.md` in [`midnghtsapphire/revvel-standards`](https://github.com/midnghtsapphire/revvel-standards) (metal rewrite drafts stay here; see `Library/references/metal-rewrite-2026-11-05.md` when present) |
+
+## Naming note: "metal" in standards drafts
+
+The lowercase "metal" in `AGENTS.md` / `MASTER.md` / `VISITING_AGENTS.md` (draft #18263, "metal rewrite", "metal spine") is a **style descriptor** (terse, less wordy), not a product claim. The product name is **METAL** (public) with **HUSK** as the kernel; this file is the canonical pointer.
 
 ## Historical pointer only
 
