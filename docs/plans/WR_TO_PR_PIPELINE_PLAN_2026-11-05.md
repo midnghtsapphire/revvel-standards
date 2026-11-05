@@ -444,6 +444,7 @@ Q1 and Q2 are answered and locked as of 2026-11-05 (§0). Q3 through Q10 stay op
    **Locked, both options (RulesSteward, same day, 1-Git-Triage widget t83s308 → Proofy):**
    Audrey did not pick only one. Lane 4 and lane 5 (verbatim) are the fallbacks if Roo and
    Roomote are unavailable. No call path is specified.
+   **Resolved 2026-11-05:** Q1 is answered. See "Decisions 2026-11-05" at the end of this plan.
 2. **Q2. Run the Jules data export before 2026-11-11?** It saves sessions, memories, settings,
    and environment variable values. The export contains secrets, so it must stay out of every
    repo, and storing it is a secrets decision.
@@ -453,24 +454,28 @@ Q1 and Q2 are answered and locked as of 2026-11-05 (§0). Q3 through Q10 stay op
    **Locked (same source):** The export may include secrets. Free-tier first. Anything paid
    needs its own WR/PR for Audrey's approval. No bot is created from this note alone. No
    export contents go in this repo.
+   **Resolved 2026-11-05:** Q2 is answered. See "Decisions 2026-11-05" at the end of this plan.
 3. **Q3. Where do chat bots file requests?** The plan uses `Freedom-Angel-Corp/brain-dump`
    issues. Is that right for every bot, including ones without GitHub access?
 4. **Q4. Silent merge scope.** Does the 2026-11-05 "approve everything" direction cover
    enforcement machinery (gates, triage wiring, Dragnet), which `process/wr-pr-pipeline.md`
    reserved for a human merge? Does it cover the `daily/*` → `main` merge, or only
    task → daily?
+   **Resolved 2026-11-05:** Q4 is answered. See "Decisions 2026-11-05" at the end of this plan.
 5. **Q5. Merge method:** squash, merge commit, or rebase? `CHANGELOG.md` records that a squash
    merge once dropped six commits (PR #17913), which argues for merge commits.
 6. **Q6.** `scripts/confidence_scorer.py` and the root `LEDGER.md` exist only on
    `daily/2026-11-04`. When does that branch reach `main`? Until then, this PR records its
    ledger entry in `wr/memory/decisions.jsonl` only, rather than creating a second root
    `LEDGER.md` that would collide with the one on `daily/2026-11-04`.
+   **Resolved 2026-11-05:** Q6 is answered. See "Decisions 2026-11-05" at the end of this plan.
 7. **Q7. Where do the five Audrey questions go?** Options: one pinned Discussion, a single
    issue, or chat with one named bot.
 8. **Q8.** Is a daily snapshot of cursors in `wr/status/` enough to satisfy "everything in the
    repo", or should the full poll cache be committed too?
 9. **Q9.** TriageChief and 1-Git-Triage do not appear anywhere in this repo yet. Where is their
    identity and permissions row (as the `revvel-hail` `AGENT-PERMISSIONS.md` rule asks)?
+   **Resolved 2026-11-05:** Q9 is answered. See "Decisions 2026-11-05" at the end of this plan.
 10. **Q10.** Who gives the go for each stage below: Audrey, or TriageChief on her behalf?
 
 ## 12. Rollout (each stage starts only after a go)
@@ -496,3 +501,29 @@ Q1 and Q2 are answered and locked as of 2026-11-05 (§0). Q3 through Q10 stay op
 - **2026-11-05 update:** Q1 and Q2 are locked (§0). Still need Audrey in Stage 0: Q4, Q10,
   one Jules API session on a throwaway branch, GitHub branch-rename permission, and secondary
   limits. No bot was created by this lock.
+
+## Decisions 2026-11-05
+
+Audrey Evans answered these through 1-Git-Triage's question card on 2026-11-05. They are
+resolved. Text earlier in this plan is kept as written; where it disagrees, this section
+controls.
+
+- **Q1 (resolved).** After 2026-11-11 the WR/PR rewriter is Roo or Roomote (Roo Code's cloud
+  agent). Jules stays primary until 2026-11-11. Roo/Roomote plugs into the same in-code
+  rewrite step (§4.2) as the Jules adapter did: `wr_rewrite.py` calls a Roo adapter with the
+  same input (raw request plus WR id) and expects the same output (WR body, branch name,
+  draft PR text). The adapter uses Roomote's cloud API to start a task against the WR branch
+  and poll it, or the Roo Code CLI in headless mode on the runner machine for local runs.
+  Keys stay in the vault, never in the repo. If Roo and Roomote are both unavailable, the
+  repo model chain (lane 4: LM Studio → Ollama → OpenRouter with the paid gate, then the
+  no-key Perplexity bridge) and then verbatim stay the fallbacks. Wiring needs its own WR/PR.
+- **Q2 (resolved).** Yes to the Jules data export. Secret runs it into the vault only, never
+  a repo.
+- **Q4 (resolved).** Silent merges of clean PRs are fine. A bot never merges its own PR.
+- **Q6 (resolved).** Land `scripts/confidence_scorer.py` and the root `LEDGER.md` from
+  `daily/2026-11-04` (#18249) once it is green.
+- **Q9 (resolved).** TriageChief = 1-Git-Triage. It gets added to the `AGENTS.md` roster later
+  (separate WR/PR).
+- **New merge gate.** Audrey's exact words: "Make sure the code has been assigned and done
+  before merge." Before a PR merges, its WR/issue must be assigned to a bot and marked done,
+  and the PR must deliver that work. This applies on top of §8.1.
