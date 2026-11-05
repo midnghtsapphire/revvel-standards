@@ -28,6 +28,13 @@ comment, via 1-Git-Triage widget t83s308):
 - **Free-tier first;** any paid option needs its own WR/PR for Audrey's approval only. No bot
   creation from this lock alone.
 
+**Addendum (RulesSteward, 2026-11-05):** The lock above is Audrey Evans's, exact via
+1-Git-Triage widget t83s308 → Proofy, already commented on PR #18267. Q1 and Q2 are locked.
+Both **Roo and Roomote** are the post-2026-11-11 rewriter options. Audrey did not pick only
+one. If Roo and Roomote are unavailable, lane 4 (repo model chain) and then lane 5
+(verbatim) are the fallbacks. Jules lanes 1, 2, and 3 stay historical / pre-11-11. The
+export may include secrets. This addendum does not add a call path, script, or bot.
+
 ## 1. Goal
 
 Every request Audrey makes becomes two things at once, automatically:
@@ -126,6 +133,12 @@ Audrey picks in Q1. Until she picks, lane 4 is used, because it needs no new key
 Roomote)** is the default WR rewriter. Free-tier first; any paid option needs its own WR/PR.
 Jules export is owned by Secret and lands in the vault only, never a repo.
 
+**Addendum (same lock, RulesSteward recording Audrey via Proofy):** Row 4b names **Roo or
+Roomote**, both of them, as the default from 2026-11-11. Audrey did not narrow that to one
+name. Its "how it is called" cell (`[VERIFY] Wire via RulesSteward / GIT Controller into
+wr_rewrite.py`) is not Audrey's lock. This plan does not authorize that wiring, a script, or
+a bot. Lane 4 and lane 5 stay the fallbacks when Roo and Roomote are unavailable.
+
 **What the Jules prompt pins.** The prompt is a versioned file,
 `scripts/wr-pipeline/prompts/jules-wr.md`. Jules also reads `AGENTS.md`. The prompt says:
 
@@ -140,7 +153,8 @@ Jules export is owned by Secret and lands in the vault only, never a repo.
 ### 4.3 Fallback when Jules is down (manual, no bot needed)
 
 Treat Jules as down on a 5xx, a timeout, no session progress for 30 minutes, a quota error,
-or any date after 2026-11-11.
+or any date after 2026-11-11. After the 2026-11-05 lock, the commands below are the manual
+fallback when Roo and Roomote are unavailable. This lock does not add Roo or Roomote commands.
 
 ```bash
 # 1. Record the request (always works; no network needed)
@@ -420,17 +434,25 @@ do without doing it.
 
 ## 11. Open questions for Audrey
 
+Q1 and Q2 are answered and locked as of 2026-11-05 (§0). Q3 through Q10 stay open.
+
 1. **Q1. After 2026-11-11, which lane is the default rewriter?** Options: the repo model chain
    (lane 4), another coding agent with an API, or a Google successor such as Antigravity
    [VERIFY whether it has an API].
    **ANSWERED 2026-11-05 (supersedes the open options above):** **Roo or Roomote**. Free-tier
    first; any paid option needs its own WR/PR.
+   **Locked, both options (RulesSteward, same day, 1-Git-Triage widget t83s308 → Proofy):**
+   Audrey did not pick only one. Lane 4 and lane 5 (verbatim) are the fallbacks if Roo and
+   Roomote are unavailable. No call path is specified.
 2. **Q2. Run the Jules data export before 2026-11-11?** It saves sessions, memories, settings,
    and environment variable values. The export contains secrets, so it must stay out of every
    repo, and storing it is a secrets decision.
    **ANSWERED 2026-11-05 (supersedes the open ask above):** **Yes.** Secret runs Google's Jules
    export into the **vault only** (includes stored secrets). Never commit export contents to
    any repo.
+   **Locked (same source):** The export may include secrets. Free-tier first. Anything paid
+   needs its own WR/PR for Audrey's approval. No bot is created from this note alone. No
+   export contents go in this repo.
 3. **Q3. Where do chat bots file requests?** The plan uses `Freedom-Angel-Corp/brain-dump`
    issues. Is that right for every bot, including ones without GitHub access?
 4. **Q4. Silent merge scope.** Does the 2026-11-05 "approve everything" direction cover
@@ -471,3 +493,6 @@ do without doing it.
 - **Not done, on purpose:** No scripts, no bots, no workflow edits, no labels, no merges.
 - **Next owner:** Audrey, for the Stage 0 decisions. Then TriageChief (1-Git-Triage) to
   schedule Stage 1.
+- **2026-11-05 update:** Q1 and Q2 are locked (§0). Still need Audrey in Stage 0: Q4, Q10,
+  one Jules API session on a throwaway branch, GitHub branch-rename permission, and secondary
+  limits. No bot was created by this lock.

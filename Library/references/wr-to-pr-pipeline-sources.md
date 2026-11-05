@@ -46,3 +46,17 @@ These are relayed by the parent agent and TriageChief and recorded as given.
   <https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api>
 - GitHub Docs, *Rate limits for the REST API* (primary and secondary limits):
   <https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api>
+
+## Owner lock (Audrey Evans, 2026-11-05) — Q1 and Q2
+
+Recorded by RulesSteward from 1-Git-Triage widget t83s308 → Proofy. The same lock is the
+2026-11-05 comment on PR #18267. This file does not contain any Jules export, secrets, or
+vault material. No bot is created from this note.
+
+- **Q1 locked.** After 2026-11-11 the WR rewriter options are Roo or Roomote (Jules
+  successor). Both are recorded. Audrey did not pick only one. Lane 4 (repo model chain)
+  and verbatim are the fallbacks if Roo and Roomote are unavailable. No call path is
+  specified.
+- **Q2 locked.** Jules data export: Yes. Secret runs Google's Jules export into the vault
+  only (never a repo). The export may include secrets. Free-tier first. Anything paid
+  needs its own WR/PR for Audrey's approval.
