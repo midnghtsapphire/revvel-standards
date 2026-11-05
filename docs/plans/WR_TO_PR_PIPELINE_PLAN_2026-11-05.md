@@ -19,6 +19,15 @@ after that date (Open question Q1). Google also offers a full export of Jules se
 sessions, and memories. Whether to run that export is Audrey's call (Q2). This plan does
 not run it.
 
+**SUPERSEDED (Q1/Q2 left open):** The paragraph above. **Audrey lock 2026-11-05** (PR #18267
+comment, via 1-Git-Triage widget t83s308):
+- **Until 2026-11-11:** Jules remains the default WR rewriter (lanes 1–3 above stay as written).
+- **From 2026-11-11:** the default WR rewriter is **Roo or Roomote** (Jules successor).
+- **Jules data export:** Yes — Secret runs Google's Jules export into the **vault only**
+  (includes stored secrets). Never commit export contents to any repo.
+- **Free-tier first;** any paid option needs its own WR/PR for Audrey's approval only. No bot
+  creation from this lock alone.
+
 ## 1. Goal
 
 Every request Audrey makes becomes two things at once, automatically:
@@ -105,11 +114,17 @@ the lanes in order:
 | **1 (default until 2026-11-11)** | **Jules REST API** | `POST https://jules.googleapis.com/v1alpha/sessions` with `sourceContext.source = sources/github/<owner>/<repo>`, `githubRepoContext.startingBranch = daily/YYYY-MM-DD`, `automationMode = AUTO_CREATE_PR`, `title`, `prompt`. Then `GET /sessions/{id}` and `GET /sessions/{id}/activities?createTime=<cursor>` until `outputs[].pullRequest` appears. | Header `X-Goog-Api-Key` from env `JULES_API_KEY`, which is never printed, logged, or written to a file | Can run unattended from cron. The API is alpha, so the request shape is pinned in one function. |
 | 2 | **Jules CLI** (`@google/jules`) | `jules remote new --repo <owner>/<repo> --session "$(cat prompt.md)"`, then `jules remote list --session` and `jules remote pull --session <id>` | OAuth from an interactive `jules login`, kept in the OS keyring. Scripts never read the keyring. | Good for manual runs from Audrey's machine. Less suited to cron, because the token expires after about an hour. |
 | 3 | **Jules through MCP** | The `gemini-cli-extensions/jules` extension ships an MCP server that wraps the CLI (tools such as `start_new_jules_task`). The script runs it over stdio JSON-RPC as an MCP client. | Same CLI login | [VERIFY] Jules has no first-party MCP server for driving Jules; its own MCP feature is for Jules calling other services. This lane adds nothing over lane 2 unless an MCP host is already in use. |
-| 4 (default after 2026-11-11, pending Q1) | **Repo model chain** | `python3 scripts/local_llm.py ask` (LM Studio → Ollama → OpenRouter, with the paid lane refused unless `REVVEL_LLM_ALLOW_CLOUD=1`), then the no-key Perplexity bridge `scripts/perplexity-no-key-bridge.js` | No new keys | The script then opens the PR itself (§5, mode S). |
+| 4 (~~default after 2026-11-11, pending Q1~~ — **SUPERSEDED 2026-11-05**) | **Repo model chain** | `python3 scripts/local_llm.py ask` (LM Studio → Ollama → OpenRouter, with the paid lane refused unless `REVVEL_LLM_ALLOW_CLOUD=1`), then the no-key Perplexity bridge `scripts/perplexity-no-key-bridge.js` | No new keys | Kept as a fallback lane. No longer the post-11-11 default (see row 4b). The script then opens the PR itself (§5, mode S). Free-tier / local first. |
+| **4b (default from 2026-11-11)** | **Roo or Roomote** | [VERIFY] Wire via RulesSteward / GIT Controller into `wr_rewrite.py` as the Jules-successor lane. Prefer free tier. | Free-tier credentials only unless a paid WR/PR is approved | Audrey lock 2026-11-05: Jules successor for WR rewrite. Any paid option needs its own WR/PR. |
 | 5 | **Verbatim only** | No model. Title = first line of her text, trimmed. The body holds the verbatim block plus "Rewrite pending". | None | Used only when every lane is down. The poller retries the rewrite later and adds it as a new comment. It never overwrites. |
 
 **Default:** lane 1, the Jules REST API, until 2026-11-11. After that the default is whatever
 Audrey picks in Q1. Until she picks, lane 4 is used, because it needs no new key.
+
+**SUPERSEDED (pending Q1):** The three sentences above. **Locked 2026-11-05:** until
+2026-11-11, lane 1 (Jules REST API) remains the default; **from 2026-11-11, lane 4b (Roo or
+Roomote)** is the default WR rewriter. Free-tier first; any paid option needs its own WR/PR.
+Jules export is owned by Secret and lands in the vault only, never a repo.
 
 **What the Jules prompt pins.** The prompt is a versioned file,
 `scripts/wr-pipeline/prompts/jules-wr.md`. Jules also reads `AGENTS.md`. The prompt says:
@@ -408,9 +423,14 @@ do without doing it.
 1. **Q1. After 2026-11-11, which lane is the default rewriter?** Options: the repo model chain
    (lane 4), another coding agent with an API, or a Google successor such as Antigravity
    [VERIFY whether it has an API].
+   **ANSWERED 2026-11-05 (supersedes the open options above):** **Roo or Roomote**. Free-tier
+   first; any paid option needs its own WR/PR.
 2. **Q2. Run the Jules data export before 2026-11-11?** It saves sessions, memories, settings,
    and environment variable values. The export contains secrets, so it must stay out of every
    repo, and storing it is a secrets decision.
+   **ANSWERED 2026-11-05 (supersedes the open ask above):** **Yes.** Secret runs Google's Jules
+   export into the **vault only** (includes stored secrets). Never commit export contents to
+   any repo.
 3. **Q3. Where do chat bots file requests?** The plan uses `Freedom-Angel-Corp/brain-dump`
    issues. Is that right for every bot, including ones without GitHub access?
 4. **Q4. Silent merge scope.** Does the 2026-11-05 "approve everything" direction cover
@@ -435,7 +455,7 @@ do without doing it.
 
 | Stage | What happens | Exit check | Go needed from |
 | --- | --- | --- | --- |
-| **0. Decide and verify (urgent, before 2026-11-11)** | Answer Q1, Q2, Q4, Q10. Run one Jules API session against a throwaway branch to confirm: branch naming, draft state, `AUTO_CREATE_PR` output shape, quota. Confirm GitHub branch-rename permission and secondary limits. | Findings recorded in this plan as a dated addendum | Audrey |
+| **0. Decide and verify (urgent, before 2026-11-11)** | Answer Q1, Q2, Q4, Q10. Run one Jules API session against a throwaway branch to confirm: branch naming, draft state, `AUTO_CREATE_PR` output shape, quota. Confirm GitHub branch-rename permission and secondary limits. **Update 2026-11-05:** Q1 (Roo or Roomote) and Q2 (Secret → vault only; free-tier first) are locked; Q4 and Q10 remain. | Findings recorded in this plan as a dated addendum | Audrey |
 | **1. Manual runbook only** | `scripts/wr-pipeline/README.md` with the §4.3 commands. Audrey or any bot can open a WR and draft PR by hand. | One real request goes from intake to issue plus draft PR by hand | Audrey / TriageChief |
 | **2. Scripts, run by hand** | Write the §10.1 scripts with tests (stdlib `unittest`, as the scorer does). Run `--dry-run` first, then for real on three requests. | Tests green. Three WR and PR pairs that pass `wr_verify.py`. | Audrey / TriageChief |
 | **3. Polling from cron** | Turn on `wr_poll.py` every 5 minutes on one machine | 48 hours with no duplicate WRs, no missed brain-dump items, and rate-limit headroom above 50% | Audrey / TriageChief |
