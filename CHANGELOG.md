@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-05
+
+- 2026-11-05 — Grok Bot (executor, for Audrey Evans) — Added `docs/plans/WR_TO_PR_PIPELINE_PLAN_2026-11-05.md`: plan for turning every request into a WR issue and a draft PR into `daily/YYYY-MM-DD`. Covers the Jules rewrite in code (REST API is the default; CLI and MCP documented), the Jules shutdown (sessions only until 2026-11-11), the model-chain and manual fallbacks, assignment by TriageChief with the confidence scorer, no hosted Actions, pull-only efficient pull paths, silent merge, and append-only. Plan only; nothing built. Also added `Library/README.md` and `Library/references/wr-to-pr-pipeline-sources.md`.
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
