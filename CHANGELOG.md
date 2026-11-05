@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-05
+
+- 2026-11-05 — Proofy (Grok Bot, directed) — `.circleci/scripts/check-archival-policy.sh`: fail closed on deletions; `allow-destroy` label/env is detected for logging then IGNORED per AGENTS.md OWNER RULE (2026-10-30). `tests/circleci-allow-destroy.test.js` updated additively to expect fail-closed. `CLAUDE.md`: added OWNER RULE pointers (never-delete / no label exception, draft-only PRs into daily/YYYY-MM-DD, agents never merge) pointing at AGENTS.md. Refs Freedom-Angel-Corp/brain-dump#3; docs conflict recorded in #18258/#18259 (untouched).
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
