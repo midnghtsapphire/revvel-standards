@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-05
+
+- 2026-11-05 — Grok Bot (Audrey-directed, TriageChief t60u) — Metal standards wave 1: **archive then rewrite**. Moved wordy `AGENTS.md`, `MASTER.md`, `VISITING_AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `.github/copilot-instructions.md`, `docs/AGENTS.md` into `Archive/2026-11-05/` (`git mv`, history preserved). Wrote short metal replacements under original names; never-delete impossible to miss (no rm/trash/force-push wipe; visiting LLMs invent no permissions; call out search/long runs). Claude/Cursor/Copilot stubs point only at AGENTS + VISITING. Added `docs/governance/GUARDED_ARCHIVIST.md` (diffs-only) and `Library/references/metal-rewrite-2026-11-05.md` (PNG + Aegis + ROI notes; Dependabot/ImgBot marked diagram artifact). Compatible with drafts #18258/#18259/#18260. LEDGER.md not on base.
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
