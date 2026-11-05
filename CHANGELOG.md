@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-05
+
+- 2026-11-05 — Grok Bot (for Audrey) — Added `docs/governance/GITHUB_GOVERNANCE_PLAYBOOK.md` (links existing governance docs, states the daily-branch draft-PR rule, records the open `allow-destroy` vs OWNER RULE conflict for owner decision); appended one pointer line to `AGENTS.md`. Source: Freedom-Angel-Corp/brain-dump#3.
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
