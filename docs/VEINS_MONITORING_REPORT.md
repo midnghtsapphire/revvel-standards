@@ -20,7 +20,7 @@ artifacts tab to track trends across builds.
 
 ---
 
-## Live snapshot — 2026-11-04
+## Live snapshot — 2026-11-05
 
 ```text
 Overall: 🔴 DOWN  |  Effectiveness index: 0/100
@@ -40,7 +40,7 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
   First proposal commit:  2026-07-02T23:04:13.000Z
   Last proposal commit:   2026-07-22T19:32:41.000Z
   Span: 20 day(s)  |  Avg interval: 68.1 hour(s)
-  Days since last proposal: 105
+  Days since last proposal: 106
   ⚠️  Engine appears silent (> 30 days).
 
 ── 3. ARE THEY DOING ANYTHING? ─────────────────────────────────
@@ -53,16 +53,18 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
   dim H⁰: 1  dim H¹: 3  energy: 0
   Consistent: true  Obstruction: true
   Long-lived H¹ bars: 0  (as of 2026-08-21T01:30:41.878Z)
+  ⚠️  Sheaf fingerprint is 76 days old — topology data is stale.
+      Re-run: node scripts/bnatsheaf/cli.js imprint_agent --agent <name>
 ```
 
 **Bottom line:**
 - VEINS fired 3 times between 2026-07-02 and 2026-07-22, all targeting the same
   flaky workflow (`🎛️ PR State Orchestrator`), generating 7 stub proposals.
 - **Zero proposals have been actioned.** The stub boilerplate is still in every file.
-- The engine has been **silent for 105 days** — it stopped running around 2026-07-22.
+- The engine has been **silent for 106 days** — it stopped running around 2026-07-22.
 - The sheaf topology fingerprint (`docs/biome/bnat-fingerprint.json`) is itself stale
-  (last updated 2026-08-21), so the H¹ numbers reflect a historical snapshot of the
-  BIOME fleet, not the live fleet state.
+  (last updated 2026-08-21, now 76 days old), so the H¹ numbers reflect a historical
+  snapshot of the BIOME fleet, not the live fleet state.
 
 ---
 
@@ -191,11 +193,11 @@ node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
 
 ---
 
-## Action items (as of 2026-11-04)
+## Action items (as of 2026-11-05)
 
 | Priority | Item |
 |---|---|
-| P1 | VEINS engine has been silent 105 days. Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. |
+| P1 | VEINS engine has been silent 106 days. Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. |
 | P1 | 7 unactioned stubs in `.veins/proposals/` all target `🎛️ PR State Orchestrator`. Either apply a real quarantine patch or close them as resolved if the flakiness is gone. |
-| P2 | `bnat-fingerprint.json` is 75 days stale (2026-08-21). Re-run the BNAT CLI to get a current sheaf topology snapshot. |
+| P2 | `bnat-fingerprint.json` is 76 days stale (2026-08-21). Re-run the BNAT CLI to get a current sheaf topology snapshot. |
 | P3 | `veins-monitor.yml` has no schedule (cron freeze). Consider running it manually on a cadence or via the VEINS WR process. |
