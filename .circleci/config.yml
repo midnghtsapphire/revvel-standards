@@ -93,7 +93,8 @@ jobs:
   # and are the proposals doing anything? Runs on every push; never fails the
   # pipeline (exit code swallowed with || true) — this is an observer, not a
   # gate. Output is stored as a CircleCI artifact for trend tracking.
-  # Scripts: scripts/veins-snapshot.js, scripts/veins-tracker.js
+  # Scripts: scripts/veins-snapshot.js, scripts/veins-tracker.js,
+  #          scripts/veins-state-log.js
   # Doc: docs/VEINS_MONITORING_REPORT.md
   veins-monitor:
     executor: node-executor
@@ -110,6 +111,17 @@ jobs:
             mkdir -p /tmp/veins-artifacts
             node scripts/veins-snapshot.js --json \
               > /tmp/veins-artifacts/veins-snapshot.json || true
+      # Append a compact summary row to docs/veins-history.jsonl and store it as
+      # an artifact alongside veins-snapshot.json. The JSONL in-repo is the
+      # committed baseline; this artifact shows the per-build cumulative history
+      # (baseline + current row) so trends are readable across build artifacts.
+      - run:
+          name: VEINS State Log (trend tracking)
+          command: |
+            node scripts/veins-state-log.js \
+              > /tmp/veins-artifacts/veins-state-log.txt || true
+            cp docs/veins-history.jsonl \
+              /tmp/veins-artifacts/veins-history.jsonl || true
       - store_artifacts:
           path: /tmp/veins-artifacts
           destination: veins-monitor
