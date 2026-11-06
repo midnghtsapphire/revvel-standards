@@ -40,12 +40,14 @@ test("ignores lockfile churn in protected paths", () => {
   assert.strictEqual(r.fail, false);
 });
 
-test("allow-destroy label overrides the guard", () => {
+// Was: "allow-destroy label overrides the guard" — DEAD 2026-11-05 (Audrey).
+test("allow-destroy label is IGNORED — guard still fails closed", () => {
   const r = evaluateDiff(
     [{ path: "products/foo/page.tsx", added: "0", deleted: "9999", status: "D" }],
     { ...opts, allowDestroy: true }
   );
-  assert.strictEqual(r.fail, false);
+  assert.strictEqual(r.fail, true, "label must not override");
+  assert.ok(r.reasons.some((x) => /IGNORED/i.test(x)));
 });
 
 console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);

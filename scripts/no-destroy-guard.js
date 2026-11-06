@@ -10,12 +10,15 @@
  * that claimed to "add a research WR".
  *
  * An LLM coder that "rewrites" a working app shows up as mass deletions of
- * existing files; this guard stops that from merging. Intentional removals are
- * still possible — add the `allow-destroy` label to the PR to override.
+ * existing files; this guard stops that from merging.
+ *
+ * SUPERSEDED 2026-11-05 — allow-destroy bypass KILLED (Audrey Evans via
+ * TriageChief): "ya not lets get rid of that." AGENTS.md OWNER RULE
+ * (2026-10-30): no label may permit deletion. Old bypass kept commented below.
  *
  * Env:
  *   BASE_SHA        the PR base commit (e.g. github.event.pull_request.base.sha)
- *   ALLOW_DESTROY   'true' when the PR carries the allow-destroy label
+ *   ALLOW_DESTROY   IGNORED (dead). Retained env name so callers do not break.
  *   PROTECTED       comma list of protected path prefixes (default below)
  *   MAX_DELETED     max deleted lines allowed under protected paths (default 400)
  */
@@ -26,10 +29,17 @@ const DEFAULT_PROTECTED = "products/,apps/,sites/,src/,public/";
 const LOCKFILE_RE = /(^|\/)(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|bun\.lockb)$/;
 
 function evaluateDiff(files, { protectedPrefixes, maxDeleted, allowDestroy }) {
-  if (allowDestroy) {
-    return { fail: false, reasons: ["`allow-destroy` label present — guard intentionally skipped."] };
-  }
+  // SUPERSEDED 2026-11-05 — allow-destroy bypass COMMENTED OUT (Audrey Evans):
+  // "ya not lets get rid of that." AGENTS.md OWNER RULE (2026-10-30): no label
+  // may permit deletion. Old path kept visible; never revive.
+  // if (allowDestroy) {
+  //   return { fail: false, reasons: ["`allow-destroy` label present — guard intentionally skipped."] };
+  // }
   const reasons = [];
+  // Dead bypass: record that the label was seen but ignored.
+  if (allowDestroy) {
+    reasons.push("`allow-destroy` label/env is IGNORED (Audrey 2026-11-05) — guard still enforces.");
+  }
   const inProtected = (p) => protectedPrefixes.some((pre) => pre && p.startsWith(pre));
   let protectedDeleted = 0;
   const deletedFiles = [];
@@ -46,7 +56,8 @@ function evaluateDiff(files, { protectedPrefixes, maxDeleted, allowDestroy }) {
   if (protectedDeleted > maxDeleted) {
     reasons.push(`Removes ${protectedDeleted} lines under protected paths (limit ${maxDeleted}).`);
   }
-  return { fail: reasons.length > 0, reasons };
+  const hardFail = deletedFiles.length > 0 || protectedDeleted > maxDeleted;
+  return { fail: hardFail, reasons };
 }
 
 function readDiff(baseSha) {
@@ -88,8 +99,9 @@ function main() {
     console.log("❌ No-Destroy Guard: this PR would destroy existing work.\n");
     reasons.forEach((r) => console.log(r));
     console.log(
-      "\nIf this removal is intentional, add the `allow-destroy` label to the PR and re-run.\n" +
-      "Otherwise, change the approach to EDIT existing files with minimal diffs instead of replacing them."
+      "\nallow-destroy is DEAD (Audrey 2026-11-05 + AGENTS.md OWNER RULE).\n" +
+        "Do not delete. Comment out with REVVEL-DISABLED or archive-rename.\n" +
+        "Edit existing files with minimal diffs — do not replace them."
     );
     return 1;
   }
