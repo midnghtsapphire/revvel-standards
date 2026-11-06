@@ -343,3 +343,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 2026-10-30 — GitHubOrchestrator — recorded HUSK (elisymlabs/husk) integration requirements as proposed, pending Audrey's confirmation of repo identity; no code changes.
 - 2026-11-04 — Proofy — added 'Backups' section (back up to GitHub under backup-YYYY-MM-DD-<folder>-<bot>, verify size+sha256, never delete originals without Audrey's yes) to AGENTS.md and VISITING_AGENTS.md
 - 2026-11-04 (MST) — Proofy — recorded on behalf of Claude Code (out of usage): two comments in revvel-standards Discussion #18238 (a misplaced pointer to the tartaria-tablets whiteboard, `19400617`, and Claude Code's correction under it, `19400657`) were DELETED by Claude Code on Audrey Evans's explicit instruction ("Delete it"). Both were Claude Code's own comments, posted minutes earlier by mistake; nothing else was touched. tartaria-tablets commit `2de436c`'s statement that they were "left in place" is superseded by this line (full entry in tartaria-tablets CHANGELOG.md).
+
+## 2026-11-06 — PR lifecycle independence
+
+- 2026-11-06 — Codex (ChatGPT Work Mode; root plus audit, research, implementation, deployment, and records agents) — added a standalone deterministic lifecycle-label implementation and test/runbook/research work package; retained existing workflows and documented authenticated publishing/deployment blockers. See `docs/automation/pr-lifecycle-session-2026-11-06.md`; local preparation is not a production cutover.
+
+- 2026-11-06 — Codex — owner-directed correction: preserve lifecycle badges through optional deterministic marked-comment updates (`--badges`, `--badge-author`); this supersedes the earlier proposal to omit badge updates. Root verified 24/24 tests and syntax/diff checks after this addition. No auto-merge or production cutover was performed; OpenHands SQLite remains under investigation.
+
+- 2026-11-06 — Codex — final local receipt: 25/25 tests, including badge concurrent-edit fingerprint regression; syntax, systemd verification, and diff checks exit 0. Added OpenHands SQLite investigation record; no attributable traceback was found and no SQLite repair is claimed.
+
+- 2026-11-06 — Codex repository-audit specialist (ChatGPT Work Mode) — appended the supplied all-hands-bot HTTP 401 `token_not_found_in_db` diagnosis to `docs/research/openhands-sqlite-investigation-2026-11-06.md`, superseding the earlier unknown-error status. Distinguished Cloud API and LLM proxy credentials; recorded deployment/merge authorization and missing authenticated access. No database change or live repair claimed.
+
+### 2026-11-06 — CircleCI lifecycle integration (Codex)
+
+- Added opt-in main-only CircleCI labels/badges maintenance using the existing deterministic reconciler, a restricted context, serial execution, and dry-run default. Existing four test/monitor jobs and all GitHub workflows are preserved.
+- Added four boundary/config tests; combined lifecycle suite passes 29/29. Official CircleCI CLI 1.14.0 validates and expands the configuration. Activation still needs verified context credentials and an hourly main schedule. Draft PR: <https://github.com/midnghtsapphire/revvel-standards/pull/18291>.
