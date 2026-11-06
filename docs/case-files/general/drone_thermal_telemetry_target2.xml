@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version="2.0" uid="DRONE-FLIR-STREAM-TARGET-2" type="b-a-g-u-v" time="2026-10-15T05:02:59.992143+00:00" start="2026-10-15T05:02:59.992143+00:00" stale="2026-10-15T07:02:59.992176+00:00" how="m-g">
+  <point lat="49.38450" lon="-122.94300" hae="285.4" ce="1.5" le="2.0" />
+  <detail>
+    <contact callsign="DRONE-RECON-ONE (FLIR-IR)" endpoint="192.168.1.120:554:rtsp" />
+    <takv device="Matrice 300 RTK + Zenmuse H20T" platform="UAV-THERMAL" version="v08.02.01" />
+    <sensor model="FLIR Boson LWIR 640x512" fov="45.0" azimuth="345.0" elevation="-38.0" roll="0.0" />
+    <thermal_telemetry_ir>
+      <hotspot_detected value="true" peak_temp_c="38.5" ambient_temp_c="11.4" DeltaT_c="27.1" />
+      <bounding_box xmin="210" ymin="160" xmax="320" ymax="270" confidence="0.999" />
+      <radiometric_calibration mode="FLIR_HIGH_GAIN" emissivity="0.92" distance_m="108.2" target_type="METALLIC_SPACE_BLANKET_OPEN_CLEARING" />
+    </thermal_telemetry_ir>
+    <remarks>[UAV THERMAL REDIRECT - TARGET #2] Drone redirected to Target #2 (49.38450N, -122.94300W). Intense radiometric thermal reflection detected (38.5°C vs 11.4°C ambient). Metallic space blanket / shelter confirmed in open clearing (CHM 0.4m).</remarks>
+  </detail>
+</event>

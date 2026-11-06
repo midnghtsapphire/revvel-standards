@@ -36,6 +36,9 @@ docs/prompts/
 - `architecture/attention-mechanism.md`
 - `research/rnd-master.md`
 - `LLM/malama/SYSTEM_PROMPT.md`
+- `LLM/noseynoodle/SYSTEM_PROMPT.md` (dispatcher: routes work, never does it)
+- `LLM/noseynoodle/GROK_SETUP.md` (running NoseyNoodle inside Grok: 4,000-char agent version, connectors, automations)
+- `LLM/cartographer/SYSTEM_PROMPT.md` (read-only claims-vs-reality auditor, reports to NoseyNoodle)
 
 ## Sister libraries
 

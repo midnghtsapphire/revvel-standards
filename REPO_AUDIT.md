@@ -17,7 +17,7 @@ This report analyzes all midnghtsapphire repositories for opportunities, errors,
 | reese-reviews | ✅ Complete | **245 ✅** | ✅ | TEST section pushed |
 | revvel-standards | ✅ Fixed | 334 ✅ | ✅ | Audit complete |
 | neurooz | ✅ Complete | 27 ✅ | ✅ | TEST section pushed |
-| thealttext-frontend | ✅ Fixed | N/A | ✅ | TEST section pushed |
+| thealttext-frontend | ✅ Fixed (2026-10-30 note: no `thealttext` package on npm) | N/A | ✅ | TEST section pushed |
 | Soup2Bowl | ✅ Complete | N/A | ✅ | TEST section pushed |
 | mindmappr | ✅ Complete | 3 ✅ | N/A | README created, pushed |
 | revvel-music-studio | ✅ Complete | N/A | ✅ | TEST section pushed |
@@ -56,7 +56,7 @@ This report analyzes all midnghtsapphire repositories for opportunities, errors,
 | zeuroo | ✅ Complete |
 | nomad-navigator | ✅ Complete |
 | guardaio | ✅ Complete |
-| rvvel-affiliate-links-mcp | ✅ Complete |
+| rvvel-affiliate-links-mcp | ~~✅ Complete~~ ❌ NOT LIVE (verified 2026-10-30: not on npm) |
 | affiliate-marketing-system | ✅ Complete |
 | meetaudreyevans | ✅ Complete |
 | revvel-skills-vault | ✅ Complete |

@@ -1,0 +1,31 @@
+{
+  "schema": "distance_table/1",
+  "fictional": true,
+  "name": "FICTIONAL example distance table - NOT real data",
+  "source": "FICTIONAL. Invented round numbers for tests of lost_person_sim.py --distance-table. Not ISRID, not Lost Person Behavior (Koester 2008), not any real study.",
+  "licence": "FICTIONAL test data, free to copy. Real ISRID / Lost Person Behavior figures are licensed: put the owner's licence terms here, and do not commit licensed numbers to this repository.",
+  "data_period": "FICTIONAL 2000-2010",
+  "region": "FICTIONAL",
+  "entries": [
+    {
+      "category": "example_hiker",
+      "terrain": "mountainous",
+      "ecoregion": "example_temperate",
+      "n": 100,
+      "km": {"25": 0.5, "50": 1.0, "75": 2.0, "95": 4.0}
+    },
+    {
+      "category": "example_hiker",
+      "terrain": "flat",
+      "ecoregion": "example_dry",
+      "n": 50,
+      "km": {"25": 0.8, "50": 1.6, "75": 3.0, "95": 6.0}
+    },
+    {
+      "category": "example_child",
+      "terrain": "flat",
+      "n": 40,
+      "km": {"25": 0.3, "50": 0.6, "75": 1.0, "95": 1.8}
+    }
+  ]
+}

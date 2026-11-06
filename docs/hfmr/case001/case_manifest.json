@@ -1,0 +1,37 @@
+{
+  "case_id": "FF-001-BRIAN-SHAFFER",
+  "subject": "Brian Shaffer",
+  "reference_site": {
+    "address": "1546 N High St, Columbus, OH 43201",
+    "latitude": 39.99401,
+    "longitude": -83.006497,
+    "coordinate_role": "approximate building reference only",
+    "source": "https://oddstops.com/brian-shaffer"
+  },
+  "incident_date": "2006-04-01",
+  "status": "source discovery; no case-related anomaly established",
+  "caveats": [
+    "No metal or remains detection claimed",
+    "April 2006 CLIF collection day not verified",
+    "No source dataset acquired into this package",
+    "LiDAR tile directory date is not acquisition date"
+  ],
+  "sources": [
+    {
+      "id": "CLIF-2006",
+      "url": "https://www.sdms.afrl.af.mil/index.php?collection=clif2006"
+    },
+    {
+      "id": "FRANKLIN-GIS",
+      "url": "https://auditor.franklincountyohio.gov/Auditor/FTP"
+    },
+    {
+      "id": "OHIO-LIDAR",
+      "url": "https://gis1.oit.ohio.gov/ZIPARCHIVES/ELEVATION/LIDAR/Franklin/"
+    },
+    {
+      "id": "OSU-HIST",
+      "url": "https://gissvc.osu.edu/arcgis/rest/services/Imagery"
+    }
+  ]
+}

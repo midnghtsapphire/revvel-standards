@@ -1,0 +1,9 @@
+{
+ "error": {
+  "code": 400,
+  "message": "Unable to complete operation.",
+  "details": [
+   "Requested image exceeds the size limit."
+  ]
+ }
+}

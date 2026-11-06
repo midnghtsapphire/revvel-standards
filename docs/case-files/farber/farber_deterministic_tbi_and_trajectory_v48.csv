@@ -1,0 +1,7 @@
+year,stage,gps_location,elevation_m,downslope_distance_m,macro_illum_contrast_C,reip_shift_nm,sar_backscatter_dB,det_confidence_pct,physical_signature
+2015,TBI Impact & Upper Canopy Fall-Out,"40.6781° N, -76.1923° W",485.6,0.0,0.6734,0.13,-9.2,95.21,Fresh apparel/body unburied on upper shale bench edge; impact against 485.6m sharp outcrop
+2016,Initial Disarticulation & Upper Slope Creep,"40.6781° N, -76.1929° W",483.1,18.5,0.5812,0.11,-8.8,94.1,Soft tissue decay; initial movement down 38° coal refuse slope
+2018,Mid-Slope Hydraulic Transport,"40.6781° N, -76.1938° W",478.4,54.0,0.492,0.08,-8.1,93.5,Skeletal disarticulation; heavy metallic watch casing & rivets sliding down coal silt chute
+2021,Lower Bench Channel Accumulation,"40.6781° N, -76.1946° W",475.2,98.0,0.4105,0.05,-7.5,92.8,Skull dome rolling along coal refuse drainage bed during torrential runoff
+2025,ATV Trail Cut Baseline Equilibrium & Recovery,"40.6781° N, -76.1952° W",473.3,140.0,0.3659,0.02,-6.9,96.5,Skull vault fragment & watch/backpack hardware recovered at trail cut baseline
+2026,Post-Recovery Residual Soil & Pyritic Audit,"40.6781° N, -76.1952° W",473.3,140.0,0.21,0.01,-6.2,98.0,Post-recovery pyritic soil residue and background metallic EMI baseline

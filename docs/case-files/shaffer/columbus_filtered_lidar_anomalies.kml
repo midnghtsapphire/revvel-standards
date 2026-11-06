@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Columbus Pearl Alley LiDAR Elevation Anomalies (±5cm to ±50cm Filtered)</name>
+    <description>Filtered micro-elevation anomaly polygon boundaries from multi-temporal bare-earth DEM subtraction (2006 OSIP I vs Present 3DEP).</description>
+
+    <Style id="positive_anomaly">
+      <LineStyle><color>ff0000ff</color><width>3</width></LineStyle>
+      <PolyStyle><color>400000ff</color></PolyStyle>
+    </Style>
+
+    <Style id="negative_anomaly">
+      <LineStyle><color>ffff0000</color><width>3</width></LineStyle>
+      <PolyStyle><color>40ff0000</color></PolyStyle>
+    </Style>
+
+    <Placemark>
+      <name>ANOMALY-001: Vault SHAFFER-001 Boundary (+0.18m)</name>
+      <styleUrl>#positive_anomaly</styleUrl>
+      <description>Sub-pavement vault right-of-way cut (+0.18m fill/repaving). GPS: 39.9985° N, -83.0064° W.</description>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -83.006420,39.998520,0
+              -83.006380,39.998520,0
+              -83.006380,39.998480,0
+              -83.006420,39.998480,0
+              -83.006420,39.998520,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
+    <Placemark>
+      <name>ANOMALY-002: Catch Basin SHAFFER-002 (-0.12m)</name>
+      <styleUrl>#negative_anomaly</styleUrl>
+      <description>Storm strainer catch basin trench (-0.12m settling). GPS: 39.9972° N, -83.0058° W.</description>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -83.005820,39.997220,0
+              -83.005780,39.997220,0
+              -83.005780,39.997180,0
+              -83.005820,39.997180,0
+              -83.005820,39.997220,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
+    <Placemark>
+      <name>ANOMALY-003: Egress Trench (+0.22m)</name>
+      <styleUrl>#positive_anomaly</styleUrl>
+      <description>Service corridor exit alley cut (+0.22m repaving). GPS: 39.9986° N, -83.0065° W.</description>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -83.006520,39.998620,0
+              -83.006480,39.998620,0
+              -83.006480,39.998580,0
+              -83.006520,39.998580,0
+              -83.006520,39.998620,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+
+  </Document>
+</kml>

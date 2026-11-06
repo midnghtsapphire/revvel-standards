@@ -1,0 +1,42 @@
+model_id,category,primary_strategy,median_dist_km,pct_95_dist_km,linear_adherence,conduit_bias
+M01,Dementia / Alzheimer's,Random Walk / Goal-Deficit,0.8,3.2,Low,Moderate (Fences/Pipes)
+M02,Autism Spectrum / Dev. Delayed,Water Seeking / Sensory Attraction,1.2,4.5,High to Water,High (Pond/Stream/Drain)
+M03,Despondent / Suicidal,Concealment / High Line-of-Sight,1.5,6.0,Moderate,High (Structures/Ravines)
+M04,Mental Illness / Psychosis,Evasive / Threat-Avoidance,2.1,8.5,Low,High (Enclosed Spaces)
+M05,Substance Impaired (Alcohol/Drugs),Disoriented Walkaway / Thermal Slump,0.9,3.8,Moderate (Roads/Paths),High (Drainage Slumps/Culverts)
+M06,Hiker,Trail Following / Ridge Line,3.2,12.0,Very High,Low
+M07,Hunter,Off-Trail Tracking / Down-Wind,2.8,9.5,Moderate,Moderate (Ravines)
+M08,Skier (Alpine In-Bounds),Gravity Fall / Out-of-Bounds Glade,1.1,4.2,High Downhill,High (Tree Wells/Gullies)
+M09,Skier (Nordic / Backcountry),Drainage Descent / Creek Trap,4.5,15.0,High (Streams),High (Log Jams/Creek Cut-Banks)
+M10,Snowboarder,Out-of-Bounds Traverse / Flat-Spot Stuck,1.8,5.5,High Downhill,High (Tree Wells/Creek Basins)
+M11,Snowshoer,Trail Drift / Deep Snow Trapping,2.4,7.0,High,Moderate
+M12,Snowmobiler,High-Speed Run / Avalanche Trapping,8.0,25.0,High (Trails/Roads),Low
+M13,Child (1–3 years),Random Wandering / Immediate Obstacle Trap,0.3,1.2,Low,High (Water/Brush/Pipes)
+M14,Child (4–6 years),Navigation Deficit / Structure Seeking,0.6,2.1,Moderate,High (Structures/Pipes)
+M15,Child (7–9 years),Familiar Path / Hideout Seeking,1.0,3.5,High,Moderate
+M16,Child (10–12 years),Shortcut Taking / Adventure Seeking,1.5,5.0,High,Moderate
+M17,Youth / Adolescent (13–15),Peer Escape / Group Separation,2.2,7.8,High,Low
+M18,Angler / Fisherman,Creek / River Bank Adherence,1.4,4.8,Very High (Water),High (River Cuts/Strainers)
+M19,ATV / Quad Rider,Trail Network / Mechanical Break,5.2,18.0,Very High,Low
+M20,Biker (Mountain / Off-Road),High-Speed Rollover / Ravine Drop,4.1,14.0,Very High,Moderate (Gullies)
+M21,Biker (Road),Road Shoulder / Culvert Strike,6.0,22.0,Paved Road,High (Roadside Ditches)
+M22,Caver / Speleologist,Subterranean Void Entrapment,0.4,1.5,Subsurface Vault,100% (Subterranean)
+M23,Climber / Mountaineer,Vertical Fall / Scree Slope Trap,2.0,6.5,Ridge/Face,High (Crevasses/Ravines)
+M24,Runner / Jogger,Loop Course / Sudden Medical Event,2.5,8.0,Very High,Low
+M25,Gatherer (Mushroom/Berry/Shed),Focused Ground Head-Down Drift,1.7,5.2,Low,Moderate (Dense Cover)
+M26,Outdoor Worker / Logger,Equipment Zone / Slash Pile Trap,0.8,3.0,Moderate,Moderate
+M27,Horseback / Equestrian,Mounted Separation / Trail Drift,3.5,11.0,High,Low
+M28,Swimmer / Wader,Submersion / Hydraulic Strainer,0.2,1.0,Waterway,100% (River Silt/Strainers)
+M29,Boater / Kayaker / Canoer,Downriver Drift / Strainer Entrapment,6.5,20.0,Waterway,High (Log Jams/Piers)
+M30,Jet Skier / PWC,Open Water Drift / Bank Impact,5.0,16.0,Waterway,Moderate
+M31,Vehicle Driver / Stranded Motorist,Linear Road Walkaway / Crash Concealment,1.2,4.5,Roadway,High (Roadside Culverts)
+M32,Walkaway (Residential Facility),Linear Road Adherence / Shelter Seeking,0.7,2.8,High,Moderate
+M33,Walkaway (Urban / Commercial),Blind Spot / Service Vault Entry,0.4,1.8,Alleys/Vaults,High (Utility Vaults)
+M34,Walkaway (Hospital / Medical),Confused Escape / Stairwell/Boiler Room,0.3,1.5,Structures,High (Mechanical Spaces)
+M35,Subterranean Conduit Concealment,The Ebby Steppach Model (Park/Urban Drain),0.02,0.05,Drainage Pipe,100% (Subsurface Pipe)
+M36,Urban Sub-Pavement Vault,The Brian Shaffer Model (Service Vault),0.0,0.02,Sub-Pavement,100% (Sub-Slab Vault)
+M37,Alpine Creek / Cut-Bank Entrapment,The Ryan Shtuka Model (Log Jam / Cut-Bank),0.19,0.5,Creek Channel,100% (Log Jam / Silt)
+M38,Waterway Outflow / Silt Bed,The Liam Toman Model (Outflow Silt Bed),0.04,0.15,Outflow Stream,100% (Channel Silt Bed)
+M39,Roadside Culvert / Crash Walkaway,The Jason Landry Model (Culvert / Pond),0.012,0.08,Roadside Ditch,100% (Roadside Culvert)
+M40,Hypothermic Terminal Burrowing,Hide-and-Die Reflex / Micro-Space Burrowing,0.5,2.0,Micro-Concealment,100% (Under Roots/Culverts)
+M41,Tree Well Snow Immersion Suffocation,SIS Inversion / Conifer Base Entrapment,0.05,0.3,Tree Canopy Rim,100% (Conifer Tree Well)

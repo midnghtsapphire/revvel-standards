@@ -39,9 +39,8 @@ jobs:
   review:
     name: xAI Grok review
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.pull_request.draft == false &&
-       !contains(github.event.pull_request.title, '[skip-review]'))
+      (github.event_name == 'workflow_dispatch' || (github.event.pull_request.draft == false && !contains(github.event.pull_request.title, '[skip-review]'))) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -63,7 +62,7 @@ jobs:
         # Advisory only — never block merge on a transient xAI outage.
         continue-on-error: true
         # pin: tarmojussila/xai-code-review@v0.1.0
-        uses: tarmojussila/xai-code-review@0a0ec8e6ae59ed29819ac73ba1b8a983f40ca255
+        uses: tarmojussila/xai-code-review@d86fe10ac75980e564824bbe76648b7d6e0f44c5
         with:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           XAI_MODEL: ${{ vars.XAI_MODEL || 'grok-3' }}

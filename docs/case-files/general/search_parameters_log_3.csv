@@ -1,0 +1,2 @@
+search_id,case_id,query_string,jurisdiction_target,engines_queried_json,unindexed_gap_status,run_status,hypothesis_a_valid_score,hypothesis_b_null_score,retention_status,timestamp_utc
+SEARCH-001,CHAPMAN-2006-OH,Andrew Grey Chapman middle name Grey car title transfer to roommate,Ohio / Franklin County,"[""google"", ""brave"", ""duckduckgo"", ""searxng"", ""wayback_cdx""]",Bypassed Fab-5 commercial ranking algorithms; recovered historical CDX snapshots.,SUCCESS,0.99,0.01,PERMANENTLY_STORED_NEVER_EXCLUDED,2026-10-08 19:15:04

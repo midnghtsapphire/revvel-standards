@@ -721,6 +721,47 @@ Examples:
 - **Comments:** Only for non-obvious logic. No boilerplate comments like `// Import dependencies` or `# Initialize variables`.
 - **Error handling:** Never swallow errors silently. Log them or propagate them.
 
+## Decision Notes Live In The File — Not Only In The Log
+
+**CRITICAL: When you decide why something is the way it is, write the reason INTO THE FILE ITSELF. The ledger, the commit message, the PR body and the audit log are all additional — they are not where anyone will look. (@midnghtsapphire)**
+
+The next person to open that file is usually a bot, and it opens the file, not the
+history. A reason that exists only in a log is a reason that will be asked again,
+re-litigated, and often silently reversed.
+
+**This applies to EVERYTHING, not just code:**
+
+- ✅ **Code** — a comment next to the thing, saying why it is that way
+- ✅ **Research notes, transcriptions, extracted source text** — a header note at the top of the file
+- ✅ **Data files, fixtures, config, manifests** — a note in the file or in a sibling `README.md` named by the file
+- ✅ **Figures, scans, extracted images** — a `README.md` in the folder saying what was kept, what was skipped, and why
+- ✅ **Anything kept that looks like it should have been removed** — say in the file why it stays
+
+**The test:** if someone opened this file cold, with no access to the history,
+would they understand why this is here and be able to avoid undoing it? If no,
+the note is missing.
+
+**Rules for the note itself:**
+
+- **Write it where the thing is.** Top of the file for a whole-file decision; next to the line for a local one.
+- **Say WHY, not just WHAT.** "Kept deliberately" is useless. "Kept because it is the journal's published correspondence block and is needed for drafting letters" is the note.
+- **Date it and name who decided.** The decider is a person, not an agent.
+- **A note is append-only like everything else.** Never delete a decision note when editing the file. If the decision changes, add the new note below and mark the old one superseded — never remove it. See the 300-line rule above.
+- **For a verbatim source file** — a transcription, an extraction, a quoted text — put the note in a clearly marked header block and **prove the body below it is unchanged** (hash the file from the first content line and compare before/after). A note must never corrupt the thing it explains.
+- **Still write the log entry.** This rule adds a second place; it does not replace the first.
+
+**What goes IN the note — err long, not short:**
+
+- **The reasoning, not the conclusion.** Capture the substance of the discussion that produced the decision — what was being weighed, what the trade-off actually was. A conclusion with no reasoning gets overturned by the first person with a different intuition.
+- **What was considered and rejected, and why.** The rejected option is precisely the one someone will propose again in six months. Name it and close it.
+- **WHAT HAPPENS IF YOU TAKE IT OUT.** State the consequence of reversing the decision: what breaks, what is lost, what can no longer be proved. **This is the part that actually prevents silent reversal.** "Why this is here" is a weaker guard than "here is what goes wrong when it is gone."
+- **Who raised it and who decided.** If the point came out of a conversation with an AI assistant, say so and say what it argued — the argument is the useful part, and it will not be in anyone's memory later.
+- **Length is not a defect.** A note that ran long has cost nothing. A note that ran short costs the decision. **When in doubt, put the whole discussion in.**
+
+**Why this is a standard and not a preference:** three years of work is only
+provable if the reasoning survives next to the evidence. A decision recorded only
+in a log that nobody opens is a decision that did not get recorded.
+
 ## Tech Stack Defaults
 
 When the repo does not have an established stack, use these defaults:

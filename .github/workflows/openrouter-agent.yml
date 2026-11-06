@@ -19,12 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
-    if: |
-      github.event.sender.type != 'Bot' && (
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@openrouter-agent')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@openrouter-agent')) ||
-      (github.event_name == 'issues' && github.event.action == 'opened'))
-
+    if: >-
+      (github.event.sender.type != 'Bot' && ( (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@openrouter-agent')) || (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@openrouter-agent')) || (github.event_name == 'issues' && github.event.action == 'opened'))) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
     steps:
       - name: Build prompt context
         id: context

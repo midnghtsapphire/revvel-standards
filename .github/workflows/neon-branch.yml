@@ -65,7 +65,9 @@ jobs:
   create_neon_branch:
     name: Create Neon Branch
     needs: setup
-    if: github.event.action != 'closed'
+    if: >-
+      (github.event.action != 'closed') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_INFRA != '0')
     outputs:
       db_url: ${{ steps.create_neon_branch.outputs.db_url }}
       db_url_pooled: ${{ steps.create_neon_branch.outputs.db_url_pooled }}

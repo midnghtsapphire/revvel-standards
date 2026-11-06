@@ -67,8 +67,8 @@
 
 | Server | Status | Notes |
 |---|---|---|
-| `rvvel-affiliate-links` | ✅ live | Production, npm: `rvvel-affiliate-links-mcp` |
-| `code-review` | ✅ live | Production, mandatory in every project |
+| `rvvel-affiliate-links` | ❌ NOT LIVE (verified 2026-10-30: not on npm) ~~✅ live~~ | ~~Production, npm: `rvvel-affiliate-links-mcp`~~ — 2026-10-30: `rvvel-affiliate-links-mcp` does not exist on the npm registry |
+| `code-review` | ❌ NOT LIVE (verified 2026-10-30: not on npm) ~~✅ live~~ | ~~Production,~~ mandatory in every project — 2026-10-30: no `@mechatronopolis/code-review-mcp` on npm; unscoped `code-review-mcp` belongs to physics91, not Audrey |
 | `wr-pr-control-plane` | ✅ live | In-tree at `mcp-servers/wr-control-plane/`. Implements the 2026 WR-PR Automation Blueprint contract for Composio + Firecrawl + Tavily + Obot + FastMCP. Ships `"disabled": true` in `.mcp.json` so downstream clones opt in after installing the local Python deps (`uv pip install -e .`) and provisioning the credentials listed in `.env.example`. |
 | `perplexity-no-key` | ✅ documented | `.mcp.json` entry for the `helallao/perplexity-ai` no-key MCP server. Ships `"disabled": true` until a clone installs `python -m pip install "perplexity-api[mcp] @ git+https://github.com/helallao/perplexity-ai.git@main"`. No `PERPLEXITY_API_KEY` is required. |
 

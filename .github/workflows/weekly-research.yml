@@ -205,7 +205,9 @@ jobs:
   trigger-research:
     name: Trigger research agents
     needs: detect-wr
-    if: needs.detect-wr.outputs.is_wr == 'true'
+    if: >-
+      (needs.detect-wr.outputs.is_wr == 'true') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_RESEARCH != '0')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

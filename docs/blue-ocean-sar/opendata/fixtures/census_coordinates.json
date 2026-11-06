@@ -1,0 +1,55 @@
+{
+ "result": {
+  "input": {
+   "location": {
+    "x": -77.0352,
+    "y": 38.8987
+   },
+   "vintage": {
+    "vintageName": "Current_Current"
+   },
+   "benchmark": {
+    "benchmarkName": "Public_AR_Current"
+   }
+  },
+  "geographies": {
+   "States": [
+    {
+     "GEOID": "11",
+     "NAME": "District of Columbia",
+     "STUSAB": "DC",
+     "CENTLAT": "+38.9041031",
+     "CENTLON": "-077.0172290"
+    }
+   ],
+   "Counties": [
+    {
+     "GEOID": "11001",
+     "NAME": "District of Columbia",
+     "BASENAME": "District of Columbia",
+     "CENTLAT": "+38.9041031",
+     "CENTLON": "-077.0172290"
+    }
+   ],
+   "Census Tracts": [
+    {
+     "GEOID": "11001006202",
+     "NAME": "Census Tract 62.02",
+     "BASENAME": "62.02",
+     "TRACT": "006202",
+     "CENTLAT": "+38.8809933",
+     "CENTLON": "-077.0363219"
+    }
+   ],
+   "2020 Census Blocks": [
+    {
+     "GEOID": "110010062021031",
+     "NAME": "Block 1031",
+     "BLOCK": "1031",
+     "CENTLAT": "+38.8977450",
+     "CENTLON": "-077.0365310"
+    }
+   ]
+  }
+ }
+}
