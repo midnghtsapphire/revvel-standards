@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-06
+
+- 2026-11-06 — Cursor Cloud (Grok) — Follow-up on `standards/AGENT_SECURITY_BOUNDARIES.md` (PR #18260): history rewrite is an Audrey-approved incident exception under the `AGENTS.md` NEVER DELETE rule (rotate/revoke first and mandatory; private backup of original refs, plaintext secret never in a public place); token/app installation is the capability ceiling, and rulesets, branch protection, required reviews, and environment approvals also enforce limits; one-line pointers in `AGENTS.md` and `VISITING_AGENTS.md`; `lopezcaresse-wq` Write stays a pending owner action. No permissions changed. No workflow edits.
+
 ## 2026-11-05
 
 - 2026-11-05 — RulesSteward (Grok Bot, for Audrey) — Added `standards/AGENT_SECURITY_BOUNDARIES.md` (token role is the boundary; Triage-only untrusted agents, Workflows perm off; one writer, loop cap 3; rotate-then-purge, Gitleaks on CircleCI/self-hosted). Read-only collaborator checks recorded. Refs Freedom-Angel-Corp/brain-dump#14.
