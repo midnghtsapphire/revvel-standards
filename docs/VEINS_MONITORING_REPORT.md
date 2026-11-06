@@ -20,7 +20,7 @@ artifacts tab to track trends across builds.
 
 ---
 
-## Live snapshot — 2026-11-04
+## Live snapshot — 2026-11-06
 
 ```text
 Overall: 🔴 DOWN  |  Effectiveness index: 0/100
@@ -40,7 +40,7 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
   First proposal commit:  2026-07-02T23:04:13.000Z
   Last proposal commit:   2026-07-22T19:32:41.000Z
   Span: 20 day(s)  |  Avg interval: 68.1 hour(s)
-  Days since last proposal: 105
+  Days since last proposal: 107
   ⚠️  Engine appears silent (> 30 days).
 
 ── 3. ARE THEY DOING ANYTHING? ─────────────────────────────────
@@ -59,7 +59,7 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
 - VEINS fired 3 times between 2026-07-02 and 2026-07-22, all targeting the same
   flaky workflow (`🎛️ PR State Orchestrator`), generating 7 stub proposals.
 - **Zero proposals have been actioned.** The stub boilerplate is still in every file.
-- The engine has been **silent for 105 days** — it stopped running around 2026-07-22.
+- The engine has been **silent for 107 days** — it stopped running around 2026-07-22.
 - The sheaf topology fingerprint (`docs/biome/bnat-fingerprint.json`) is itself stale
   (last updated 2026-08-21), so the H¹ numbers reflect a historical snapshot of the
   BIOME fleet, not the live fleet state.
@@ -170,17 +170,32 @@ VEINS de-duplicates comments: it only posts once per 6-hour window per issue.
 |---|---|
 | `scripts/veins-tracker.js` | Parses `.veins/proposals/`, answers the 3 questions |
 | `scripts/veins-snapshot.js` | Full snapshot: proposals + git history + sheaf topology |
+| `scripts/veins-state-log.js` | Appends compact summary row to `docs/veins-history.jsonl` for trend tracking |
 | `scripts/biome/veins-observer.js` | Queries GitHub for `[VEINS]` issue alerts |
+| `docs/veins-history.jsonl` | Persistent JSONL state log — one row per monitoring run |
 | `tests/veins-tracker.test.js` | Regression-pins the parser and analyser |
 | `tests/veins-snapshot.test.js` | Pins frequency, effectiveness, snapshot builder |
+| `tests/veins-state-log.test.js` | Pins row builder and trend analysis |
 | `.github/workflows/veins-monitor.yml` | In-repo recovery workflow (manual dispatch) |
 | `.github/workflows/veins-intake-dedup.yml` | Dedup gate for new `[VEINS]` issues |
 | `docs/biome/bnat-fingerprint.json` | Sheaf topology snapshot (run BNAT CLI to refresh) |
 
 CircleCI artifact chain:
 ```text
-Every push → veins-monitor job → veins-snapshot.js --json
-           → CircleCI artifact: veins-monitor/veins-snapshot.json
+Every push → veins-monitor job
+           → veins-snapshot.js --json  → artifact: veins-monitor/veins-snapshot.json
+           → veins-state-log.js        → artifact: veins-monitor/veins-state-log.txt
+                                       → artifact: veins-monitor/veins-history.jsonl
+```
+
+To query the JSONL trend history locally:
+```bash
+# latest entry
+tail -1 docs/veins-history.jsonl | jq .
+
+# all entries, human-readable table
+jq -r '[.snapshot_at, .status, .effectiveness_index, .stub_unactioned, .days_since_last_commit] | @tsv' \
+  docs/veins-history.jsonl
 ```
 
 To refresh the sheaf fingerprint manually:
@@ -191,11 +206,12 @@ node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
 
 ---
 
-## Action items (as of 2026-11-04)
+## Action items (as of 2026-11-06)
 
 | Priority | Item |
 |---|---|
-| P1 | VEINS engine has been silent 105 days. Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. |
-| P1 | 7 unactioned stubs in `.veins/proposals/` all target `🎛️ PR State Orchestrator`. Either apply a real quarantine patch or close them as resolved if the flakiness is gone. |
-| P2 | `bnat-fingerprint.json` is 75 days stale (2026-08-21). Re-run the BNAT CLI to get a current sheaf topology snapshot. |
+| P1 | VEINS engine has been **silent 107 days**. Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. |
+| P1 | **7 unactioned stubs** in `.veins/proposals/` all target `🎛️ PR State Orchestrator`. Either apply a real quarantine patch (edit the stub files, remove boilerplate, add an actual fix) or close them as resolved if the flakiness is no longer observed. |
+| P2 | `bnat-fingerprint.json` is **77 days stale** (2026-08-21). Re-run the BNAT CLI to get a current sheaf topology snapshot: `node scripts/bnatsheaf/cli.js fingerprint --out docs/biome/bnat-fingerprint.json` |
+| P2 | `🎛️ PR State Orchestrator` is the **only component VEINS has ever flagged** (3 runs, 7 proposals, all stubs). The underlying flakiness was never resolved. Check if this workflow is still flaky or if the problem self-healed; either action the stubs or close them. |
 | P3 | `veins-monitor.yml` has no schedule (cron freeze). Consider running it manually on a cadence or via the VEINS WR process. |
