@@ -1,8 +1,21 @@
 # PR lifecycle labels without GitHub Actions
 
+**Preferred route — owner update, 2026-11-06:** reuse the working CircleCI
+installation for the deterministic labels and badges. See
+[CircleCI setup](#circleci-route-approved-on-2026-11-06) below. The earlier
+operating-system scheduler instructions remain as an alternative, not an
+additional service to enable.
+
 The external label updater reconciles PR labels through the GitHub API, with an operating-system scheduler providing execution independently of GitHub Actions.
 
 **Who / when / why:** Codex deployment agent, 2026-11-06, implementing Audrey Evans's request for a deterministic, FOSS billing workaround that preserves all existing work. These are installation instructions, not a claim of deployment. The session could read public repositories but could not authenticate a push or access a deployment host. Existing workflows remain active and unchanged in this change.
+
+**Later access update, 2026-11-06:** GitHub connector access recovered and the
+prepared work was published for review in
+[draft PR #18291](https://github.com/midnghtsapphire/revvel-standards/pull/18291).
+The earlier access failure above is retained as session history. CircleCI
+context permissions, schedule activation, and production writes remain
+unverified; publishing a PR is not deployment.
 
 ## Reuse the existing external host
 
@@ -45,6 +58,79 @@ If several marker comments exist, or a marker belongs to an unconfigured author,
 Badges add comment-list reads and occasional writes to the request budget. Deterministic bodies prevent a new timestamp alone from forcing comment updates on every poll; execution receipts remain in the host journal. Labels and badges need no LLM. [The current Cubic, CircleCI, and OpenHands comparison](../../Library/pr-lifecycle-label-research-2026-11-06.md#follow-up-badges-cubic-circleci-and-openhands) assigns review, deterministic tests, and coding/repair to those tools separately. Their installations and credentials must be verified before claiming they run here.
 
 The normal repository scan covers all open PRs and closed/merged PRs updated during the previous seven days. `--closed-days` accepts 0 through 365; 0 disables the closed-PR sweep. Closed results are ordered by their update time, and enumeration stops at the cutoff. To repair an older closed or merged PR, invoke the CLI with that PR's explicit `--pr` number and `--apply`. If the service has been offline longer than its closed window, widen the window for a catch-up run or supply the missed PR numbers. This bounded sweep does not claim to reconcile all historical closed PRs.
+
+## CircleCI route approved on 2026-11-06
+
+Audrey selected the existing working CircleCI installation after inspection of
+PR [#18287](https://github.com/midnghtsapphire/revvel-standards/pull/18287).
+Its policy-check, veins-monitor, and validate-registries statuses succeeded;
+lint-and-test ran and failed. Devin Review succeeded and Cubic/Cursor review
+summaries were present. These observations establish external integration
+activity, not permission for a CircleCI script to write labels.
+
+The additive `.circleci/config.yml` job calls the existing deterministic CLI
+through `.circleci/scripts/pr-lifecycle-labels.mjs`. It uses the existing pinned
+Node executor, needs no package installation, includes badges, and defaults to
+dry-run. A 15-minute timeout bounds the batch. The serial group prevents two
+maintenance runs from writing concurrently. Only this maintenance workflow runs
+when the boolean pipeline parameter `run-pr-lifecycle` is `true`; normal pushes
+retain all four existing jobs. No GitHub workflow is changed by this addition.
+
+Before enabling the job, reuse an existing suitably restricted CircleCI context
+or create `revvel-pr-lifecycle` (the name referenced in the config). Restrict it
+to this project, the authorized operator group where supported, and this
+server-side expression:
+
+```text
+pipeline.git.branch == "main" and not job.ssh.enabled and not (pipeline.config_source starts-with "api")
+```
+
+The context restriction must exist outside repository YAML: branch checks inside
+a script do not protect a token from a PR that edits the script or job config.
+Do not place the label-write credential in project-wide variables or attach its
+context to PR lint/test jobs. For a GitHub App pipeline, configure both its
+configuration source and checkout source to this repository's trusted `main`.
+The restriction against API-supplied config still permits normal API-triggered
+pipelines that load their config from the repository.
+
+| Context variable | Meaning |
+| --- | --- |
+| `REVVEL_LIFECYCLE_GITHUB_TOKEN` | Dedicated repository credential; preferred over fallback `GH_TOKEN` / `GITHUB_TOKEN` from this restricted context |
+| `REVVEL_BADGE_AUTHORS` | Comma-separated verified existing badge author and current token actor logins |
+| `REVVEL_LIFECYCLE_APPLY` | Unset or `false`: dry-run. Exactly `true`: write labels and badges after cutover |
+
+Reuse an existing authorized token through the restricted context if one is
+already available. The wrapper checks presence without printing the value;
+presence does not prove permissions. The required GitHub permissions are listed
+above under **Runtime and token**. Successful CircleCI checkout/status reporting is not
+evidence that a shell job has a label-write token.
+
+After the reviewed code is on `main`, run one main-branch pipeline with
+`run-pr-lifecycle=true`, leaving apply unset. Verify the full dry-run succeeds
+and its badge ownership and label plan match the actual PRs. Preserve/retire
+competing writers using the cutover procedure below, then set apply to `true`
+and verify an apply run plus an immediate repeat with no new differences.
+
+Create exactly one hourly **scheduled pipeline**, targeting `main`, with the
+boolean parameter `run-pr-lifecycle=true`. In CircleCI's project settings this
+is under **Triggers** for GitHub OAuth or **Project Setup** for GitHub App.
+For OAuth's timetable choose one run per hour, all hours and all days; for a
+GitHub App cron schedule use `17 * * * *` (UTC). A schedule may run later than
+its nominal time. Do not also enable the optional systemd timer below.
+No webhook secret or Railway dispatcher is required for this route. CircleCI
+has its own usage/credit limits; this removes GitHub Actions runner dependence,
+not every hosting cost.
+
+To pause mutations, set `REVVEL_LIFECYCLE_APPLY=false`; to stop polling, disable
+the CircleCI schedule. Keep the code and original workflows for rollback.
+The local job/script tests do not establish a live schedule, context creation,
+token authorization, or a successful production write. Those must have real run
+receipts before this route is reported operational.
+
+Sources checked 2026-11-06:
+[schedule triggers](https://circleci.com/docs/guides/orchestrate/scheduled-pipelines/),
+[context restrictions](https://circleci.com/docs/guides/security/contexts/),
+[configuration reference](https://circleci.com/docs/reference/configuration-reference/).
 
 ## Optional user-level systemd installation
 
@@ -159,3 +245,22 @@ For large queues, estimate request load before scheduling: a non-draft PR requir
 The new CLI tests are offline validation. Live credentials, downstream event behavior, host uptime, token renewal, and a post-cutover second run with no label differences must be verified before calling the service operational. No live label mutations or old-workflow disablement occurred while writing this document.
 
 `systemd-analyze verify` passed for both supplied units in this session. User-manager validation with `--user` could not initialize because the execution environment has no user runtime manager; the commands above must still be checked on the actual host. This validates unit syntax, not installation or a live scheduled run.
+
+### CircleCI validation receipt — 2026-11-06
+
+Codex CircleCI specialist: 29/29 tests passed (25 reconciler tests plus four
+CircleCI isolation/configuration tests). The declared `js-yaml@5.5.0` dependency
+was installed in an isolated validation directory; no dependency files changed.
+Official CircleCI CLI 1.14.0, verified against its release SHA-256 checksums,
+accepted `config validate` and expanded `config process` successfully.
+The expanded default config retains the ordinary workflows.
+
+The wrapper uses `CIRCLE_PROJECT_USERNAME` / `CIRCLE_PROJECT_REPONAME`, matching
+the observed OAuth-shaped integration. A future GitHub App integration may use
+different organization/project names: verify its runtime identifiers before
+migrating this job, rather than weakening the repository guard.
+
+No live CircleCI credential, context restriction, scheduled run, or label write
+was available to this specialist. The BNAT imprint reported no obstruction and
+`h1ApproxZero=true`, but the new worker was unknown and `imprinted=false`;
+this change adds an opt-in job and does not activate production mutations.

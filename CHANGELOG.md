@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-06
+
+- 2026-11-06 — Cursor Cloud (Grok 4.7), authorized by Audrey Evans (t10u) — Filed the XP Swarm Orchestrator paste-ready prompt at `docs/prompts/agents/XP-SWARM-ORCHESTRATOR.md` and the shorter companion at `docs/prompts/agents/XP-SWARM-ORCHESTRATOR-OVERVIEW.md`. Added `standards/ALWAYS_TRAINING.md` as the preferred name for the practice older docs call self-heal (good to-dos, bad to-dos, went-raunchy; Sense → Plan → Execute → Reflect → Escalate). Existing self-heal standards, skills, and scripts were left in place.
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
@@ -349,3 +353,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 2026-11-06 — Codex — final local receipt: 25/25 tests, including badge concurrent-edit fingerprint regression; syntax, systemd verification, and diff checks exit 0. Added OpenHands SQLite investigation record; no attributable traceback was found and no SQLite repair is claimed.
 
 - 2026-11-06 — Codex repository-audit specialist (ChatGPT Work Mode) — appended the supplied all-hands-bot HTTP 401 `token_not_found_in_db` diagnosis to `docs/research/openhands-sqlite-investigation-2026-11-06.md`, superseding the earlier unknown-error status. Distinguished Cloud API and LLM proxy credentials; recorded deployment/merge authorization and missing authenticated access. No database change or live repair claimed.
+
+### 2026-11-06 — CircleCI lifecycle integration (Codex)
+
+- Added opt-in main-only CircleCI labels/badges maintenance using the existing deterministic reconciler, a restricted context, serial execution, and dry-run default. Existing four test/monitor jobs and all GitHub workflows are preserved.
+- Added four boundary/config tests; combined lifecycle suite passes 29/29. Official CircleCI CLI 1.14.0 validates and expands the configuration. Activation still needs verified context credentials and an hourly main schedule. Draft PR: <https://github.com/midnghtsapphire/revvel-standards/pull/18291>.
