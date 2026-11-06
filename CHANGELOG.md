@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 2026-11-06
 
+- 2026-11-06 — Cursor Grok — `products/merge-prosecutor`: a failed prosecution now opens a GitHub issue titled `[WR]`, which is the Work Request the call chain starts from. The runner markdown file is still written and is still discarded with the job. Repeat runs reuse the open issue via an `mpkey` search token. `docs/merge-prosecutor/index.html` is the page the README already linked. Owner direction on PR #18276: the empty "already done" close was not the work.
 - 2026-11-06 — Cursor Cloud (Grok) — Follow-up on `standards/AGENT_SECURITY_BOUNDARIES.md` (PR #18260): history rewrite is an Audrey-approved incident exception under the `AGENTS.md` NEVER DELETE rule (rotate/revoke first and mandatory; private backup of original refs, plaintext secret never in a public place); token/app installation is the capability ceiling, and rulesets, branch protection, required reviews, and environment approvals also enforce limits; one-line pointers in `AGENTS.md` and `VISITING_AGENTS.md`; `lopezcaresse-wq` Write stays a pending owner action. No permissions changed. No workflow edits.
 
 ## 2026-11-05
