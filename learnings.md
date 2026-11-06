@@ -1024,3 +1024,19 @@ issue N" over "X will fix this."
 `.github/workflows/openrouter-triage.yml`,
 `docs/playbooks/wr-manual-processes.md` §1–§2, CLAUDE.md gotcha #6,
 `standards/VERIFY_THE_POSTCONDITION.md`.
+
+
+## TM-0008 — Public repository access is not publishing access
+
+**Discovered:** 2026-11-06 (America/Denver)  **Discovered-by:** Codex, ChatGPT Work Mode  **WR:** `wr/pending/WR-pr-lifecycle-independent-2026-11-06.md`
+**Category:** access-contract / deployment-evidence
+
+**Symptom:** The GitHub plugin is listed as installed, but repository calls return `Unknown tool`. Public Git clone succeeds while `git push --dry-run` fails with `could not read Username for 'https://github.com': No such device or address`.
+
+**Root cause:** Read access to a public repository does not supply an authenticated Git writer. The exact underlying connector failure was not diagnosed; treating it as an owner configuration mistake would invent evidence.
+
+**Detection heuristic:** Verify the actual operation required, not a nearby capability. A clone is a read receipt, tests are local behavior receipts, and a timer file is configuration—not a running deployment.
+
+**Prevention rule:** Preserve useful local work and its source records; report missing authenticated publishing/host access explicitly. Do not disable current production workflows before the replacement runner is verified. Do not repeatedly request installation for an already installed connector or print credentials while diagnosing access.
+
+**Related:** `docs/automation/pr-lifecycle-session-2026-11-06.md`, `standards/VERIFY_THE_POSTCONDITION.md`.

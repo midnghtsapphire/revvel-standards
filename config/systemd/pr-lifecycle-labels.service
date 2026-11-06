@@ -1,0 +1,26 @@
+# Who: Codex deployment agent; When: 2026-11-06; Owner request: Audrey Evans.
+# Why: Execute deterministic label decisions independently of Actions billing.
+# What: Optional user-level timer target, dry-run until the documented cutover.
+# Reuse the revvel-dark-run machine. If its existing scheduler runs this CLI,
+# use that scheduler instead of enabling this timer (one owner, one schedule).
+# Setup and troubleshooting: docs/automation/pr-lifecycle-labels.md.
+[Unit]
+Description=Revvel PR lifecycle label reconciliation
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/revvel-standards
+EnvironmentFile=%h/.config/revvel/pr-lifecycle-labels.env
+# Preserve the existing status badge feature. Configure its known legacy author
+# and the current token actor in REVVEL_BADGE_AUTHORS (comma-separated logins).
+# Missing/unknown author configuration fails visibly instead of replacing a
+# different person's comment. Dry-run still performs no label/comment writes.
+ExecStart=/usr/bin/env node scripts/pr-lifecycle-labels.mjs --repo midnghtsapphire/revvel-standards --badges --badge-author ${REVVEL_BADGE_AUTHORS}
+# Large PR queues can take time; an expired run fails visibly in the journal.
+# systemd does not start another instance of this service while one is active.
+TimeoutStartSec=15min
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+StandardOutput=journal
+StandardError=journal
