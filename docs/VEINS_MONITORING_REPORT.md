@@ -53,6 +53,8 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
   dim H⁰: 1  dim H¹: 3  energy: 0
   Consistent: true  Obstruction: true
   Long-lived H¹ bars: 0  (as of 2026-08-21T01:30:41.878Z)
+  ⚠️  Sheaf fingerprint is 77 days old — topology data is stale.
+      Re-run: node scripts/bnatsheaf/cli.js imprint_agent --agent <name>
 ```
 
 **Bottom line:**
@@ -61,8 +63,19 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
 - **Zero proposals have been actioned.** The stub boilerplate is still in every file.
 - The engine has been **silent for 107 days** — it stopped running around 2026-07-22.
 - The sheaf topology fingerprint (`docs/biome/bnat-fingerprint.json`) is itself stale
-  (last updated 2026-08-21), so the H¹ numbers reflect a historical snapshot of the
-  BIOME fleet, not the live fleet state.
+  (last updated 2026-08-21, now 77 days old), so the H¹ numbers reflect a historical
+  snapshot of the BIOME fleet, not the live fleet state.
+
+The 2026-11-05 reading from this branch is kept here so it is not dropped.
+It counted **106 days** silent and a fingerprint **76 days** old. Both readings
+use the same last proposal (2026-07-22) and the same fingerprint timestamp
+(2026-08-21). The 2026-11-06 figures above are one day later and match
+`docs/veins-history.jsonl` (`days_since_last_commit`: 107). The warning lines
+in the snapshot block are this branch's addition; `renderReport()` in
+`scripts/veins-snapshot.js` prints them when `fingerprint_stale` is true, and
+the refresh line it prints is `imprint_agent`. Writing a new fingerprint file
+is the separate `fingerprint --out` command named in the 2026-11-06 action
+items below.
 
 ---
 
@@ -215,3 +228,16 @@ node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
 | P2 | `bnat-fingerprint.json` is **77 days stale** (2026-08-21). Re-run the BNAT CLI to get a current sheaf topology snapshot: `node scripts/bnatsheaf/cli.js fingerprint --out docs/biome/bnat-fingerprint.json` |
 | P2 | `🎛️ PR State Orchestrator` is the **only component VEINS has ever flagged** (3 runs, 7 proposals, all stubs). The underlying flakiness was never resolved. Check if this workflow is still flaky or if the problem self-healed; either action the stubs or close them. |
 | P3 | `veins-monitor.yml` has no schedule (cron freeze). Consider running it manually on a cadence or via the VEINS WR process. |
+
+### Earlier reading (2026-11-05), kept from this branch
+
+Same three items, counted one day earlier. Kept so this branch's wording is
+still in the file. The 2026-11-06 table above is the later snapshot: it
+restates these items with the newer day counts, names the `fingerprint --out`
+write command, and adds the second P2 about `🎛️ PR State Orchestrator`.
+
+| Priority | Item |
+|---|---|
+| P1 | VEINS engine has been silent 106 days. Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. |
+| P1 | 7 unactioned stubs in `.veins/proposals/` all target `🎛️ PR State Orchestrator`. Either apply a real quarantine patch or close them as resolved if the flakiness is gone. |
+| P2 | `bnat-fingerprint.json` is 76 days stale (2026-08-21). Re-run the BNAT CLI to get a current sheaf topology snapshot. |
