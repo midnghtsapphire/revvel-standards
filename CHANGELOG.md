@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-06
+
+- 2026-11-06 — Cursor Cloud (Grok 4.7), authorized by Audrey Evans (t10u) — Filed the XP Swarm Orchestrator paste-ready prompt at `docs/prompts/agents/XP-SWARM-ORCHESTRATOR.md` and the shorter companion at `docs/prompts/agents/XP-SWARM-ORCHESTRATOR-OVERVIEW.md`. Added `standards/ALWAYS_TRAINING.md` as the preferred name for the practice older docs call self-heal (good to-dos, bad to-dos, went-raunchy; Sense → Plan → Execute → Reflect → Escalate). Existing self-heal standards, skills, and scripts were left in place.
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
