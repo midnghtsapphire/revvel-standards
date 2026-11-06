@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-06
+
+- 2026-11-06 — PromptOrchestrator cloud agent (approved by Audrey Evans) — `VISITING_AGENTS.md` §5: previous "Record what you did" commented out in place (HTML comment; full original text kept) and superseded in force by a write-as-you-go continuous log (skills, interfaces, thought-process, decisions, learnings, commits). Additive pointer in `AGENTS.md`. Decision line appended to `wr/memory/decisions.jsonl`.
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
