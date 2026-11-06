@@ -17,7 +17,7 @@ This file does not edit `MASTER.md`.
 - `MASTER.md` — header (method properties), §0 (title-only input; form fields, not labels), §1 step (7) (execute in one iteration), §4 (invariants).
 - `workflows/TITLE_TO_WR_EXPANSION.md` — STEP 0, STEP 0.5, STEP 1, STEP 3, STEP 5, and INVARIANTS.
 - `docs/case-files/platform/AGENT_BUILD_PROMPT_1.md` — execution-mode header (XP, one iteration, max build) and §12 (the manifest is the floor, not the ceiling).
-- Orchestrator non-negotiable A in `docs/orchestration/xp-swarm-orchestrator-prompt.md` (PromptSteward paste-ready prompt, drafted 2026-11-03). That block cites the three files above. It also names a missing-scope record `WR-BLOCKER`.
+- Orchestrator non-negotiable A in revvel-hail `docs/orchestrator/ORCHESTRATOR_PROMPT.md` (canonical prompt, [revvel-hail#3](https://github.com/midnghtsapphire/revvel-hail/pull/3)). This repo only points at that file from `docs/orchestration/xp-swarm-orchestrator-prompt.md`. Non-negotiable A cites the three files above and names a missing-scope record `WR-BLOCKER`.
 
 ## Properties
 
@@ -43,10 +43,10 @@ Run these steps in order for the work request in hand. Do not skip a step. Do no
 4. **Write the required bundle at maximum scope for the selected template.**
    - BASIC: the bundle is the root-cause fix and the regression evidence the basic template requires. Do not add product, market, or payment scope.
    - PRODUCT: the bundle is every asset the output type implies, plus anything the research says the title implies. The list is the floor. Where an item implies a further item, include the further item (`workflows/TITLE_TO_WR_EXPANSION.md` STEP 3; `docs/case-files/platform/AGENT_BUILD_PROMPT_1.md` execution-mode header and §12).
-   - When the product scope includes an application, the operational unit includes the app, the backend, and the payment gate. When the work request does not include those surfaces, do not add them (`docs/orchestration/xp-swarm-orchestrator-prompt.md`, non-negotiable A).
+   - When the product scope includes an application, the operational unit includes the app, the backend, and the payment gate. When the work request does not include those surfaces, do not add them (revvel-hail `docs/orchestrator/ORCHESTRATOR_PROMPT.md`, non-negotiable A).
 5. **Execute once.** Build that bundle. Open as many pull requests as the bundle needs. Every one of those pull requests belongs to this iteration (`MASTER.md` §1 step (7) and §4; `workflows/TITLE_TO_WR_EXPANSION.md` STEP 5; `docs/case-files/platform/AGENT_BUILD_PROMPT_1.md` execution-mode header).
 6. **Self-heal inside this iteration.** On a CI failure, a runtime failure, or a schema failure: record the cause, record the fix, and open the follow-up pull request before calling the iteration finished (`MASTER.md` §4; `workflows/TITLE_TO_WR_EXPANSION.md` STEP 5).
-7. **Keep requested scope.** Do not omit an item the work request states or implies. If an item cannot be built, write a documented blocker and leave the iteration incomplete. The orchestrator prompt names that record `WR-BLOCKER` (`MASTER.md` §4; `workflows/TITLE_TO_WR_EXPANSION.md` STEP 5 and INVARIANTS; `docs/orchestration/xp-swarm-orchestrator-prompt.md`, non-negotiable A).
+7. **Keep requested scope.** Do not omit an item the work request states or implies. If an item cannot be built, write a documented blocker and leave the iteration incomplete. The orchestrator prompt names that record `WR-BLOCKER` (`MASTER.md` §4; `workflows/TITLE_TO_WR_EXPANSION.md` STEP 5 and INVARIANTS; revvel-hail `docs/orchestrator/ORCHESTRATOR_PROMPT.md`, non-negotiable A).
 8. **Match the pull requests to the bundle.** Each pull request mirrors the required bundle and the definition of done. A pull request that covers only part of the bundle does not finish the iteration unless the missing part is the documented blocker from step 7 (`workflows/TITLE_TO_WR_EXPANSION.md` STEP 5).
 
 ## Reject these outcomes

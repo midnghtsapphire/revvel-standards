@@ -11,14 +11,14 @@ non-negotiable B.
 
 ## Sources
 
-- `docs/orchestration/xp-swarm-orchestrator-prompt.md` — non-negotiable B (two programmers, identical model ID, one branch lease, scale by more pairs, review twin after draft) and the swarm-topology and model-policy sections.
+- revvel-hail `docs/orchestrator/ORCHESTRATOR_PROMPT.md` ([revvel-hail#3](https://github.com/midnghtsapphire/revvel-hail/pull/3)) — non-negotiable B (two programmers, identical model ID, one branch lease, scale by more pairs, review twin after draft) and the swarm-topology and model-policy sections. This repo's `docs/orchestration/xp-swarm-orchestrator-prompt.md` is only a pointer to that file.
 - `MODEL_CONFIG.md` — coding lane versus review lane, Opus twins, Claude Sonnet denylist. The YAML at `.github/agent-models.yml` wins when this summary and the YAML disagree (`MODEL_CONFIG.md` header).
 - `standards/GOAP_SWARM_RULES.md` — hard rule on reservations: a lease carries `agentId` and a TTL before two agents touch the same resource.
 - `skills/openrouter-swarms/SKILL.md` — scale by spawning more swarms; do not put more than 10 agents in one named swarm unless Audrey approves.
 
 ## Definitions
 
-- **Implementation job.** A job whose output changes application code, backend code, payment code, infrastructure, CI, scripts, or schema. Research and docs jobs are specialist jobs. A specialist job may be one agent or a pair (`docs/orchestration/xp-swarm-orchestrator-prompt.md`, swarm topology, specialists / scouts).
+- **Implementation job.** A job whose output changes application code, backend code, payment code, infrastructure, CI, scripts, or schema. Research and docs jobs are specialist jobs. A specialist job may be one agent or a pair (revvel-hail `docs/orchestrator/ORCHESTRATOR_PROMPT.md`, swarm topology, specialists / scouts).
 - **Pair.** Two programmer agents on one branch. One is the driver. One is the navigator. There is no third programmer in the pair.
 - **Model ID.** The exact provider model string, for example `anthropic/claude-opus-5`. The pair matches when both strings are character-for-character the same.
 - **Lease.** The reservation that lets this pair edit a branch and the files, pull requests, issues, and deploy targets on that branch. Required fields are `agentId` and TTL (`standards/GOAP_SWARM_RULES.md`). Both programmers are named on that lease.
