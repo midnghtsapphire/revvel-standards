@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-06
+
+- 2026-11-06 — Cursor Grok — `products/merge-prosecutor`: a failed prosecution now opens a GitHub issue titled `[WR]`, which is the Work Request the call chain starts from. The runner markdown file is still written and is still discarded with the job. Repeat runs reuse the open issue via an `mpkey` search token. `docs/merge-prosecutor/index.html` is the page the README already linked. Owner direction on PR #18276: the empty "already done" close was not the work.
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.

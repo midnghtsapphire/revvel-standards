@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merge Prosecutor</title>
+<meta name="description" content="Deterministic merge-quality check. Paste a diff and review comments. The same math flags keep-both merges, conflict markers, dismissive comments, and unimplemented suggestions.">
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 16px/1.5 system-ui, sans-serif; max-width: 820px; margin: 2rem auto; padding: 0 1.2rem; }
+  h1 { margin-bottom: .2rem; }
+  .meta { color: #888; margin-bottom: 1.2rem; }
+  label { display: block; font-weight: 700; margin-top: 1rem; }
+  textarea { width: 100%; min-height: 9rem; font: 14px/1.4 ui-monospace, monospace; padding: .6rem; }
+  .row { display: flex; flex-wrap: wrap; gap: .5rem; margin: .8rem 0; }
+  button { font: inherit; padding: .45rem .8rem; border-radius: 8px; border: 1px solid #8886; background: transparent; cursor: pointer; }
+  button.primary { font-weight: 700; }
+  #results { margin-top: 1rem; }
+  .finding { border: 1px solid #8884; border-radius: 8px; padding: .7rem .9rem; margin: .5rem 0; }
+  .finding h3 { margin: 0 0 .3rem; font-size: 1rem; }
+  .pass { border-color: #3fb95066; background: #3fb95014; }
+  .fail { border-color: #f8514966; background: #f8514914; }
+  pre { white-space: pre-wrap; word-break: break-word; margin: .3rem 0 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Merge Prosecutor</h1>
+  <p class="meta">Deterministic gate. Levenshtein distance on consecutive added lines, conflict markers, dismissive phrasing, unimplemented fenced suggestions. No model call.</p>
+  <p>
+    This page runs the checks in your browser. It does not open a GitHub issue.
+    The Action in <code>products/merge-prosecutor</code> does: a failed pull request
+    files a <code>[WR]</code> issue, which is the Work Request the call chain starts from.
+    A markdown file written on the Actions runner is discarded when the job ends.
+  </p>
+
+  <label for="diff">Pull request diff</label>
+  <textarea id="diff" spellcheck="false"></textarea>
+
+  <label for="comment">Review comment (one comment, treated as a human reviewer)</label>
+  <textarea id="comment" spellcheck="false"></textarea>
+
+  <div class="row">
+    <button type="button" class="primary" id="run">Prosecute</button>
+    <button type="button" id="sample-keep">Load keep-both sample</button>
+    <button type="button" id="sample-conflict">Load conflict sample</button>
+    <button type="button" id="sample-clean">Load clean sample</button>
+  </div>
+
+  <div id="results" aria-live="polite"></div>
+</main>
+<script type="module">
+import {
+  detectDuplicatedBlocks,
+  detectUnresolvedConflicts,
+  detectUnimplementedSuggestions,
+  isDismissiveComment
+} from '../../products/merge-prosecutor/browser/checks.mjs';
+
+const diffEl = document.getElementById('diff');
+const commentEl = document.getElementById('comment');
+const results = document.getElementById('results');
+
+const samples = {
+  keep: {
+    diff: [
+      'diff --git a/test.js b/test.js',
+      '--- a/test.js',
+      '+++ b/test.js',
+      '+function test() {',
+      '+  console.log("hello");',
+      '+}',
+      '+function test() {',
+      '+  console.log("hello");',
+      '+}'
+    ].join('\n'),
+    comment: 'not my bug, leave it'
+  },
+  conflict: {
+    diff: [
+      'diff --git a/test.js b/test.js',
+      '--- a/test.js',
+      '+++ b/test.js',
+      '+<<<<<<< HEAD',
+      '+function test() {',
+      '+=======',
+      '+function test2() {',
+      '+>>>>>>> main'
+    ].join('\n'),
+    comment: 'Please use this instead:\n```javascript\nfunction sayHello() {\n  console.error("hello");\n}\n```'
+  },
+  clean: {
+    diff: [
+      'diff --git a/test.js b/test.js',
+      '--- a/test.js',
+      '+++ b/test.js',
+      '+function sayHello() {',
+      '+  console.log("hello");',
+      '+}'
+    ].join('\n'),
+    comment: 'This is implemented:\n```javascript\nfunction sayHello() {\n  console.log("hello");\n}\n```'
+  }
+};
+
+function load(name) {
+  diffEl.value = samples[name].diff;
+  commentEl.value = samples[name].comment;
+  prosecute();
+}
+
+function card(parent, title, ok, lines) {
+  const section = document.createElement('section');
+  section.className = 'finding ' + (ok ? 'pass' : 'fail');
+  const heading = document.createElement('h3');
+  heading.textContent = title;
+  section.appendChild(heading);
+  const pre = document.createElement('pre');
+  pre.textContent = lines.length ? lines.join('\n') : (ok ? 'None.' : 'Found.');
+  section.appendChild(pre);
+  parent.appendChild(section);
+}
+
+function prosecute() {
+  const diffText = diffEl.value;
+  const commentBody = commentEl.value;
+  const comment = {
+    body: commentBody,
+    html_url: 'local-comment',
+    user: { login: 'reviewer' }
+  };
+  const conflicts = detectUnresolvedConflicts(diffText);
+  const duplicates = detectDuplicatedBlocks(diffText);
+  const dismissive = isDismissiveComment(commentBody);
+  const unimplemented = commentBody.trim()
+    ? detectUnimplementedSuggestions(diffText, [comment])
+    : [];
+
+  results.replaceChildren();
+  const summary = document.createElement('p');
+  const noDiff = !String(diffText).trim();
+  const failed = conflicts.length || duplicates.length || dismissive || unimplemented.length;
+  // An empty diff is not a pass. The Action's resolveDiff throws on an
+  // empty body so a failed fetch cannot look clean. Say that here too.
+  if (noDiff) {
+    summary.textContent = 'No diff entered. The Action refuses an empty diff and does not treat it as a pass.';
+  } else if (failed) {
+    summary.textContent = 'Failed. The Action would open a [WR] issue and exit 1.';
+  } else {
+    summary.textContent = 'Passed. The Action would not open a Work Request for this input.';
+  }
+  results.appendChild(summary);
+
+  card(results, 'Unresolved conflict markers', conflicts.length === 0,
+    conflicts.map((item) => `${item.file}: ${item.line}`));
+  card(results, 'Keep-both duplicate blocks', duplicates.length === 0,
+    duplicates.map((item) => `${item.file}: distance ${item.distance}`));
+  card(results, 'Dismissive comment', !dismissive,
+    dismissive ? ['Matched not my error / not my bug / not my problem, leave it, or out of scope.'] : []);
+  card(results, 'Unimplemented fenced suggestion', unimplemented.length === 0,
+    unimplemented.map((item) => `${item.user}: match ratio ${item.matchRatio.toFixed(2)}`));
+}
+
+document.getElementById('run').addEventListener('click', prosecute);
+document.getElementById('sample-keep').addEventListener('click', () => load('keep'));
+document.getElementById('sample-conflict').addEventListener('click', () => load('conflict'));
+document.getElementById('sample-clean').addEventListener('click', () => load('clean'));
+load('keep');
+</script>
+</body>
+</html>
