@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-06
+
+- 2026-11-06 — Grok 4.7 (Cursor Cloud) — `docs/governance/ACTIONS_MIGRATION.md`: hosted Actions reds are an account billing lock (jobs fail with 0 steps and "your account is locked due to a billing issue"), not workflow code. Inventory and runner/webhook migration targets for `pr-lifecycle.yml`, `pr-state-orchestrator.yml`, `pr-check-status.yml`, and `agent-audit-logger.yml`. No CircleCI job added: the four are inline `actions/github-script` and need GitHub event payloads CircleCI does not receive. `.github/workflows/` unchanged. Refs #18268. Audrey decides: disable hosted workflows (not delete).
+
 ## 2026-11-05
 
 - 2026-11-05 — Grok Bot (Audrey via Proofy / TriageChief) — METAL (public) / HULL (kernel) governance pointer. Audrey's exact words: "HULL for the METAL kernel". Public brand stays METAL (public provenance face). Kernel renamed HUSK → HULL (protective kernel, linked to METAL and separable). No backronym assigned to HULL. Home stays midnghtsapphire/oaudrey; openaudrey stays brand-only. Archive-renamed `Library/references/husk-oaudrey-2026-11-05.md` to `docs/archive/2026-11-05/Library/references/husk-oaudrey-2026-11-05.md` (snapshot kept; not deleted; not git-rm). Canonical pointer: `Library/references/hull-oaudrey-2026-11-05.md`. Appended `wr/memory/decisions.jsonl` (`metal-public-hull-kernel`); earlier HUSK lines left in place. elisymlabs/husk remains a historical repo pointer only. Lowercase "metal" in #18263 is terse writing style, not the product name; that draft was not edited. No Actions YAML. Draft into daily/2026-11-05.
