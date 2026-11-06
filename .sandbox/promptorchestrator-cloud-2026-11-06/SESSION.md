@@ -41,3 +41,6 @@ This file is the continuous log for this task. Append-only.
 ## Commits
 
 - Conventional Commits on this branch, split by concern: the guest-contract edit, the `AGENTS.md` pointer, then the ledger (changelog, decision, learning, this session).
+- `3b7c19e31` `docs: strengthen visiting-agent write-as-you-go recording`
+- `79ca222b8` `docs: point agents at strengthened visiting-agent recording`
+- `ebdc5d013` `docs: record the visiting-agent write-as-you-go decision`
