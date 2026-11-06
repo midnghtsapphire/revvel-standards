@@ -44,3 +44,10 @@ This file is the continuous log for this task. Append-only.
 - `3b7c19e31` `docs: strengthen visiting-agent write-as-you-go recording`
 - `79ca222b8` `docs: point agents at strengthened visiting-agent recording`
 - `ebdc5d013` `docs: record the visiting-agent write-as-you-go decision`
+
+## Pull request
+
+- Draft: [revvel-standards #18284](https://github.com/midnghtsapphire/revvel-standards/pull/18284)
+- Base: `daily/2026-11-06`
+- Head: `feat/visiting-agents-write-as-you-go-2026-11-06`
+- Not merged. Agents do not merge their own PRs.

@@ -1049,3 +1049,5 @@ add the new section immediately after
 **Prevention rule:** Never delete and never rewrite a file wholesale. To retire a rule, comment it out in place with a dated note and keep the original visible in the source. Add the replacement beside it.
 
 **Related:** `VISITING_AGENTS.md` §5, `AGENTS.md` OWNER RULE, `standards/COMMENT-DONT-DELETE.md`, `wr/memory/decisions.jsonl` topic `visiting-agents-write-as-you-go`.
+
+**PR opened:** [revvel-standards #18284](https://github.com/midnghtsapphire/revvel-standards/pull/18284) (draft, base `daily/2026-11-06`). Appended after the pull request existed so the Training Module headings above stay as first written.
