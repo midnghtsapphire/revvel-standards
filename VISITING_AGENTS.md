@@ -108,6 +108,54 @@ parallel fallback chain is scaffolding — it will be removed.
 Guests who follow this get invited back. Welcome — now go ship something that
 makes money.
 
+
+## 7b. If another agent shares your checkout — read this before you push
+
+Added 6 Nov 2026 after a real incident in `midnghtsapphire/tartaria-tablets`,
+where three sessions committed to one working copy on `main`. Nothing was lost,
+but a push would have published bytes another session had deliberately held.
+**This section describes the traps; it adds no new rule.** The governing rules
+are already OWNER RULE 2 and 3 in [`AGENTS.md`](./AGENTS.md) (never delete,
+never rewrite) and the existing "never force-push over reviewer commits" in
+[`agent-pack/AGENTS.md`](./agent-pack/AGENTS.md).
+
+- ❌ **Do not trust `origin/...` without a fetch that finished.** A fetch that
+  hangs or is cancelled leaves the ref days stale, and `git log HEAD..origin/main`
+  then reports *no remote changes* while the remote is in fact ahead. The symptom
+  is a push rejected as `fetch first` right after a clean-looking comparison.
+  **Confirm the fetch exited, then compare.**
+
+- ❌ **Do not assume your commit is still the tip.** Another session can stack
+  commits on top of yours between your commit and your push. Run
+  `git log --oneline --reverse origin/main..HEAD` and find your own SHA in the
+  list before you push anything.
+
+- ❌ **Do not push a branch to publish one commit.** A branch push sends every
+  ancestor. If any commit below the tip was deliberately held — licence
+  unresolved, owner decision pending, a `*-HOLD.md` or `*-CONFLICT-*.md` note
+  beside it — pushing the branch publishes it anyway. **Push an explicit commit
+  instead:** `git push origin <sha>:main`, where `<sha>` is the last commit you
+  have verified. Check with `git ls-tree -r --name-only <sha>` that the held
+  paths are absent from that tree.
+
+- ❌ **Do not rebase to clear a rejected push.** In a shared checkout a rebase
+  rewrites the other agents' commits, which is the wholesale rewrite OWNER
+  RULE 3 forbids. **Merge, or push an earlier SHA.**
+
+- ❌ **Do not `git stash`, `git reset --hard`, or switch branches.** Another
+  agent's uncommitted work is sitting in that working tree. `rebase.autostash`
+  must stay unset — check with `git config rebase.autostash` before any rebase
+  someone has authorised.
+
+- ✅ **Stage by path, never `git add -A`.** `git commit` after `git add <file>`
+  still reports other files in `git diff HEAD~1`, because that command compares
+  the *working tree*. Confirm what you actually committed with
+  `git show --numstat HEAD`.
+
+- ✅ **When a push is rejected and another agent is live, stop and ask the
+  owner.** Integrating is a decision about someone else's unpushed work. Say
+  which SHAs are yours, which are theirs, and which are held.
+
 ## Whiteboard (GitHub Discussions)
 
 Every repo uses its **GitHub Discussions** as the agent whiteboard.
