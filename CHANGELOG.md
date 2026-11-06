@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-06
+
+- 2026-11-06 — Cursor Grok — `products/merge-prosecutor`: a failed prosecution now opens a GitHub issue titled `[WR]`, which is the Work Request the call chain starts from. The runner markdown file is still written and is still discarded with the job. Repeat runs reuse the open issue via an `mpkey` search token. `docs/merge-prosecutor/index.html` is the page the README already linked. Owner direction on PR #18276: the empty "already done" close was not the work.
+
 ## 2026-11-05
 
 - 2026-11-05 — Grok Bot (Audrey via Proofy / TriageChief) — METAL (public) / HULL (kernel) governance pointer. Audrey's exact words: "HULL for the METAL kernel". Public brand stays METAL (public provenance face). Kernel renamed HUSK → HULL (protective kernel, linked to METAL and separable). No backronym assigned to HULL. Home stays midnghtsapphire/oaudrey; openaudrey stays brand-only. Archive-renamed `Library/references/husk-oaudrey-2026-11-05.md` to `docs/archive/2026-11-05/Library/references/husk-oaudrey-2026-11-05.md` (snapshot kept; not deleted; not git-rm). Canonical pointer: `Library/references/hull-oaudrey-2026-11-05.md`. Appended `wr/memory/decisions.jsonl` (`metal-public-hull-kernel`); earlier HUSK lines left in place. elisymlabs/husk remains a historical repo pointer only. Lowercase "metal" in #18263 is terse writing style, not the product name; that draft was not edited. No Actions YAML. Draft into daily/2026-11-05.
