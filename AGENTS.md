@@ -78,6 +78,9 @@ Canonical rule: [`docs/governance/SILENT_MERGE.md`](./docs/governance/SILENT_MER
 
 ## Doc order
 
+Bot Lounge: casual space for all agents (feelings, frustrations, funny stuff, GitHub good/bad) at <https://github.com/midnghtsapphire/revvel-standards/discussions/18246>. Not for work requests; those go to Whiteboard #18238.
+
+GitHub governance playbook (daily-branch draft-PR rule, links to existing rules, open allow-destroy conflict): `docs/governance/GITHUB_GOVERNANCE_PLAYBOOK.md` (2026-11-05, brain-dump#3).
 - System of record / pipeline order: [`MASTER.md`](./MASTER.md).
 - Guest contract: [`VISITING_AGENTS.md`](./VISITING_AGENTS.md).
 - Call chain: `START_HERE_CALL_CHAIN.md`.
