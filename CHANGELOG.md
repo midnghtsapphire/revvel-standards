@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-05
+
+- 2026-11-05 — Grok Bot (Audrey-directed, TriageChief t59u) — Kill allow-destroy bypass (comment-out, not delete). `.circleci/scripts/check-archival-policy.sh`: old `resolve_allow_destroy` / label-ratify path commented out with Audrey quote ("ya not lets get rid of that") + AGENTS.md OWNER RULE (2026-10-30); deletions always fail closed. `scripts/no-destroy-guard.js` + `.github/workflows/no-destroy-guard.yml`: surgical comment-out of allow-destroy bypass wiring only (no new Actions). `tests/circleci-allow-destroy.test.js` + `tests/no-destroy-guard.test.js`: expect fail-closed / label ignored. Supersedes approach in draft #18261 (kept open). LEDGER.md not on base — no ledger line.
+
 All notable changes to the Revvel Standards repository will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
