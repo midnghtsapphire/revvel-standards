@@ -195,5 +195,11 @@ function runLinearALoop(maxIter) {
 if (process.argv.includes("--linear-a")) {
   const i = process.argv.indexOf("--iter");
   const maxIter = i >= 0 ? Number(process.argv[i + 1]) : undefined;
+  // Fail loudly on a bad --iter rather than silently running the whole ledger,
+  // so a mistyped limit can't look like a successful bounded run (Gitar review,
+  // PR #18298; same postcondition-honesty rule as H4).
+  if (i >= 0 && !(Number.isInteger(maxIter) && maxIter > 0)) {
+    throw new Error(`--iter expects a positive integer, got ${JSON.stringify(process.argv[i + 1])}`);
+  }
   runLinearALoop(maxIter);
 }
