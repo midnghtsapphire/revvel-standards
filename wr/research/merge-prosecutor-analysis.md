@@ -56,3 +56,25 @@ Yes. The code in `products/merge-prosecutor/action/run-prosecutor.mjs` contains 
 ## Next Step
 
 No further action — research answered the question; archive this doc.
+
+## Addendum 2026-11-06 — owner rejected the "already done" close
+
+Audrey Evans commented on PR #18276: "needs to actually be worked on".
+The findings above described the detectors. They did not check whether a
+Work Request survived the job. `createWR` wrote `wr/wr-<random>.md` under
+the Actions workspace (`WORKSPACE_DIR` is `products/merge-prosecutor` in
+`.github/workflows/merge-prosecutor.yml`). The runner disk is discarded
+when the job ends. The call chain in `START_HERE_CALL_CHAIN.md` starts at
+a GitHub issue titled `[WR]`. The action had `issues: write` and never
+called the issues API.
+
+What changed, as an addition next to `createWR`: `fileWorkRequest` still
+writes that local file, and it also opens (or reuses) a GitHub issue whose
+body carries `mpkey<fingerprint>`. A repeat run searches that token and
+does not open a second issue. A 403 is logged and returned. The job stays
+red because of the finding, not because the issue exists. The local file
+is still not the system of record.
+
+The README link `docs/merge-prosecutor/` had no page. `docs/merge-prosecutor/index.html`
+now runs the same checks in the browser. It does not open GitHub issues.
+`tests/demo-parity.test.js` compares that copy to the Action.
