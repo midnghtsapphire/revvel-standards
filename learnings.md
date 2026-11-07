@@ -1025,7 +1025,7 @@ issue N" over "X will fix this."
 `docs/playbooks/wr-manual-processes.md` §1–§2, CLAUDE.md gotcha #6,
 `standards/VERIFY_THE_POSTCONDITION.md`.
 
----
+## TM-0008 — Measured a gate nothing consumes; deleted where the standard requires adding
 
 **Date/Time:** 2026-11-07
 
