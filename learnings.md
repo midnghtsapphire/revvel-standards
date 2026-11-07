@@ -1040,3 +1040,29 @@ issue N" over "X will fix this."
 **Prevention rule:** Preserve useful local work and its source records; report missing authenticated publishing/host access explicitly. Do not disable current production workflows before the replacement runner is verified. Do not repeatedly request installation for an already installed connector or print credentials while diagnosing access.
 
 **Related:** `docs/automation/pr-lifecycle-session-2026-11-06.md`, `standards/VERIFY_THE_POSTCONDITION.md`.
+---
+
+### TM-0008 — Comment-out must keep the original lines in the file
+
+**Discovered:** 2026-11-06  **Discovered-by:** PromptOrchestrator cloud agent during VISITING_AGENTS.md §5 write-as-you-go strengthening  **PR/issue:** draft PR on `feat/visiting-agents-write-as-you-go-2026-11-06` targeting `daily/2026-11-06` (number assigned when the PR opens)
+**Category:** scope
+
+**Symptom:** A strengthened guest-contract section looks like a deletion in review when the previous wording is replaced, even if the author meant to retire it.
+
+**Root cause:** Replacing a block removes the old bytes from the file. Owner rule (Audrey Evans, 2026-10-30) and this task require the previous text to stay in place, commented out, so a reviewer can see it without reconstructing it from git history.
+
+**Detection heuristic:** `git diff -U0` on a retired section should still contain the old lines as context or as commented lines, and `grep -F 'COMMENTED OUT 2026-11-06'` plus `grep -F 'REVVEL-DISABLED'` should find the marker. A diff that only shows `-` lines for the old rule, with none of that text under `+`, is a deletion.
+
+**Autofix pattern:**
+```text
+insert the dated HTML comment and REVVEL-DISABLED header
+leave the previous lines byte-for-byte
+close with REVVEL-DISABLED-END -->
+add the new section immediately after
+```
+
+**Prevention rule:** Never delete and never rewrite a file wholesale. To retire a rule, comment it out in place with a dated note and keep the original visible in the source. Add the replacement beside it.
+
+**Related:** `VISITING_AGENTS.md` §5, `AGENTS.md` OWNER RULE, `standards/COMMENT-DONT-DELETE.md`, `wr/memory/decisions.jsonl` topic `visiting-agents-write-as-you-go`.
+
+**PR opened:** [revvel-standards #18284](https://github.com/midnghtsapphire/revvel-standards/pull/18284) (draft, base `daily/2026-11-06`). Appended after the pull request existed so the Training Module headings above stay as first written.

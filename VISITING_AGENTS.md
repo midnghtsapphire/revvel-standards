@@ -11,6 +11,10 @@ junk behind.
 For the product/monorepo map and per-product commands, see [`AGENTS.md`](./AGENTS.md).
 This file is only the guest contract.
 
+**XP-pair / one-iteration swarm jobs:** also read the fleet orchestrator prompt,
+[revvel-hail `docs/orchestrator/ORCHESTRATOR_PROMPT.md`](https://github.com/midnghtsapphire/revvel-hail/blob/main/docs/orchestrator/ORCHESTRATOR_PROMPT.md)
+(that file's PR may land the same day). Write-as-you-go recording for every visit is §5.
+
 ---
 
 ## 1. The Prime Directive
@@ -70,6 +74,10 @@ Don't go spelunking and reinventing config. The canonical sources are:
 If a value isn't in one of these, ask via the work-request issue — don't guess
 and don't hardcode.
 
+<!-- COMMENTED OUT 2026-11-06 by PromptOrchestrator cloud agent: superseded by stronger write-as-you-go log; owner reviews comment-outs -->
+
+<!-- REVVEL-DISABLED | AGENT: PromptOrchestrator-cloud-agent | MODEL: grok-4.7 | WR: owner-approved-2026-11-06-visiting-agents-write-as-you-go | DATE: 2026-11-06 | STATUS: REPLACED | OWNER: Audrey Evans
+REASON: previous §5 superseded by the strengthened write-as-you-go section immediately after this comment; full original text is preserved below, unchanged, for owner review.
 ## 5. Record what you did
 
 Fast iteration only works if it's observable. Write down what you're doing in
@@ -82,6 +90,25 @@ real time:
 - The [agent audit logger](.github/workflows/agent-audit-logger.yml) and
   `scripts/agent-activity-monitor.js` track agent latency and actions — keep
   steps named clearly so the trail is legible.
+REVVEL-DISABLED-END -->
+
+## 5. Record what you did (write-as-you-go — strengthened 2026-11-06)
+
+Fast iteration only works if it is observable. Write as you go from sandbox to GitHub — sandboxes are ephemeral.
+
+Required continuous log (append-only; never delete prior entries):
+
+1. **Skills** — every skill used (name + why).
+2. **Interfaces** — every API, MCP server, CLI, workflow, and script invoked.
+3. **Thought-process** — how you chose the approach, alternatives rejected, and what you reused from GitHub vs the web.
+4. **Decisions** — significant decisions in `wr/memory/decisions.jsonl` (one JSON object per line).
+5. **Learnings** — append to `learnings.md` using template headings verbatim (self-heal before the next project). New lessons use the Training Module headings in that file exactly: `### TM-<NNNN>`, **Discovered:**, **Category:**, **Symptom:**, **Root cause:**, **Detection heuristic:**, **Autofix pattern:**, **Prevention rule:**, **Related:**. Put extra context in the body, not on the heading.
+6. **Commits** — Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, …); name steps clearly for the [agent audit logger](.github/workflows/agent-audit-logger.yml) / `scripts/agent-activity-monitor.js`.
+
+Where to put the continuous log for a task:
+
+- Prefer `wr/` or `docs/` paths the task already uses, or a dated session file under the agent sandbox folder (this repo uses `.sandbox/<agent>/`) that is committed promptly. Do not drop that log at the repo root (§2).
+- Cross-link fleet orchestrator prompt: [revvel-hail `docs/orchestrator/ORCHESTRATOR_PROMPT.md`](https://github.com/midnghtsapphire/revvel-hail/blob/main/docs/orchestrator/ORCHESTRATOR_PROMPT.md) (the hail PR may land the same day).
 
 ## 6. What already runs the fleet — don't rebuild it
 

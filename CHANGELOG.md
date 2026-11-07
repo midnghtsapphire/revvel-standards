@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 2026-11-06
 
+- 2026-11-06 — PromptOrchestrator cloud agent (approved by Audrey Evans) — `VISITING_AGENTS.md` §5: previous "Record what you did" commented out in place (HTML comment; full original text kept) and superseded in force by a write-as-you-go continuous log (skills, interfaces, thought-process, decisions, learnings, commits). Additive pointer in `AGENTS.md`. Decision line appended to `wr/memory/decisions.jsonl`.
 - 2026-11-06 — Cursor Cloud (Grok 4.7), authorized by Audrey Evans (t10u) — Filed the XP Swarm Orchestrator paste-ready prompt at `docs/prompts/agents/XP-SWARM-ORCHESTRATOR.md` and the shorter companion at `docs/prompts/agents/XP-SWARM-ORCHESTRATOR-OVERVIEW.md`. Added `standards/ALWAYS_TRAINING.md` as the preferred name for the practice older docs call self-heal (good to-dos, bad to-dos, went-raunchy; Sense → Plan → Execute → Reflect → Escalate). Existing self-heal standards, skills, and scripts were left in place.
 
 ## 2026-11-04
