@@ -126,6 +126,40 @@ jobs:
           path: /tmp/veins-artifacts
           destination: veins-monitor
 
+  # Deploy to Railway on main-branch merges after lint-and-test passes.
+  # Division of labor: CircleCI = test gate; this job is the bridge to the
+  # Railway deploy target that GitHub Actions (ship-to-market.yml) also uses.
+  #
+  # Human setup required (one-time):
+  #   1. Get a Railway token: https://railway.app/account/tokens
+  #   2. Add RAILWAY_TOKEN to CircleCI project env vars:
+  #      app.circleci.com → Project Settings → Environment Variables
+  #   3. Also add RAILWAY_TOKEN to GitHub Actions secrets for ship-to-market.yml.
+  #
+  # If RAILWAY_TOKEN is absent the step exits 0 with a clear "SKIPPED" message
+  # so the rest of the main pipeline is not blocked. Once the token is set, a
+  # failed railway deploy exits non-zero and fails the job (RVS-VERIFY-001:
+  # exit codes reflect the postcondition, not process completion).
+  deploy-railway:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Deploy to Railway
+          command: |
+            if [[ -z "$RAILWAY_TOKEN" ]]; then
+              echo "============================================================"
+              echo "SKIPPED — RAILWAY_TOKEN not set in CircleCI project env vars."
+              echo "To activate: app.circleci.com → Project Settings"
+              echo "             → Environment Variables → Add RAILWAY_TOKEN"
+              echo "Get a token: https://railway.app/account/tokens"
+              echo "============================================================"
+              exit 0
+            fi
+            npm install -g @railway/cli
+            railway up --detach
+            echo "Deploy triggered. Check https://railway.app for service status."
+
   # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
   # and that every REVVEL-DISABLED block in changed files has all required
   # metadata fields (AGENT, MODEL, WR, DATE, STATUS).
@@ -193,6 +227,14 @@ workflows:
             branches:
               only: main
       - veins-monitor:
+          filters:
+            branches:
+              only: main
+      # deploy-railway runs only on main, only after the test gate is green.
+      # Skips silently if RAILWAY_TOKEN is not set in CircleCI project env vars.
+      - deploy-railway:
+          requires:
+            - lint-and-test
           filters:
             branches:
               only: main
