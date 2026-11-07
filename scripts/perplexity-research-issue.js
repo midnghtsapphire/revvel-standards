@@ -44,6 +44,7 @@ const CONFIG = {
 // inline copies would drift, and the drift would be invisible until one
 // of them silently stopped matching the installed Python package.
 const { NO_KEY_BRIDGE, NO_KEY_INSTALL_HINT } = require('./perplexity-no-key-bridge');
+const { pythonBinOrThrow } = require('./lib/python-bin.js');
 
 
 async function main() {
@@ -149,7 +150,7 @@ Return your response in this format:
  */
 async function callPerplexityNoKey(prompt, execFileSyncImpl = execFileSync) {
   const output = execFileSyncImpl(
-    'python3',
+    pythonBinOrThrow(),
     ['-c', NO_KEY_BRIDGE, prompt, CONFIG.model, CONFIG.fallbackMode, NO_KEY_INSTALL_HINT],
     {
       encoding: 'utf8',

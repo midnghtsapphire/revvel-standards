@@ -1024,3 +1024,125 @@ issue N" over "X will fix this."
 `.github/workflows/openrouter-triage.yml`,
 `docs/playbooks/wr-manual-processes.md` §1–§2, CLAUDE.md gotcha #6,
 `standards/VERIFY_THE_POSTCONDITION.md`.
+
+## TM-0008 — Measured a gate nothing consumes; deleted where the standard requires adding
+
+**Date/Time:** 2026-11-07
+
+**Task Attempted:** Work the open WR/PR backlog. I had two changes rejected in
+October — PR #18035 (merge-prosecutor README usage example) and PR #18130
+(`wr/research/**` in `.markdownlintignore`) — and came back to ask whether they
+should be reopened. The owner's answer was to read `standards/` first and to
+stop overwriting what already has a workaround.
+
+**Outcome:** Both PRs were correctly closed, for two different reasons, and I
+had the premise of each one wrong. Nothing needed reopening. The two findings
+are now recorded in `wr/memory/decisions.jsonl` under topics
+`markdown-gate-scope-not-markdownlintignore` and
+`merge-prosecutor-readme-usage-keep-both`.
+
+**Root Cause of Failure:** I measured the wrong gate, and I deleted instead of
+adding.
+
+1. **Wrong gate.** I reported main as "red on the markdown gate" from
+   `npm run lint`, which scans all 1197 files. The gate that decides anything is
+   the CircleCI `lint-and-test` step `Lint changed Markdown (markdownlint)` →
+   `.circleci/scripts/lint-changed-markdown.sh`, which lints only Markdown
+   changed against the merge-base. Scoping it to changed files *is* the
+   workaround for the pre-existing backlog, and the comment above the step in
+   `.circleci/config.yml` says so. Worse, that script feeds
+   `.markdownlintignore` to `markdownlint-cli2` as `#glob` negations
+   deliberately, "so all three gates agree on scope" — so my one-line ignore
+   entry would have exempted every *future* changed file under `wr/research/`
+   from the real gate. The fix I proposed to make a gate green would have put a
+   hole in it.
+2. **Deleted instead of added.** My README change removed the local-path usage
+   form (`- uses: ./products/merge-prosecutor`) to resolve a duplicated block,
+   on a branch I had named `…-keep-both`. The duplicated block *is* broken —
+   `action.yml` marks `github-token`, `repository` and `pr-number`
+   `required: true` and the remote invocation carries no `with:` — but
+   RVS-PRESERVE-001 §1 requires the additive fix (two complete labelled
+   examples), or a `REVVEL-DISABLED` block per RVS-AGENT-001 for a human to
+   ratify. `check-archival-policy.sh` enforces RVS-AGENT-001 against deleted
+   *files*, so nothing in CI would have stopped me.
+
+**Self-Healing Fix / Learned Lesson:** Before calling a gate red, find the
+consumer that actually blocks the merge and run *that*. A repo-wide linter and
+the CI gate can disagree by design, and when they do, the disagreement is
+usually a deliberate scoping decision with a comment next to it. The general
+form, which is RVS-VERIFY-001 read backwards: *a finding nobody's gate consumes
+is not a failure.* I had been treating the hosted-Actions reds the same way —
+`docs/governance/ACTIONS_MIGRATION.md` (PR #18279) states the interim rule
+plainly, that billing-lock reds are noise and CircleCI is the gate, and I was
+re-deriving "CI is dead" against it every session.
+
+Second lesson: when an existing block looks like a bad merge, the additive
+reading is usually available. Two usage forms with one set of inputs between
+them is a keep-both resolution missing a second `with:`, not a line to delete.
+
+**Next Action:** The branches `fix/markdownlint-ignore-wr-research` and
+`fix/markdown-gate-md026-daily-bom` still carry both rejected changes. Owner's
+call whether to delete them; the decision rows name them so neither gets
+resurrected by a later agent reading the branch list.
+
+---
+
+## 2026-11-07 — The billing-free CI lane is a workaround, not a bug. Do not "fix" it
+
+**Reported by Audrey, 7 Nov 2026:** *"we are using workarounds because of the
+payment gate. do not overwrite what was already fixed or had a workaround."*
+
+**Symptom an agent will see.** Account-wide GitHub Actions billing is locked.
+Every GitHub-hosted job fails in 1–4 seconds with `conclusion: failure` and
+`steps: []` — no logs, no runner, nothing to debug. A PR sits `BLOCKED` with
+required contexts pending. The obvious-looking repairs are all wrong:
+
+- **Do not disable Actions.** Actions must stay **ENABLED**. Disabling them
+  stops the three checks below from reporting at all, which makes every PR
+  permanently unmergeable rather than merely slow.
+- **Do not rewrite workflows to "work around" the failures.** They are not
+  failing for a reason in the YAML.
+- **Do not re-enter payment details.** The lock is Audrey's and GitHub
+  Support's to clear. No agent touches billing.
+
+**What still reports under the lock, and why — these three are the lane.**
+
+| check | why it survives |
+| --- | --- |
+| `ci/circleci: lint-and-test` | CircleCI is not GitHub-hosted, so GitHub billing does not gate it |
+| `GitGuardian Security Checks` | a GitHub App, not an Actions job |
+| `check-for-scaffolding` | **skipped**, so it never requests a runner — and a *skipped* required check is satisfied, not pending |
+
+**The third one is the subtle one.** `.github/workflows/anti-scaffolding-enforcer.yml:48`
+carries a **job-level** `if: github.event.pull_request.user.login != 'midnghtsapphire'`.
+On an owner-authored PR the job is skipped before a runner is requested, so
+billing never enters it. That `if:` was **not written as a billing workaround**
+— the comment above it says it exists so the owner's quickly-written WRs are
+never blocked — but it is the reason the check still reports green under the
+lock. **Moving that condition from the job down into a step would break the
+lane**, because a step-level `if:` still requests a runner, and the runner is
+what billing refuses. Same outcome for the PR, opposite outcome for CI.
+
+**The second standing workaround: the OpenRouter routing policy.**
+`.github/copilot-instructions.md:7` — *"Automation in this repository is routed
+through OpenRouter via `OPENROUTER_API_KEY`, not through the paid GitHub
+Copilot Coding Agent. Do not add `@Copilot` or `copilot-swe-agent` as an
+assignee in any workflow."* That is a paid lane deliberately not used. An agent
+that "restores Copilot integration" is undoing a cost decision, not fixing an
+omission. PR #18296 comments the three `copilot` entries out of
+`auto-approve-clean-prs.yml` **rather than deleting them**, so the policy is
+one edit away from reversal if Audrey changes it.
+
+**Prevention rule.** A workaround is indistinguishable from a bug once the
+reason for it leaves the room. Before "repairing" anything that looks broken
+but is load-bearing — a disabled lane, an unused adapter, a condition in an odd
+place, a commented-out entry — **look for the constraint it was written
+against, and if you cannot find one written down, write the question down
+before you write the fix.** Comment out rather than delete; name the file and
+line that states the policy; say in the PR body what would have to change for
+the code to come back.
+
+**Related:** `.github/workflows/anti-scaffolding-enforcer.yml` (job-level `if:`,
+line 48), `.github/copilot-instructions.md:7`, PR #18296, CLAUDE.md gotcha #9
+(*a marker nobody checks is decoration* — its mirror image: a guard that looks
+like decoration may be the only thing holding a lane open).
