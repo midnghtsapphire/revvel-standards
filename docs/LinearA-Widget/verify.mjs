@@ -146,10 +146,13 @@ const HYPOTHESES = [
     id: "H4",
     claim: "The sign *301 (in A-TA-I-*301-WA-JA) has a known phonetic value.",
     test(c) {
-      const hasStar = c.some((e) => tokenize(e.seq).some(isUndeciphered));
-      return hasStar
+      // Check for *301 specifically — the sign this claim is about — not "any
+      // starred sign", so the verdict always follows from the claim it reports
+      // (cf. standards/VERIFY_THE_POSTCONDITION.md). Gitar review, PR #18298.
+      const has301 = c.some((e) => tokenize(e.seq).includes("*301"));
+      return has301
         ? { verdict: "KILLED", evidence: "*301 is a starred sign = no agreed phonetic value; cannot be read" }
-        : { verdict: "UNRESOLVABLE", evidence: "no starred sign in seed" };
+        : { verdict: "UNRESOLVABLE", evidence: "*301 not present in seed" };
     },
   },
   {
@@ -159,7 +162,7 @@ const HYPOTHESES = [
       const t = c.find((e) => e.seq === "TE-KI-TO-NE");
       if (!t) return { verdict: "UNRESOLVABLE", evidence: "sequence absent from seed" };
       return t.role === "not-linear-a"
-        ? { verdict: "KILLED", evidence: "this is Linear B te-ko-to-ne (τέκτονες); the Linear A vowel would be -ko-, not -ki-. Not Linear A." }
+        ? { verdict: "KILLED", evidence: "garbled Linear B te-ko-to-ne (τέκτονες, 'carpenters'): Linear B spells -ko-, not -ki-. Not Linear A." }
         : { verdict: "SURVIVES", evidence: "attested as Linear A" };
     },
   },
