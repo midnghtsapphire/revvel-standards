@@ -39,6 +39,8 @@ This rule overrides any conflicting text in this repo, including the `allow-dest
 > short guest contract: where you may write, where setup/API info lives, and how not to
 > scaffold over the repo.
 >
+> Write-as-you-go recording is [`VISITING_AGENTS.md` §5](./VISITING_AGENTS.md) (strengthened 2026-11-06): skills, interfaces, thought-process, decisions, learnings, and commits.
+>
 > Every error is a training module. Append lessons to [`learnings.md`](./learnings.md)
 > using the TM-NNNN format at the bottom of that file — future agents (and future
 > auto-fix scripts) read those modules as their curriculum.
