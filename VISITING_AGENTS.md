@@ -135,12 +135,16 @@ never rewrite) and the existing "never force-push over reviewer commits" in
   unresolved, owner decision pending, a `*-HOLD.md` or `*-CONFLICT-*.md` note
   beside it — pushing the branch publishes it anyway. **Push an explicit commit
   instead:** `git push origin <sha>:main`, where `<sha>` is the last commit you
-  have verified. Check with `git ls-tree -r --name-only <sha>` that the held
-  paths are absent from that tree.
+  have verified. After a fetch that finished, run
+  `git log --stat origin/main..<sha>`: that is exactly what the push publishes.
+  Every commit in it must be yours and verified, and no held commit may appear.
+  (`git ls-tree -r --name-only <sha>` only shows paths, so it misses held edits
+  to files that already exist.)
 
 - ❌ **Do not rebase to clear a rejected push.** In a shared checkout a rebase
   rewrites the other agents' commits, which is the wholesale rewrite OWNER
-  RULE 3 forbids. **Merge, or push an earlier SHA.**
+  RULE 3 forbids. **Stop and ask the owner (see below); merge only if they
+  authorise it.**
 
 - ❌ **Do not `git stash`, `git reset --hard`, or switch branches.** Another
   agent's uncommitted work is sitting in that working tree. `rebase.autostash`
