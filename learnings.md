@@ -1084,3 +1084,64 @@ them is a keep-both resolution missing a second `with:`, not a line to delete.
 `fix/markdown-gate-md026-daily-bom` still carry both rejected changes. Owner's
 call whether to delete them; the decision rows name them so neither gets
 resurrected by a later agent reading the branch list.
+---
+
+## 2026-11-07 — The billing-free CI lane is a workaround, not a bug. Do not "fix" it.
+
+**Reported by Audrey, 7 Nov 2026:** *"we are using workarounds because of the
+payment gate. do not overwrite what was already fixed or had a workaround."*
+
+**Symptom an agent will see.** Account-wide GitHub Actions billing is locked.
+Every GitHub-hosted job fails in 1–4 seconds with `conclusion: failure` and
+`steps: []` — no logs, no runner, nothing to debug. A PR sits `BLOCKED` with
+required contexts pending. The obvious-looking repairs are all wrong:
+
+- **Do not disable Actions.** Actions must stay **ENABLED**. Disabling them
+  stops the three checks below from reporting at all, which makes every PR
+  permanently unmergeable rather than merely slow.
+- **Do not rewrite workflows to "work around" the failures.** They are not
+  failing for a reason in the YAML.
+- **Do not re-enter payment details.** The lock is Audrey's and GitHub
+  Support's to clear. No agent touches billing.
+
+**What still reports under the lock, and why — these three are the lane.**
+
+| check | why it survives |
+| --- | --- |
+| `ci/circleci: lint-and-test` | CircleCI is not GitHub-hosted, so GitHub billing does not gate it |
+| `GitGuardian Security Checks` | a GitHub App, not an Actions job |
+| `check-for-scaffolding` | **skipped**, so it never requests a runner — and a *skipped* required check is satisfied, not pending |
+
+**The third one is the subtle one.** `.github/workflows/anti-scaffolding-enforcer.yml:48`
+carries a **job-level** `if: github.event.pull_request.user.login != 'midnghtsapphire'`.
+On an owner-authored PR the job is skipped before a runner is requested, so
+billing never enters it. That `if:` was **not written as a billing workaround**
+— the comment above it says it exists so the owner's quickly-written WRs are
+never blocked — but it is the reason the check still reports green under the
+lock. **Moving that condition from the job down into a step would break the
+lane**, because a step-level `if:` still requests a runner, and the runner is
+what billing refuses. Same outcome for the PR, opposite outcome for CI.
+
+**The second standing workaround: the OpenRouter routing policy.**
+`.github/copilot-instructions.md:7` — *"Automation in this repository is routed
+through OpenRouter via `OPENROUTER_API_KEY`, not through the paid GitHub
+Copilot Coding Agent. Do not add `@Copilot` or `copilot-swe-agent` as an
+assignee in any workflow."* That is a paid lane deliberately not used. An agent
+that "restores Copilot integration" is undoing a cost decision, not fixing an
+omission. PR #18296 comments the three `copilot` entries out of
+`auto-approve-clean-prs.yml` **rather than deleting them**, so the policy is
+one edit away from reversal if Audrey changes it.
+
+**Prevention rule.** A workaround is indistinguishable from a bug once the
+reason for it leaves the room. Before "repairing" anything that looks broken
+but is load-bearing — a disabled lane, an unused adapter, a condition in an odd
+place, a commented-out entry — **look for the constraint it was written
+against, and if you cannot find one written down, write the question down
+before you write the fix.** Comment out rather than delete; name the file and
+line that states the policy; say in the PR body what would have to change for
+the code to come back.
+
+**Related:** `.github/workflows/anti-scaffolding-enforcer.yml` (job-level `if:`,
+line 48), `.github/copilot-instructions.md:7`, PR #18296, CLAUDE.md gotcha #9
+(*a marker nobody checks is decoration* — its mirror image: a guard that looks
+like decoration may be the only thing holding a lane open).
