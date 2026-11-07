@@ -26,10 +26,30 @@ This is the **single source of truth** for all Revvel and MIDNGHTSAPPHIRE standa
 
 ## Environment
 
-This is a **documentation-only repository**. No build step required.
-- No `package.json` with runnable code
-- No tests to execute
-- Just Markdown files and GitHub Actions YAML
+Mostly Markdown and GitHub Actions YAML, but **not documentation-only**: there
+is a real `package.json` with a test suite, a typecheck and a linter, and
+agents are expected to run them before opening a PR.
+
+| Command | What it does |
+|---------|--------------|
+| `npm test` | `node --test tests/**/*.test.js` plus `tests/social_post_formatter.test.sh` |
+| `npm run lint` | `scripts/markdownlint-repo.mjs` (`lint:fix` to repair) |
+| `npm run typecheck` | `tsc -p tsconfig.json`; `npm run build` is this and nothing else |
+| `npm run verify` | workflows:validate + lint + test — the one to run before a PR |
+| `npm run llm:doctor` | which LLM lane is live, and whether it costs anything |
+
+There are ~37 npm scripts in total, driving the tooling under `scripts/`. Read
+`package.json` rather than assuming a command exists.
+
+**LLM routing.** Work runs on Layer 0 first — LM Studio at
+`http://127.0.0.1:1234/v1`, free. Cloud lanes are gated behind
+`REVVEL_LLM_ALLOW_CLOUD=1` and are off by default locally. Run
+`npm run llm:doctor` before assuming a model is reachable.
+
+> This section said the opposite until 3 Nov 2026 — "No `package.json` with
+> runnable code / No tests to execute" — while `package.json` carried 37 npm
+> scripts and a two-part test command. An agent briefed with that had no reason
+> to run the suite before opening a PR.
 
 ## Key Files
 
@@ -43,4 +63,4 @@ This is a **documentation-only repository**. No build step required.
 
 ---
 
-*Updated: 2026-05-19*
+*Updated: 2026-11-03*

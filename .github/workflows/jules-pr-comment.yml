@@ -17,6 +17,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   comment:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0'
     name: Post Jules session summary
     runs-on: ubuntu-latest
     env:

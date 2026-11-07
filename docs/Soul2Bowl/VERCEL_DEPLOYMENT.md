@@ -1,6 +1,6 @@
 # Soul2Bowl — Vercel Staging Deployment
 
-**Staging URL:** [https://soul2bowl.vercel.app](https://soul2bowl.vercel.app)  
+**Staging URL:** [https://soul2bowl.vercel.app](https://soul2bowl.vercel.app)   _(⚠️ NOT LIVE — verified 2026-10-30: <https://soul2bowl.vercel.app> returns HTTP 402)_
 **Production URL:** [https://soul2bowl.com](https://soul2bowl.com) (DigitalOcean App Platform)  
 **Repository:** `midnghtsapphire/Soul2Bowl`
 
@@ -104,7 +104,7 @@ To run a manual health check:
 ```bash
 gh workflow run "Deployment Health Check" \
   --repo midnghtsapphire/revvel-standards \
-  -f url=https://soul2bowl.vercel.app
+  -f url=https://soul2bowl.vercel.app _(⚠️ NOT LIVE — verified 2026-10-30: https://soul2bowl.vercel.app returns HTTP 402)_
 ```
 
 ---

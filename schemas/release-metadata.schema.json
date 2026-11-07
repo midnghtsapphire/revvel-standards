@@ -1,0 +1,418 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/midnghtsapphire/revvel-standards/schemas/release-metadata.schema.json",
+  "title": "Release metadata",
+  "description": "Delivery manifest for one release. AI disclosure is required with no default: an omitted disclosure does not read as 'no AI' downstream, it reads as unknown and the DSP substitutes its own detector. See docs/distribution/DDEX_AI_DISCLOSURE.md.",
+  "type": "object",
+  "required": [
+    "version",
+    "release",
+    "ai_disclosure"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "release": {
+      "$ref": "#/$defs/release"
+    },
+    "ai_disclosure": {
+      "$ref": "#/$defs/ai_disclosure"
+    }
+  },
+  "$defs": {
+    "release": {
+      "type": "object",
+      "required": [
+        "title",
+        "release_artist",
+        "release_date",
+        "isrc_registrant",
+        "sound_recordings"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "release_artist": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Artist name as it should appear. Spotify routes releases by this string unless the distributor pins a Spotify artist URI, so a typo creates a second artist profile."
+        },
+        "spotify_artist_uri": {
+          "type": "string",
+          "pattern": "^spotify:artist:[A-Za-z0-9]{22}$",
+          "description": "Pin the target profile where the distributor supports it. Absent, routing falls back to release_artist string matching."
+        },
+        "release_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "upc": {
+          "type": "string",
+          "pattern": "^[0-9]{12,13}$"
+        },
+        "isrc_registrant": {
+          "$ref": "#/$defs/isrc_registrant"
+        },
+        "sound_recordings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sound_recording"
+          }
+        }
+      }
+    },
+    "isrc_registrant": {
+      "type": "object",
+      "description": "The ISRC registrant code the recordings are issued under. Owning the code ($95 one-time, RIAA, usisrc.org, 100000 ISRCs/year, yours for life) is what makes codes portable on distributor exit. Codes issued under someone else's registrant code stay traceable to them.",
+      "required": [
+        "code",
+        "owned"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{3}$",
+          "description": "Three-character registrant code, the 3rd-5th characters of every ISRC issued under it."
+        },
+        "owned": {
+          "type": "boolean",
+          "description": "true when we hold the registrant code directly."
+        },
+        "issued_by": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Who holds the code, when we do not. Required when owned is false, because the exit-terms risk depends on knowing whose code it is."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "owned": {
+                "const": false
+              }
+            },
+            "required": [
+              "owned"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "required": [
+              "issued_by"
+            ],
+            "properties": {
+              "issued_by": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "sound_recording": {
+      "type": "object",
+      "required": [
+        "sequence",
+        "title",
+        "isrc",
+        "duration_s"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "isrc": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}[A-Z0-9]{3}[0-9]{2}[0-9]{5}$",
+          "description": "Undashed 12-character ISRC: 2-char country, 3-char registrant, 2-digit year, 5-digit designation."
+        },
+        "duration_s": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Artificially short tracks are a named enforcement trigger. Anything under ~30s should be deliberate and explicable."
+        },
+        "instrumental": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ai_disclosure": {
+      "type": "object",
+      "description": "Per-element AI disclosure. DDEX attaches ContainsAI to Release, SoundRecording, Image, Text and Video separately, because AI artwork over a human-performed recording is a real combination.",
+      "required": [
+        "release",
+        "artwork",
+        "sound_recordings"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "release": {
+          "$ref": "#/$defs/contains_ai_block"
+        },
+        "artwork": {
+          "$ref": "#/$defs/contains_ai_block"
+        },
+        "lyrics": {
+          "$ref": "#/$defs/contains_ai_block",
+          "description": "Omit only for an instrumental release."
+        },
+        "sound_recordings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/recording_disclosure"
+          }
+        },
+        "ai_contributors": {
+          "type": "array",
+          "description": "Generative systems credited as contributors. DDEX carries these as AiContribution on Contributor, with GenerativeAI available as a special contributor role.",
+          "items": {
+            "$ref": "#/$defs/ai_contributor"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "description": "Any AI involvement at release level requires at least one named generative system. An AI release with no named system is an unsupported claim.",
+          "if": {
+            "type": "object",
+            "properties": {
+              "release": {
+                "type": "object",
+                "properties": {
+                  "contains_ai": {
+                    "enum": [
+                      "Partly",
+                      "All"
+                    ]
+                  }
+                },
+                "required": [
+                  "contains_ai"
+                ]
+              }
+            },
+            "required": [
+              "release"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "required": [
+              "ai_contributors"
+            ],
+            "properties": {
+              "ai_contributors": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "contains_ai_block": {
+      "type": "object",
+      "required": [
+        "contains_ai"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "contains_ai": {
+          "type": "string",
+          "enum": [
+            "None",
+            "Partly",
+            "All"
+          ],
+          "description": "No default, deliberately. None means no content was created using generative AI. 'unknown' is not a value here: per YouTube it exists only to clear a previously incorrect value, and absence already reads as unknown."
+        },
+        "human_contribution": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The specific, nameable human contribution to this element. Required for Partly, forbidden for All. 'I prompted it' is selection, not contribution."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "contains_ai": {
+                "const": "Partly"
+              }
+            },
+            "required": [
+              "contains_ai"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "required": [
+              "human_contribution"
+            ],
+            "properties": {
+              "human_contribution": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "description": "All means no human contribution to this element, so claiming one contradicts the value.",
+          "if": {
+            "type": "object",
+            "properties": {
+              "contains_ai": {
+                "const": "All"
+              }
+            },
+            "required": [
+              "contains_ai"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "human_contribution": false
+            }
+          }
+        }
+      ]
+    },
+    "recording_disclosure": {
+      "type": "object",
+      "required": [
+        "isrc",
+        "contains_ai"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "isrc": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}[A-Z0-9]{3}[0-9]{2}[0-9]{5}$",
+          "description": "Must match a sound recording in release.sound_recordings. Cross-reference is checked by tests/release-metadata-schema.test.js, which JSON Schema cannot express."
+        },
+        "contains_ai": {
+          "type": "string",
+          "enum": [
+            "None",
+            "Partly",
+            "All"
+          ]
+        },
+        "human_contribution": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "contains_ai": {
+                "const": "Partly"
+              }
+            },
+            "required": [
+              "contains_ai"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "required": [
+              "human_contribution"
+            ],
+            "properties": {
+              "human_contribution": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "contains_ai": {
+                "const": "All"
+              }
+            },
+            "required": [
+              "contains_ai"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "human_contribution": false
+            }
+          }
+        }
+      ]
+    },
+    "ai_contributor": {
+      "type": "object",
+      "required": [
+        "system",
+        "role",
+        "contribution"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "system": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The generative system, named. e.g. ACE-Step, Donna."
+        },
+        "system_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "GenerativeAI"
+          ],
+          "description": "DDEX special contributor role. Only one value today; an enum so a second one is a schema change rather than a free-text drift."
+        },
+        "contribution": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "lyrics",
+              "vocals",
+              "instrumental",
+              "production",
+              "mastering",
+              "artwork"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

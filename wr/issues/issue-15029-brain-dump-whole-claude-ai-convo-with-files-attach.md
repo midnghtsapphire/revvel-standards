@@ -385,7 +385,7 @@ Hand it to OpenHands or Devin — they build it, the ledger records it. That's D
 
 Wr 4250 cross platform handoff
 Document · MD 
-https://veinsloop.vercel.app/
+https://veinsloop.vercel.app/ _(⚠️ NOT LIVE — verified 2026-10-30: https://veinsloop.vercel.app returns HTTP 402)_
 
 
 Thinking about analyzing a web application interface and functionality

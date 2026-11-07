@@ -437,8 +437,8 @@ Pending implementation.
 
 | Feature  | Status     | URL                                                       |
 | -------- | ---------- | --------------------------------------------------------- |
-| Homepage | ✅ Working | https://merchandise-asset-generator.vercel.app            |
-| API      | ✅ Working | https://merchandise-asset-generator.vercel.app/api/health |
+| Homepage | ✅ Working | https://merchandise-asset-generator.vercel.app            | _(⚠️ NOT LIVE — verified 2026-10-30: https://merchandise-asset-generator.vercel.app returns HTTP 404)_
+| API      | ✅ Working | https://merchandise-asset-generator.vercel.app/api/health | _(⚠️ NOT LIVE — verified 2026-10-30: https://merchandise-asset-generator.vercel.app returns HTTP 404)_
 ```
 
 **Action Required:** Add section to `products/merchandise-asset-generator/README.md`.
@@ -452,8 +452,8 @@ Pending implementation.
 ```markdown
 ## Deployment
 
-**Production:** https://merchandise-asset-generator.vercel.app
-**Preview:** https://merchandise-asset-generator-preview.vercel.app
+**Production:** https://merchandise-asset-generator.vercel.app _(⚠️ NOT LIVE — verified 2026-10-30: https://merchandise-asset-generator.vercel.app returns HTTP 404)_
+**Preview:** https://merchandise-asset-generator-preview.vercel.app _(⚠️ NOT LIVE — verified 2026-10-30: https://merchandise-asset-generator-preview.vercel.app returns HTTP 404)_
 **Status:** ![Deployment Status](https://img.shields.io/badge/deploy-success-green)
 ```
 

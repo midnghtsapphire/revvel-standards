@@ -56,11 +56,9 @@ jobs:
   invoke:
     name: Invoke Octopus CLI
     runs-on: ubuntu-latest
-    if: |-
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'pull_request_target' &&
-       github.event.pull_request.draft == false &&
-       github.event.pull_request.head.repo.full_name == github.repository)
+    if: >-
+      ((github.event_name == 'workflow_dispatch') || (github.event_name == 'pull_request_target' && github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository)) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0')
     # Security: deliberately do NOT actions/checkout the PR ref under
     # pull_request_target. We only need PR metadata (number, body, linked
     # issues), which we read via `gh api` — never executing PR code.

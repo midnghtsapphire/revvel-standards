@@ -36,7 +36,9 @@ concurrency:
 jobs:
   dispatch:
     name: NoimosAI (dispatch)
-    if: github.event_name == 'workflow_dispatch'
+    if: >-
+      (github.event_name == 'workflow_dispatch') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1')
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -95,14 +97,9 @@ jobs:
     timeout-minutes: 30
   invoke-on-issue:
     name: NoimosAI on marketing issue
-    if: |-
-      github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'reopened') && (
-        contains(github.event.issue.labels.*.name, 'noimosai')    ||
-        contains(github.event.issue.labels.*.name, 'marketing')   ||
-        contains(github.event.issue.labels.*.name, 'seo')         ||
-        contains(github.event.issue.labels.*.name, 'content')     ||
-        contains(github.event.issue.labels.*.name, 'affiliate')
-      )
+    if: >-
+      (github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'reopened') && ( contains(github.event.issue.labels.*.name, 'noimosai')    || contains(github.event.issue.labels.*.name, 'marketing')   || contains(github.event.issue.labels.*.name, 'seo')         || contains(github.event.issue.labels.*.name, 'content')     || contains(github.event.issue.labels.*.name, 'affiliate') )) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1')
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -201,7 +198,9 @@ jobs:
     timeout-minutes: 30
   daily-refresh:
     name: NoimosAI daily marketing refresh
-    if: github.event_name == 'schedule'
+    if: >-
+      (github.event_name == 'schedule') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1')
     runs-on: ubuntu-latest
     permissions:
       contents: read

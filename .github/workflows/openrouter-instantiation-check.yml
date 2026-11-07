@@ -20,6 +20,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   probe:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     name: Probe OpenRouter and update tracking issue
     runs-on: ubuntu-latest
     steps:

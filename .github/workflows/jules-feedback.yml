@@ -11,6 +11,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   send-feedback:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0'
     name: Send review feedback to Jules
     runs-on: ubuntu-latest
     env:
