@@ -61,7 +61,30 @@ search quality; this standard covers how to source).
 | GORILA | EFA-owned, no-derivatives | Never store scans |
 | RILA-S1 | EFA-owned, no-derivatives | Never store scans |
 | SigLA | Non-commercial | Non-commercial use only |
+| lineara.xyz | No license | Reference-only. Licence-request status UNRESOLVED as of 2026-11-06 - see the note below this table. Do not assume one is in train and do not send one. |
+<!--
+RETIRED 2026-11-06 at the owner's instruction (Audrey Evans). Commented out in
+place, NOT deleted, per AGENTS.md OWNER RULE 2 ("NEVER delete files, code, docs,
+or rules") and OWNER RULE 4 ("to retire something, COMMENT IT OUT in place with a
+dated note"). The single line that follows is the original row, preserved byte for
+byte:
 | lineara.xyz | No license | Reference-only; license request filed |
+Reason it was retired: "license request filed" is contradicted by three other
+records in this project that say NOT SENT. Which reading is true is NOT decided
+here. See the visible note below the table.
+-->
+
+> **lineara.xyz licence status is UNRESOLVED, recorded 2026-11-06.** The retired
+> row in this file read "license request filed" (kept verbatim in the HTML comment
+> above). Three other records in this project state the request was **NOT SENT**:
+> `bootstrap/SOURCES.tsv` and `publishing/PUBLISHING_PLAN.md` in the Tartaria book
+> repo, and `docs/DATA_SOURCES.md` in linear-a. The upstream repository
+> (`github.com/mwenge/lineara.xyz`) has not been checked by anyone, so which
+> reading is correct is **still open and is not settled by this edit**. Until the
+> owner resolves it: treat lineara.xyz as reference-only with no licence, assume no
+> request is in train, and send none. Logged as an open conflict in the Tartaria
+> repo at `bootstrap/LICENCE-CONFLICT-2026-11-06.md`.
+
 
 - Hash every ingested file and record a receipt for it, with a license sidecar.
 
