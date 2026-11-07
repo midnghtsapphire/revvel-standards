@@ -30,6 +30,7 @@
 const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
+const { pythonBinOrThrow } = require('./lib/python-bin.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_BASELINE = path.join(ROOT, 'config', 'flake8-baseline.txt');
@@ -129,7 +130,7 @@ function loadBaseline(filePath) {
  * why `.circleci/scripts/install-python-flake8.sh` exists (WR #17746).
  */
 function ensureFlake8() {
-  const check = spawnSync('python3', ['-m', 'flake8', '--version'], {
+  const check = spawnSync(pythonBinOrThrow(), ['-m', 'flake8', '--version'], {
     encoding: 'utf8',
   });
   if (check.status === 0) return;
@@ -145,7 +146,7 @@ function ensureFlake8() {
   }
 
   const install = spawnSync(
-    'python3',
+    pythonBinOrThrow(),
     ['-m', 'pip', 'install', '--user', '-q', 'flake8==7.1.1'],
     { encoding: 'utf8' }
   );
@@ -174,7 +175,7 @@ function runFlake8(targetDir) {
     '--exit-zero',
     targetDir,
   ];
-  const res = spawnSync('python3', args, {
+  const res = spawnSync(pythonBinOrThrow(), args, {
     encoding: 'utf8',
     cwd: ROOT,
     maxBuffer: 20 * 1024 * 1024,

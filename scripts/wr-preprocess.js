@@ -49,6 +49,7 @@
 const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
+const { pythonBinOrThrow } = require('./lib/python-bin.js');
 
 let routedChat;
 try {
@@ -153,7 +154,7 @@ function runOcr(url, opts = {}) {
         maxBuffer: 10 * 1024 * 1024,
       }));
   try {
-    const out = runner("python3", [ocrScript, "--input", url]);
+    const out = runner(pythonBinOrThrow(), [ocrScript, "--input", url]);
     return { url, text: (out || "").trim() };
   } catch (err) {
     return { url, text: "", error: err && err.message ? err.message : String(err) };
