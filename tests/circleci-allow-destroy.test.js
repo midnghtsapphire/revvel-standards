@@ -1,6 +1,20 @@
 'use strict';
 
 /**
+ * CircleCI archival policy: allow-destroy fails CLOSED.
+ *
+ * Historical context (WR #17829): the script once let the `allow-destroy`
+ * label / ALLOW_DESTROY=true ratify a deletion. AGENTS.md OWNER RULE
+ * (Audrey Evans, 2026-10-30) forbids that: "No label, flag, or agent
+ * judgment permits deletion." These tests now assert fail-closed behaviour —
+ * label/env presence is logged as IGNORED and deletions still exit 1.
+ *
+ * Detection of the label (via CIRCLE_PULL_REQUEST + GITHUB_TOKEN) is kept for
+ * clear logging. An unreadable label is still not permission.
+ *
+ * These tests drive the SHIPPED script in a throwaway git repo with a stubbed
+ * `curl` on PATH, so they exercise the resolution as it will run rather than a
+ * re-implementation of it.
  * CircleCI archival policy: allow-destroy is DEAD / fail CLOSED.
  *
  * 2026-11-05 Audrey Evans (via TriageChief): "ya not lets get rid of that."
@@ -70,6 +84,9 @@ function run(dir, env, { bin } = {}) {
 const LABELLED = JSON.stringify({ labels: [{ name: 'bug' }, { name: 'allow-destroy' }] });
 const UNLABELLED = JSON.stringify({ labels: [{ name: 'bug' }] });
 
+test('the allow-destroy label is IGNORED — deletions still fail closed', () => {
+  // OWNER RULE (AGENTS.md, 2026-10-30): no label may permit deletion.
+  // Was: "the allow-destroy label ratifies a deletion" (pre-OWNER-RULE bypass).
 test('the allow-destroy label is IGNORED — deletions still fail closed (bypass dead)', () => {
   // Bypass resolver is commented out; even a labelled PR response cannot ratify.
   const dir = repoWithADeletion();
@@ -81,6 +98,9 @@ test('the allow-destroy label is IGNORED — deletions still fail closed (bypass
     CIRCLE_PROJECT_REPONAME: 'r',
   }, { bin });
   assert.equal(r.status, 1, `label must not ratify; expected fail-closed:\n${r.stdout}\n${r.stderr}`);
+  assert.match(r.stderr, /allow-destroy label found on PR #1234/);
+  assert.match(r.stderr, /IGNORED.*OWNER RULE|OWNER RULE.*forbids label-based deletion/i);
+  assert.match(r.stderr, /Deleted files detected/);
   assert.match(r.stderr, /Deleted files detected/);
   assert.match(r.stderr, /allow-destroy is dead|OWNER RULE|Audrey 2026-11-05/i);
 });
@@ -120,6 +140,9 @@ test('no token fails CLOSED (bypass dead — no live label lookup)', () => {
   const dir = repoWithADeletion();
   const r = run(dir, { CIRCLE_PULL_REQUEST: 'https://github.com/o/r/pull/1234' });
   assert.equal(r.status, 1);
+  assert.match(r.stderr, /no GITHUB_TOKEN in this job/);
+  assert.match(r.stderr, /Add GITHUB_TOKEN/);
+  assert.match(r.stderr, /fail closed|OWNER RULE/i);
   assert.match(r.stderr, /Deleted files detected/);
 });
 
@@ -137,6 +160,12 @@ test('an API failure cannot open a bypass (resolver is commented out)', () => {
 });
 
 test('an explicit ALLOW_DESTROY is IGNORED — deletions still fail closed', () => {
+  // OWNER RULE (AGENTS.md, 2026-10-30): no flag may permit deletion.
+  // Was: "an explicit ALLOW_DESTROY still wins" (pre-OWNER-RULE bypass).
+  const dir = repoWithADeletion();
+  const r = run(dir, { ALLOW_DESTROY: 'true' });
+  assert.equal(r.status, 1, 'explicit ALLOW_DESTROY must not bypass deletion gate');
+  assert.match(r.stderr, /allow-destroy label\/env is IGNORED|OWNER RULE/i);
   const dir = repoWithADeletion();
   const r = run(dir, { ALLOW_DESTROY: 'true' });
   assert.equal(r.status, 1, 'explicit ALLOW_DESTROY must not bypass deletion gate');

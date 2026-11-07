@@ -3,6 +3,11 @@
 #
 # Validates that every REVVEL-DISABLED block introduced in the current branch
 # diff contains the required metadata fields (AGENT, MODEL, WR, DATE, STATUS).
+# Also checks that no existing tracked files are being deleted. Deletions always
+# fail closed. The historical `allow-destroy` label / ALLOW_DESTROY env path is
+# still detected for logging, then IGNORED — AGENTS.md OWNER RULE (Audrey Evans,
+# 2026-10-30) says no label may permit deletion. Comment out with REVVEL-DISABLED
+# instead (standards/COMMENT-DONT-DELETE.md).
 # Also checks that no existing tracked files are being deleted.
 #
 # Deletions ALWAYS fail closed. No label, env, or flag may permit deletion.
@@ -12,6 +17,12 @@
 #   1  — policy violated (details printed to stderr)
 #
 # Env:
+#   ALLOW_DESTROY   retained for detection/logging only. When 'true' (explicit
+#                   env or allow-destroy label on the PR), the script logs that
+#                   the bypass is ignored under the OWNER RULE and still fails
+#                   closed on deletions. When unset, and CIRCLE_PULL_REQUEST
+#                   names a PR, the label is resolved from the GitHub API — see
+#                   resolve_allow_destroy().
 #   BASE_SHA        merge-base commit to diff against (auto-detected when unset)
 #   GITHUB_TOKEN    (or GH_TOKEN) retained only for historical logging paths that
 #                   are now commented out (2026-11-05). Not used for bypass.
@@ -28,6 +39,79 @@
 
 set -euo pipefail
 
+# ── allow-destroy detection (logging only; never permits deletion) ────────────
+#
+# Historical note: RVS-AGENT-001 §7 / no-destroy-guard.yml once treated the
+# `allow-destroy` label as human ratification of a deletion (#17829). That
+# path conflicts with AGENTS.md OWNER RULE (Audrey Evans, 2026-10-30):
+# "NEVER delete … No label, flag, or agent judgment permits deletion."
+#
+# resolve_allow_destroy() is kept so CI still detects when the label/env is
+# present and can log clearly that it is ignored. It does NOT skip the
+# deletion check below. An unreadable label is still not permission.
+resolve_allow_destroy() {
+  # Explicit env is detected for logging; OWNER RULE still forbids using it
+  # as a deletion bypass (see deletion check below).
+  if [ -n "${ALLOW_DESTROY:-}" ]; then
+    echo "${ALLOW_DESTROY}"
+    return 0
+  fi
+  if [ -z "${CIRCLE_PULL_REQUEST:-}" ]; then
+    echo "false"
+    return 0
+  fi
+
+  local pr_number="${CIRCLE_PULL_REQUEST##*/}"
+  case "$pr_number" in
+    ''|*[!0-9]*)
+      echo "::warn:: could not read a PR number from CIRCLE_PULL_REQUEST" >&2
+      echo "false"; return 0 ;;
+  esac
+
+  local token="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+  if [ -z "$token" ]; then
+    echo "   ℹ️  allow-destroy cannot be checked: no GITHUB_TOKEN in this job." >&2
+    echo "      Add GITHUB_TOKEN (read access) to the CircleCI project or a" >&2
+    echo "      context attached to policy-check if you want the label presence" >&2
+    echo "      logged. Deletions fail closed either way — AGENTS.md OWNER RULE" >&2
+    echo "      (2026-10-30) forbids label-based deletion." >&2
+    echo "false"; return 0
+  fi
+
+  # Secret on stdin, never in argv — `curl -H "Authorization: Bearer $T"` puts
+  # the token in the process list for anything that can read /proc
+  # (CLAUDE.md gotcha #4). --config - takes the header from stdin instead.
+  local slug="${CIRCLE_PROJECT_USERNAME:-}/${CIRCLE_PROJECT_REPONAME:-}"
+  local body
+  if ! body="$(
+    printf 'header = "Authorization: Bearer %s"\nheader = "Accept: application/vnd.github+json"\n' "$token" \
+      | curl --config - --silent --show-error --fail --max-time 20 \
+          "https://api.github.com/repos/${slug}/pulls/${pr_number}" 2>/dev/null
+  )"; then
+    echo "   ℹ️  allow-destroy lookup failed (API unreachable or token lacks" >&2
+    echo "      access to ${slug}). Staying strict." >&2
+    echo "false"; return 0
+  fi
+
+  # Match the label by name inside the labels array, not anywhere in the body:
+  # a PR whose TITLE or BODY merely says "allow-destroy" must not ratify itself.
+  if printf '%s' "$body" | node -e '
+      let raw = "";
+      process.stdin.on("data", (c) => { raw += c; });
+      process.stdin.on("end", () => {
+        let pr;
+        try { pr = JSON.parse(raw); } catch { process.exit(1); }
+        const names = (pr.labels || []).map((l) => (typeof l === "string" ? l : l.name));
+        process.exit(names.includes("allow-destroy") ? 0 : 1);
+      });
+    '; then
+    echo "   ⚠️  allow-destroy label found on PR #${pr_number} — IGNORED (OWNER RULE forbids label-based deletion)." >&2
+    echo "true"; return 0
+  fi
+  echo "false"
+}
+
+ALLOW_DESTROY="$(resolve_allow_destroy)"
 # ══════════════════════════════════════════════════════════════════════════════
 # SUPERSEDED 2026-11-05 — allow-destroy / ALLOW_DESTROY bypass (COMMENTED OUT)
 # Audrey Evans (exact, 2026-11-05 via TriageChief / t59u):
@@ -114,6 +198,13 @@ fi
 echo "🔍 RVS-AGENT-001 archival policy check (diff base: ${BASE_SHA:0:8}…)"
 echo ""
 
+# ── 1. File deletions (always fail closed) ─────────────────────────────────────
+# OWNER RULE (AGENTS.md, 2026-10-30): no label may permit deletion. Even when
+# ALLOW_DESTROY resolves to true, log the ignore and still fail the deletion.
+if [ "$ALLOW_DESTROY" = "true" ]; then
+  echo "   ⚠️  allow-destroy label/env is IGNORED because AGENTS.md OWNER RULE" >&2
+  echo "      (Audrey Evans, 2026-10-30) forbids label-based deletion. Deletions" >&2
+  echo "      still fail closed. Comment out with REVVEL-DISABLED instead." >&2
 # ── 1. File deletions (ALWAYS fail closed — 2026-11-05) ───────────────────────
 # No label may permit deletion. allow-destroy / ALLOW_DESTROY are dead (above).
 if [ -n "${ALLOW_DESTROY:-}" ] && [ "${ALLOW_DESTROY}" = "true" ]; then
@@ -128,6 +219,11 @@ if [ -n "$DELETED_FILES" ]; then
     echo "   - $f" >&2
   done <<< "$DELETED_FILES"
   echo "" >&2
+  echo "   Per AGENTS.md OWNER RULE (2026-10-30) and RVS-AGENT-001" >&2
+  echo "   (standards/COMMENT-DONT-DELETE.md): tracked files must not be deleted." >&2
+  echo "   The allow-destroy label is ignored (no label permits deletion)." >&2
+  echo "   Option: comment out file contents with a REVVEL-DISABLED header +" >&2
+  echo "   open an issue. Do not delete." >&2
   echo "   Per AGENTS.md OWNER RULE (2026-10-30) and Audrey 2026-11-05:" >&2
   echo "   tracked files must not be deleted. allow-destroy is dead." >&2
   echo "   Comment out with REVVEL-DISABLED, or archive-rename (Archive/YYYY-MM-DD/)." >&2
