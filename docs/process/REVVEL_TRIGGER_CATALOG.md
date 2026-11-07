@@ -24,6 +24,12 @@ Companion artifacts:
 
 This is a default-branch operational inventory, not a search of every historical branch or every deleted file. Dynamic JavaScript and shell dispatches cannot all be resolved statically; important dynamic paths were manually cross-checked. The 20 literal calls found in workflow YAML are listed in the companion index.
 
+### Post-audit merge verification
+
+All **28 PRs merged after the snapshot** were checked on 2026-11-07: 16 into `main`, three into `daily/2026-11-06`, and nine into `daily/2026-11-05`. Current-`main` behavior was verified through `371be6bf9b5d003cd0f6d017b47a29e1eefb0c2e` (#18177). Daily-only changes are not misrepresented as current `main`.
+
+Two main merges add information to this snapshot catalog: #18304 makes the coder script try LM Studio → Ollama → OpenRouter, and #18292 adds a conditional CircleCI → Railway deploy call. #18296 removes Copilot identities from trusted auto-approvers but does not change the workflow's manual-only trigger status; #18287 changes Python interpreter resolution, not routing.
+
 ### Status words used below
 
 - **Direct listener:** the repository has an active event listener and a matching predicate for the phrase or label.
@@ -54,7 +60,7 @@ Evidence: `START_HERE_CALL_CHAIN.md:25-30,34-87,91-105,138-148`. The documented 
 | Want | Use | What it really reaches |
 | --- | --- | --- |
 | Start work | Issue title `[WR] …` | Several intake/research workflows, subject to their predicates and gates |
-| Start OpenRouter implementation | Apply `wr:code` or `spec-approved` to the issue | `openrouter-coder.yml` |
+| Start coder implementation | Apply `wr:code` or `spec-approved` to the issue | `openrouter-coder.yml`; after #18304 its script tries LM Studio → Ollama → OpenRouter, while the workflow's cloud/coding-agent job gates remain |
 | Start OpenHands | Apply `fix-me` to the issue | `openhands-resolver.yml` |
 | Start SWE-Agent | Apply `swe-fix` to the issue | `swe-agent.yml` |
 | Ask OpenRouter in a comment | `@openrouter-agent <question>` | `openrouter-agent.yml`; also works in inline PR review comments |
@@ -454,6 +460,7 @@ Evidence: `.github/agent-router.json:1-3`; `.github/workflows/agent-request-deli
 | `veins-monitor.yml` | `wr-pr-creation.yml`; cycles `triage:new` | Monitoring/recovery route. `veins-monitor.yml:250-280,300-323` |
 | `ship-to-market.yml` | `auto-deploy-to-stores.yml` | Post-merge deployment handoff. `ship-to-market.yml:555-590` |
 | `auto-deploy-to-stores.yml` | `research-engine.yml` | Invoked when its research gate is unmet. `auto-deploy-to-stores.yml:231-250` |
+| CircleCI main `lint-and-test` | `deploy-railway` → `railway up --detach` | Added by #18292: runs on main after the test gate; skips successfully when `RAILWAY_TOKEN` is absent and fails on deploy errors when configured. `.circleci/config.yml` |
 | `scripts/openrouter-triage.js` | `auto-error-handler.yml` | Uses declared error inputs. `scripts/openrouter-triage.js:657-695` |
 | `scripts/dragnet-ci-autofix.js` | `self-heal-pr.yml` | CI repair handoff. `scripts/dragnet-ci-autofix.js:296-318` |
 | `scripts/biome/homeostat.js` | `BIOME_RECOVERY_WORKFLOW` with `force_recovery=true` | Configurable dynamic target. `scripts/biome/homeostat.js:142-151` |
