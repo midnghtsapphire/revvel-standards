@@ -152,6 +152,21 @@ never rewrite) and the existing "never force-push over reviewer commits" in
   the *working tree*. Confirm what you actually committed with
   `git show --numstat HEAD`.
 
+- ❌ **Do not trust a comparison whose baseline you have not checked.** Three
+  separate wrong answers to the owner in one day came from this one mistake, and
+  each was a command that silently answered a different question than the one
+  asked. `git diff HEAD~1` compares the **working tree**, not the commit, so it
+  reports files your commit does not contain — use `git show --numstat HEAD`.
+  `git diff origin/main <sha>` compares **diverged history** as soon as `main`
+  has moved, so commits added to `main` show up as deletions in your branch —
+  use `git merge-base origin/main <sha>` as the baseline, which is what the PR
+  diff on GitHub already does. And a fetch whose ref write loses a race with
+  another agent fails with `incorrect old value provided` **while still exiting
+  0**, leaving a stale `origin/...` behind a success code — so check the ref
+  moved, not just that the command succeeded. **Before you report any number to
+  the owner, say which two things are being compared and confirm the command
+  compares those two.**
+
 - ✅ **When a push is rejected and another agent is live, stop and ask the
   owner.** Integrating is a decision about someone else's unpushed work. Say
   which SHAs are yours, which are theirs, and which are held.
