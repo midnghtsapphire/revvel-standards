@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-07
+
+- 2026-11-07 — Claude Fable 5 — `products/linear-a-lab/`: new incubating product (PRODUCT_INCUBATION_STANDARD). GORILA-GE license-clean Linear A corpus engine (1,711 inscriptions, schema `gorila-ge/1`, built from the public-domain-dedicated lineara.xyz data file — GORILA print corpus and SigLA are not license-clean); deterministic evidence/prosecution layer whose KU-RO arithmetic audit finds 8/22 documents summing exactly and reproduces the known HT 13 (+½) and HT 9a (−¾) discrepancies; test→deconstruct→prosecute→fix loop on LM Studio (stdlib-only client), first live case run on gemma-3-4b. 22 unit tests, offline, all green. BLUEPRINT.md, BLUEOCEAN.md, LEDGER.md, Library/ per standards.
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.
