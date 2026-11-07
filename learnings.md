@@ -1084,9 +1084,10 @@ them is a keep-both resolution missing a second `with:`, not a line to delete.
 `fix/markdown-gate-md026-daily-bom` still carry both rejected changes. Owner's
 call whether to delete them; the decision rows name them so neither gets
 resurrected by a later agent reading the branch list.
+
 ---
 
-## 2026-11-07 — The billing-free CI lane is a workaround, not a bug. Do not "fix" it.
+## 2026-11-07 — The billing-free CI lane is a workaround, not a bug. Do not "fix" it
 
 **Reported by Audrey, 7 Nov 2026:** *"we are using workarounds because of the
 payment gate. do not overwrite what was already fixed or had a workaround."*
