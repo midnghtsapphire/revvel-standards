@@ -26,6 +26,53 @@ Merge Prosecutor is a deterministic, mathematical GitHub Action that evaluates p
 
 ## Usage
 
+The block below is the one wired on this repository. It is
+`.github/workflows/merge-prosecutor.yml`. Copy that, not the retired example
+under it. The Action opens a GitHub issue titled `[WR]` when it fails a pull
+request. That issue is the Work Request. The markdown file it also writes
+lives on the runner and is deleted with the job.
+
+```yaml
+name: Merge Prosecutor
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  prosecute:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./products/merge-prosecutor
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          pr-number: ${{ github.event.pull_request.number }}
+          test-command: "node --test tests/prosecutor.test.js"
+          workspace-dir: ${{ github.workspace }}/products/merge-prosecutor
+```
+
+### Retired example, 2026-11-06
+
+Kept on the page so the bad snippet is still visible. Do not copy it.
+It checks the repository out twice, then has a bare
+`uses: midnghtsapphire/revvel-standards/products/merge-prosecutor@main`
+with no `with:` block. That `@main` form is the self-reference issue #17893
+closed. The `uses: ./products/merge-prosecutor` step under it is the local
+action, and it is the one that belongs in a workflow.
+
 ```yaml
 name: Prosecute Merge
 on:
