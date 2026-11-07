@@ -1,3 +1,21 @@
+// --corpus-template fast-path (added 2026-11-07, Gitar review PR #18302). It
+// MUST run before the model-check below prints to stdout, so that
+// `node verify.mjs --corpus-template > corpus.json` is valid JSON which
+// `--corpus` then accepts — otherwise `verify.mjs ok` and the A/B/C rows would
+// be prepended and corrupt the file. Inlined (not CORPUS_TEMPLATE) to avoid the
+// const TDZ. This is the ONLY code above the model-check; every other
+// invocation (bare, --linear-a, --corpus) skips it and the model-check is
+// unchanged.
+if (process.argv.includes("--corpus-template")) {
+  console.log(JSON.stringify({
+    sequences: [
+      { seq: "KU-RO", role: "total", source: "GORILA <vol>:<page>; <tablet id>" },
+      { seq: "A-TA-I-*301-WA-JA", role: "libation-frame-open", source: "SigLA <doc id>; GORILA ref" },
+    ],
+  }, null, 2));
+  process.exit(0);
+}
+
 const scenarios = [
   { id: "A", base: 50, essay: 87, w: { proximity: 0.35, concealment: 0.05, metrology: 0.25, seismic: 0.05, acidity: -0.15 } },
   { id: "B", base: 30, essay: 64, w: { proximity: 0.15, concealment: -0.45, metrology: 0.15, seismic: 0.6, acidity: 0.2 } },
@@ -43,10 +61,11 @@ console.log(
 
 // ───────────────────────────────────────────────────────────────────────────
 // Linear A structural loop — added 2026-11-07 (session request, decided with
-// the session owner). Nothing above this line was deleted or changed; a bare
-// `node verify.mjs` still runs only the model-check and prints the same output,
-// so every existing consumer is unaffected. The loop below runs ONLY when the
-// `--linear-a` flag is passed.
+// the session owner). The model-check CODE above is unchanged; the only thing
+// added above it is the `--corpus-template` fast-path (PR #18302), which fires
+// only for that one new flag. A bare `node verify.mjs` still runs only the
+// model-check and prints the same output, so every existing consumer is
+// unaffected. The loop below runs ONLY when the `--linear-a` flag is passed.
 //
 // WHY THIS EXISTS: a deterministic "decipherment loop" that proposes a
 // falsifiable rule, tests it against a seed corpus of ATTESTED Linear A
@@ -270,12 +289,7 @@ if (process.argv.includes("--linear-a")) {
 // Expected JSON: an array of rows, or { "sequences": [ ...rows ] }. Each row:
 //   { "seq": "KU-RO", "role": "total", "source": "GORILA <vol>:<page>; <id>" }
 // `seq` and `source` are REQUIRED; `role` is optional (defaults to "unknown").
-const CORPUS_TEMPLATE = {
-  sequences: [
-    { seq: "KU-RO", role: "total", source: "GORILA <vol>:<page>; <tablet id>" },
-    { seq: "A-TA-I-*301-WA-JA", role: "libation-frame-open", source: "SigLA <doc id>; GORILA ref" },
-  ],
-};
+// (The --corpus-template fast-path at the top of this file prints this schema.)
 
 async function loadCorpus(path) {
   const { readFileSync } = await import("node:fs");
@@ -328,10 +342,6 @@ function dispatchLinearA(maxIter) {
       console.error(String((err && err.message) || err));
       process.exit(1);
     });
-}
-
-if (process.argv.includes("--corpus-template")) {
-  console.log(JSON.stringify(CORPUS_TEMPLATE, null, 2));
 }
 
 if (process.argv.includes("--corpus") && !process.argv.includes("--linear-a")) {
