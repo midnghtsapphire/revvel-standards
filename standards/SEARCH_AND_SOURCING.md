@@ -123,7 +123,6 @@ here. See the visible note below the table.
 > request is in train, and send none. Logged as an open conflict in the Tartaria
 > repo at `bootstrap/LICENCE-CONFLICT-2026-11-06.md`.
 
-
 - Hash every ingested file and record a receipt for it, with a license sidecar.
 
 ## 6. Paid access
