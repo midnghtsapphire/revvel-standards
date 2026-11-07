@@ -197,6 +197,11 @@ test('dismissive regex is word-bounded (leave items is not leave it)', () => {
   assert.equal(isDismissiveComment('not my bug'), true);
   assert.equal(isDismissiveComment('Not my error, leave it.'), true);
   assert.equal(isDismissiveComment('this is out of scope for this PR'), true);
+  assert.equal(isDismissiveComment('not my fault'), true);
+  assert.equal(isDismissiveComment('not my code'), true);
+  assert.equal(isDismissiveComment('ignore it please'), true);
+  assert.equal(isDismissiveComment('just ignore this'), true);
+  assert.equal(isDismissiveComment("won't fix"), true);
   assert.equal(isDismissiveComment('please leave items in the queue'), false);
   assert.equal(isDismissiveComment('leave iteration counter alone'), false);
   assert.equal(isDismissiveComment('looks good to me'), false);
