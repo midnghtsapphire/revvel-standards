@@ -168,10 +168,59 @@ const HYPOTHESES = [
   },
 ];
 
-function runLinearALoop(maxIter) {
-  const stats = corpusStats(LINEAR_A_SEED);
-  console.log("\n── Linear A structural loop (seed sample; method harness, not a decipherment) ──");
-  console.log(`corpus: ${LINEAR_A_SEED.length} attested sequences, ${stats.freq.size} distinct signs`);
+// ───────────────────────────────────────────────────────────────────────────
+// Corpus-scale hypotheses — added 2026-11-07 (same session). Pushed onto the
+// EXISTING ledger (nothing above is edited or removed). These are the claims
+// that only a real SigLA/GORILA corpus can settle: against the 10-row seed
+// they deliberately return UNRESOLVABLE ("corpus too small"), so the loop can
+// never pass off a sample as a corpus-wide finding (NULL_RESULT posture;
+// standards/VERIFY_THE_POSTCONDITION.md). Each verdict is DERIVED from the
+// loaded data, never hard-coded — the evidence prints the real counts.
+const CORPUS_SCALE_MIN = 25; // below this, positional/frequency claims are noise
+HYPOTHESES.push(
+  {
+    id: "H6",
+    claim: "Sign-group-final position is dominated by a small set of signs (an administrative/grammatical suffix effect) — testable only at corpus scale.",
+    test(c) {
+      if (c.length < CORPUS_SCALE_MIN) {
+        return { verdict: "UNRESOLVABLE", evidence: `corpus too small: ${c.length} sequences, need ≥${CORPUS_SCALE_MIN} — load a real export with --corpus` };
+      }
+      const finals = [...corpusStats(c).final.entries()].sort((a, b) => b[1] - a[1]);
+      const totalFinal = finals.reduce((sum, [, n]) => sum + n, 0);
+      const [topSign, topCount] = finals[0];
+      const topShare = (topCount / totalFinal) * 100;
+      return topShare >= 15
+        ? { verdict: "SURVIVES", evidence: `top sign-final sign ${topSign} is ${topShare.toFixed(1)}% of ${totalFinal} sequence-final signs — concentration consistent with a suffix effect` }
+        : { verdict: "KILLED", evidence: `sequence-final signs are near-uniform (top ${topSign} only ${topShare.toFixed(1)}%) — no suffix concentration at this scale` };
+    },
+  },
+  {
+    id: "H7",
+    claim: "Undeciphered (*-starred) signs are a MINORITY of all sign tokens — i.e. most of the script carries agreed phonetic values — testable only at corpus scale.",
+    test(c) {
+      if (c.length < CORPUS_SCALE_MIN) {
+        return { verdict: "UNRESOLVABLE", evidence: `corpus too small: ${c.length} sequences, need ≥${CORPUS_SCALE_MIN} — load a real export with --corpus` };
+      }
+      let starred = 0;
+      let total = 0;
+      for (const { seq } of c) {
+        for (const sign of tokenize(seq)) {
+          total += 1;
+          if (isUndeciphered(sign)) starred += 1;
+        }
+      }
+      const pct = (starred / total) * 100;
+      return pct < 50
+        ? { verdict: "SURVIVES", evidence: `${starred}/${total} sign tokens (${pct.toFixed(1)}%) are starred/undeciphered — the majority have agreed values` }
+        : { verdict: "KILLED", evidence: `${pct.toFixed(1)}% of ${total} sign tokens are undeciphered — the majority cannot be read` };
+    },
+  },
+);
+
+function runLinearALoop(maxIter, corpus = LINEAR_A_SEED, sourceLabel = "seed sample; method harness, not a decipherment") {
+  const stats = corpusStats(corpus);
+  console.log(`\n── Linear A structural loop (${sourceLabel}) ──`);
+  console.log(`corpus: ${corpus.length} attested sequences, ${stats.freq.size} distinct signs`);
   const top = [...stats.freq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([s, n]) => `${s}:${n}`).join("  ");
   console.log(`most frequent signs: ${top}`);
   const undeciphered = [...stats.freq.keys()].filter(isUndeciphered);
@@ -181,7 +230,7 @@ function runLinearALoop(maxIter) {
   const ledger = [];
   console.log(`\nhypothesis ledger (running ${Math.min(limit, HYPOTHESES.length)} of ${HYPOTHESES.length}):`);
   for (const h of HYPOTHESES.slice(0, limit)) {
-    const { verdict, evidence } = h.test(LINEAR_A_SEED);
+    const { verdict, evidence } = h.test(corpus);
     const mark = verdict === "SURVIVES" ? "✓" : verdict === "KILLED" ? "✗" : "?";
     console.log(`  ${mark} ${h.id} [${verdict}] ${h.claim}`);
     console.log(`      evidence: ${evidence}`);
@@ -201,5 +250,90 @@ if (process.argv.includes("--linear-a")) {
   if (i >= 0 && !(Number.isInteger(maxIter) && maxIter > 0)) {
     throw new Error(`--iter expects a positive integer, got ${JSON.stringify(process.argv[i + 1])}`);
   }
-  runLinearALoop(maxIter);
+  // Was `runLinearALoop(maxIter);` — now dispatched so `--corpus <path>` can
+  // run the SAME ledger against a real export. With no --corpus, dispatch calls
+  // runLinearALoop(maxIter) exactly as before: the seed path is byte-identical.
+  dispatchLinearA(maxIter);
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Real-corpus ingestion — added 2026-11-07 (same session). Lets the ledger run
+// against an ATTESTED SigLA/GORILA export instead of the built-in seed. It does
+// NOT ship a corpus and it does NOT invent one: you supply the file. The loader
+// refuses any row without a `source` citation, so "ran against an attested
+// corpus" is a checked claim, not decoration (standards/VERIFY_THE_POSTCONDITION.md).
+//
+//   node verify.mjs --linear-a --corpus path/to/corpus.json
+//   node verify.mjs --linear-a --corpus corpus.json --iter 4
+//   node verify.mjs --corpus-template        # print the expected JSON schema
+//
+// Expected JSON: an array of rows, or { "sequences": [ ...rows ] }. Each row:
+//   { "seq": "KU-RO", "role": "total", "source": "GORILA <vol>:<page>; <id>" }
+// `seq` and `source` are REQUIRED; `role` is optional (defaults to "unknown").
+const CORPUS_TEMPLATE = {
+  sequences: [
+    { seq: "KU-RO", role: "total", source: "GORILA <vol>:<page>; <tablet id>" },
+    { seq: "A-TA-I-*301-WA-JA", role: "libation-frame-open", source: "SigLA <doc id>; GORILA ref" },
+  ],
+};
+
+async function loadCorpus(path) {
+  const { readFileSync } = await import("node:fs");
+  let text;
+  try {
+    text = readFileSync(path, "utf8");
+  } catch (err) {
+    throw new Error(`--corpus: cannot read ${JSON.stringify(path)}: ${err.message}`);
+  }
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (err) {
+    throw new Error(`--corpus: ${JSON.stringify(path)} is not valid JSON: ${err.message}`);
+  }
+  const rows = Array.isArray(data) ? data : data && data.sequences;
+  if (!Array.isArray(rows) || rows.length === 0) {
+    throw new Error(`--corpus: expected a non-empty array or {"sequences":[...]} in ${JSON.stringify(path)}`);
+  }
+  // Postcondition (RVS-VERIFY-001): reject loudly on the first row that is not
+  // a cited attestation. Do NOT silently drop rows — a partial load that looked
+  // complete would be exactly the marker-nobody-checks failure the repo bans.
+  return rows.map((row, idx) => {
+    if (!row || typeof row.seq !== "string" || row.seq.trim() === "") {
+      throw new Error(`--corpus: row ${idx} has no "seq" string`);
+    }
+    if (typeof row.source !== "string" || row.source.trim() === "") {
+      throw new Error(`--corpus: row ${idx} (${row.seq}) has no "source" — attested rows need a citation (SigLA/GORILA ref)`);
+    }
+    return { seq: row.seq.trim(), role: typeof row.role === "string" && row.role.trim() ? row.role.trim() : "unknown", source: row.source.trim() };
+  });
+}
+
+function dispatchLinearA(maxIter) {
+  const corpusIdx = process.argv.indexOf("--corpus");
+  if (corpusIdx < 0) {
+    runLinearALoop(maxIter); // unchanged seed behaviour
+    return;
+  }
+  const path = process.argv[corpusIdx + 1];
+  if (!path || path.startsWith("--")) {
+    throw new Error(`--corpus expects a file path, got ${JSON.stringify(path)}`);
+  }
+  loadCorpus(path)
+    .then((corpus) => {
+      console.log(`loaded ${corpus.length} attested sequences from ${path}`);
+      runLinearALoop(maxIter, corpus, `real corpus: ${path}`);
+    })
+    .catch((err) => {
+      console.error(String((err && err.message) || err));
+      process.exit(1);
+    });
+}
+
+if (process.argv.includes("--corpus-template")) {
+  console.log(JSON.stringify(CORPUS_TEMPLATE, null, 2));
+}
+
+if (process.argv.includes("--corpus") && !process.argv.includes("--linear-a")) {
+  throw new Error('--corpus must be combined with --linear-a, e.g. node verify.mjs --linear-a --corpus corpus.json');
 }
