@@ -3,7 +3,7 @@
 **WR ID:** OZ-OS-010
 **Parent:** OZ-OS-001
 **Type:** feature
-**Status:** 🟢 Ready
+**Status:** ✅ Complete
 **Tracks:** OZ-OS-001
 
 ## Deliverable
