@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 2026-11-05
 
+- 2026-11-05 — Grok Bot (for Audrey) — Ported PR #18255: `scripts/veins-snapshot.js` adds sheaf fingerprint staleness fields and a stale-topology warning; tests in `tests/veins-snapshot.test.js`; appended a dated 2026-11-05 update section to `docs/VEINS_MONITORING_REPORT.md` (earlier dated sections left intact).
 - 2026-11-05 — Grok Bot (for Audrey) — Added `docs/governance/incidents/2026-11-never-delete-and-lock-in-audit.md` (deletion and vendor lock-in evidence, CLAUDE.md vs AGENTS.md conflicts); appended one incident line to `learnings.md`. Source: Freedom-Angel-Corp/brain-dump#4.
 - 2026-11-05 — Proofy (Grok Bot, directed) — `.circleci/scripts/check-archival-policy.sh`: fail closed on deletions; `allow-destroy` label/env is detected for logging then IGNORED per AGENTS.md OWNER RULE (2026-10-30). `tests/circleci-allow-destroy.test.js` updated additively to expect fail-closed. `CLAUDE.md`: added OWNER RULE pointers (never-delete / no label exception, draft-only PRs into daily/YYYY-MM-DD, agents never merge) pointing at AGENTS.md. Refs Freedom-Angel-Corp/brain-dump#3; docs conflict recorded in #18258/#18259 (untouched).
 - 2026-11-05 — Grok Bot (for Audrey) — Added `docs/governance/GITHUB_GOVERNANCE_PLAYBOOK.md` (links existing governance docs, states the daily-branch draft-PR rule, records the open `allow-destroy` vs OWNER RULE conflict for owner decision); appended one pointer line to `AGENTS.md`. Source: Freedom-Angel-Corp/brain-dump#3.

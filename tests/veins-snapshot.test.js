@@ -161,6 +161,20 @@ test('buildSnapshot: sheaf_topology is null when no fingerprint', () => {
   assert.strictEqual(snap.sheaf_topology, null);
 });
 
+test('buildSnapshot: flags stale fingerprint (> 30 days old)', () => {
+  const staleFp = { ...FINGERPRINT, generated_at: '2026-01-01T00:00:00.000Z' };
+  const snap = buildSnapshot([], ISO_DATES_RECENT, staleFp, '2026-07-03T14:00:00Z');
+  assert.strictEqual(snap.sheaf_topology.fingerprint_stale, true);
+  assert.ok(snap.sheaf_topology.fingerprint_age_days > 30);
+});
+
+test('buildSnapshot: fresh fingerprint not flagged as stale', () => {
+  const freshFp = { ...FINGERPRINT, generated_at: new Date(Date.now() - 5 * 86400000).toISOString() };
+  const snap = buildSnapshot([], ISO_DATES_RECENT, freshFp, new Date().toISOString());
+  assert.strictEqual(snap.sheaf_topology.fingerprint_stale, false);
+  assert.ok(snap.sheaf_topology.fingerprint_age_days <= 30);
+});
+
 test('buildSnapshot: commit history populated from dates', () => {
   const snap = buildSnapshot([], ISO_DATES_RECENT, null, '2026-07-03T14:00:00Z');
   assert.ok(snap.how_frequently.commit_history !== null);
