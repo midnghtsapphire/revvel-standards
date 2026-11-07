@@ -1024,3 +1024,63 @@ issue N" over "X will fix this."
 `.github/workflows/openrouter-triage.yml`,
 `docs/playbooks/wr-manual-processes.md` §1–§2, CLAUDE.md gotcha #6,
 `standards/VERIFY_THE_POSTCONDITION.md`.
+
+---
+
+**Date/Time:** 2026-11-07
+
+**Task Attempted:** Work the open WR/PR backlog. I had two changes rejected in
+October — PR #18035 (merge-prosecutor README usage example) and PR #18130
+(`wr/research/**` in `.markdownlintignore`) — and came back to ask whether they
+should be reopened. The owner's answer was to read `standards/` first and to
+stop overwriting what already has a workaround.
+
+**Outcome:** Both PRs were correctly closed, for two different reasons, and I
+had the premise of each one wrong. Nothing needed reopening. The two findings
+are now recorded in `wr/memory/decisions.jsonl` under topics
+`markdown-gate-scope-not-markdownlintignore` and
+`merge-prosecutor-readme-usage-keep-both`.
+
+**Root Cause of Failure:** I measured the wrong gate, and I deleted instead of
+adding.
+
+1. **Wrong gate.** I reported main as "red on the markdown gate" from
+   `npm run lint`, which scans all 1197 files. The gate that decides anything is
+   the CircleCI `lint-and-test` step `Lint changed Markdown (markdownlint)` →
+   `.circleci/scripts/lint-changed-markdown.sh`, which lints only Markdown
+   changed against the merge-base. Scoping it to changed files *is* the
+   workaround for the pre-existing backlog, and the comment above the step in
+   `.circleci/config.yml` says so. Worse, that script feeds
+   `.markdownlintignore` to `markdownlint-cli2` as `#glob` negations
+   deliberately, "so all three gates agree on scope" — so my one-line ignore
+   entry would have exempted every *future* changed file under `wr/research/`
+   from the real gate. The fix I proposed to make a gate green would have put a
+   hole in it.
+2. **Deleted instead of added.** My README change removed the local-path usage
+   form (`- uses: ./products/merge-prosecutor`) to resolve a duplicated block,
+   on a branch I had named `…-keep-both`. The duplicated block *is* broken —
+   `action.yml` marks `github-token`, `repository` and `pr-number`
+   `required: true` and the remote invocation carries no `with:` — but
+   RVS-PRESERVE-001 §1 requires the additive fix (two complete labelled
+   examples), or a `REVVEL-DISABLED` block per RVS-AGENT-001 for a human to
+   ratify. `check-archival-policy.sh` enforces RVS-AGENT-001 against deleted
+   *files*, so nothing in CI would have stopped me.
+
+**Self-Healing Fix / Learned Lesson:** Before calling a gate red, find the
+consumer that actually blocks the merge and run *that*. A repo-wide linter and
+the CI gate can disagree by design, and when they do, the disagreement is
+usually a deliberate scoping decision with a comment next to it. The general
+form, which is RVS-VERIFY-001 read backwards: *a finding nobody's gate consumes
+is not a failure.* I had been treating the hosted-Actions reds the same way —
+`docs/governance/ACTIONS_MIGRATION.md` (PR #18279) states the interim rule
+plainly, that billing-lock reds are noise and CircleCI is the gate, and I was
+re-deriving "CI is dead" against it every session.
+
+Second lesson: when an existing block looks like a bad merge, the additive
+reading is usually available. Two usage forms with one set of inputs between
+them is a keep-both resolution missing a second `with:`, not a line to delete.
+
+**Next Action:** The branches `fix/markdownlint-ignore-wr-research` and
+`fix/markdown-gate-md026-daily-bom` still carry both rejected changes. Owner's
+call whether to delete them; the decision rows name them so neither gets
+resurrected by a later agent reading the branch list.
