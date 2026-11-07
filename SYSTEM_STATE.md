@@ -256,3 +256,28 @@ Last updated: 2026-05-02 04:00 UTC
 Updated by: copilot
 Session summary: Implemented production-ready daily WR & PR summary system with automated HTML/markdown reports, full XSS protection, and comprehensive documentation. Fixed secrets-health-check.yml duplicate keys. All 214 tests passing.
 ```
+
+
+## 2026-11-06 — Lifecycle labeling handoff (additive)
+
+Codex / ChatGPT Work Mode prepared a deterministic external lifecycle-label work package. **Not deployed; remote repository unchanged by this session.** Existing workflow files remain active/intact in the prepared checkout. The GitHub connector reports unknown-tool errors; public cloning works, but Git push dry-run lacks credentials. External host/token access and timer operation have not been verified. No passing test result is asserted in this entry; the final validation receipt must be attached before publication.
+
+See `docs/automation/pr-lifecycle-session-2026-11-06.md` for identities, permission facts, preservation decisions, work-product paths, and remaining handoff. Exact operational cutover/rollback is documented in `docs/automation/pr-lifecycle-labels.md`.
+
+## Validation receipt — 2026-11-06
+
+Root reports `node --test tests/pr-lifecycle-labels.test.js` passed 12/12 tests on Node 24.22.1. This is an offline test receipt; independent review is ongoing and it does not establish live API or timer operation. Prepared branch: `codex/pr-lifecycle-independent-2026-11-06`, based on `f969a2c1cc663a5a0c01382ab58f6bb4b9e5c94b`. The public inventory examined 204 repositories and found no dedicated label fork; `revvel-dark-run` is the existing external-runner integration target.
+
+## Final local validation receipt — 2026-11-06
+
+Root verified `node --test tests/pr-lifecycle-labels.test.js`: **19/19 passing** on Node 24.22.1; `node --check`: exit 0; `systemd-analyze verify` for the supplied units: exit 0; `git diff --check`: clean. The earlier 12-test result above is retained as an intermediate receipt. The optional hourly timer defaults to dry-run, and reconciliation includes a seven-day closed-PR sweep. Remote GitHub state remains unchanged and no host deployment is verified.
+
+## Badge-preservation validation — 2026-11-06
+
+Following Audrey's clarification, the implementation now supports optional deterministic marked lifecycle badge updates with `--badges` and explicit `--badge-author` selection. Existing badge behavior is preserved through this opt-in path; no auto-merge behavior is added. Root reports **24/24 tests passing**, `node --check` passing, and `git diff --check` clean after the badge extension. Earlier 12- and 19-test receipts remain intermediate history. No live credentials, authenticated label/comment mutation, host deployment, or OpenHands SQLite recovery has been verified.
+
+## Definitive local validation and SQLite handoff — 2026-11-06
+
+Root's final run passed **25/25 tests**, including the badge concurrent-edit fingerprint regression. Syntax checking, systemd unit verification, and `git diff --check` all exited 0. This supersedes the earlier test counts as the latest local validation receipt; those earlier entries remain preserved as intermediate history. No live GitHub or host deployment receipt is available.
+
+OpenHands SQLite investigation is recorded at `docs/research/openhands-sqlite-investigation-2026-11-06.md`. No attributable error was found in the inspected material. An exact traceback or affected task link is required to identify the failure; no SQLite fix is claimed.
