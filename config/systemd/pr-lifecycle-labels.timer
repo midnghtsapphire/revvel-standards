@@ -1,0 +1,17 @@
+# Who: Codex deployment agent; When: 2026-11-06; Owner request: Audrey Evans.
+# Why: Recover label drift without paying for or depending on Actions execution.
+# What: Optional single-host schedule; prefer an existing host scheduler if present.
+# The next invocation occurs after the previous run finishes, avoiding overlap.
+[Unit]
+Description=Reconcile Revvel PR lifecycle labels hourly
+
+[Timer]
+OnBootSec=2min
+# Start conservatively: hundreds of PRs share the installation API quota.
+# Measure request count and remaining quota before reducing this interval.
+OnUnitInactiveSec=1h
+RandomizedDelaySec=30s
+Unit=pr-lifecycle-labels.service
+
+[Install]
+WantedBy=timers.target

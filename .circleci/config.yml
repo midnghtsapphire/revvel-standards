@@ -15,6 +15,17 @@
 
 version: 2.1
 
+# 2026-11-06 Codex / Audrey's lifecycle billing workaround: the historical
+# ownership note above is retained. CircleCI may also run the deterministic
+# label/badge reconciler; no LLM or GitHub Actions runner is involved.
+# Set this parameter only on the main-branch hourly schedule/manual dry run.
+# Default push/PR pipelines keep their existing jobs and never receive this
+# job's restricted context. Setup: docs/automation/pr-lifecycle-labels.md.
+parameters:
+  run-pr-lifecycle:
+    type: boolean
+    default: false
+
 orbs:
   node: circleci/node@5.1.0
 
@@ -24,6 +35,18 @@ executors:
       - image: cimg/node:22.11
 
 jobs:
+  pr-lifecycle-labels:
+    executor: node-executor
+    resource_class: small
+    steps:
+      - checkout
+      - run:
+          name: Reconcile PR labels and badges (dry run unless enabled)
+          no_output_timeout: 20m
+          # No npm install or PR checkout: execute reviewed main code only.
+          # timeout bounds the full batch; errors are real job failures.
+          command: timeout 15m node .circleci/scripts/pr-lifecycle-labels.mjs
+
   lint-and-test:
     executor: node-executor
     steps:
@@ -159,6 +182,7 @@ workflows:
 
   # Run on every PR (non-main branches).
   pr-workflow:
+    unless: << pipeline.parameters.run-pr-lifecycle >>
     jobs:
       - lint-and-test:
           filters:
@@ -179,6 +203,7 @@ workflows:
 
   # Run on main.
   main-workflow:
+    unless: << pipeline.parameters.run-pr-lifecycle >>
     jobs:
       - lint-and-test:
           filters:
@@ -193,6 +218,24 @@ workflows:
             branches:
               only: main
       - veins-monitor:
+          filters:
+            branches:
+              only: main
+
+  # A scheduled pipeline supplies run-pr-lifecycle=true. Using a pipeline
+  # parameter supports both OAuth and GitHub App integrations (legacy YAML
+  # cron triggers only work with OAuth). Configure ONE hourly main schedule.
+  pr-lifecycle-maintenance:
+    when:
+      and:
+        - << pipeline.parameters.run-pr-lifecycle >>
+        - equal: [main, << pipeline.git.branch >>]
+    jobs:
+      - pr-lifecycle-labels:
+          # Must be project-restricted AND expression-restricted to main
+          # outside this editable YAML before storing a write credential.
+          context: revvel-pr-lifecycle
+          serial-group: << pipeline.project.slug >>/pr-lifecycle-labels
           filters:
             branches:
               only: main

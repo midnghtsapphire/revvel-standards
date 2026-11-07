@@ -40,6 +40,12 @@ docs/prompts/
 - `LLM/noseynoodle/GROK_SETUP.md` (running NoseyNoodle inside Grok: 4,000-char agent version, connectors, automations)
 - `LLM/cartographer/SYSTEM_PROMPT.md` (read-only claims-vs-reality auditor, reports to NoseyNoodle)
 
+### agents
+
+- `agents/XP-SWARM-ORCHESTRATOR.md` — paste-ready XP Swarm Orchestrator system prompt (delegate, same-model XP pairs, one iteration). Always-Training replaces spoken "self-heal": good to-dos, bad to-dos, and went-raunchy.
+- `agents/XP-SWARM-ORCHESTRATOR-OVERVIEW.md` — shorter companion and overview for the same orchestrator.
+- Naming note: `standards/ALWAYS_TRAINING.md`. Aliases that stay valid: `standards/SELF_HEALING_STANDARDS.md`, `skills/self-healer`, `scripts/agent-self-heal.js`.
+
 ## Sister libraries
 
 - Private hoard: <https://github.com/midnghtsapphire/AI-Conversation-Archive>
