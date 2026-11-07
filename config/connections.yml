@@ -143,6 +143,24 @@ connections:
     connects_to: [github]
     used_by: [augment-check.yml]
 
+  - id: railway
+    name: Railway
+    type: app
+    auth: key
+    env: RAILWAY_TOKEN
+    status: unverified
+    access: [deploy, hosting, preview-environments]
+    connects_to: [github]
+    used_by: [ship-to-market.yml, .circleci/config.yml]
+    note: >-
+      Deploy target for deliver:api and deliver:mcp labels (ship-to-market.yml)
+      and for the main-branch deploy-railway job in .circleci/config.yml.
+      RAILWAY_TOKEN must be set in BOTH places: GitHub Actions repo secrets
+      (Settings → Secrets → Actions) and CircleCI project environment variables
+      (app.circleci.com → Project Settings → Environment Variables).
+      Get a token at https://railway.app/account/tokens.
+      Status unverified — flip to verified once a deploy actually succeeds.
+
   - id: vercel
     name: Vercel
     type: app
