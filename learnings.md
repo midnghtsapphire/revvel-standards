@@ -1024,3 +1024,36 @@ issue N" over "X will fix this."
 `.github/workflows/openrouter-triage.yml`,
 `docs/playbooks/wr-manual-processes.md` §1–§2, CLAUDE.md gotcha #6,
 `standards/VERIFY_THE_POSTCONDITION.md`.
+
+---
+
+## TM-0008 — A Work Request file on the runner is not a Work Request
+
+**Discovered:** 2026-11-06  **Discovered-by:** cursor (Grok) after Audrey Evans rejected the empty close on PR #18276  **PR/issue:** #18276
+**Category:** false-completion
+
+**Symptom:** Several pull requests (including #17966, #18203, #18212, #18225, #18235, #18276) reported that `products/merge-prosecutor` already files Work Requests for bad merges and dismissive comments, and changed nothing. The job log said `Created WR`. No issue appeared.
+
+**Root cause:** `createWR` wrote `wr/wr-<random>.md` under `WORKSPACE_DIR`. The workflow sets that to `products/merge-prosecutor` inside the Actions checkout. The runner disk is thrown away when the job ends. `START_HERE_CALL_CHAIN.md` starts the call chain at a GitHub issue titled `[WR]`. The workflow token had `issues: write`. The action never called the issues API. A green unit suite on the detectors does not prove the issue exists (RVS-VERIFY-001).
+
+**Detection heuristic:** If a log line says a Work Request, an issue, or a ticket was created, name the URL a second process can fetch after the job exits. A path under `github.workspace` fails that test. Random filenames also fail dedup: the next `synchronize` cannot find the previous file.
+
+**Autofix pattern:**
+```text
+keep the local write
++ POST /repos/{repo}/issues with title [WR] ...
++ stable fingerprint in the body (mpkey + sha256 prefix)
++ search that token before creating, so synchronize does not spam
++ return the API error (403 on a fork token is a GitHub limit)
++ the finding sets exit code 1 before the network call
+tests: mock fetch, assert the POST body, assert a second call does not POST,
+       assert 403 does not report a url
+```
+
+**Prevention rule:** "Created WR" is only true when the test observes an issue URL or a thrown API error. Do not close a build request as already implemented until the side effect that leaves the process has a test.
+
+**Related:** `products/merge-prosecutor/action/run-prosecutor.mjs`,
+`.github/workflows/merge-prosecutor.yml`,
+`START_HERE_CALL_CHAIN.md`,
+`standards/VERIFY_THE_POSTCONDITION.md`,
+PR #18276.

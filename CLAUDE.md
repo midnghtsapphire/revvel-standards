@@ -1,8 +1,6 @@
-# CLAUDE.md — Agent Operating Notes
+# CLAUDE.md
 
-This file is the short-form checklist the agent reads on every task. Long-form
-methodology lives in `standards/`. If this file and a document in `standards/`
-disagree, the standards document wins and this file gets updated.
+Claude Code discovery stub only.
 
 ## Prime directive
 
@@ -125,3 +123,7 @@ Canonical policy lives in [`AGENTS.md`](./AGENTS.md) — **OWNER RULE — NEVER 
 - **Never delete.** No label (including `allow-destroy`), flag, or agent judgment permits deletion. Comment out with `REVVEL-DISABLED` instead (`standards/COMMENT-DONT-DELETE.md`). CircleCI `check-archival-policy.sh` fails closed on deletions and ignores `allow-destroy`.
 - **Draft-only PRs into `daily/YYYY-MM-DD`.** Open draft PRs targeting the current daily branch for owner review.
 - **Agents never merge.** Draft PRs await owner review; agents do not merge their own PRs (see AGENTS.md OWNER RULE item 6).
+1. Read [`AGENTS.md`](./AGENTS.md) — OWNER RULE / NEVER DELETE / draft-only PRs.
+2. Visiting? Also read [`VISITING_AGENTS.md`](./VISITING_AGENTS.md).
+3. Do not keep a private conflicting rule set.
+4. Archived long form: [`Archive/2026-11-05/CLAUDE.md`](./Archive/2026-11-05/CLAUDE.md).
