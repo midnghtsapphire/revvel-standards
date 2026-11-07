@@ -10,6 +10,7 @@ junk behind.
 
 For the product/monorepo map and per-product commands, see [`AGENTS.md`](./AGENTS.md).
 This file is only the guest contract.
+Agent security boundaries: [`standards/AGENT_SECURITY_BOUNDARIES.md`](./standards/AGENT_SECURITY_BOUNDARIES.md).
 
 ---
 
