@@ -56,12 +56,50 @@ search quality; this standard covers how to source).
 - Check the license before storing anything. Treat unclear licenses as
   reference-only.
 
+<!--
+RETIRED 2026-11-06 at the owner's instruction (Audrey Evans). Commented out in
+place, NOT deleted and NOT retyped, per AGENTS.md OWNER RULE 2 ("NEVER delete
+files, code, docs, or rules") and OWNER RULE 4 ("to retire something, COMMENT IT
+OUT in place with a dated note").
+
+WHY THE WHOLE TABLE IS WRAPPED AND NOT JUST THE TWO ROWS: the two superseded
+"Never store scans" rows sit in the MIDDLE of this table. An HTML comment placed
+between table rows ends the table, so commenting only those two rows in place
+would have split the table and left the rows below it rendering as loose text.
+Wrapping the whole block keeps every original line exactly where it was, byte for
+byte, and the corrected table below renders normally. Nothing here is deleted and
+nothing is retyped.
+
+WHAT CHANGED: the GORILA and RILA-S1 rule "Never store scans" was superseded by
+the owner on 2026-11-02 ("ya i am allowing scans"). The superseded item is
+recorded as SUPERSEDED, not deleted, in the Tartaria book repo. The lineara.xyz
+row carries forward unchanged from the retirement earlier today.
+
+The lines that follow, to the closing marker, are the original table:
 | Source | License status | Rule |
 | --- | --- | --- |
 | GORILA | EFA-owned, no-derivatives | Never store scans |
 | RILA-S1 | EFA-owned, no-derivatives | Never store scans |
 | SigLA | Non-commercial | Non-commercial use only |
 | lineara.xyz | No license | Reference-only. Licence-request status UNRESOLVED as of 2026-11-06 - see the note below this table. Do not assume one is in train and do not send one. |
+-->
+
+| Source | License status | Rule |
+| --- | --- | --- |
+| GORILA | EFA-owned, no-derivatives | Scans MAY be stored - owner decision, Audrey Evans, 2026-11-02 08:34 MST. The no-derivatives status in the middle column is UNCHANGED: this permits local storage only, not redistribution or publication. |
+| RILA-S1 | EFA-owned, no-derivatives | Scans MAY be stored - owner decision, Audrey Evans, 2026-11-02 08:34 MST. The no-derivatives status in the middle column is UNCHANGED: this permits local storage only, not redistribution or publication. |
+| SigLA | Non-commercial | Non-commercial use only |
+| lineara.xyz | No license | Reference-only. Licence-request status UNRESOLVED as of 2026-11-06 - see the note below this table. Do not assume one is in train and do not send one. |
+
+> **"Never store scans" was superseded on 2026-11-02 and is retired here on
+> 2026-11-06.** The owner decided scans may be stored (Audrey Evans, 2026-11-02
+> 08:34 MST). The original rule is kept verbatim in the HTML comment above, and
+> the superseded item is recorded as superseded rather than deleted in the
+> Tartaria book repo. **The licence status is not changed by this:** GORILA and
+> RILA-S1 remain EFA-owned and no-derivatives, so this permits local storage
+> only. It does not authorise redistributing or publishing scans or anything
+> derived from them, and it is not a judgement about what those licences allow.
+
 <!--
 RETIRED 2026-11-06 at the owner's instruction (Audrey Evans). Commented out in
 place, NOT deleted, per AGENTS.md OWNER RULE 2 ("NEVER delete files, code, docs,
