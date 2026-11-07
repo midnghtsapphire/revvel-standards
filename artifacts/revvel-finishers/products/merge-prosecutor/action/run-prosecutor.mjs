@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { execSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -246,7 +247,9 @@ export function detectUnresolvedConflicts(diffText) {
       currentFile = line.slice(6);
     }
 
-    if (line.startsWith('+<<<<<<<') || line.startsWith('+=======')) {
+    // >>>>>>> is the end marker. A resolution that left only the closer
+    // used to pass, because the scan stopped at <<<<<<< and =======.
+    if (line.startsWith('+<<<<<<<') || line.startsWith('+=======') || line.startsWith('+>>>>>>>')) {
        conflictMarkers.push({ file: currentFile, line: line.slice(1) });
     }
   }
@@ -373,16 +376,69 @@ export function isDismissiveComment(body) {
   return Boolean(body) && DISMISSIVE_REGEX.test(body);
 }
 
-function createWR(title, issueContext, learnings, rootDir) {
-  const wrDir = join(rootDir, 'wr');
-  try {
-    mkdirSync(wrDir, { recursive: true });
-  } catch (e) {}
+/**
+ * Stable id for one finding on one pull request.
+ * Same inputs always return the same id, so a second Actions run
+ * finds the issue already opened instead of filing another one.
+ * Random ids (the old wr-${n}-prosecutor.md names) cannot do that:
+ * every synchronize event minted a new file that the runner then deleted.
+ */
+export function findingFingerprint(parts) {
+  return createHash('sha256')
+    .update(parts.map((part) => String(part ?? '')).join('\u001f'))
+    .digest('hex')
+    .slice(0, 20);
+}
 
-  const wrId = Math.floor(Math.random() * 100000);
-  const wrPath = join(wrDir, `wr-${wrId}-prosecutor.md`);
+export function workRequestIssueTitle(title, prNumber) {
+  const cleaned = String(title || '').replace(/^\[WR\]\s*/i, '').trim();
+  const suffix = prNumber ? ` (PR #${prNumber})` : '';
+  return `[WR] ${cleaned}${suffix}`;
+}
 
-  const templateContent = `# WR: ${title}
+/**
+ * Body shared by the runner markdown and the GitHub issue.
+ * The call chain starts when an issue titled `[WR]` is opened
+ * (START_HERE_CALL_CHAIN.md). A file under the job workspace is not that.
+ * `mpkey` is a single search token on purpose: a `key: value` line is
+ * parsed by GitHub search as a qualifier and the lookup 422s.
+ */
+export function renderWorkRequest({
+  title,
+  issueContext,
+  learnings,
+  fingerprint,
+  repo,
+  prNumber,
+  issueUrl,
+  issueError,
+  forIssue
+}) {
+  const key = fingerprint ? `mpkey${fingerprint}` : 'mpkeylocal-only';
+  const durable = [
+    '## Where this Work Request lives',
+    '',
+    'Audrey Evans, 2026-11-06, on PR #18276: a file written inside the',
+    'GitHub Actions runner is discarded when the job ends. That is why',
+    'earlier runs could log "Created WR" and still leave no Work Request',
+    'in the repository. The issue below is the copy that enters the call chain.',
+    '',
+    issueUrl
+      ? `GitHub issue: ${issueUrl}`
+      : (forIssue
+        ? 'This GitHub issue is the Work Request. The runner file is not.'
+        : 'GitHub issue: not opened on this run.'),
+    issueError ? `Open failure: ${issueError}` : '',
+    `Search token: ${key}`,
+    `Repository: ${repo || 'unknown'} pull request #${prNumber || 'unknown'}.`,
+    'If the issue is missing, open the Merge Prosecutor log and search for',
+    '"WR issue create failed". Status 403 on a fork pull request means the',
+    'default GITHUB_TOKEN is not allowed to open issues. A same-repo pull',
+    'request with issues:write is the path that files the Work Request.',
+    'Closing the issue without changing the diff does not turn the job green.'
+  ].filter((line) => line !== '').join('\n');
+
+  return `# WR: ${title}
 
 ## Issue Context
 
@@ -401,9 +457,256 @@ Fix the merge errors and dismissive attitudes found by the Merge Prosecutor Acti
 ## Learnings — What & Why
 
 ${learnings}
+
+${durable}
 `;
-  writeFileSync(wrPath, templateContent);
-  log(`Created WR: ${wrPath}`);
+}
+
+/**
+ * Runner-local markdown. Kept because the original action wrote it, and
+ * because a laptop run with no token still needs a file the human can read.
+ * It is not the Work Request of record. The GitHub issue is.
+ * The id is the fingerprint when we have one, so a re-run overwrites the
+ * same path instead of scattering random wr-NNNNN-prosecutor.md files.
+ * The random id remains for a caller that has no fingerprint.
+ */
+function createWR(title, issueContext, learnings, rootDir, extras = {}) {
+  const wrDir = join(rootDir, 'wr');
+  try {
+    mkdirSync(wrDir, { recursive: true });
+  } catch (e) {
+    // A silent catch made a read-only workspace look like success: the next
+    // line used to log "Created WR" for a file that was never written.
+    // What to check: WORKSPACE_DIR exists and is writable. The GitHub issue
+    // is still attempted by fileWorkRequest after this returns null.
+    log(`Local WR directory was not created (${e && e.message ? e.message : e}).`);
+  }
+
+  const fingerprint = extras.fingerprint;
+  const wrId = fingerprint || String(Math.floor(Math.random() * 100000));
+  const wrPath = join(wrDir, `wr-${wrId}-prosecutor.md`);
+  const templateContent = renderWorkRequest({
+    title,
+    issueContext,
+    learnings,
+    fingerprint,
+    repo: extras.repo,
+    prNumber: extras.prNumber,
+    issueUrl: extras.issueUrl,
+    issueError: extras.issueError
+  });
+
+  try {
+    writeFileSync(wrPath, templateContent);
+    log(`Created local WR file (runner copy, not the call-chain issue): ${wrPath}`);
+    return wrPath;
+  } catch (e) {
+    log(`Local WR file was not written (${e && e.message ? e.message : e}). Check WORKSPACE_DIR.`);
+    return null;
+  }
+}
+
+async function readResponseText(response) {
+  if (response && typeof response.text === 'function') {
+    return response.text();
+  }
+  return '';
+}
+
+/**
+ * Look up an open issue that already carries this finding's token.
+ * Search failure is not a pass and not a hard stop: the caller creates
+ * the issue anyway. What to check if two issues appear for one finding:
+ * the log line "WR search skipped" — the search API returned non-200
+ * (fine-grained tokens and cold indexes do this) so dedup could not run.
+ */
+export async function findOpenWorkRequest({ token, repo, fingerprint, fetchImpl = fetch }) {
+  const q = `repo:${repo} is:issue is:open mpkey${fingerprint}`;
+  const url = `https://api.github.com/search/issues?q=${encodeURIComponent(q)}&per_page=5`;
+  const response = await fetchImpl(url, { headers: githubHeaders(token) });
+  if (!response.ok) {
+    const body = await readResponseText(response);
+    log(`WR search skipped (${response.status} ${response.statusText || ''}). ${String(body).slice(0, 160)}`);
+    return null;
+  }
+  const data = await response.json();
+  const items = data && Array.isArray(data.items) ? data.items : [];
+  return items[0] || null;
+}
+
+export async function createWorkRequestIssue({ token, repo, title, body, fetchImpl = fetch }) {
+  const url = `https://api.github.com/repos/${repo}/issues`;
+  const response = await fetchImpl(url, {
+    method: 'POST',
+    headers: {
+      ...githubHeaders(token),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ title, body })
+  });
+  const text = await readResponseText(response);
+  if (!response.ok) {
+    throw new GitHubApiError(
+      `WR issue create failed: ${response.status} ${response.statusText || ''} ${String(text).slice(0, 200)}. The finding still fails the job. Status 403 on a fork pull request means the default GITHUB_TOKEN cannot open issues. Use a same-repo pull request, or a token with issues:write.`,
+      { status: response.status, url }
+    );
+  }
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new GitHubApiError(
+      `WR issue create returned non-JSON (${response.status}). Refusing to treat that as a filed Work Request.`,
+      { status: response.status, url }
+    );
+  }
+  if (!data || !data.html_url) {
+    throw new GitHubApiError(
+      'WR issue create returned no html_url. Refusing to treat that as a filed Work Request.',
+      { status: response.status, url }
+    );
+  }
+  return data;
+}
+
+/**
+ * File the Work Request the action has always claimed to file.
+ * Local markdown stays (the original behavior). The GitHub issue is what
+ * START_HERE_CALL_CHAIN.md actually ignites. A failed create is returned,
+ * not swallowed: the pull request is already red from the finding, and the
+ * report comment repeats the API error so the log is not the only place it exists.
+ */
+export async function fileWorkRequest({
+  title,
+  issueContext,
+  learnings,
+  rootDir,
+  token,
+  repo,
+  prNumber,
+  kind,
+  detailKey,
+  fetchImpl = fetch
+}) {
+  const fingerprint = findingFingerprint([kind, repo, prNumber, detailKey, title]);
+  const issueTitle = workRequestIssueTitle(title, prNumber);
+  let issue = null;
+  let issueError = null;
+
+  if (!token || !repo) {
+    issueError = new GitHubApiError(
+      'No GITHUB_TOKEN or GITHUB_REPOSITORY — wrote a local WR file only. That file is not a GitHub issue and does not start the WR call chain.'
+    );
+    log(issueError.message);
+  } else {
+    try {
+      const existing = await findOpenWorkRequest({ token, repo, fingerprint, fetchImpl });
+      if (existing && existing.html_url) {
+        issue = { html_url: existing.html_url, number: existing.number, created: false };
+        log(`WR already open: ${existing.html_url}`);
+      } else {
+        const body = renderWorkRequest({
+          title,
+          issueContext,
+          learnings,
+          fingerprint,
+          repo,
+          prNumber,
+          forIssue: true
+        });
+        const created = await createWorkRequestIssue({
+          token,
+          repo,
+          title: issueTitle,
+          body,
+          fetchImpl
+        });
+        issue = { html_url: created.html_url, number: created.number, created: true };
+        log(`Opened WR issue: ${created.html_url}`);
+      }
+    } catch (err) {
+      issueError = err instanceof Error ? err : new GitHubApiError(String(err));
+      log(issueError.message);
+    }
+  }
+
+  const localPath = createWR(title, issueContext, learnings, rootDir, {
+    fingerprint,
+    repo,
+    prNumber,
+    issueUrl: issue && issue.html_url,
+    issueError: issueError && issueError.message
+  });
+
+  return { fingerprint, localPath, issueTitle, issue, issueError };
+}
+
+export function prosecutionReportMarker(fingerprints) {
+  return `<!-- merge-prosecutor-report:${fingerprints.slice().sort().join(',')} -->`;
+}
+
+/**
+ * One comment on the pull request listing the issues that were opened.
+ * Dedup is the marker. A later run with the same findings does not add
+ * another comment. A run with a new finding has a new marker, so it posts.
+ * Comment failure is logged and does not hide the red job. What to check:
+ * pull-requests:write on the workflow token (fork PRs are read-only).
+ */
+export async function postProsecutionReport({
+  token,
+  repo,
+  prNumber,
+  filings,
+  existingComments,
+  fetchImpl = fetch
+}) {
+  if (!token || !repo || !prNumber || !filings || filings.length === 0) return null;
+  const marker = prosecutionReportMarker(filings.map((filing) => filing.fingerprint));
+  const already = (existingComments || []).some((comment) => comment && comment.body && comment.body.includes(marker));
+  if (already) {
+    log('Prosecution report comment already on the pull request. Not posting a second one.');
+    return null;
+  }
+
+  const lines = filings.map((filing) => {
+    if (filing.issue && filing.issue.html_url) {
+      const verb = filing.issue.created ? 'opened' : 'already open';
+      return `- ${filing.issueTitle} (${verb}): ${filing.issue.html_url}`;
+    }
+    const why = filing.issueError && filing.issueError.message
+      ? filing.issueError.message
+      : 'no issue url';
+    return `- ${filing.issueTitle}: issue was not opened. ${why}`;
+  });
+
+  const body = [
+    marker,
+    '',
+    'Merge Prosecutor failed this pull request.',
+    '',
+    ...lines,
+    '',
+    'The job stays red until the diff and the review comments are clean.',
+    'Closing the Work Request without changing the diff does not turn the job green.',
+    'The markdown file inside the runner workspace is discarded with the job.'
+  ].join('\n');
+
+  const url = `https://api.github.com/repos/${repo}/issues/${prNumber}/comments`;
+  const response = await fetchImpl(url, {
+    method: 'POST',
+    headers: {
+      ...githubHeaders(token),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ body })
+  });
+  const text = await readResponseText(response);
+  if (!response.ok) {
+    log(`Prosecution report comment was not posted: ${response.status} ${String(text).slice(0, 200)}. The Work Request issues above are unaffected. Check pull-requests:write. Fork pull requests cannot be commented on with the default token.`);
+    return null;
+  }
+  log('Posted the prosecution report on the pull request.');
+  return text;
 }
 
 export async function main(env = process.env, fetchImpl = fetch) {
@@ -422,22 +725,47 @@ export async function main(env = process.env, fetchImpl = fetch) {
     fetchImpl
   });
 
+  // Filings are collected and then one report comment is posted.
+  // exitCode is set when the finding is real, before the network call,
+  // so a failed issue create cannot turn a bad merge into a green job.
+  const filings = [];
+  const fileFinding = (spec) => fileWorkRequest({
+    token,
+    repo,
+    prNumber,
+    rootDir: workspaceDir,
+    fetchImpl,
+    ...spec
+  });
+
   log("1. Checking for unresolved conflicts...");
   const conflicts = detectUnresolvedConflicts(diffContent);
   if (conflicts.length > 0) {
       log(`Found unresolved conflicts in ${conflicts.length} locations!`);
-      const context = conflicts.map(c => `- ${c.file}: ${c.line}`).join('\n');
-      createWR("Fix Unresolved Merge Conflicts", context, "Conflict markers were left in the codebase.", workspaceDir);
       process.exitCode = 1;
+      const context = conflicts.map(c => `- ${c.file}: ${c.line}`).join('\n');
+      filings.push(await fileFinding({
+        kind: 'conflicts',
+        detailKey: 'conflicts',
+        title: 'Fix Unresolved Merge Conflicts',
+        issueContext: context,
+        learnings: 'Conflict markers were left in the codebase.'
+      }));
   }
 
   log("2. Checking for duplicated code blocks (bad merge)...");
   const duplicates = detectDuplicatedBlocks(diffContent);
   if (duplicates.length > 0) {
       log(`Found ${duplicates.length} potential duplicate blocks indicating keeping both current and incoming sides.`);
-      const context = duplicates.slice(0, 5).map(d => `- ${d.file}: ${d.blockA}`).join('\n');
-      createWR("Fix Duplicated Blocks from Bad Merge", context, "Merge resolution incorrectly kept both 'current' and 'incoming' logic instead of choosing one or refactoring.\n\nProblem created: This results in redundant code execution, duplicated logic, and potentially introduces syntax or runtime errors.", workspaceDir);
       process.exitCode = 1;
+      const context = duplicates.slice(0, 5).map(d => `- ${d.file}: ${d.blockA}`).join('\n');
+      filings.push(await fileFinding({
+        kind: 'duplicates',
+        detailKey: 'duplicates',
+        title: 'Fix Duplicated Blocks from Bad Merge',
+        issueContext: context,
+        learnings: "Merge resolution incorrectly kept both 'current' and 'incoming' logic instead of choosing one or refactoring.\n\nProblem created: This results in redundant code execution, duplicated logic, and potentially introduces syntax or runtime errors."
+      }));
   }
 
   log("3. Testing system stability...");
@@ -448,37 +776,67 @@ export async function main(env = process.env, fetchImpl = fetch) {
           log("Tests passed!");
       } catch (e) {
           log("Tests failed! The merge broke the system.");
-          createWR("Fix Broken Tests after Merge", `Tests failed when running ${testCmd}.`, "The recent merge introduced regressions that were not caught.", workspaceDir);
           process.exitCode = 1;
+          filings.push(await fileFinding({
+            kind: 'tests',
+            detailKey: 'tests',
+            title: 'Fix Broken Tests after Merge',
+            issueContext: `Tests failed when running ${testCmd}.`,
+            learnings: 'The recent merge introduced regressions that were not caught.'
+          }));
       }
   }
 
   log("4. Checking for dismissive comments...");
+  let allComments = [];
   if (token && repo && prNumber) {
       const issueComments = await fetchPRComments(token, repo, prNumber, fetchImpl);
       const reviewComments = await fetchPRReviewComments(token, repo, prNumber, fetchImpl);
 
-      const allComments = [...issueComments, ...reviewComments];
+      allComments = [...issueComments, ...reviewComments];
 
       const dismissiveComments = allComments.filter(c => isHumanReviewer(c) && isDismissiveComment(c.body));
 
       if (dismissiveComments.length > 0) {
           log(`Found ${dismissiveComments.length} dismissive comments.`);
-          for (const c of dismissiveComments) {
-             createWR(`Address Dismissive Comment from ${c.user.login}`, `Comment URL: ${c.html_url}\n\nBody: ${c.body}`, "Agents cannot dismiss bugs or tasks as 'out of scope' or 'not my bug' without filing a formal WR.", workspaceDir);
-          }
           process.exitCode = 1;
+          for (const c of dismissiveComments) {
+             filings.push(await fileFinding({
+               kind: 'dismissive',
+               detailKey: c.html_url || c.id || c.body,
+               title: `Address Dismissive Comment from ${c.user.login}`,
+               issueContext: `Comment URL: ${c.html_url}\n\nBody: ${c.body}`,
+               learnings: "Agents cannot dismiss bugs or tasks as 'out of scope' or 'not my bug' without filing a formal WR."
+             }));
+          }
       }
 
       log("5. Checking for unimplemented review suggestions...");
       const unimplemented = detectUnimplementedSuggestions(diffContent, allComments);
       if (unimplemented.length > 0) {
           log(`Found ${unimplemented.length} unimplemented code suggestions in comments.`);
-          for (const u of unimplemented) {
-              createWR(`Implement Code Suggestion from ${u.user}`, `Comment URL: ${u.commentUrl}\n\nSuggested Code:\n\`\`\`\n${u.suggestion}\n\`\`\`\n\nMatch Ratio found in PR: ${u.matchRatio.toFixed(2)}`, "A code review suggestion was ignored or missed before merging.", workspaceDir);
-          }
           process.exitCode = 1;
+          for (const u of unimplemented) {
+              filings.push(await fileFinding({
+                kind: 'unimplemented',
+                detailKey: `${u.commentUrl}\n${u.suggestion}`,
+                title: `Implement Code Suggestion from ${u.user}`,
+                issueContext: `Comment URL: ${u.commentUrl}\n\nSuggested Code:\n\`\`\`\n${u.suggestion}\n\`\`\`\n\nMatch Ratio found in PR: ${u.matchRatio.toFixed(2)}`,
+                learnings: 'A code review suggestion was ignored or missed before merging.'
+              }));
+          }
       }
+
+      await postProsecutionReport({
+        token,
+        repo,
+        prNumber,
+        filings,
+        existingComments: allComments,
+        fetchImpl
+      });
+  } else if (filings.length > 0) {
+      log('No GITHUB_TOKEN / GITHUB_REPOSITORY / PR_NUMBER — findings fail the job, and no pull-request report was posted.');
   }
 
   if (process.exitCode === 1) {
