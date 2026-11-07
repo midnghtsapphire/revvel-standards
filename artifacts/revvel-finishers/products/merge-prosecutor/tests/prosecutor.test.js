@@ -89,6 +89,17 @@ diff --git a/test.js b/test.js
   assert.ok(conflicts.length > 0, 'Should detect unresolved conflict');
 });
 
+test('detects a leftover >>>>>>> closer with no other marker', () => {
+  const diffText = `
++++ b/test.js
++function test() {
++>>>>>>> main
+`;
+  const conflicts = detectUnresolvedConflicts(diffText);
+  assert.equal(conflicts.length, 1);
+  assert.match(conflicts[0].line, />>>>>>>/);
+});
+
 test('detects unimplemented console.error suggestion vs console.log add', () => {
   const diffText = `
 diff --git a/test.js b/test.js

@@ -11,6 +11,28 @@
 4. Comment-out / archive-rename is allowed. Deletion is not.
 5. Search jobs, long-running processes, and visiting LLMs are the usual failure mode — re-read this before every bulk edit.
 6. OWNER RULE (Audrey Evans, 2026-10-30) still governs. Louder, not quieter.
+## OWNER RULE — SILENT MERGE (Audrey Evans, 2026-11-05)
+
+Audrey lock, exact via Pedal + 1-Git-Triage, 2026-11-05: "Make sure the code has been assigned and done before merge."
+
+Silent-merge only when all three are true: the PR assignee is set, the linked work was assigned and is done (acceptance met), and required checks are green. Plan-only and "no bots until green-light" drafts stay draft. Item 6 stands: agents never merge their own PRs.
+
+Canonical rule: [`docs/governance/SILENT_MERGE.md`](./docs/governance/SILENT_MERGE.md).
+
+> ⚡ **Call chain (what starts → what runs next):**  
+> Read **[`START_HERE_CALL_CHAIN.md`](./START_HERE_CALL_CHAIN.md)** before changing workflows or claiming a step is “done.”  
+> Do not invent a second pipeline; do not edit random folders for UI color — see that file’s “Where to change” table.
+>
+> **Visiting / transient agent?** (OpenHands, Cursor Cloud, Lovable, Replit, a one-off
+> API caller…) Read [`VISITING_AGENTS.md`](./VISITING_AGENTS.md) **first** — it's the
+> short guest contract: where you may write, where setup/API info lives, and how not to
+> scaffold over the repo.
+>
+> Agent security boundaries: [`standards/AGENT_SECURITY_BOUNDARIES.md`](./standards/AGENT_SECURITY_BOUNDARIES.md).
+>
+> Every error is a training module. Append lessons to [`learnings.md`](./learnings.md)
+> using the TM-NNNN format at the bottom of that file — future agents (and future
+> auto-fix scripts) read those modules as their curriculum.
 
 ## One rule set
 

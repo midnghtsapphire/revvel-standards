@@ -10,6 +10,9 @@
 - Comment out with a dated note, or `git mv` into `Archive/YYYY-MM-DD/`.
 - This applies especially during **search** and **long-running** jobs — stop and re-read before bulk changes.
 - Full spine: [`AGENTS.md`](./AGENTS.md).
+For the product/monorepo map and per-product commands, see [`AGENTS.md`](./AGENTS.md).
+This file is only the guest contract.
+Agent security boundaries: [`standards/AGENT_SECURITY_BOUNDARIES.md`](./standards/AGENT_SECURITY_BOUNDARIES.md).
 
 ## Do the work; leave the carpet clean
 
