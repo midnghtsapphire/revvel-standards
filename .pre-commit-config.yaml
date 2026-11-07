@@ -7,3 +7,9 @@ repos:
         language: system
         files: \.jsonl$
         pass_filenames: true
+      - id: secret-scan
+        name: Local secret scan (masked, blocking)
+        entry: bash .pre-commit-hooks/secret-scan.sh
+        language: system
+        pass_filenames: true
+        # Own code for brain-dump #6 — no marketplace Actions.
