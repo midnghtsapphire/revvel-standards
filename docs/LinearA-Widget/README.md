@@ -29,6 +29,39 @@ not Linear A; `*301` has no agreed value) is the product. It stays a method
 harness, not a decipherment. The seed is a sample, not the corpus; real work
 needs [SigLA](https://sigla.phis.me/) / GORILA ingestion, which is the next step.
 
+### Run against a real corpus (SigLA / GORILA)
+
+By default the loop runs on the 10-row **seed sample**, and the two
+corpus-scale hypotheses (`H6`, `H7`) deliberately return `UNRESOLVABLE`
+("corpus too small") so a sample can never be passed off as a corpus-wide
+finding. To settle them, feed a real **attested** export:
+
+```bash
+node verify.mjs --linear-a --corpus path/to/corpus.json
+node verify.mjs --linear-a --corpus corpus.json --iter 4   # stop after N
+node verify.mjs --corpus-template                          # print the schema
+```
+
+The corpus file is a JSON array (or `{ "sequences": [ ... ] }`) of rows:
+
+```json
+{ "seq": "KU-RO", "role": "total", "source": "GORILA 1:142; HT 13" }
+```
+
+`seq` and `source` are **required**; `role` is optional (defaults to
+`unknown`). The loader **refuses any row without a `source`** and exits
+non-zero — so "ran against an attested corpus" is a checked claim, not
+decoration (`standards/VERIFY_THE_POSTCONDITION.md`). No corpus file is
+committed and none is invented: you supply it.
+
+**Getting the data:** [SigLA](https://sigla.phis.me/) publishes the Linear A
+documents and sign inventory; GORILA (_Recueil des inscriptions en linéaire
+A_) is the printed corpus SigLA transcribes. Export the attested sign-groups
+you want to test into the schema above (one row per sign-group, each cited to
+its GORILA volume:page and/or SigLA document id), then point `--corpus` at the
+file. Start small — even a few hundred cited rows make `H6`/`H7` meaningful —
+and grow it over time; the ledger reruns unchanged as the corpus grows.
+
 ### Auto-run (DISABLED — not installed)
 
 A scheduled runner is intentionally **left dormant**: it is NOT committed as a
