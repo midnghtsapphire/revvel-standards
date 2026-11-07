@@ -3,6 +3,7 @@
 
 const assert = require('assert');
 const { execFileSync } = require('child_process');
+const { pythonBinOrThrow } = require('../scripts/lib/python-bin.js');
 const {
   buildSystemPrompt,
   buildUserPrompt,
@@ -155,7 +156,7 @@ test('FAILURE_LABELS are aligned with .github/labels.yml names', () => {
 test('buildPerplexityTriageScript emits Python that parses with quoted install hints', () => {
   const installHint = 'python3 -m pip install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"';
   const script = buildPerplexityTriageScript(installHint);
-  execFileSync('python3', ['-c', 'import ast,sys; ast.parse(sys.stdin.read())'], { input: script });
+  execFileSync(pythonBinOrThrow(), ['-c', 'import ast,sys; ast.parse(sys.stdin.read())'], { input: script });
   assert.ok(script.includes('INSTALL_HINT = '));
   assert.ok(script.includes('Install with: {INSTALL_HINT}'));
 });

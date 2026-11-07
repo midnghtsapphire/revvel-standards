@@ -4,6 +4,7 @@ const { execFileSync, execFile } = require("node:child_process");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+const { pythonBinOrThrow } = require('../scripts/lib/python-bin.js');
 
 const GATE = path.join(__dirname, "..", ".pre-commit-hooks", "pre-review-gate.sh");
 const ENV = { ...process.env, PRE_REVIEW_NO_LINT: "1" };
@@ -32,7 +33,7 @@ test.after(() => {
 
 const hasPyYaml = (() => {
   try {
-    execFileSync("python3", ["-c", "import yaml"], { stdio: "ignore" });
+    execFileSync(pythonBinOrThrow(), ["-c", "import yaml"], { stdio: "ignore" });
     return true;
   } catch {
     return false;
