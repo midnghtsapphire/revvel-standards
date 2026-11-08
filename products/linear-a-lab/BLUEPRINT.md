@@ -16,7 +16,7 @@ machine-readable, test-covered corpus an autonomous pipeline can build on.
 
 ## The answer: three layers
 
-```
+```text
 ┌───────────────────────────────────────────────────────────┐
 │ 3. LOOP      test → deconstruct → prosecute → fix         │
 │    pipeline/loop.py + LM Studio (local, $0/token)         │
@@ -85,7 +85,7 @@ reasoning lane (MODEL_CONFIG.md) graduates it to A.
 
 ## Interfaces
 
-```
+```bash
 py -3 run_decipher.py audit                  # KU-RO arithmetic audit
 py -3 run_decipher.py top 20                 # frequency table
 py -3 run_decipher.py evidence KU-RO         # evidence pack (JSON)

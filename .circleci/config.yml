@@ -156,8 +156,22 @@ jobs:
               echo "============================================================"
               exit 0
             fi
-            npm install -g @railway/cli
-            railway up --detach
+            # npx, not npm install -g: cimg/node's global prefix is root-owned,
+            # so `npm install -g` dies EACCES for the circleci user. npx stages
+            # the CLI under the user-writable ~/.npm cache instead.
+            #
+            # The project must be linked explicitly: bare `railway up` opens an
+            # interactive "link a project" prompt, which hangs a CI step until
+            # the 10-minute no-output timeout kills it. Defaults below are the
+            # lucky-light project already wired to this repo's Railway GitHub
+            # integration (IDs are public in the commit status target_url);
+            # override via CircleCI env vars if the target ever changes.
+            PROJECT_ID="${RAILWAY_PROJECT_ID:-fda5db73-50e3-4a67-8b53-4e723630af43}"
+            SERVICE_ID="${RAILWAY_SERVICE_ID:-90cbc6dc-4cb2-4ae9-a631-48748455c970}"
+            npx --yes @railway/cli link --project "$PROJECT_ID" --service "$SERVICE_ID"
+            # `timeout` is the hang guard: any future prompt fails in 5 minutes
+            # instead of burning the full 10-minute no-output window.
+            timeout 300 npx --yes @railway/cli up --detach
             echo "Deploy triggered. Check https://railway.app for service status."
 
   # RVS-AGENT-001 gate: validates that no tracked files are silently deleted

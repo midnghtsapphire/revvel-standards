@@ -56,7 +56,7 @@ LOGOGRAMS: frozenset[str] = frozenset(
         "CYP",      # copper?/cyperus
         "AROM",     # aromatics
         "AURUM",    # gold
-        "ARGENTUM", # silver
+        "ARGENTUM",  # silver
     }
 )
 
