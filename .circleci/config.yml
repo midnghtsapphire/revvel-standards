@@ -156,8 +156,10 @@ jobs:
               echo "============================================================"
               exit 0
             fi
-            npm install -g @railway/cli
-            railway up --detach
+            # npx, not npm install -g: cimg/node's global prefix is root-owned,
+            # so `npm install -g` dies EACCES for the circleci user. npx stages
+            # the CLI under the user-writable ~/.npm cache instead.
+            npx --yes @railway/cli up --detach
             echo "Deploy triggered. Check https://railway.app for service status."
 
   # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
