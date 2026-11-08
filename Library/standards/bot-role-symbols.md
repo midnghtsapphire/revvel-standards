@@ -104,15 +104,15 @@ These rules apply to every fleet, team, and solo bot:
 |---|---|
 | GitHub fleet | Bright blue cat |
 | MoneyCrew | Bright-green heart with a white $ |
-| Linear A fleet | Gold labrys on navy | (superseded 2026-10-30: see Background rule)
+| Linear A fleet | Gold labrys on navy (superseded 2026-10-30: see Background rule) |
 
 ### Examples (Linear A fleet)
 
 | File | Shows |
 |---|---|
-| [`logo-examples/base_labrys.png`](logo-examples/base_labrys.png) | Fleet base only: gold labrys on navy | (superseded 2026-10-30: see Background rule)
-| [`logo-examples/corpusbot_logo.png`](logo-examples/corpusbot_logo.png) | CorpusBot: labrys + 🔍 Researcher badge (lower-left, white circle) + grid personal touch (lower-right) | (superseded 2026-10-30: see Background rule)
-| [`logo-examples/decipherer_logo.jpg`](logo-examples/decipherer_logo.jpg) | Decipherer: labrys + 🔍 Researcher badge (lower-left, white circle) + network personal touch (lower-right) | (superseded 2026-10-30: see Background rule)
+| [`logo-examples/base_labrys.png`](logo-examples/base_labrys.png) | Fleet base only: gold labrys on navy (superseded 2026-10-30: see Background rule) |
+| [`logo-examples/corpusbot_logo.png`](logo-examples/corpusbot_logo.png) | CorpusBot: labrys + 🔍 Researcher badge (lower-left, white circle) + grid personal touch (lower-right) (superseded 2026-10-30: see Background rule) |
+| [`logo-examples/decipherer_logo.jpg`](logo-examples/decipherer_logo.jpg) | Decipherer: labrys + 🔍 Researcher badge (lower-left, white circle) + network personal touch (lower-right) (superseded 2026-10-30: see Background rule) |
 
 Note: in these early examples the lower-right personal-touch circle is navy with a white ring (CorpusBot) or teal (Decipherer), not white. New logos should use a white circle per the rule above; these files are kept unchanged as historical examples. (superseded 2026-10-30: see Background rule)
 
