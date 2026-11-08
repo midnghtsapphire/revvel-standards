@@ -305,7 +305,14 @@ if (require.main === module) {
   try {
     process.exitCode = main();
   } catch (err) {
-    process.stderr.write(`flake8 baseline gate error: ${err.message || err}\n`);
+    // Every throw here is a "cannot measure" case, and the ratchet's contract
+    // (tests/python-flake8-workflow.test.js) requires the failure to say so:
+    // exit non-zero AND name the fail-closed stance, not just the cause.
+    process.stderr.write(
+      `flake8 baseline gate error: ${err.message || err}\n`
+        + 'This gate fails closed by design: a ratchet that cannot measure '
+        + 'must not report that nothing grew.\n'
+    );
     process.exitCode = 2;
   }
 }
