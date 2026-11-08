@@ -42,9 +42,9 @@ Two main merges add information to this snapshot catalog: #18304 makes the coder
 
 ---
 
-# 1. The shortest useful cheat sheet
+## 1. The shortest useful cheat sheet
 
-## The intended WR path
+### The intended WR path
 
 1. Open an **issue**, not merely a PR comment, titled **`[WR] <what you want>`**.
 2. Research/intake may run, but implementation commonly waits until someone applies **`wr:code`** or **`spec-approved`** to the issue.
@@ -55,7 +55,7 @@ Evidence: `START_HERE_CALL_CHAIN.md:25-30,34-87,91-105,138-148`. The documented 
 
 **Reality check:** the call-chain document still describes automatic WR PR creation and fallback behavior that is no longer matched by the workflow `on:` blocks. See the traps section before relying on that diagram literally.
 
-## High-value commands and labels
+### High-value commands and labels
 
 | Want | Use | What it really reaches |
 | --- | --- | --- |
@@ -73,7 +73,7 @@ Evidence: `START_HERE_CALL_CHAIN.md:25-30,34-87,91-105,138-148`. The documented 
 | Ask for conflict help | `has-conflicts` label or a dirty mergeable state | `conflict-helper.yml`; its leftover-to-Jules handoff is broken |
 | Ship a merged PR | `deliver:api`, `deliver:cli`, `deliver:pdf`, etc. | `ship-to-market.yml` |
 
-## Spend gate that can make a valid command appear ignored
+### Spend gate that can make a valid command appear ignored
 
 Paid lanes generally require:
 
@@ -96,9 +96,9 @@ See `docs/SPEND-SWITCHES.md:1-42`. These GitHub variables do **not** stop dashbo
 
 ---
 
-# 2. Generic command window: `/name` and `@name`
+## 2. Generic command window: `/name` and `@name`
 
-## Where and how
+### Where and how
 
 Comment on an ordinary issue or PR conversation. The listener is `issue_comment: created` in `.github/workflows/agent-command-window.yml`; the parser is `.github/scripts/agent-command-router.mjs`, configured by `.github/agent-router.json`.
 
@@ -114,7 +114,7 @@ Supported forms:
 
 Multiple agents can appear in one comment. Fenced code and quoted lines are ignored. Bot authors are rejected. Humans must be `OWNER`, `MEMBER`, `COLLABORATOR`, or the explicitly allowed user `midnghtsapphire` (`agent-command-router.mjs:21-140`; `.github/agent-router.json:1-11`).
 
-## Exact accepted aliases
+### Exact accepted aliases
 
 | Canonical agent | Accepted names after `/` or `@` | Lane recorded in registry |
 | --- | --- | --- |
@@ -136,7 +136,7 @@ Multiple agents can appear in one comment. Fenced code and quoted lines are igno
 
 Source: `.github/agent-router.json:12-89`.
 
-## Critical behavior: these are mostly gateway requests, not direct summons
+### Critical behavior: these are mostly gateway requests, not direct summons
 
 The router emits:
 
@@ -161,7 +161,7 @@ Consequences:
 
 ---
 
-# 3. Direct repository-owned comment triggers
+## 3. Direct repository-owned comment triggers
 
 These are separate from the generic gateway router.
 
@@ -204,9 +204,9 @@ wr-autotitle.yml
 
 ---
 
-# 4. Persona commands — parser aliases versus the actual gate
+## 4. Persona commands — parser aliases versus the actual gate
 
-## Reliable forms
+### Reliable forms
 
 ```text
 /persona <name-or-alias> <task>
@@ -220,7 +220,7 @@ Direct persona triggers use a **leading slash, not `@name`**. The file explicitl
 
 The parser accepts `/persona <name> <task>` and aliases registered in `scripts/openrouter-personas.js` (`scripts/persona-comment-runner.js:111-165`). The workflow requires non-bot authorship, `REVVEL_LLM_ALLOW_CLOUD == '1'`, and `REVVEL_SWITCH_PERSONAS != '0'` (`persona-comment-trigger.yml:44-47`).
 
-## Registry aliases and direct-gate reality
+### Registry aliases and direct-gate reality
 
 | Persona | Parser aliases | Direct slash aliases admitted by `persona-comment-trigger.yml` |
 | --- | --- | --- |
@@ -253,7 +253,7 @@ Some omitted aliases, including `/coder`, `/fixer`, `/triager`, `/citer`, `/spot
 
 `docs/process/SYSTEM_MAP.md:125-140` currently presents several omitted aliases as straightforward direct summons. Treat that section as drifted from the workflow gate.
 
-## What personas do after parsing
+### What personas do after parsing
 
 - Action verbs `build`, `implement`, `create`, `fix`, `ship`, `make`, `add`, or `do` file a WR with `wr:code`.
 - DRAGNET deduplicates before creating work.
@@ -263,9 +263,9 @@ Evidence: `scripts/persona-comment-runner.js:52-83,428-553,556-684`.
 
 ---
 
-# 5. Fleet commands
+## 5. Fleet commands
 
-## Syntax and authorization
+### Syntax and authorization
 
 On an issue or PR, human `midnghtsapphire` can use:
 
@@ -281,7 +281,7 @@ Cloud-marked fleets are refused unless `REVVEL_LLM_ALLOW_CLOUD == '1'`; their ta
 
 The headers still say “proposed; not installed,” but the registry and active YAML listener are present. Treat those headers as stale prose, not proof of operational availability (`fleet-dispatch.yml:1-4`; `.github/fleets.yml:1-9`).
 
-## Exact fleet registry
+### Exact fleet registry
 
 | Fleet | Aliases | Route / destination | Cloud |
 | --- | --- | --- | --- |
@@ -314,9 +314,9 @@ open docs/unfound-docket/FLEET.md and paste a role prompt into Claude
 
 ---
 
-# 6. Labels, titles, and automatic issue/PR routes
+## 6. Labels, titles, and automatic issue/PR routes
 
-## Active implementation and research routes
+### Active implementation and research routes
 
 | Signal | Event required | Actual route | Evidence / caveat |
 | --- | --- | --- | --- |
@@ -340,7 +340,7 @@ open docs/unfound-docket/FLEET.md and paste a role prompt into Claude
 | `[WR]`, selected labels, and title tags | Issue **opened** only | `wr-auto-classify.yml` Project v2 classification | Requires `PROJECTS_PAT`; no general `labeled` listener. `wr-auto-classify.yml:1-47` |
 | `[WR]`, `deep-research`, `jules`, or `weekly-research` | New/reopened issue; also unblocked-issue handling | `jules-invoke.yml` | This is the real Jules route; manual dispatch requires a `prompt`. `jules-invoke.yml:1-28,123-148` |
 
-## Output Type auto-routing
+### Output Type auto-routing
 
 `openrouter-auto-route.yml:117-136` maps classified work as follows:
 
@@ -357,7 +357,7 @@ Two important caveats:
 1. `bito-ai.yml` is manual-only, so a dispatch can be meaningful while Bito's own PR/comment listeners remain disabled.
 2. `noimosai.yml` has no `labeled` listener. It checks those labels only when an issue is **opened/reopened**. Applying `noimosai` later does not itself launch NoimosAI (`noimosai.yml:27-31,98-102`).
 
-## `deliver:*` channels
+### `deliver:*` channels
 
 The shipping workflow recognizes:
 
@@ -387,7 +387,7 @@ Evidence: `ship-to-market.yml:1-17,58-100`.
 
 ---
 
-# 7. Manual dispatch routes
+## 7. Manual dispatch routes
 
 Manual dispatch is a real entry point only when `workflow_dispatch` is declared **and** the job predicates can succeed for that event. A lingering label predicate does not create a label listener.
 
@@ -425,9 +425,9 @@ For every workflow's exact manual inputs, use the companion event index rather t
 
 ---
 
-# 8. Internal calls and handoffs
+## 8. Internal calls and handoffs
 
-## Generic agent and gateway chain
+### Generic agent and gateway chain
 
 ```text
 issue comment
@@ -442,7 +442,7 @@ issue comment
 
 Evidence: `.github/agent-router.json:1-3`; `.github/workflows/agent-request-delivery.yml:3-5,31-66`; `.github/workflows/agent-command-window.yml` event declarations.
 
-## Curated workflow-to-workflow call map
+### Curated workflow-to-workflow call map
 
 | Source | Target / next call | Status and evidence |
 | --- | --- | --- |
@@ -469,7 +469,7 @@ Evidence: `.github/agent-router.json:1-3`; `.github/workflows/agent-request-deli
 | `conflict-helper.yml` | `jules-coding-agent.yml` with `pr_number` | **Broken:** disabled target and unsupported input. `conflict-helper.yml:229-244` |
 | `pdf-work-request-router.yml` | `repository_dispatch: pdf_work_request` | **No static listener found.** `pdf-work-request-router.yml:314-328` |
 
-## Repository-dispatch listeners
+### Repository-dispatch listeners
 
 In addition to `agent_requested` and `agent_status`, the snapshot includes:
 
@@ -484,7 +484,7 @@ The companion index lists all declared repository-dispatch types and all literal
 
 ---
 
-# 9. External GitHub App and vendor commands
+## 9. External GitHub App and vendor commands
 
 These do not require a repository-owned comment listener. Installation and account entitlements still must be verified in the relevant GitHub/vendor dashboard.
 
@@ -501,9 +501,9 @@ Do not infer that typing `/copilot` into the generic router installs, assigns, o
 
 ---
 
-# 10. Advertised, dormant, broken, and documentation-only triggers
+## 10. Advertised, dormant, broken, and documentation-only triggers
 
-## Highest-priority traps
+### Highest-priority traps
 
 | Phrase/label/path | What the snapshot actually does | Evidence |
 | --- | --- | --- |
@@ -523,7 +523,7 @@ Do not infer that typing `/copilot` into the generic router installs, assigns, o
 | API rate-limit fallback | Dispatches OpenRouter Coder with `issue_number=0` and undeclared `fallback_reason`. | `api-rate-limit-handler.yml:79-87` |
 | `pdf_work_request` | Emitted by the PDF router, but no static repository-dispatch listener was found. | `pdf-work-request-router.yml:314-328` |
 
-## Documentation-only or non-GitHub commands
+### Documentation-only or non-GitHub commands
 
 | Phrase/convention | Actual classification |
 | --- | --- |
@@ -537,7 +537,7 @@ Do not infer that typing `/copilot` into the generic router installs, assigns, o
 | `@copilot`, `@cursoragent`, `@openhands-agent`, `@imgbotapp` in Research Engine | Dormant parser branches because Research Engine no longer listens to issue comments |
 | `/recon`, `/steam`, `/discord`, `/reddit`, `/tiktok`, `/sweep`, `/server`, `/deleted`, `/monitor`, `/satellite`, `/map` | Discord/Telegram product-design commands in `standards/GENZ_INT_OSINT.md`, not GitHub workflow listeners |
 
-## RadioChaser drift
+### RadioChaser drift
 
 `docs/agents/radiochaser/PROFILE.md` predates the generic router and says nothing fires. Current reality is more nuanced:
 
@@ -547,7 +547,7 @@ Do not infer that typing `/copilot` into the generic router installs, assigns, o
 - `/standby` still has no listener.
 - `ready-for-review.yml:323-354` continues to advertise these commands.
 
-## Quiet mode and fallback documentation conflicts
+### Quiet mode and fallback documentation conflicts
 
 1. `README.md:787-793` says “QUIET MODE — No automation runs,” but many active listeners remain. `exit-quiet-mode` is only a gate for selected manual workflows, not a global switch (`eeat-trust-cron.yml:19-48`; `triage-cron.yml:17-34`; `migration-cron.yml:18-35`). The latter two are placeholders.
 2. `docs/AGENT_FALLBACK_PROCESS.md:99-164` describes automatic fallback issue/PR/reusable routes that are absent from the current `on:` block.
@@ -557,7 +557,7 @@ Do not infer that typing `/copilot` into the generic router installs, assigns, o
 
 ---
 
-# 11. Operational interpretation and repair order
+## 11. Operational interpretation and repair order
 
 This section is an audit recommendation, not a change already made.
 
@@ -573,9 +573,9 @@ For LM Studio specifically, repository governance already warns that GitHub-host
 
 ---
 
-# 12. Practical “what can I type?” list
+## 12. Practical “what can I type?” list
 
-## Direct, repository-owned comment lanes
+### Direct, repository-owned comment lanes
 
 ```text
 @openrouter-agent <question>
@@ -590,7 +590,7 @@ For LM Studio specifically, repository governance already warns that GitHub-host
 /persona <registry-name-or-alias> <task>
 ```
 
-## Direct persona slash forms admitted by the current gate
+### Direct persona slash forms admitted by the current gate
 
 ```text
 /professor <task>
@@ -611,15 +611,15 @@ For LM Studio specifically, repository governance already warns that GitHub-host
 
 Listed emoji forms are also admitted: `/🎓`, `/🧠`, `/🗺️`, `/🗺`, `/🔀`, `/🕵️`, `/🕵`, `/🔎`, `/🛠️`, `/🛠`, `/🪐`, `/⭕`, `/🐙`, `/🧪`.
 
-## Generic gateway aliases
+### Generic gateway aliases
 
 Every name in section 2 works after either `/` or `@`, subject to router authorization. Always check for `needs-adapter` rather than assuming the named agent ran.
 
-## Fleet aliases
+### Fleet aliases
 
 Every fleet and alias in section 5 works syntactically for owner `midnghtsapphire`. Cloud routes still require the spend gate. Local routes return instructions rather than running CI.
 
-## Labels worth remembering
+### Labels worth remembering
 
 ```text
 wr:code
@@ -646,7 +646,7 @@ Labels listed in section 10 as dormant should **not** be added to this operation
 
 ---
 
-## Bottom line
+### Bottom line
 
 Your instinct was correct: the repository has accumulated several generations of commands, and prose/comments now disagree with actual event listeners. The most consequential findings are:
 
