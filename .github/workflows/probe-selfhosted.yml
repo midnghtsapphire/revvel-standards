@@ -1,0 +1,9 @@
+name: probe-selfhosted
+on:
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: self-hosted
+    timeout-minutes: 5
+    steps:
+      - run: echo "self-hosted runner reachable"
