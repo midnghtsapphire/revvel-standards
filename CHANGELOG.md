@@ -1,3 +1,10 @@
+## 2026-11-10 — PR State Orchestrator: scripts-as-CI extraction (METAL)
+
+- `scripts/ci/pr-state-orchestrator.js` — ALL orchestrator logic extracted from YAML into one versioned, zero-dependency node script (MEASURED: local resync of 19 open PRs OK).
+- `.github/workflows/pr-state-orchestrator.yml` — jobs are now thin invokers; `runs-on: self-hosted` (CARESSE), immune to GitHub-hosted billing lock (CITED: probe run 42686663155).
+- Keeps schedule-trigger fix from earlier today (6-hourly auto resync — was gated on `schedule` with no trigger).
+- Principles: oaudrey `governance/METAL/ci-docker-runners-principles.md` #1, #3, #8.
+
 # Changelog
 
 All notable changes to the Revvel Standards repository will be documented in this file.
