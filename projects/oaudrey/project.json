@@ -1,0 +1,13 @@
+{
+  "slug": "oaudrey",
+  "title": "OAudrey",
+  "domain_strategy": "own-domain",
+  "own_domain": "oaudrey.com",
+  "hub_path": "/oaudrey/",
+  "hub_url": null,
+  "redirect_from": [],
+  "repo": "midnghtsapphire/oaudrey",
+  "status": "building",
+  "description": "Personal hub domain.",
+  "added": "2026-11-10"
+}

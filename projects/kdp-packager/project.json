@@ -1,0 +1,13 @@
+{
+  "slug": "kdp-packager",
+  "title": "KDP Packager",
+  "domain_strategy": "path",
+  "own_domain": null,
+  "hub_path": "/kdp-packager/",
+  "hub_url": "https://oaudrey.com/kdp-packager/",
+  "redirect_from": [],
+  "repo": "midnghtsapphire/kdp-packager",
+  "status": "building",
+  "description": "KDP cover + answers tooling.",
+  "added": "2026-11-10"
+}

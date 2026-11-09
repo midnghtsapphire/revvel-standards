@@ -1,0 +1,13 @@
+{
+  "slug": "colorado-cle",
+  "title": "Colorado CLE Online",
+  "domain_strategy": "path",
+  "own_domain": null,
+  "hub_path": "/colorado-cle/",
+  "hub_url": "https://oaudrey.com/colorado-cle/",
+  "redirect_from": [],
+  "repo": "midnghtsapphire/colorado-cle-online",
+  "status": "building",
+  "description": "Colorado CLE.",
+  "added": "2026-11-10"
+}
