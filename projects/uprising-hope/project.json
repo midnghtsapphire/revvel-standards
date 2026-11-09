@@ -1,13 +1,14 @@
 {
   "slug": "uprising-hope",
   "title": "Uprising Hope",
-  "domain_strategy": "path",
-  "own_domain": null,
+  "domain_strategy": "own-domain",
+  "own_domain": "uprisinghope.com",
   "hub_path": "/uprising-hope/",
-  "hub_url": "https://oaudrey.com/uprising-hope/",
+  "hub_url": null,
   "redirect_from": [],
   "repo": "midnghtsapphire/Uprising-Hope-LLC",
   "status": "building",
-  "description": "Uprising Hope LLC.",
+  "category": "coaching",
+  "description": "Recovery and life coaching. Uprising Hope LLC.",
   "added": "2026-11-10"
 }
