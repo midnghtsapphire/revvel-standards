@@ -87,6 +87,11 @@
     <div class="panel-head"><h2>Live activity (real commits &amp; cycles)</h2><span class="badge" id="feed-status">connecting…</span></div>
     <div id="feed"></div>
   </div>
+  <div id="wr-banner" style="grid-column:1/-1;display:none;background:var(--bg-panel);
+       border:1px solid var(--gold);border-radius:14px;padding:1rem 1.2rem;">
+    <span style="font-family:var(--mono);font-size:.72rem;color:var(--gold);letter-spacing:.12em">ACTIVE WORK REQUEST</span>
+    <div id="wr-detail" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;margin-top:.3rem"></div>
+  </div>
   <div id="mission-bar">
     <label>Assign mission</label>
     <select id="mission-select">
@@ -164,6 +169,12 @@ async function loadFleetStatus(){
     const s = await r.json();
     document.getElementById("agent-count").textContent =
       `${s.agents.filter(a=>a.state!=="idle").length}/${s.agents.length} active · updated ${s.updated}`;
+    if (s.active_wr && s.active_wr.stage !== "done") {
+      const b = document.getElementById("wr-banner");
+      b.style.display = "block";
+      document.getElementById("wr-detail").textContent =
+        s.active_wr.id + " — " + s.active_wr.title + "  →  " + s.active_wr.stage;
+    } else { document.getElementById("wr-banner").style.display = "none"; }
     const active = [];
     s.agents.forEach(a => {
       const t = document.getElementById("task-"+a.id);
