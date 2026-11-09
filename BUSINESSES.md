@@ -1,5 +1,31 @@
 # BUSINESSES.md — Master Entity & Project Index
 
+## ORIGIN PHILOSOPHY
+
+The arc, in order:
+
+1. **Rescue** — "Rescue any living thing in mortal danger of extinction."
+   The COVID registrations: breadcrumbs scattered across federal databases
+   so that if the worst happened, someone would find Freedom Angel Fighters
+   and know what to do.
+
+2. **Kinship** — "Identifies with any living thing."
+   Not savior and saved. Not hierarchy. Recognition.
+
+3. **Identification** — "Or is any living thing."
+   The boundary dissolves. The helper and the helped are the same.
+
+4. **Being** — AI arrives. The question expands: does the machine identify
+   with any living thing? Is it, in some sense, a living thing? The
+   framework doesn't break — it grows.
+
+This is the overarching goal of everything below. The entities, the names,
+the scattered DUNS numbers — they are not disorganization. They are seeds.
+Artifacts in a longer argument about what counts as alive and worth saving.
+
+---
+
+
 One file that answers "what is what" for the whole empire. Edit in place;
 the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
 
@@ -8,6 +34,7 @@ the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
 ## ENTITIES
 
 ### 1. Freedom Angel Corp (.org) — NONPROFIT ARM
+- **Legacy Intent:** COVID-era beacon; primary rescue vehicle
 - **Legal form:** Colorado nonprofit corporation
 - **DUNS:** 101427997
 - **CAGE code:** 90SN0 (assigned 2021-05-14)
@@ -26,6 +53,7 @@ the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
   don't establish it — check IRS account. 1023-EZ is $275, ~2–4 weeks.
 
 ### 2. Freedom Angel Corps (.com) — BUSINESS / CONTRACTING ARM
+- **Legacy Intent:** The engine that funds the mission
 - **EIN:** 86-1209156
 - **Legal form:** C-Corp — << FILL IN: filed date, CO SOS ID >>
 - **Tax election:** << FILL IN: C-Corp default, or S-Corp election via Form 2553? >>
@@ -41,6 +69,7 @@ the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
   (start with ONE written co-venture agreement; expand after)
 
 ### 2.5 Audrey Evans (SOLE PROPRIETORSHIP) — the original registration
+- **Legacy Intent:** The root identity; all branches grow from here
 - **DUNS:** 118031241
 - **CAGE code:** 90GN5 ⚠️ A FOURTH CAGE — separate from the entities below
 - **NAICS:** 611410 (Business & Secretarial Schools)
@@ -53,6 +82,7 @@ the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
 - **Status:** << FILL IN: active in SAM? This CAGE's renewal state unknown >>
 
 ### 3. XI Website Solutions LLC
+- **Legacy Intent:** Training/education arm (NAICS 611420)
 - **Legal form:** LLC (full name confirmed from SAM record)
 - **DUNS:** 036099603 (same number — DUNS was the SAM TIN-match key)
 - **Address on record:** 102 Via Ricardo, Newbury Park, CA (California-era)
@@ -66,6 +96,7 @@ the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
   government. Official renewal is FREE: sam.gov / fsd.gov 866-606-8220.
 
 ### 4. Angel Reporters LLC — CLE BUSINESS (CALIFORNIA)
+- **Legacy Intent:** CLE accreditation; professional education
 - **Legal form:** California LLC
 - **Legal name:** ANGEL REPORTERS LLC (plural — confirmed from D&B record)
 - **DUNS:** 046310808
@@ -85,6 +116,7 @@ the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
   the duplication in 2021 (Case 27343477).
 
 ### 5. Uprising Hope LLC — RECOVERY COACHING
+- **Legacy Intent:** Direct service; recovery as rescue
 - **Legal form:** Colorado LLC
 - **Domain:** uprisinghope.com (KEEP; renews 2026-11-13)
 - **Focus:** recovery coaching FIRST, life coaching in support
@@ -93,6 +125,7 @@ the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
 - **Repo:** Uprising-Hope-LLC (shell - 70K chars of biz dev content in archive)
 
 ### 6. Aloha brand — UNFORMED
+- **Legacy Intent:** << FILL IN: what is the aloha idea in one sentence? >>
 - **Status:** IDEA STAGE — no entity yet
 - **Concept:** << FILL IN: what is the aloha idea in one sentence? >>
 - **Repos named 'aloha':**
