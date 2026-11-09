@@ -61,6 +61,11 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
       - name: PR Lifecycle Labels
         shell: cmd
         run: node scripts/ci/pr-state-orchestrator.js lifecycle
@@ -73,6 +78,11 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
       - name: Review State Labels
         shell: cmd
         run: node scripts/ci/pr-state-orchestrator.js review
@@ -85,6 +95,11 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
       - name: CI Check Suite Labels
         shell: cmd
         run: node scripts/ci/pr-state-orchestrator.js check-suite
@@ -97,6 +112,11 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
       - name: CI Check Run Labels
         shell: cmd
         run: node scripts/ci/pr-state-orchestrator.js check-run
@@ -109,6 +129,11 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
       - name: Re-sync All Open PRs
         shell: cmd
         run: node scripts/ci/pr-state-orchestrator.js resync
@@ -121,6 +146,11 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
       - name: Re-evaluate PR state from scratch
         shell: cmd
         run: node scripts/ci/pr-state-orchestrator.js reevaluate
