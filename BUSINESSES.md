@@ -12,8 +12,8 @@ the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
 - **Federal status:** 501(c)(3) — << FILL IN: applied? determination letter date? >>
 - **990 filings:** e-Postcard (990-N) filed for years: << FILL IN >>
 - **CAGE code:** 90SN0 (assigned 2021-05-14)
-- **SAM.gov:** ⚠️ EXPIRED 2026-05-14 — renew NOW at sam.gov (FREE — never pay
-  a third party). DLA cancellation notices go out 90/60/30 days ahead.
+- **SAM.gov:** EXPIRED 2026-05-14 — REINSTATEMENT IN PROGRESS (started
+  2026-11; not yet active). Official channels only, all FREE.
 - **SAM UEI:** << FILL IN — visible in SAM.gov workspace >>
 - **DLA CAGE help:** cage.dla.mil/Request or DLA Customer Interaction Center
   1-877-352-2255 (24/7, FREE)
@@ -41,8 +41,8 @@ the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
 - **Legal form:** LLC (full name confirmed from SAM record)
 - **EIN/TIN on SAM record:** 036099603
 - **CAGE code:** 8ZRW3 (assigned 2021-04-23)
-- **SAM.gov:** ⚠️ EXPIRED 2026-05-05 — DLA 90/60/30-day cancellation notice
-  already issued. Renew at sam.gov or cage.dla.mil/Request
+- **SAM.gov:** EXPIRED 2026-05-05 — REINSTATEMENT IN PROGRESS (started
+  2026-11; not yet active). DLA cancellation notice was already issued.
 - **Primary NAICS:** 611420 (Computer Training)
 - **Role:** << FILL IN: legacy web business? keep / merge / retire? >>
 - **NOTE:** solicitations referencing this CAGE (e.g. 'samfulfillment.com',
@@ -102,9 +102,9 @@ trends -> chapters -> linter -> git -> --book -> cover + answers manifest.
 ---
 
 ## OPEN ACTION ITEMS
-- [x] CAGE 90SN0 = Freedom Angel Corp — EXPIRED 2026-05-14 (renew at sam.gov, FREE)
-- [x] CAGE 8ZRW3 = XI Website Solutions LLC — EXPIRED 2026-05-05 (renew at sam.gov, FREE)
-- [ ] SAM.gov: renew 90SN0 + 8ZRW3 (one login.gov session, ~30 min each)
+- [x] CAGE 90SN0 = Freedom Angel Corp — EXPIRED 2026-05-14, reinstatement IN PROGRESS
+- [x] CAGE 8ZRW3 = XI Website Solutions LLC — EXPIRED 2026-05-05, reinstatement IN PROGRESS
+- [ ] SAM.gov: confirm both registrations flip to ACTIVE (watch for confirmation emails)
 - [ ] CAGE #3 (Freedom Angel Corps .com?) — << FILL IN if a third code exists >>
 - [ ] IRS: verify 501(c)(3) status; file 1023-EZ if never applied ($275)
 - [ ] Bank accounts: Freedom Angel Corp (.org) + Freedom Angel Corps (.com)
