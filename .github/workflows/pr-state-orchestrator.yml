@@ -18,6 +18,12 @@ on:
   check_run:
     types:
       - completed
+  # Periodic drift repair: labels can drift when events are missed (API
+  # outages, rate-limit storms, cancelled runs). The resync-all-prs job is
+  # gated on github.event_name == 'schedule' — without this trigger that job
+  # could NEVER run automatically.
+  schedule:
+    - cron: '17 */6 * * *'
   workflow_dispatch:
     inputs:
       pr_number:
