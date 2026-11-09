@@ -1,5 +1,14 @@
 # Project Hub Standard
 
+## Domain roles
+
+- **oaudrey.com** = the engine hub. Tools, generators, project pages.
+  Every project without its own domain serves from oaudrey.com/<slug>/.
+- **freedomangelcorps.com** = the registered business + payment gateway.
+  The money face. freedomangelcorp.org redirects here.
+- All other domains: folder + redirect, $0/yr hosting.
+
+
 **Rule:** Every project lives as a folder in `projects/` — one hub domain
 (oaudrey.com), many projects, no domain-per-project spend.
 

@@ -1,13 +1,14 @@
 {
   "slug": "oaudrey",
-  "title": "OAudrey",
+  "title": "OAudrey Engine Hub",
   "domain_strategy": "own-domain",
   "own_domain": "oaudrey.com",
-  "hub_path": "/oaudrey/",
+  "hub_path": "/",
   "hub_url": null,
   "redirect_from": [],
   "repo": "midnghtsapphire/oaudrey",
-  "status": "building",
-  "description": "Personal hub domain.",
+  "status": "live",
+  "role": "engine-hub",
+  "description": "The engine room: tools, generators, project registry. Every project without its own domain lives at oaudrey.com/<slug>/.",
   "added": "2026-11-10"
 }

@@ -1,13 +1,16 @@
 {
   "slug": "freedom-angel-corps",
   "title": "Freedom Angel Corps",
-  "domain_strategy": "path",
-  "own_domain": null,
+  "domain_strategy": "own-domain",
+  "own_domain": "freedomangelcorps.com",
   "hub_path": "/freedom-angel-corps/",
-  "hub_url": "https://oaudrey.com/freedom-angel-corps/",
-  "redirect_from": [],
+  "hub_url": null,
+  "redirect_from": [
+    "freedomangelcorp.org"
+  ],
   "repo": "midnghtsapphire/freedom-angel-corps",
-  "status": "building",
-  "description": "Freedom Angel Corps.",
+  "status": "live",
+  "role": "business-gateway",
+  "description": "Registered business + payment gateway. The money face. freedomangelcorp.org redirects here.",
   "added": "2026-11-10"
 }
