@@ -24,83 +24,7 @@
 // ============================================================================
 'use strict';
 
-const fs = require('fs');
-
-// ---------------------------------------------------------------------------
-// Minimal Octokit-compatible client over fetch (no dependencies).
-// Throws { status, message } on non-2xx so the ported logic's error handling
-// (err.status === 404 guards, rate-limit regex) behaves identically.
-// ---------------------------------------------------------------------------
-function makeClient(token) {
-  const API = 'https://api.github.com';
-  async function req(method, path, body) {
-    const res = await fetch(API + path, {
-      method,
-      headers: {
-        authorization: `Bearer ${token}`,
-        accept: 'application/vnd.github+json',
-        'x-github-api-version': '2022-11-28',
-        ...(body !== undefined ? { 'content-type': 'application/json' } : {}),
-      },
-      ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
-    });
-    if (res.status === 204) return { data: null };
-    const text = await res.text();
-    let data = null;
-    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
-    if (!res.ok) {
-      const err = new Error((data && data.message) || `${method} ${path} -> ${res.status}`);
-      err.status = res.status;
-      throw err;
-    }
-    return { data };
-  }
-  const q = (o) => Object.entries(o).filter(([, v]) => v !== undefined)
-    .map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
-  return {
-    rest: {
-      issues: {
-        listLabelsOnIssue: ({ owner, repo, issue_number }) =>
-          req('GET', `/repos/${owner}/${repo}/issues/${issue_number}/labels`),
-        listLabelsForRepo: ({ owner, repo, per_page = 100 }) =>
-          req('GET', `/repos/${owner}/${repo}/labels?${q({ per_page })}`),
-        createLabel: ({ owner, repo, name, color, description }) =>
-          req('POST', `/repos/${owner}/${repo}/labels`, { name, color, description }),
-        addLabels: ({ owner, repo, issue_number, labels }) =>
-          req('POST', `/repos/${owner}/${repo}/issues/${issue_number}/labels`, { labels }),
-        removeLabel: ({ owner, repo, issue_number, name }) =>
-          req('DELETE', `/repos/${owner}/${repo}/issues/${issue_number}/labels/${encodeURIComponent(name)}`),
-        listComments: ({ owner, repo, issue_number, per_page = 100 }) =>
-          req('GET', `/repos/${owner}/${repo}/issues/${issue_number}/comments?${q({ per_page })}`),
-        createComment: ({ owner, repo, issue_number, body }) =>
-          req('POST', `/repos/${owner}/${repo}/issues/${issue_number}/comments`, { body }),
-        updateComment: ({ owner, repo, comment_id, body }) =>
-          req('PATCH', `/repos/${owner}/${repo}/issues/comments/${comment_id}`, { body }),
-      },
-      pulls: {
-        get: ({ owner, repo, pull_number }) =>
-          req('GET', `/repos/${owner}/${repo}/pulls/${pull_number}`),
-        list: ({ owner, repo, state = 'open', per_page = 100 }) =>
-          req('GET', `/repos/${owner}/${repo}/pulls?${q({ state, per_page })}`),
-        listReviews: ({ owner, repo, pull_number }) =>
-          req('GET', `/repos/${owner}/${repo}/pulls/${pull_number}/reviews`),
-      },
-      checks: {
-        listForRef: ({ owner, repo, ref, per_page = 100 }) =>
-          req('GET', `/repos/${owner}/${repo}/commits/${encodeURIComponent(ref)}/check-runs?${q({ per_page })}`),
-      },
-    },
-    graphql: (query, variables) => req('POST', '/graphql', { query, variables }),
-  };
-}
-
-// ---------------------------------------------------------------------------
-// Console-backed `core` shim (matches @actions/core surface we use).
-// ---------------------------------------------------------------------------
-const core = {
-  warning: (m) => console.log(`::warning::${m}`),
-  setFailed: (m) => { console.log(`::error::${m}`); process.exitCode = 1; },
-};
+const { makeClient, makeSafeApi, core, sleep, runCli } = require('./lib/mini-github');
 
 // ---------------------------------------------------------------------------
 // Shared constants & helpers (were copy-pasted into all 5 jobs).
@@ -133,24 +57,6 @@ const STATUS_PRIORITY = [
   'status:ready-to-merge', 'status:checks-failing', 'status:approved',
   'status:needs-action', 'status:waiting-for-review', 'status:draft',
 ];
-
-// Wrap fallible reads so a transient API error degrades to a warning instead
-// of failing the whole run. Rate-limit 403s are expected under event storms.
-function makeSafeApi(github) {
-  return async function safeApi(callName, fn, fallback) {
-    try {
-      return await fn();
-    } catch (e) {
-      const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
-      core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
-      return fallback;
-    }
-  };
-}
-
-// Small pause between PRs (150ms keeps sequential mutations under GitHub's
-// secondary rate limit guidance for rapid content writes).
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function upsertStatusBadge(github, owner, repo, prNum, labels) {
   const activeStatus = STATUS_PRIORITY.find((s) => labels.includes(s));
@@ -307,7 +213,7 @@ async function runLifecycle(github, context) {
   const isDraft = pr.draft;
   const action = context.payload.action;
   const { owner, repo } = context.repo;
-  const safeApi = makeSafeApi(github);
+  const safeApi = makeSafeApi();
 
   const currentLabels = await readCurrentLabels(github, safeApi, owner, repo, prNumber);
   const { addLabel, removeLabel } = makeLabelOps(github, owner, repo, prNumber, currentLabels, { createMissing: true, safeApi });
@@ -369,7 +275,7 @@ async function runReview(github, context) {
   const prNumber = pr.number;
   const state = review.state.toLowerCase();
   const { owner, repo } = context.repo;
-  const safeApi = makeSafeApi(github);
+  const safeApi = makeSafeApi();
 
   if (state === 'commented') { console.log('💬 Comment only — no state change'); return; }
 
@@ -413,7 +319,7 @@ async function runCheckSuite(github, context) {
   const conclusion = suite.conclusion;
   const headSha = suite.head_sha;
   const { owner, repo } = context.repo;
-  const safeApi = makeSafeApi(github);
+  const safeApi = makeSafeApi();
 
   if (!conclusion || ['skipped', 'neutral', 'stale', 'cancelled'].includes(conclusion)) {
     console.log(`ℹ️ Suite conclusion: ${conclusion} — no action`);
@@ -464,7 +370,7 @@ async function runCheckRun(github, context) {
   const conclusion = run.conclusion;
   const headSha = run.head_sha;
   const { owner, repo } = context.repo;
-  const safeApi = makeSafeApi(github);
+  const safeApi = makeSafeApi();
 
   if (!conclusion || ['skipped', 'neutral', 'stale', 'action_required', 'cancelled'].includes(conclusion)) {
     console.log(`ℹ️ check_run conclusion: ${conclusion} — no action`);
@@ -516,7 +422,7 @@ async function runCheckRun(github, context) {
 // ---------------------------------------------------------------------------
 async function runResync(github, context) {
   const { owner, repo } = context.repo;
-  const safeApi = makeSafeApi(github);
+  const safeApi = makeSafeApi();
 
   const { data: openPRs } = await safeApi(
     'pulls.list (open PRs)',
@@ -600,7 +506,7 @@ async function runReevaluate(github, context) {
     return;
   }
   const { owner, repo } = context.repo;
-  const safeApi = makeSafeApi(github);
+  const safeApi = makeSafeApi();
 
   // Unguarded on purpose — a missing PR is a legitimate hard stop.
   const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
@@ -649,77 +555,25 @@ async function runReevaluate(github, context) {
 }
 
 // ---------------------------------------------------------------------------
-// Entry point — builds context from standard runner env vars (or CLI flags
-// for local/client use) and dispatches to the mode. No github-script needed.
+// Entry point — shared CLI runner (standard runner env vars in Actions;
+// --owner/--repo/--pr/--payload flags for local or client-infra runs).
 // ---------------------------------------------------------------------------
-function parseArgs(argv) {
-  const args = { _: [] };
-  for (let i = 0; i < argv.length; i++) {
-    if (argv[i].startsWith('--')) args[argv[i].slice(2)] = argv[++i];
-    else args._.push(argv[i]);
-  }
-  return args;
-}
-
-async function main() {
-  const args = parseArgs(process.argv.slice(2));
-  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
-  if (!token) {
-    console.error('Missing GH_TOKEN/GITHUB_TOKEN env var.');
-    process.exit(1);
-  }
-
-  const [defOwner, defRepo] = (process.env.GITHUB_REPOSITORY || '').split('/');
-  const owner = args.owner || defOwner;
-  const repo = args.repo || defRepo;
-  if (!owner || !repo) {
-    console.error('Missing repo: set GITHUB_REPOSITORY or pass --owner/--repo.');
-    process.exit(1);
-  }
-
-  // Event payload: from the runner's payload file, or synthesized for local use.
-  let payload = {};
-  if (process.env.GITHUB_EVENT_PATH && fs.existsSync(process.env.GITHUB_EVENT_PATH)) {
-    payload = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
-  }
-  if (args.pr) payload = { ...payload, inputs: { ...(payload.inputs || {}), pr_number: String(args.pr) } };
-
-  // Mode: explicit CLI arg wins; otherwise infer from the event name.
-  const eventName = process.env.GITHUB_EVENT_NAME || '';
-  let mode = args._[0];
-  if (!mode) {
-    mode = {
-      pull_request: 'lifecycle',
-      pull_request_review: 'review',
-      check_suite: 'check-suite',
-      check_run: 'check-run',
-      schedule: 'resync',
-      workflow_dispatch: (payload.inputs || {}).pr_number ? 'reevaluate' : 'resync',
-    }[eventName];
-  }
-
-  const modes = {
+if (require.main === module) {
+  runCli({
     lifecycle: runLifecycle,
     review: runReview,
     'check-suite': runCheckSuite,
     'check-run': runCheckRun,
     resync: runResync,
     reevaluate: runReevaluate,
-  };
-  if (!modes[mode]) {
-    console.error(`Unknown mode "${mode || eventName}". Use: ${Object.keys(modes).join(' | ')}`);
-    process.exit(1);
-  }
-
-  const github = makeClient(token);
-  const context = { repo: { owner, repo }, payload, eventName };
-  console.log(`🎛️ PR State Orchestrator — mode: ${mode} — ${owner}/${repo}`);
-  await modes[mode](github, context);
-  if (process.exitCode) process.exit(process.exitCode);
-}
-
-if (require.main === module) {
-  main().catch((e) => { console.error(`❌ Orchestrator failed: ${e.message}`); process.exit(1); });
+    _byEvent: {
+      pull_request: 'lifecycle',
+      pull_request_review: 'review',
+      check_suite: 'check-suite',
+      check_run: 'check-run',
+      schedule: 'resync',
+    },
+  }, '🎛️ PR State Orchestrator').catch((e) => { console.error(`❌ Orchestrator failed: ${e.message}`); process.exit(1); });
 }
 
 module.exports = { runLifecycle, runReview, runCheckSuite, runCheckRun, runResync, runReevaluate };
