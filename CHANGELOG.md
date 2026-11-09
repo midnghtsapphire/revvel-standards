@@ -1,3 +1,10 @@
+## 2026-11-10 (2) — scripts-as-CI wave 2: PR Lifecycle + PR Check Status + shared client
+
+- `scripts/ci/lib/mini-github.js` — shared zero-dep client; listForRef/listComments now paginate fully (MEASURED: 235 check runs on main).
+- `scripts/ci/pr-lifecycle.js`, `scripts/ci/pr-check-status.js` — extracted from YAML; replay-tested (PR #18324 green suite correctly resolved to aggregate failing; label write verified).
+- Orchestrator refactored onto shared lib (regression: 19-PR resync OK).
+- All three workflows: thin shims, `runs-on: self-hosted`, `shell: cmd`, **checkout pinned to `main`** so untrusted event-SHA code never runs on CARESSE with a write token.
+
 ## 2026-11-10 — PR State Orchestrator: scripts-as-CI extraction (METAL)
 
 - `scripts/ci/pr-state-orchestrator.js` — ALL orchestrator logic extracted from YAML into one versioned, zero-dependency node script (MEASURED: local resync of 19 open PRs OK).
