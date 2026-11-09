@@ -65,20 +65,24 @@ the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
   1.877.258.4824 'courtesy review') are THIRD-PARTY SALES OPS, not the
   government. Official renewal is FREE: sam.gov / fsd.gov 866-606-8220.
 
-### 4. Angel Reporter, LLC — CLE BUSINESS
-- **Legal form:** LLC
+### 4. Angel Reporters LLC — CLE BUSINESS (CALIFORNIA)
+- **Legal form:** California LLC
+- **Legal name:** ANGEL REPORTERS LLC (plural — confirmed from D&B record)
 - **DUNS:** 046310808
-- **Address on record:** 25591 Mont Pointe, Lake Forest, CA (California-era record;
-  << FILL IN: still active in CA? or moved to Colorado? >>)
+- **Address on record:** 25591 Mont Pointe, Lake Forest, CA
 - **CAGE:** none on record (never SAM-registered as an LLC)
 - **CLE provider name:** "Angel" (Colorado Supreme Court accredited) — << FILL IN: provider ID >>
 - **Repo:** angel-reporter (archive import 2026-11-05)
 - **Content home:** colorado-cle-online (platform, exec summaries, requirements research,
   trending topics, sponsors, App.jsx)
-- **NOTE:** The D&B record also shows ANGEL REPORTER as a *trade style* of the
-  Audrey Evans sole proprietorship (DUNS 118031241) — two registrations exist
-  for the same brand name (sole-prop DBA + LLC). D&B flagged the duplication
-  in 2021 (Case 27343477). Decide: keep LLC as the CLE home, retire the DBA.
+- **⚠️ STATE QUESTION:** This is a CALIFORNIA entity (Lake Forest address). The
+  Colorado Supreme Court CLE accreditation is under the trade name "Angel."
+  Is Angel Reporters LLC still active in CA? Or did you domesticate/move it
+  to Colorado and I missed it? << FILL IN: CA active / CO domesticated / dissolved? >>
+- **NOTE:** D&B also shows ANGEL REPORTER as a *trade style* of the Audrey
+  Evans sole proprietorship (DUNS 118031241). Three registrations for the
+  same brand: CA LLC + CO sole-prop DBA + CO CLE provider name. D&B flagged
+  the duplication in 2021 (Case 27343477).
 
 ### 5. Uprising Hope LLC — RECOVERY COACHING
 - **Legal form:** Colorado LLC
@@ -175,7 +179,7 @@ DUNS 101427997 | CAGE 90SN0 | NAICS 813219
   3645 Knoll Ln Apt 169, Colorado Springs, CO 80917
 
 DUNS 046310808 | no CAGE
-  Legal Business Name: Angel Reporter, LLC
+  Legal Business Name: Angel Reporters LLC (plural)
   25591 Mont Pointe, Lake Forest, CA
 
 DUNS 036099603 | CAGE 8ZRW3 | NAICS 611420
