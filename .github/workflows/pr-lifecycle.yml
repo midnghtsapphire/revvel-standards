@@ -103,64 +103,43 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # ---------------------------------------------------------------------------
+  # METAL Scripts-as-CI (oaudrey governance/METAL principles #1/#3/#8): logic
+  # lives in scripts/ci/*.js — versioned, runnable anywhere. These jobs are thin
+  # invokers. runs-on: self-hosted (CARESSE) — immune to the GitHub-hosted
+  # billing lock; shell: cmd because CARESSE's PowerShell execution policy
+  # blocks runner temp scripts (PSSecurityException).
+  # ---------------------------------------------------------------------------
   pr-state:
     if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 10
     steps:
-      - name: Update PR state labels
-        uses: actions/github-script@v9.0.0
+      - uses: actions/checkout@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const pr = context.payload.pull_request;
-            if (!pr) return;
-            core.info(`PR #${pr.number} state=${pr.state} draft=${pr.draft}`);
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
+      - name: Update PR state labels
+        shell: cmd
+        run: node scripts/ci/pr-lifecycle.js pr-state
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   check-state:
     if: github.event_name == 'check_suite' || github.event_name == 'workflow_run'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 15
     steps:
-      - name: Re-aggregate check state for head SHA
-        uses: actions/github-script@v9.0.0
+      - uses: actions/checkout@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const sha = context.payload.workflow_run?.head_sha
-              || context.payload.check_suite?.head_sha;
-            if (!sha) {
-              core.info('No head SHA on event payload; nothing to do.');
-              return;
-            }
-            core.info(`Re-aggregating check state for SHA ${sha}`);
-
-            // Rate-limit guard: bail early if remaining budget is low.
-            try {
-              const { data: rl } = await github.rest.rateLimit.get();
-              const remaining = rl?.resources?.core?.remaining ?? 0;
-              if (remaining < 100) {
-                core.warning(`Core API remaining=${remaining}; skipping to preserve budget.`);
-                return;
-              }
-            } catch (e) {
-              core.warning(`rateLimit.get() failed: ${e.message}`);
-            }
-
-            const { data: prs } = await github.rest.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              per_page: 100,
-            });
-            const matching = prs.filter(p => p.head.sha === sha);
-            if (matching.length === 0) {
-              core.info('No open PRs match this SHA.');
-              return;
-            }
-            const { data: suites } = await github.rest.checks.listSuitesForRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: sha,
-            });
-            core.info(`Found ${matching.length} PR(s) and ${suites.total_count} check suite(s) for SHA.`);
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
+      - name: Re-aggregate check state for head SHA
+        shell: cmd
+        run: node scripts/ci/pr-lifecycle.js check-state
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
