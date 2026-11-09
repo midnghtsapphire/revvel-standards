@@ -11,8 +11,12 @@ the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
 - **Legal form:** Colorado nonprofit corporation
 - **Federal status:** 501(c)(3) — << FILL IN: applied? determination letter date? >>
 - **990 filings:** e-Postcard (990-N) filed for years: << FILL IN >>
-- **CAGE code:** << FILL IN — recover via SAM.gov Workspace >>
-- **SAM.gov:** << FILL IN: active / expired / reactivate by ____ >>
+- **CAGE code:** 90SN0 (assigned 2021-05-14)
+- **SAM.gov:** ⚠️ EXPIRED 2026-05-14 — renew NOW at sam.gov (FREE — never pay
+  a third party). DLA cancellation notices go out 90/60/30 days ahead.
+- **SAM UEI:** << FILL IN — visible in SAM.gov workspace >>
+- **DLA CAGE help:** cage.dla.mil/Request or DLA Customer Interaction Center
+  1-877-352-2255 (24/7, FREE)
 - **Bank account:** NOT YET OPEN — << FILL IN: bank, date opened >>
 - **Role:** fundraising for other nonprofits; grantmaking arm; CLE home
 - **Projects/repos:** colorado-cle-online, freedom-angel-corps (site), future regranting
@@ -33,10 +37,17 @@ the hub build carries it forward. Placeholders marked `<< FILL IN >>`.
 - **Donation model:** % of every sale → Freedom Angel Corp / beneficiary nonprofits
   (start with ONE written co-venture agreement; expand after)
 
-### 3. XI Web Solutions
-- **Legal form:** << FILL IN: sole prop / LLC / corp? >>
-- **CAGE code:** << FILL IN — recover via SAM.gov or cage.dla.mil search >>
+### 3. XI Website Solutions LLC
+- **Legal form:** LLC (full name confirmed from SAM record)
+- **EIN/TIN on SAM record:** 036099603
+- **CAGE code:** 8ZRW3 (assigned 2021-04-23)
+- **SAM.gov:** ⚠️ EXPIRED 2026-05-05 — DLA 90/60/30-day cancellation notice
+  already issued. Renew at sam.gov or cage.dla.mil/Request
+- **Primary NAICS:** 611420 (Computer Training)
 - **Role:** << FILL IN: legacy web business? keep / merge / retire? >>
+- **NOTE:** solicitations referencing this CAGE (e.g. 'samfulfillment.com',
+  1.877.258.4824 'courtesy review') are THIRD-PARTY SALES OPS, not the
+  government. Official renewal is FREE: sam.gov / fsd.gov 866-606-8220.
 
 ### 4. Angel Reporters LLC — CLE BUSINESS
 - **Legal form:** Colorado LLC
@@ -91,7 +102,10 @@ trends -> chapters -> linter -> git -> --book -> cover + answers manifest.
 ---
 
 ## OPEN ACTION ITEMS
-- [ ] SAM.gov: recover all 3 CAGE codes (entities 1, 2, 3) -> fill placeholders
+- [x] CAGE 90SN0 = Freedom Angel Corp — EXPIRED 2026-05-14 (renew at sam.gov, FREE)
+- [x] CAGE 8ZRW3 = XI Website Solutions LLC — EXPIRED 2026-05-05 (renew at sam.gov, FREE)
+- [ ] SAM.gov: renew 90SN0 + 8ZRW3 (one login.gov session, ~30 min each)
+- [ ] CAGE #3 (Freedom Angel Corps .com?) — << FILL IN if a third code exists >>
 - [ ] IRS: verify 501(c)(3) status; file 1023-EZ if never applied ($275)
 - [ ] Bank accounts: Freedom Angel Corp (.org) + Freedom Angel Corps (.com)
 - [ ] HUBZone map check for home address (maps.certify.sba.gov/hubzone/map)
@@ -103,3 +117,17 @@ trends -> chapters -> linter -> git -> --book -> cover + answers manifest.
 
 ---
 *Generated 2026-11-10 · revvel-standards · edit placeholders in place*
+
+---
+
+## OFFICIAL RENEWAL CONTACTS (all FREE — never pay third parties)
+| what | where | contact |
+|---|---|---|
+| SAM registration renewal | sam.gov (login.gov) | Federal Service Desk: fsd.gov, 866-606-8220 toll-free, 334-206-7828 intl |
+| CAGE-only renewal (no SAM) | cage.dla.mil/Request | DLA Customer Interaction Center 1-877-352-2255 (24/7) |
+| Free local contracting help | aptac-us.org | Colorado PTAC/APEX Accelerator |
+| CAGE status check | cage.dla.mil | public search by name or code |
+
+⚠️ SCAM SHIELD: 'samfulfillment.com'-style emails, calls offering 'courtesy
+reviews' of expiring contracts, or anyone charging for SAM renewal are
+commercial lead-gen operations, NOT the government. SAM/DLA/FSD never charge.
