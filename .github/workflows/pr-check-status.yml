@@ -44,7 +44,7 @@ jobs:
     runs-on: self-hosted
     if: github.event_name == 'check_suite'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # Run trusted scripts from the default branch, never event-SHA code,
           # on the self-hosted runner (a PR could otherwise ship its own
@@ -72,7 +72,7 @@ jobs:
     runs-on: self-hosted
     if: github.event_name == 'workflow_run'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # Run trusted scripts from the default branch, never event-SHA code,
           # on the self-hosted runner (a PR could otherwise ship its own
