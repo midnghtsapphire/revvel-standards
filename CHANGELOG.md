@@ -412,3 +412,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   successful required CircleCI job 23013 and retained final execution receipts.
   Preserved an unstaged continuation-note appendix in a separate documentation
   follow-up; original product/research/customer acceptance remains open.
+
+- Codex documentation completeness: added all nine Lago receiver environment
+  names to canonical .env.example, including explicit issuer/key/database
+  guidance. No credential values, live environment settings, listeners or
+  subscriptions were created or changed.
