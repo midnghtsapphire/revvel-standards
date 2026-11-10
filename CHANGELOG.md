@@ -406,3 +406,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   HULL/prosecution receipt in GIT-FLEET PR #2, and recorded actual CircleCI
   job 23006 success on the implementation source head. Product hosting remains
   staged; no deployment, transaction, benchmark or customer result invented.
+
+- Codex final handoff: recorded confirmed implementation merges #18348 and
+  GIT-FLEET #2, exact reviewed/merged tree agreement, the installed local task,
+  successful required CircleCI job 23013 and retained final execution receipts.
+  Preserved an unstaged continuation-note appendix in a separate documentation
+  follow-up; original product/research/customer acceptance remains open.

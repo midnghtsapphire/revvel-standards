@@ -112,3 +112,76 @@ were left intact. Read-only model listing is not inference or model setup.
 
 Final integration results are appended after the source freezes. No original
 issue is closed by this document and no public payment/live release is claimed.
+
+Observed integration receipt: prosecution run
+51940dc4-d75a-4615-943d-e633bd83539b passed 63/63 configured Node tests in
+8.65 seconds, with zero findings. HULL run
+b6ff55a0-c436-4c88-af61-404a39364c14 succeeded with bridge_provider_calls=0;
+scheduler attempt b9605e3d-c1f8-435b-96a1-f7b033f132c8 passed. The receipt
+identifies the actual commit plus worktree-diff hash; it is not misrepresented
+as a clean-commit deployment. Earlier failing receipts remain retained.
+
+Subsequent independent review corrections added interpolation/tagged-template
+and regex-backtick regression coverage, complete vault discovery metadata,
+and bounded billing draining. The billing suite now passes 21 tests and the
+prosecutor suite 39. The scheduler has 12 passing tests plus independent review.
+The lifecycle has ten real HULL integration cases and two callback cases.
+The final integrated source-head run includes these corrections.
+
+Required CircleCI job 23001 ran on initial continuation commit 1b7527f:
+1,468 Node tests, 1,464 passed, three skipped and one failed. The sole failure
+was a missing merge-prosecutor.skill.yml; its actual metadata manifest and
+registry/index entries are added, with all five vault tests passing locally.
+No legacy allowlist or required gate was weakened. Existing GitHub job
+130056246254 had runner_id=0 and zero steps; its annotation states the account
+is locked for billing. No hosted workflow was dispatched by this chat.
+
+## Final merge and operational handoff
+
+Both reviewed implementation PRs merged on 2026-11-10:
+
+- [revvel-standards #18348](https://github.com/midnghtsapphire/revvel-standards/pull/18348),
+  merge 7825930aa4c7f85995c9d9b187c72df1bc98c5ef, final source head
+  c9f0bd68936d6f79053a577111c760845e89705b. Required CircleCI job
+  [23013](https://circleci.com/gh/midnghtsapphire/revvel-standards/23013)
+  succeeded, GitGuardian succeeded, and the existing owner-authored scaffolding
+  job skipped without a runner. No required gate was bypassed.
+- [GIT-FLEET #2](https://github.com/midnghtsapphire/GIT-FLEET/pull/2), merge
+  3ff970c5a31a9d4b41cce825d017fe93e717db71, final source head
+  b728e89b559ff8a5f265d068dbf3d52eddd162c9. Thirteen scheduler tests passed;
+  source and interruption handling received independent review.
+
+After fetch, each merged main tree hash exactly matched its reviewed source
+tree. No branch reset, force push, existing-service replacement or source
+deletion was performed. A local 23-line continuation of these handoff notes
+was identified as unstaged during the final status check and is preserved in
+this explicit documentation follow-up instead of being lost or silently omitted.
+
+Final owned integration passed 78 tests, zero findings/provider calls.
+Prosecution d8134255-b14b-41de-88c0-4e40245e3811 and scheduler attempt
+90859d51-48aa-45f9-a72b-612a72765001 are retained with exact nonsecret operator
+snapshots in GIT-FLEET's schedules/local/installed-20261110/. A later check of
+the final documentation source also passed as scheduler attempt
+27ecba60-e912-4a4d-8cf9-68488e1385de. Original failed receipts remain intact.
+
+`GIT-FLEET local checks` is installed as a separate current-user Windows task
+on Audrey's computer. It polls every 15 minutes, checking changed local Git
+source or once per America/Denver day. Observed LastTaskResult=0 at 12:09:14
+and 12:10:11 MST; next repetition was 12:25:11 MST. It uses no model, Airtable,
+GitHub API, App or hosted runner. Existing legacy fleet mode remains available.
+The machine/current user must be available; this is not an always-on cloud
+service. Its SQLite journal holds failed fingerprints and blocks automatic
+replay after uncertain interruption. No public billing service was started.
+
+One local Markdown command had imported the CLI library instead of executing
+its binary. Required remote CI caught two heading-level errors; they were
+fixed, and the actual markdownlint-cli2-bin.mjs invocation then verified all
+13 changed Markdown files with zero findings. The final remote gate passed.
+
+Railway read-back after merge still showed exactly the same twelve additive
+settings for four staged releases, destructive=false, patch
+f7d1ef3b-8a4b-4a8e-8665-5375c86116e3. They are not live. Automatic approval
+review rejected apply despite Audrey approving it; no alternate-interface
+bypass was attempted. Original live payment, protocol, research, assessment
+and customer requirements in the table above remain open. Cloudflare/Proofy
+connectivity remains with the other chat and was not changed here.
