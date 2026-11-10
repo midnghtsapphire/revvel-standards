@@ -113,7 +113,9 @@ jobs:
   research:
     name: Run layered research engine
     needs: route
-    if: needs.route.outputs.should_run == 'true'
+    if: >-
+      (needs.route.outputs.should_run == 'true') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_RESEARCH != '0')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

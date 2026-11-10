@@ -83,11 +83,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: >-
-      github.event_name == 'check_suite' &&
-      (github.event.check_suite.conclusion == 'failure' ||
-       github.event.check_suite.conclusion == 'timed_out') &&
-      github.event.check_suite.pull_requests[0].number != null
-
+      (github.event_name == 'check_suite' && (github.event.check_suite.conclusion == 'failure' || github.event.check_suite.conclusion == 'timed_out') && github.event.check_suite.pull_requests[0].number != null) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -144,7 +141,9 @@ jobs:
     name: "🔧 Autofix on demand (workflow_dispatch)"
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: github.event_name == 'workflow_dispatch'
+    if: >-
+      (github.event_name == 'workflow_dispatch') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
 
     steps:
       - name: Checkout

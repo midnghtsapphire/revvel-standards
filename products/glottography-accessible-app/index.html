@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Accessible dashboard for public Glottography repository data, built to make the dataset easy to browse and explore."
+    />
+    <title>Glottography Explorer</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <header class="page-header">
+      <div class="container header-layout">
+        <div class="brand-block" aria-label="Glottography project overview">
+          <div class="brand-mark" aria-hidden="true">G</div>
+          <div>
+            <p class="eyebrow">Public data explorer</p>
+            <h1>Glottography Explorer</h1>
+          </div>
+        </div>
+
+        <a
+          class="source-link"
+          href="https://github.com/Glottography"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Visit the org on GitHub
+        </a>
+      </div>
+    </header>
+
+    <main id="main-content" class="container main-content" tabindex="-1">
+      <section class="summary-panel" aria-label="Repository summary statistics">
+        <div class="stat-card">
+          <span class="stat-label">Repositories</span>
+          <strong id="repo-count">0</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Total stars</span>
+          <strong id="star-count">0</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Languages</span>
+          <strong id="language-count">0</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Updated recently</span>
+          <strong id="updated-count">0</strong>
+        </div>
+      </section>
+
+      <section class="controls-panel" aria-label="Repository filters">
+        <label class="control-label" for="search-input">
+          <span>Search repositories</span>
+          <input
+            id="search-input"
+            type="search"
+            name="search"
+            placeholder="Search by repo name or topic"
+            autocomplete="off"
+          />
+        </label>
+
+        <label class="control-label" for="language-filter">
+          <span>Language</span>
+          <select id="language-filter" name="language">
+            <option value="all">All languages</option>
+          </select>
+        </label>
+
+        <button id="reset-button" class="reset-button" type="button">Reset filters</button>
+      </section>
+
+      <section class="results-panel" aria-labelledby="repositories-heading">
+        <div class="section-header">
+          <h2 id="repositories-heading">Repositories</h2>
+          <p id="result-summary" aria-live="polite">Loading repository data…</p>
+        </div>
+
+        <div id="repo-list" class="repo-list" role="list" aria-live="polite"></div>
+
+        <div id="empty-state" class="status-message empty-state" hidden>
+          No repositories match the current filters.
+        </div>
+
+        <div id="error-state" class="status-message error-state" hidden>
+          Live GitHub data is unavailable right now, so the dashboard is showing a built-in fallback set.
+        </div>
+      </section>
+
+      <section class="about-panel" aria-labelledby="about-heading">
+        <h2 id="about-heading">About this dashboard</h2>
+        <p>
+          This app surfaces the public repository list for the Glottography organization in an
+          accessible, keyboard-friendly layout. It supports search, language filtering, and clear
+          summaries so the dataset is easy to browse without needing a custom application or a
+          deep technical setup.
+        </p>
+        <ul>
+          <li>Public GitHub data is loaded from the GitHub API when available.</li>
+          <li>Fallback dataset support keeps the page useful if the API is slow or rate limited.</li>
+          <li>Color contrast, semantic structure, and visible focus states are prioritized.</li>
+        </ul>
+      </section>
+    </main>
+
+    <noscript>
+      <div class="noscript-warning">
+        JavaScript is required to load the live GitHub data for this dashboard.
+      </div>
+    </noscript>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -37,9 +37,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: >-
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'issues' && github.event.action == 'labeled' &&
-       github.event.label.name == 'deep-search')
+      ((github.event_name == 'workflow_dispatch') || (github.event_name == 'issues' && github.event.action == 'labeled' && github.event.label.name == 'deep-search')) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_RESEARCH != '0')
     steps:
       - name: Checkout
         uses: actions/checkout@v7

@@ -1,0 +1,80 @@
+{
+  "system_version": "v50.0",
+  "title": "GroundTruth AR 3D WebAR Mobile Viewfinder Field Configuration",
+  "timestamp_utc": "2026-10-10T23:08:15.732941Z",
+  "hud_rendering_mode": "HOLOGRAPHIC_ATOMIC_SOIL_OVERLAY",
+  "target_sectors": [
+    {
+      "case_id": "SHAFFER-2006-OH",
+      "location_name": "Columbus Pearl Alley Utility Vault (SHAFFER-001)",
+      "latitude_deg": 39.9985,
+      "longitude_deg": -83.0064,
+      "elevation_m": 227.0,
+      "crim_target_depth_m": 4.24,
+      "gltf_overlay_model": "gltf_models/vault_subpavement_structure_v50.glb",
+      "holographic_color_hex": "#00FF66",
+      "soil_atomic_match_pct": 98.72,
+      "chemical_compound_target": "Human eDNA + Putrescine Silt Matrix (45.2 uM)",
+      "webar_bounding_box": {
+        "width_m": 2.5,
+        "length_m": 4.0,
+        "height_m": 1.2
+      },
+      "camera_hud_label": "SHAFFER-001: 98.72% Soil Atomic Match [CRIM Depth: 4.24m]"
+    },
+    {
+      "case_id": "SHTUKA-2018-BC",
+      "location_name": "Sun Peaks Fairways Creek Log Jam (SHTUKA-001)",
+      "latitude_deg": 50.8825,
+      "longitude_deg": -119.8851,
+      "elevation_m": 1245.44,
+      "crim_target_depth_m": 1.84,
+      "gltf_overlay_model": "gltf_models/creek_logjam_catchment_v50.glb",
+      "holographic_color_hex": "#00E5FF",
+      "soil_atomic_match_pct": 99.22,
+      "chemical_compound_target": "Cadaverine + Alpine Nitrogen Flush (88.7 uM)",
+      "webar_bounding_box": {
+        "width_m": 3.0,
+        "length_m": 5.0,
+        "height_m": 1.8
+      },
+      "camera_hud_label": "SHTUKA-001: 99.22% Soil Atomic Match [CRIM Depth: 1.84m]"
+    },
+    {
+      "case_id": "LINDEMAN-2026-MO",
+      "location_name": "Dogwood Lane Ravine Drainage Sink (LINDEMAN-001)",
+      "latitude_deg": 38.4512,
+      "longitude_deg": -91.8234,
+      "elevation_m": 312.03,
+      "crim_target_depth_m": 3.39,
+      "gltf_overlay_model": "gltf_models/ravine_gully_drainage_v50.glb",
+      "holographic_color_hex": "#FF0055",
+      "soil_atomic_match_pct": 99.26,
+      "chemical_compound_target": "Human eDNA + Decomposing Lipid Fraction (112.4 uM)",
+      "webar_bounding_box": {
+        "width_m": 2.2,
+        "length_m": 4.5,
+        "height_m": 1.5
+      },
+      "camera_hud_label": "LINDEMAN-001: 99.26% Soil Atomic Match [CRIM Depth: 3.39m]"
+    },
+    {
+      "case_id": "FARBER-2015-PA",
+      "location_name": "Sharp Mountain Coal Spoil Bench (FARBER-001)",
+      "latitude_deg": 40.6781,
+      "longitude_deg": -76.1923,
+      "elevation_m": 473.3,
+      "crim_target_depth_m": 1.66,
+      "gltf_overlay_model": "gltf_models/coal_bench_shale_void_v50.glb",
+      "holographic_color_hex": "#9900FF",
+      "soil_atomic_match_pct": 98.46,
+      "chemical_compound_target": "Pyritic Iron Oxide + Nitrogen Burst (32.1 uM)",
+      "webar_bounding_box": {
+        "width_m": 1.8,
+        "length_m": 3.5,
+        "height_m": 1.0
+      },
+      "camera_hud_label": "FARBER-001: 98.46% Soil Atomic Match [CRIM Depth: 1.66m]"
+    }
+  ]
+}

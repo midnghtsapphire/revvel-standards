@@ -437,7 +437,9 @@ jobs:
   create-wr-pr:
     name: Create WR PR
     needs: detect-completion
-    if: needs.detect-completion.outputs.should_create_pr == 'true'
+    if: >-
+      (needs.detect-completion.outputs.should_create_pr == 'true') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
     runs-on: ubuntu-latest
     env:
       ISSUE_NUMBER: ${{ needs.detect-completion.outputs.issue_number }}

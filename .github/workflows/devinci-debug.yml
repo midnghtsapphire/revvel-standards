@@ -83,6 +83,7 @@ concurrency:
 
 jobs:
   devinci:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_INFRA != '0'
     name: Start DevInCi session
     runs-on: ubuntu-latest
     # Hard stop for the whole session — the belt to the TTL's suspenders.

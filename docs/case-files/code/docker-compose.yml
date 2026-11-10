@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  realtime-validation-listener:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sar_realtime_listener
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - ALERT_THRESHOLD=30.0
+      - FORWARD_URL=${FORWARD_URL:-}
+      - DB_PATH=/data/stage0_archive.db
+      - ALERT_LOG_PATH=/data/realtime_alerts.json
+    volumes:
+      - ./data:/data
+      - ./logs:/var/log/realtime_listener
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3

@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Generate repo file changes from an issue using OpenRouter."""
+"""Generate repo file changes from an issue, Layer 0 first.
+
+The model call goes through `scripts/local_llm.py`, which cascades LM Studio ->
+Ollama -> OpenRouter. This script used to POST to OpenRouter directly, which
+made every work request a paid call and turned a shut spend gate into a hard
+failure instead of a free local run (#17849; learnings.md 2026-08-21).
+"""
 
 from __future__ import annotations
 
@@ -13,7 +19,12 @@ from typing import Any
 
 import requests
 
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+# `scripts/` is not an importable package, so put it on the path explicitly.
+_SCRIPTS_DIR = Path(__file__).resolve().parents[2] / "scripts"
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+import local_llm  # noqa: E402  (requires the sys.path line above)
 
 
 def env(name: str, default: str = "") -> str:
@@ -23,7 +34,7 @@ def env(name: str, default: str = "") -> str:
 def extract_json_payload(text: str) -> dict[str, Any]:
     text = (text or "").strip()
     if not text:
-        raise ValueError("OpenRouter returned empty content.")
+        raise ValueError("The model returned empty content.")
 
     for match in re.finditer(r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", text):
         try:
@@ -39,7 +50,7 @@ def extract_json_payload(text: str) -> dict[str, Any]:
         start = candidate.find("{")
         end = candidate.rfind("}")
         if start == -1 or end == -1 or end < start:
-            raise ValueError("OpenRouter response did not include valid JSON.") from None
+            raise ValueError("Model response did not include valid JSON.") from None
         return json.loads(candidate[start : end + 1])
 
 
@@ -125,53 +136,42 @@ def build_system_prompt() -> str:
     )
 
 
-def _assert_cloud_allowed(call_site: str) -> None:
-    """Spend gate (#17850). Refuse a paid call unless someone deliberately said yes.
+def build_prompt(repo: str, issue_title: str, issue_body: str) -> str:
+    """One flat prompt — the local lanes do not all accept a separate system role."""
+    return (
+        f"{build_system_prompt()}\n\n"
+        f"Repository: {repo or '(unknown)'}\n\n"
+        f"Issue title:\n{issue_title or '(no title)'}\n\n"
+        f"Issue body:\n{issue_body or '(no body)'}\n"
+    )
 
-    Mirrors `cloud_allowed()` in scripts/local_llm.py and the JS gate in
-    scripts/llm-spend-gate.js — one variable name, one decision, every language.
-    Must be exactly "1": `true` / `yes` fail closed rather than open.
+
+def generate_changes(
+    model: str, repo: str, issue_title: str, issue_body: str
+) -> tuple[dict[str, Any], local_llm.Completion]:
+    """Run the work request through the cascade: LM Studio, Ollama, OpenRouter.
+
+    The spend gate (#17850) is unchanged but now guards only the last lane:
+    `local_llm.cloud_allowed()` is consulted inside `local_llm.call_openrouter`,
+    which raises `CloudBlocked` only *after* the free local lanes were tried.
+    So REVVEL_LLM_ALLOW_CLOUD being unset means "use the laptop", not "fail".
     """
-    if os.environ.get("REVVEL_LLM_ALLOW_CLOUD", "").strip() != "1":
-        raise RuntimeError(
-            f'Refusing to call a paid LLM API from "{call_site}": '
-            "REVVEL_LLM_ALLOW_CLOUD is not set to \"1\". This is a spend gate, "
-            "not a bug. Set it in the calling workflow's env, with a comment "
-            "saying why the work cannot run on Layer 0 "
-            "(see docs/LOCAL_LLM_SETUP.md)."
-        )
+    # WR_MODEL names a *cloud* model ("anthropic/claude-opus-4.7"), so it must
+    # reach the paid lane and nothing else. Passing it to complete(model=...)
+    # would forward it to LM Studio, which does not have a model by that name,
+    # 404 the request, and drop the cascade straight through to the lane we were
+    # trying to avoid — a local-first router that always pays. Each local lane
+    # picks its own model (LMSTUDIO_MODEL / OLLAMA_MODEL, else whatever is
+    # loaded); OPENROUTER_MODEL is where the paid lane reads its pin, so the
+    # pin is applied there and the cascade is called without a model.
+    if model and not env("OPENROUTER_MODEL"):
+        os.environ["OPENROUTER_MODEL"] = model
 
-
-def call_openrouter(api_key: str, model: str, repo: str, issue_title: str, issue_body: str) -> dict[str, Any]:
-    _assert_cloud_allowed("openrouter_coder")
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": f"https://github.com/{repo}",
-        "X-Title": f"{repo} OpenRouter Coder",
-    }
-    payload = {
-        "model": model,
-        "temperature": 0.1,
-        "messages": [
-            {"role": "system", "content": build_system_prompt()},
-            {
-                "role": "user",
-                "content": f"Issue title:\n{issue_title or '(no title)'}\n\nIssue body:\n{issue_body or '(no body)'}",
-            },
-        ],
-    }
-
-    response = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=120)
-    if response.status_code >= 400:
-        raise RuntimeError(f"OpenRouter error HTTP {response.status_code}: {response.text[:400]}")
-
-    data = response.json()
-    content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
-    parsed = extract_json_payload(content)
+    completion = local_llm.complete(build_prompt(repo, issue_title, issue_body))
+    parsed = extract_json_payload(completion.text)
     if not isinstance(parsed, dict):
-        raise ValueError("OpenRouter response JSON must be an object.")
-    return parsed
+        raise ValueError(f"{completion.lane} response JSON must be an object.")
+    return parsed, completion
 
 
 def main() -> int:
@@ -179,7 +179,6 @@ def main() -> int:
     parser.add_argument("--output-path", required=True)
     args = parser.parse_args()
 
-    api_key = env("OPENROUTER_API_KEY")
     github_token = env("GITHUB_TOKEN")
     repo = env("GITHUB_REPOSITORY")
     issue_number = env("ISSUE_NUMBER")
@@ -188,15 +187,17 @@ def main() -> int:
     model = env("WR_MODEL", "anthropic/claude-opus-4.7")
 
     try:
-        if not api_key:
-            raise RuntimeError("OPENROUTER_API_KEY is missing.")
+        # Deliberately no OPENROUTER_API_KEY precondition: the local lanes are
+        # keyless, and demanding a paid credential up front is exactly what made
+        # Layer 0 unreachable from here. local_llm raises on the paid lane if the
+        # key is missing, by which point the free lanes have already been tried.
         if not repo or not issue_number:
             raise RuntimeError("GITHUB_REPOSITORY and ISSUE_NUMBER are required.")
 
-        result = call_openrouter(api_key, model, repo, issue_title, issue_body)
+        result, completion = generate_changes(model, repo, issue_title, issue_body)
         files = result.get("files")
         if not isinstance(files, list):
-            raise ValueError("OpenRouter payload must include `files` as an array.")
+            raise ValueError(f"{completion.lane} payload must include `files` as an array.")
 
         commit_message = result.get("commit_message")
         if not isinstance(commit_message, str) or not commit_message.strip():
@@ -205,15 +206,27 @@ def main() -> int:
         repo_root = Path.cwd()
         files_written = write_files(files, repo_root)
 
-        output_payload = {"commit_message": commit_message.strip(), "files_written": files_written}
+        # `lane` and `paid` are the record of whether this work request cost
+        # money. Without them a free local run and a billed run are
+        # indistinguishable after the fact (RVS-VERIFY-001).
+        output_payload = {
+            "commit_message": commit_message.strip(),
+            "files_written": files_written,
+            "lane": completion.lane,
+            "model": completion.model,
+            "paid": not completion.is_local,
+        }
         Path(args.output_path).write_text(json.dumps(output_payload), encoding="utf-8")
         print(json.dumps(output_payload))
         return 0
     except (RuntimeError, ValueError, requests.RequestException, json.JSONDecodeError, OSError) as exc:
         message = (
-            f"❌ OpenRouter coder failed for issue #{issue_number}.\n\n"
+            f"❌ Coder failed for issue #{issue_number}.\n\n"
             f"Error: `{exc}`\n\n"
-            "Please verify `OPENROUTER_API_KEY`, issue content, and model configuration."
+            "Lanes are tried in order: LM Studio, Ollama, then OpenRouter. "
+            "Start LM Studio to run this free on Layer 0 "
+            "(see `docs/LOCAL_LLM_SETUP.md`), or set `REVVEL_LLM_ALLOW_CLOUD=1` "
+            "and `OPENROUTER_API_KEY` to permit the paid lane."
         )
         comment_issue(repo, issue_number, github_token, message)
         print(message, file=sys.stderr)

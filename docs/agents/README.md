@@ -21,6 +21,8 @@ by what each agent leaves behind and what each one is actually good at.
 | cubic | PR review (SaaS) | TBD | archived PR comments |
 | CodeRabbit | PR review (App) | TBD | archived PR comments |
 | OpenRouter personas (oAudrey, Professor, MindMappr, Coder, RadioChaser) | various | TBD | `<persona>/` |
+| NoseyNoodle | dispatcher: triage, routing, swarms, rule enforcement (does not do the work) | [SYSTEM_PROMPT.md](../prompts/LLM/noseynoodle/SYSTEM_PROMPT.md) | — |
+| Cartographer | read-only audit: catalog/SHIPPED/BOM claims vs what is live (reports to NoseyNoodle) | [SYSTEM_PROMPT.md](../prompts/LLM/cartographer/SYSTEM_PROMPT.md) | — |
 
 ## What goes in each profile
 

@@ -1,0 +1,115 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "FARBER-ZONE-A-IMPACT-BENCH",
+    "status": "DOSSIER-MODELED",
+    "elev_m": 485.6,
+    "note": "impact/canopy bench; coords from dossier (all dossier lats share 40.6781 - field-verify); outcrop NOT yet photographed/GPS'd"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -76.1923,
+     40.6781
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "FARBER-ZONE-C-BOX",
+    "status": "MODELED",
+    "elev_band_m": "~475.6-477.8",
+    "note": "+45 to +90 m upslope of recovery along corridor; modeled interpolation, verify on ground"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -76.19466734693877,
+     40.6781
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "FARBER-ZONE-C-BOX-FAR",
+    "status": "MODELED",
+    "note": "+90 m upslope end of C box"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -76.19413469387756,
+     40.6781
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "FARBER-CHUTE-MOUTH",
+    "status": "MODELED",
+    "elev_m": 473.3,
+    "note": "base of steep chute ~21 m downslope of bench lip; transport funnel + deposition transition; field-GPS the lip and mouth on next visit"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -76.192549,
+     40.6781
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "FARBER-CORRIDOR-STRAIGHTLINE",
+    "status": "DOSSIER-ANCHORED",
+    "length_m": 245.0,
+    "note": "straight-line impact->recovery = 245 m; real flowpath >= 245 m and must be recomputed from DEM at THESE coords"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      -76.1923,
+      40.6781
+     ],
+     [
+      -76.1952,
+      40.6781
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "FARBER-ZONE-D-RECOVERY",
+    "status": "VERIFIED-GROUND",
+    "elev_m": 473.3,
+    "note": "July 2025 cranial recovery - the anchor every other coordinate must be measured against"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -76.1952,
+     40.6781
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "FARBER-SUBTERRANEAN-ENTRY",
+    "status": "TBD-UNVERIFIED",
+    "note": "PA DEP mine-map check REQUIRED at corrected location before any coordinate is published; Mammoth Seam claim unverified"
+   },
+   "geometry": null
+  }
+ ]
+}

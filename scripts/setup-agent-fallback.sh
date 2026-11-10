@@ -53,9 +53,31 @@ ok "All prerequisites present."
 # 2. chmod +x the system-provided adapter scripts
 # ---------------------------------------------------------------------------
 # System-provided (shipped in-repo) adapters — must exist.
+#
+# Only the adapters actually tracked in this repo belong here. Checked 6 Nov
+# 2026 against origin/main: scripts/call-cursor-api.sh and
+# scripts/call-openhands-api.sh are the only call-*-api.sh files that exist.
 SYSTEM_SCRIPTS=(
-  "call-devin-api.sh"
   "call-cursor-api.sh"
+)
+
+# Declared but NOT shipped in this repo.
+#
+# call-devin-api.sh and call-openrouter-api.sh were listed as system-provided
+# and "must exist", and neither is tracked on main. The run then warned about
+# two files, and still printed "Agent fallback setup complete." -- so a never-
+# shipped adapter was indistinguishable from one somebody had deleted, and
+# either way the script reported success. Same defect family as
+# `npm test || true`.
+#
+# Kept listed rather than deleted (they may yet be added) but named honestly,
+# so the output says "not shipped" instead of "missing".
+#
+# call-openrouter-api.sh is the one that matters: .github/copilot-instructions.md:7
+# states automation routes through OpenRouter, and the adapter for that lane is
+# not in the repo.
+NOT_SHIPPED_SCRIPTS=(
+  "call-devin-api.sh"
   "call-openrouter-api.sh"
 )
 
@@ -74,6 +96,19 @@ for s in "${SYSTEM_SCRIPTS[@]}"; do
     warn "Expected system script missing: scripts/${s}"
   fi
 done
+
+if [ ${#NOT_SHIPPED_SCRIPTS[@]} -gt 0 ]; then
+  info "Adapters declared but not shipped in this repo:"
+  for s in "${NOT_SHIPPED_SCRIPTS[@]}"; do
+    path="${SCRIPTS_DIR}/${s}"
+    if [ -f "$path" ]; then
+      chmod +x "$path"
+      ok "scripts/${s} is present after all — chmod +x (move it to SYSTEM_SCRIPTS)"
+    else
+      info "scripts/${s} not shipped (its provider cannot be used until it is added)"
+    fi
+  done
+fi
 
 info "Checking opt-in adapter scripts..."
 for s in "${OPTIN_SCRIPTS[@]}"; do
@@ -108,6 +143,8 @@ report_provider() {
     ok "${name}: enabled  (env ${env_var} set, ${script} executable)"
   elif [ "$required" = "optin" ] && [ "$has_script" = "no" ]; then
     info "${name}: not installed (opt-in; skipped in fallback chain)"
+  elif [ "$required" = "notshipped" ] && [ "$has_script" = "no" ]; then
+    warn "${name}: UNAVAILABLE — ${script} is not shipped in this repo"
   elif [ "$has_key" = "no" ]; then
     warn "${name}: disabled (env ${env_var} not set)"
   else
@@ -115,9 +152,9 @@ report_provider() {
   fi
 }
 
-report_provider "Devin"      "DEVIN_API_KEY"      "call-devin-api.sh"      "system"
+report_provider "Devin"      "DEVIN_API_KEY"      "call-devin-api.sh"      "notshipped"
 report_provider "Cursor"     "CURSOR_API_KEY"     "call-cursor-api.sh"     "system"
-report_provider "OpenRouter" "OPENROUTER_API_KEY" "call-openrouter-api.sh" "system"
+report_provider "OpenRouter" "OPENROUTER_API_KEY" "call-openrouter-api.sh" "notshipped"
 report_provider "OpenHands"  "OPENHANDS_API_KEY"  "call-openhands-api.sh"  "optin"
 
 echo

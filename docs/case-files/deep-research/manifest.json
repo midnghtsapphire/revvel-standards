@@ -1,0 +1,56 @@
+{
+  "name": "deep-research-orchestrator",
+  "version": "1.0.0",
+  "description": "Fans a research question across many OpenRouter models in parallel, cross-checks with an independent judge model, and returns a synthesized tiered brief. Callable by an agent swarm as a research tool.",
+  "transport": { "type": "stdio" },
+  "auth": { "type": "bearer", "env": "OPENROUTER_API_KEY" },
+  "tools": [
+    {
+      "name": "deep_research",
+      "description": "Run a multi-model research panel with iterative deepening. Returns findings tiered A1/A2/B2/B3, conflicts surfaced explicitly, per-claim confidence %, remaining unknowns, and deduped sources. Use for any non-trivial question where a single model's answer is insufficient. Time/cost are not constrained; depth is preferred.",
+      "input_schema": {
+        "type": "object",
+        "required": ["question"],
+        "properties": {
+          "question": { "type": "string" },
+          "depth": { "type": "integer", "minimum": 0, "maximum": 3, "default": 3 },
+          "models": { "type": "array", "items": { "type": "string" }, "description": "explicit OpenRouter model IDs; omit to use the reasoning tier" },
+          "rounds": { "oneOf": [{ "type": "integer" }, { "const": "auto" }], "default": "auto" },
+          "web": { "type": "boolean", "default": true },
+          "chatter": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    {
+      "name": "model_panel",
+      "description": "Send one question to an explicit list of OpenRouter models and return each raw answer plus an independent judge model's cross-check (agreements, conflicts, unsupported claims).",
+      "input_schema": {
+        "type": "object",
+        "required": ["question", "model_ids"],
+        "properties": {
+          "question": { "type": "string" },
+          "model_ids": { "type": "array", "items": { "type": "string" } },
+          "judge": { "type": "string" }
+        }
+      }
+    },
+    {
+      "name": "discover_opportunities",
+      "description": "SEM/SEO product/market opportunity research for a domain. Returns candidates ranked by priority % (value x winnability x fit) with keyword/intent data, corroborated chatter demand, competition gaps, monetization fit, and a how-to confidence %. Uses a 70/20/10 operator-domain/adjacent/wildcard effort split.",
+      "input_schema": { "type": "object", "required": ["domain"], "properties": { "domain": { "type": "string" } } }
+    },
+    {
+      "name": "research_bug",
+      "description": "Root-cause research for an error/signature. Triangulates across docs, issue trackers, CVEs, changelogs. Returns root cause, evidence, fix, regression test, and related risks.",
+      "input_schema": { "type": "object", "required": ["signature"], "properties": { "signature": { "type": "string" } } }
+    }
+  ],
+  "resources": [
+    { "uri": "dr://models", "name": "Model Tier Config", "description": "Current role-tier to OpenRouter model mapping." },
+    { "uri": "dr://ledgers", "name": "Run Ledgers", "description": "Cost/latency/token ledgers from recent runs." }
+  ],
+  "prompts": [
+    { "name": "deep_research_this", "description": "Run a full multi-model deep-research panel on the given question." },
+    { "name": "find_high_value_products", "description": "Run SEM/SEO opportunity discovery for a domain." }
+  ]
+}

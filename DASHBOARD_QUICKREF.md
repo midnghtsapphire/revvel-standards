@@ -116,7 +116,7 @@ $ npm run dashboard urls vercel
 🔗 Test URLs
 Found 15 URLs
 
-1. https://soul2bowl-staging.vercel.app
+1. https://soul2bowl-staging.vercel.app _(⚠️ NOT LIVE — verified 2026-10-30: https://soul2bowl-staging.vercel.app returns HTTP 404)_
    Project: Soul2Bowl
    Type: vercel
    Source: /Soul2Bowl/README.md

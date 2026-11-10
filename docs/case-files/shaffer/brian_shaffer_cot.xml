@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<events>
+  <event version="2.0" uid="BRIAN-SHAFFER-LKP" type="b-m-p-s-m" time="2026-10-15T05:16:16.624785+00:00" start="2026-10-15T05:16:16.624846+00:00" stale="2027-01-01T00:00:00Z" how="m-g">
+    <point lat="39.99382" lon="-83.00657" hae="230.0" ce="5.0" le="5.0" />
+    <detail>
+      <contact callsign="BRIAN SHAFFER LKP (Ugly Tuna Saloona)" />
+      <remarks>Verified LKP at South Campus Gateway (April 1, 2006, 01:55 AM). CCTV entrance/escalator location.</remarks>
+    </detail>
+  </event>
+</events>

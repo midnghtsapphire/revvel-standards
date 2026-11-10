@@ -1,0 +1,63 @@
+{
+  "model_version": "7.4-PREDICTIVE-UNIFIED",
+  "benchmark_cases_evaluated": 4,
+  "cases": [
+    {
+      "subject": "Brian Shaffer",
+      "case_id": "SHAFFER-2006-OH",
+      "environment": "Urban Commercial Sub-Pavement",
+      "primary_coordinates": {
+        "lat": 39.9985,
+        "lon": -83.0064
+      },
+      "concealment_mechanism": "Gateway Service Vault Entry / Pearl Alley Hydraulic Conduit",
+      "cell_disconnect_signature": "Concrete Faraday Shielding / Silt-Water Battery Short (0-15s)",
+      "k9_containment_factor": "Horizontal Vault Seal / Air Flow Masking",
+      "predictive_model_match": 0.93
+    },
+    {
+      "subject": "Ryan Shtuka",
+      "case_id": "SHTUKA-2018-BC",
+      "environment": "Alpine Wilderness Slope / Creek catchment",
+      "primary_coordinates": {
+        "lat": 50.8782,
+        "lon": -119.9075
+      },
+      "concealment_mechanism": "Drainage Slump Fall / Fairways Creek Log Jam Entrapment",
+      "cell_disconnect_signature": "Sub-Zero Thermal Battery Failure / Impact Destruction",
+      "k9_containment_factor": "Deep Snowpack / Thermal Inversion Masking",
+      "predictive_model_match": 0.915
+    },
+    {
+      "subject": "Liam Toman",
+      "case_id": "TOMAN-2025-QC",
+      "environment": "Sub-Zero Alpine Resort Outflow",
+      "primary_coordinates": {
+        "lat": 46.2095,
+        "lon": -74.5852
+      },
+      "concealment_mechanism": "Lac Miroir Creek Outflow Channel / Submerged Silt Bed",
+      "cell_disconnect_signature": "Immediate Water Submersion",
+      "k9_containment_factor": "Water Flow Dissipation",
+      "predictive_model_match": 0.94
+    },
+    {
+      "subject": "Ebby Steppach",
+      "case_id": "STEPPACH-2015-AR",
+      "environment": "Subterranean Park Drainage Infrastructure",
+      "primary_coordinates": {
+        "lat": 34.8099,
+        "lon": -92.5043
+      },
+      "concealment_mechanism": "60ft Radius Drainage Pipe Entry / Underground Culvert",
+      "cell_disconnect_signature": "Abrupt Battery/Signal Disconnect at Vehicle Site",
+      "k9_containment_factor": "Enclosed Concrete Pipe Duct Venting (Air Plume Trapped Inside Pipe)",
+      "predictive_model_match": 0.985
+    }
+  ],
+  "key_predictive_takeaways": [
+    "1. Subterranean & Enclosed Conduit Trap (100% K-9 Scent Failure Rate across ground sweeps due to directional pipe venting).",
+    "2. Extreme Vehicle Proximity Rule: In 50% of urban/park walkaway cases, remains are located within <100 feet in unsearched underground pipes or utility vaults.",
+    "3. Robotic Crawler & Borescope Sweep Validation: Concrete subterranean structures require remote optical/crawler insertion beyond surface visual inspection."
+  ]
+}

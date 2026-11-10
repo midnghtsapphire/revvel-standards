@@ -1,0 +1,23 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "id": 3,
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -82.998,
+     39.952
+    ]
+   },
+   "properties": {
+    "OBJECTID": 3,
+    "STATUS": "Active",
+    "ROAD_NAME": "Mound St",
+    "DIAM_IN": 24.0,
+    "INSPECTED": 1688169600000
+   }
+  }
+ ]
+}

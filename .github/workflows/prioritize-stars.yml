@@ -24,7 +24,7 @@ jobs:
 
       - name: Set up Python
         # actions/setup-python v5.6.0
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -45,7 +45,7 @@ jobs:
 
       - name: Commit & Push Updated Priority List
         # stefanzweifel/git-auto-commit-action v5.1.0
-        uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403
+        uses: stefanzweifel/git-auto-commit-action@d0b01107b5db882071f96de5dd4b54961ea93f4c
         with:
           commit_message: "chore: update prioritized stars index [skip ci]"
           file_pattern: "PRIORITIZED_STARS.md prioritized_stars.json stars_state.json"

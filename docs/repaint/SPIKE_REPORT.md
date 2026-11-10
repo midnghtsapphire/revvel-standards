@@ -58,10 +58,19 @@ _Paste from `spike.json` after the run._
 - **PASS** → proceed to `apps/editor/`. Record the narrowest passing mask as the
   UI's minimum selectable span; do not let users draw a mask the model cannot
   honor.
-- **FAIL on voice similarity** → the core cannot hold identity. Try the
-  Lyric2Vocal LoRA on separated vocal stems before abandoning; failing that,
-  re-run against DiffRhythm 2 through the same `RepaintEngine` contract. The
-  adapter exists precisely so this swap costs a day, not a rewrite.
+- **FAIL on voice similarity** → the core cannot hold identity. Three fallbacks
+  before abandoning, cheapest first:
+  1. Lyric2Vocal LoRA on separated vocal stems.
+  2. **Voice-conversion pass over the repainted span only** — convert the
+     regenerated audio back toward a voice model built from the source vocal.
+     This decouples "say the right word" from "sound like the right singer",
+     which is attractive precisely because the second problem is commoditized
+     (Kits.AI, Wondera and similar ship one-click vocal repair) while the first
+     is not. Cost: one more model in the path, and conversion artifacts of its
+     own to measure.
+  3. Re-run against DiffRhythm 2 through the same `RepaintEngine` contract.
+
+  The adapter exists precisely so these swaps cost a day, not a rewrite.
 - **FAIL on mask width only** → the artifact-removal feature still ships (it
   tolerates wide masks); word-level editing gets deferred and the product
   narrative changes. Do not ship word-editing on a 4-second mask and hope.

@@ -50,13 +50,8 @@ jobs:
     timeout-minutes: 15
     # Only run on issue comment if it contains /brain-dump and is not a PR comment.
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'issue_comment' &&
-       !github.event.issue.pull_request &&
-       (github.event.comment.author_association == 'OWNER' ||
-        github.event.comment.author_association == 'MEMBER' ||
-        github.event.comment.author_association == 'COLLABORATOR') &&
-       startsWith(github.event.comment.body, '/brain-dump'))
+      (github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && !github.event.issue.pull_request && (github.event.comment.author_association == 'OWNER' || github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'COLLABORATOR') && startsWith(github.event.comment.body, '/brain-dump'))) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_ROUTERS != '0')
     env:
       GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
       GH_REPO: ${{ github.repository }}

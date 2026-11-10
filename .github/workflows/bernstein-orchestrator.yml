@@ -82,7 +82,9 @@ jobs:
     name: Run Bernstein
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    if: github.event_name == 'workflow_dispatch'
+    if: >-
+      (github.event_name == 'workflow_dispatch') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_CODING_AGENTS != '0')
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -96,7 +98,7 @@ jobs:
         # variable REVVEL_LLM_ALLOW_CLOUD is "1". See docs/LOCAL_LLM_SETUP.md.
         if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         id: bernstein
-        uses: sipyourdrink-ltd/bernstein@v2.7.0
+        uses: sipyourdrink-ltd/bernstein@v3.23.0
         with:
           task: ${{ github.event.inputs.task }}
           plan: ${{ github.event.inputs.plan }}

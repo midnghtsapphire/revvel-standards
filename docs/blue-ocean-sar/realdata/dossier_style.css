@@ -1,0 +1,175 @@
+/* Static style for dossier.py. Case-specific text (case ID, generation time)
+   is never written here; dossier.py appends the @page margin-box strings,
+   CSS-escaped, after this file when it builds the page.
+   Palette taken from the uploaded case dossiers: navy headings and table
+   heads, teal rules and accents, pale blue-grey row banding, grey footers. */
+
+:root {
+  --navy: #1b2a4a;
+  --navy-deep: #0f172a;
+  --royal: #002060;
+  --teal: #008080;
+  --blue: #2980b9;
+  --grey: #7f8c8d;
+  --ink: #333333;
+  --row: #f4f6f9;
+  --rule: #d9d9d9;
+  --ok: #1e8449;
+  --flag: #b9770e;
+  --miss: #7f8c8d;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  background: #ffffff;
+  color: var(--ink);
+  font-family: "Liberation Sans", Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  line-height: 1.4;
+  margin: 0;
+}
+
+main { max-width: 190mm; margin: 0 auto; padding: 0 16px; }
+
+.run {
+  max-width: 190mm;
+  margin: 0 auto;
+  padding: 8px 16px;
+  font-size: 8pt;
+  font-weight: bold;
+  color: var(--grey);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.run.top { border-bottom: 1.5px solid var(--teal); }
+.run.bottom { border-top: 1px solid var(--rule); font-weight: normal; margin-top: 24px; }
+
+h1 {
+  color: var(--navy);
+  font-size: 22pt;
+  line-height: 1.15;
+  text-transform: uppercase;
+  margin: 18px 0 4px;
+}
+.subtitle { color: var(--teal); font-weight: bold; text-transform: uppercase; margin: 0 0 14px; }
+h2 { color: var(--navy); font-size: 13pt; margin: 18px 0 6px; padding-bottom: 3px; border-bottom: 1.5px solid var(--teal); }
+h3 { color: var(--navy); font-size: 10.5pt; margin: 14px 0 4px; }
+
+.directive {
+  background: var(--row);
+  border-left: 4px solid var(--teal);
+  padding: 10px 14px;
+  margin: 10px 0 14px;
+}
+
+.band {
+  background: var(--band, var(--navy));
+  color: #ffffff;
+  padding: 9px 14px 7px;
+  margin: 26px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+.band .title { font-size: 12.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.02em; }
+.band .tool { font-family: "DejaVu Sans Mono", "Liberation Mono", monospace; font-size: 9pt; opacity: 0.9; }
+.caseline {
+  background: var(--navy-deep);
+  color: #dfe6ee;
+  font-size: 8pt;
+  font-weight: bold;
+  padding: 4px 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+.sec-body { border: 1px solid var(--rule); border-top: 0; padding: 4px 14px 12px; }
+
+.chip {
+  display: inline-block;
+  font-size: 7.5pt;
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+  border-radius: 9px;
+  padding: 2px 9px;
+  white-space: nowrap;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.chip-COMPUTED { background: var(--ok); }
+.chip-FLAGGED { background: var(--flag); }
+.chip-MISSING { background: var(--miss); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 6px 0 10px;
+  font-size: 8.5pt;
+  break-inside: auto;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: var(--navy);
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
+  padding: 5px 7px;
+  vertical-align: bottom;
+}
+td { padding: 4px 7px; border-bottom: 1px solid var(--rule); vertical-align: top; overflow-wrap: anywhere; }
+tbody tr:nth-child(even) td { background: var(--row); }
+table.facts td:first-child { font-weight: bold; width: 42%; color: var(--navy); }
+.table-wrap { overflow-x: auto; }
+.tnote { font-size: 8pt; color: var(--grey); margin: -6px 0 10px; }
+
+code, .mono { font-family: "DejaVu Sans Mono", "Liberation Mono", monospace; font-size: 7.5pt; overflow-wrap: anywhere; }
+.np { color: var(--grey); font-style: italic; }
+.ok { color: var(--ok); font-weight: bold; }
+.bad { color: #a93226; font-weight: bold; }
+
+.caveats { background: var(--row); border-left: 4px solid var(--teal); padding: 6px 12px; margin: 8px 0; break-inside: avoid; }
+.caveats li { margin: 3px 0; }
+.caveats .origin { color: var(--grey); font-size: 7.5pt; }
+.flags { background: #fdf2e3; border-left: 4px solid var(--flag); padding: 6px 12px; margin: 8px 0; break-inside: avoid; }
+.missing { color: var(--grey); padding: 8px 0; }
+ul { margin: 4px 0; padding-left: 18px; }
+
+figure.map { margin: 10px 0 14px; break-inside: avoid; page-break-inside: avoid; }
+figure.map svg { width: 100%; height: auto; background: var(--navy-deep); display: block; }
+figure.map figcaption { font-size: 8pt; color: var(--grey); text-align: center; margin-top: 4px; }
+
+.appendix { break-before: page; page-break-before: always; }
+
+@page {
+  size: letter;
+  margin: 20mm 15mm 22mm 15mm;
+  @top-left { font-family: Arial, Helvetica, sans-serif; font-size: 7.5pt; font-weight: bold; color: #7f8c8d; }
+  @top-right { font-family: Arial, Helvetica, sans-serif; font-size: 7.5pt; font-weight: bold; color: #b9770e; }
+  @bottom-left { font-family: Arial, Helvetica, sans-serif; font-size: 7pt; color: #7f8c8d; }
+  @bottom-center { font-family: Arial, Helvetica, sans-serif; font-size: 7pt; color: #7f8c8d; }
+  @bottom-right { font-family: Arial, Helvetica, sans-serif; font-size: 7.5pt; font-weight: bold; color: #1b2a4a; }
+}
+
+@media print {
+  html, body { font-size: 9pt; }
+  main { max-width: none; padding: 0; }
+  .run { display: none; }
+  .band, .caseline, th, tbody tr:nth-child(even) td, .directive, .caveats, .flags, figure.map svg {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .table-wrap { overflow: visible; }
+  h2, h3 { break-after: avoid; page-break-after: avoid; }
+}

@@ -1,0 +1,184 @@
+{
+  "type": "FeatureCollection",
+  "name": "FARBER-2015-PA_Audited_Flow_Path_Corrected_Coordinates",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "audit_metadata": {
+    "correction_date": "2026-10-11",
+    "longitude_shift_applied": "-0.2702 deg (Pottsville/Sharp Mountain Quad Correction)",
+    "ground_truth_anchor": "Zone D Skull Recovery Coordinate (VERIFIED)",
+    "trig_verification": {
+      "path_length_m": 245.0,
+      "observed_drop_m": 12.3,
+      "calculated_mean_slope_deg": 2.874,
+      "calculated_drop_tan_m": 12.3
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "FARBER-ZONE-D-RECOVERY",
+        "name": "Zone D: July 2025 Skull Recovery Point",
+        "status": "VERIFIED",
+        "elevation_m": 473.3,
+        "description": "July 2025 ground-verified cranial fragments recovery coordinate at ATV trail cut catchment."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.1952,
+          40.6781,
+          473.3
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "FARBER-ZONE-A-ANCHOR",
+        "name": "Zone A: Canopy Tree Anchor & Impact Bench",
+        "status": "DOSSIER-MODELED",
+        "elevation_m": 485.6,
+        "description": "Historical tree canopy anchor (backpack/pants in tree); freefall impact bench on coal floor."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.1923,
+          40.6788,
+          485.6
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "FARBER-ZONE-C-BOX",
+        "name": "Zone C: Primary Search Target Box (+45m to +90m Upslope)",
+        "status": "MODELED",
+        "elevation_range_m": "478.0 - 482.5",
+        "description": "Mid-slope terraced bench trap (+45m to +90m upslope of recovery point) for axial remains & hardware."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -76.194,
+              40.6783
+            ],
+            [
+              -76.1936,
+              40.6785
+            ],
+            [
+              -76.1932,
+              40.6784
+            ],
+            [
+              -76.1936,
+              40.6782
+            ],
+            [
+              -76.194,
+              40.6783
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "FARBER-D-INF-FLOWPATH",
+        "name": "D-Infinity Surface Hydrological Flow Path Corridor (245m)",
+        "status": "MODELED",
+        "length_m": 245.0,
+        "average_slope_deg": 2.87,
+        "total_drop_m": 12.3,
+        "description": "Continuous 245m D-Infinity flow vector from Zone A (485.6m) to Zone D (473.3m). Recomputed at corrected WGS84 coordinates."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -76.1923,
+            40.6788,
+            485.6
+          ],
+          [
+            -76.192783,
+            40.678683,
+            483.6
+          ],
+          [
+            -76.193267,
+            40.678567,
+            481.5
+          ],
+          [
+            -76.19375,
+            40.67845,
+            479.5
+          ],
+          [
+            -76.194233,
+            40.678333,
+            477.4
+          ],
+          [
+            -76.194717,
+            40.678217,
+            475.4
+          ],
+          [
+            -76.1952,
+            40.6781,
+            473.3
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "FARBER-SUBTERRANEAN-MAMMOTH-ENTRY",
+        "name": "Hypothesis 6c: Upper Mine Breach Entry (Mammoth Seam)",
+        "status": "TBD-UNVERIFIED",
+        "elevation_m": 484.5,
+        "description": "Hypothetical Mammoth Seam crop fall upper breach. UNVERIFIED - requires PA DEP map sheet cross-check at corrected coordinates."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.19250000000001,
+          40.67875,
+          484.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "FARBER-SUBTERRANEAN-DRIFT-EXIT",
+        "name": "Hypothesis 6c: Lower Drift Portal Exit",
+        "status": "TBD-UNVERIFIED",
+        "elevation_m": 474.0,
+        "description": "Hypothetical lower haulage drift portal exit above trail cut. UNVERIFIED - requires PA DEP map sheet cross-check at corrected coordinates."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.1949,
+          40.6781,
+          474.0
+        ]
+      }
+    }
+  ]
+}

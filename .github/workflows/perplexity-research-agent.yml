@@ -33,9 +33,8 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     timeout-minutes: 20
     if: >-
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'issues' && github.event.action == 'labeled' &&
-       (github.event.label.name == 'wr:research' || github.event.label.name == 'lifecycle:stuck'))
+      ((github.event_name == 'workflow_dispatch') || (github.event_name == 'issues' && github.event.action == 'labeled' && (github.event.label.name == 'wr:research' || github.event.label.name == 'lifecycle:stuck'))) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_RESEARCH != '0')
     steps:
       - name: Checkout
         uses: actions/checkout@v7

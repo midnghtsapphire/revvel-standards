@@ -85,17 +85,9 @@ jobs:
   bito-review:
     name: BITO AI Code Review
     # Skip on drafts, skip if [skip-bito] in title
-    if: |-
-      github.event_name == 'workflow_dispatch' || (
-        github.event_name == 'pull_request' &&
-        github.event.pull_request.draft == false &&
-        !contains(github.event.pull_request.title, '[skip-bito]')
-      ) || (
-        github.event_name == 'issue_comment' &&
-        github.event.issue.pull_request != null &&
-        (startsWith(github.event.comment.body, '/review') ||
-         startsWith(github.event.comment.body, '/explain'))
-      )
+    if: >-
+      (github.event_name == 'workflow_dispatch' || ( github.event_name == 'pull_request' && github.event.pull_request.draft == false && !contains(github.event.pull_request.title, '[skip-bito]') ) || ( github.event_name == 'issue_comment' && github.event.issue.pull_request != null && (startsWith(github.event.comment.body, '/review') || startsWith(github.event.comment.body, '/explain')) )) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0')
     runs-on: ubuntu-latest
     timeout-minutes: 30
 

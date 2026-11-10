@@ -12,7 +12,9 @@ jobs:
   review:
     name: PandaOps AI PR Review
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: >-
+      (github.event_name == 'workflow_dispatch') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0')
     permissions:
       contents: read
       pull-requests: write

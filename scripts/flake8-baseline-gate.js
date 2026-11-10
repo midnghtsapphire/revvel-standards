@@ -30,18 +30,24 @@
 const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
+const { pythonBinOrThrow } = require('./lib/python-bin.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_BASELINE = path.join(ROOT, 'config', 'flake8-baseline.txt');
 
+// Earlier form: a one-line assignment followed by the original concatenation
+// as a leftover no-op expression, which orphaned the comment below:
+// const FLAKE8_EXCLUDE =
+//   '.git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,.pytest_cache,mcp-servers/gemini-notebook-mcp-cli,docs/case-files';
 const FLAKE8_EXCLUDE =
-  '.git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,.pytest_cache,mcp-servers/gemini-notebook-mcp-cli';
   '.git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,'
   + '.pytest_cache,'
   // Vendored upstream project with its own [tool.ruff] config — see .flake8.
   // This gate passes --exclude explicitly, which OVERRIDES .flake8, so the
   // path must be listed here too or the exclusion silently does nothing.
-  + 'mcp-servers/gemini-notebook-mcp-cli';
+  + 'mcp-servers/gemini-notebook-mcp-cli,'
+  // As-received upload archive, kept byte-identical to its MANIFEST.csv.
+  + 'docs/case-files';
 
 
 function isPathExcluded(filePath) {
@@ -124,7 +130,7 @@ function loadBaseline(filePath) {
  * why `.circleci/scripts/install-python-flake8.sh` exists (WR #17746).
  */
 function ensureFlake8() {
-  const check = spawnSync('python3', ['-m', 'flake8', '--version'], {
+  const check = spawnSync(pythonBinOrThrow(), ['-m', 'flake8', '--version'], {
     encoding: 'utf8',
   });
   if (check.status === 0) return;
@@ -140,7 +146,7 @@ function ensureFlake8() {
   }
 
   const install = spawnSync(
-    'python3',
+    pythonBinOrThrow(),
     ['-m', 'pip', 'install', '--user', '-q', 'flake8==7.1.1'],
     { encoding: 'utf8' }
   );
@@ -169,7 +175,7 @@ function runFlake8(targetDir) {
     '--exit-zero',
     targetDir,
   ];
-  const res = spawnSync('python3', args, {
+  const res = spawnSync(pythonBinOrThrow(), args, {
     encoding: 'utf8',
     cwd: ROOT,
     maxBuffer: 20 * 1024 * 1024,
@@ -299,7 +305,14 @@ if (require.main === module) {
   try {
     process.exitCode = main();
   } catch (err) {
-    process.stderr.write(`flake8 baseline gate error: ${err.message || err}\n`);
+    // Every throw here is a "cannot measure" case, and the ratchet's contract
+    // (tests/python-flake8-workflow.test.js) requires the failure to say so:
+    // exit non-zero AND name the fail-closed stance, not just the cause.
+    process.stderr.write(
+      `flake8 baseline gate error: ${err.message || err}\n`
+        + 'This gate fails closed by design: a ratchet that cannot measure '
+        + 'must not report that nothing grew.\n'
+    );
     process.exitCode = 2;
   }
 }

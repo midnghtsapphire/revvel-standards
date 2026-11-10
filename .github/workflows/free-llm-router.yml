@@ -11,6 +11,7 @@ on:
 
 jobs:
   route:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_ROUTERS != '0'
     name: Route LLM Call
     runs-on: ubuntu-latest
     timeout-minutes: 30

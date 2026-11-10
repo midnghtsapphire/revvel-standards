@@ -17,7 +17,9 @@ permissions:
 jobs:
   claude-renovate-review:
     name: Claude Renovate Review
-    if: github.event.pull_request.user.login == 'renovate[bot]'
+    if: >-
+      (github.event.pull_request.user.login == 'renovate[bot]') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

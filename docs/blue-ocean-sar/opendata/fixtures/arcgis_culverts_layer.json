@@ -1,0 +1,44 @@
+{
+ "currentVersion": 11.1,
+ "id": 0,
+ "name": "Culverts",
+ "type": "Feature Layer",
+ "geometryType": "esriGeometryPoint",
+ "objectIdField": "OBJECTID",
+ "maxRecordCount": 2,
+ "supportedQueryFormats": "JSON, geoJSON, PBF",
+ "advancedQueryCapabilities": {
+  "supportsPagination": true,
+  "supportsOrderBy": true
+ },
+ "fields": [
+  {
+   "name": "OBJECTID",
+   "type": "esriFieldTypeOID",
+   "alias": "OBJECTID"
+  },
+  {
+   "name": "STATUS",
+   "type": "esriFieldTypeString",
+   "alias": "Status",
+   "length": 20
+  },
+  {
+   "name": "ROAD_NAME",
+   "type": "esriFieldTypeString",
+   "alias": "Road",
+   "length": 80
+  },
+  {
+   "name": "DIAM_IN",
+   "type": "esriFieldTypeDouble",
+   "alias": "Diameter (in)"
+  },
+  {
+   "name": "INSPECTED",
+   "type": "esriFieldTypeDate",
+   "alias": "Last inspected",
+   "length": 8
+  }
+ ]
+}

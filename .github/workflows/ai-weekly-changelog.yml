@@ -51,6 +51,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   changelog:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     name: Generate weekly changelog
     runs-on: ubuntu-latest
     env:

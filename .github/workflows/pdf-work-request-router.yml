@@ -14,13 +14,9 @@ permissions:
 
 jobs:
   route:
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'issues' && (
-        github.event.action == 'opened' ||
-        (github.event.action == 'labeled' && github.event.label.name == 'output-type:sellable-pdf') ||
-        (github.event.action == 'edited' && contains(join(github.event.issue.labels.*.name, ','), 'output-type:sellable-pdf'))
-      ))
+    if: >-
+      (github.event_name == 'workflow_dispatch' || (github.event_name == 'issues' && ( github.event.action == 'opened' || (github.event.action == 'labeled' && github.event.label.name == 'output-type:sellable-pdf') || (github.event.action == 'edited' && contains(join(github.event.issue.labels.*.name, ','), 'output-type:sellable-pdf')) ))) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_ROUTERS != '0')
     runs-on: ubuntu-latest
     permissions:
       contents: write

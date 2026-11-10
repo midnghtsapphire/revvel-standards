@@ -16,5 +16,11 @@ else
   echo "Linting changed Markdown:"
   echo "$FILES"
   mapfile -t MARKDOWN_FILES < <(printf '%s\n' "$FILES")
-  npx markdownlint-cli2 "${MARKDOWN_FILES[@]}"
+  # Original call linted every changed file, including paths .markdownlintignore
+  # excludes from the other two markdown gates (lint-md.yml and npm run lint):
+  # npx markdownlint-cli2 "${MARKDOWN_FILES[@]}"
+  # Pass the ignore list as "#glob" negations, exactly as
+  # scripts/markdownlint-repo.mjs does, so all three gates agree on scope.
+  mapfile -t IGNORE_GLOBS < <(sed -e 's/[[:space:]]*$//' -e '/^#/d' -e '/^$/d' -e 's/^/#/' .markdownlintignore)
+  npx markdownlint-cli2 "${MARKDOWN_FILES[@]}" "${IGNORE_GLOBS[@]}"
 fi

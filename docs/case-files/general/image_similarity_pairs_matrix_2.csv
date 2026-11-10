@@ -1,0 +1,2 @@
+pair_id,case_id,missing_image_id,candidate_image_id,hamming_distance,phash_similarity_pct,color_cosine_similarity_pct,composite_match_score_pct,hypothesis_a_match_pct,hypothesis_b_null_pct,match_classification,retention_status,timestamp_utc
+PAIR-PET-001,LINDEMAN-2026-MO,IMG-PET-REF-01,IMG-PET-CAND-01,1,98.44,88.5,92.48,92.48,7.52,HIGH_PROBABILITY_PET_MATCH,PERMANENTLY_STORED_NEVER_EXCLUDED,2026-10-08 19:15:04

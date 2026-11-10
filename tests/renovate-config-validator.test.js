@@ -18,8 +18,11 @@ const DOCS = path.join(ROOT, 'docs', 'RENOVATE_SETUP.md');
 const RENOVATE_CONFIG = path.join(ROOT, '.github', 'renovate.json5');
 
 const ACTION_OWNER_REPO = 'suzuki-shunsuke/github-action-renovate-config-validator';
-const ACTION_SHA = 'ee9f69e1f683ed0d08225086482b34fc9abe9300';
-const ACTION_VERSION = 'v2.1.0';
+// const ACTION_SHA = 'ee9f69e1f683ed0d08225086482b34fc9abe9300';
+// const ACTION_VERSION = 'v2.1.0';
+// Replaced 2026-10-16: Dependabot (#18071) bumped the workflow to v2.4.1; this test still expected v2.1.0.
+const ACTION_SHA = '1e1604219a6b38ae9a10aff42a28a3656322c31a';
+const ACTION_VERSION = 'v2.4.1';
 const STEP_NAME = 'Validate Renovate Configuration';
 
 const EXPECTED_PATH_FILTERS = [
@@ -95,7 +98,7 @@ test('path filters cover common Renovate config locations', () => {
   }
 });
 
-test(`workflow has a step named "${STEP_NAME}" using the pinned v2.1.0 action`, () => {
+test(`workflow has a step named "${STEP_NAME}" using the pinned ${ACTION_VERSION} action`, () => {
   const { raw, doc } = parseWorkflow(WORKFLOW);
   const jobs = doc.jobs || {};
   assert.ok(jobs.validate, 'expected job id "validate"');

@@ -1,0 +1,34 @@
+[
+  {
+    "source_id": "CLIF-2006",
+    "modality": "Aerial image sequence",
+    "claimed_window": "April 2006; exact day unverified",
+    "acquisition_verified": false,
+    "source_url": "https://www.sdms.afrl.af.mil/index.php?collection=clif2006",
+    "verification_needed": "Camera raw frames and auxiliary metadata; verify coverage and acquisition timestamps"
+  },
+  {
+    "source_id": "FRANKLIN-GIS",
+    "modality": "Historical parcels",
+    "claimed_window": "Archive reported back to 2002",
+    "acquisition_verified": false,
+    "source_url": "https://auditor.franklincountyohio.gov/Auditor/FTP",
+    "verification_needed": "Obtain 2005/2006/2007 parcel snapshots and metadata"
+  },
+  {
+    "source_id": "OHIO-LIDAR",
+    "modality": "LiDAR tiles",
+    "claimed_window": "acquisition year unverified",
+    "acquisition_verified": false,
+    "source_url": "https://gis1.oit.ohio.gov/ZIPARCHIVES/ELEVATION/LIDAR/Franklin/",
+    "verification_needed": "Do not interpret file listing date as acquisition date"
+  },
+  {
+    "source_id": "OSU-HIST",
+    "modality": "OSU historic imagery",
+    "claimed_window": "1953-1985 services listed",
+    "acquisition_verified": false,
+    "source_url": "https://gissvc.osu.edu/arcgis/rest/services/Imagery",
+    "verification_needed": "Historical baseline, not immediate 2006 comparison"
+  }
+]

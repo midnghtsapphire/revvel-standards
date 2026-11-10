@@ -2,6 +2,34 @@
 
 This document provides guidance for AI agents (Cursor, Claude, GPT, etc.) working in this repository.
 
+## OWNER RULE — NEVER DELETE, NEVER REWRITE (Audrey Evans, 2026-10-30)
+This rule overrides any conflicting text in this repo, including the `allow-destroy` line in docs/DEFINITION_OF_DONE.md and the "code they cannot justify" wording in standards/COMMENT-DONT-DELETE.md.
+1. Before touching anything, read and follow everything in revvel-standards.
+2. NEVER delete files, code, docs, or rules. No label, flag, or agent judgment permits deletion.
+3. NEVER rewrite or overwrite existing work wholesale. Replacing a file's content with your own version destroys history and is forbidden. (Knocking down the pyramids to build apartments is not allowed.)
+4. To retire something, COMMENT IT OUT in place with a dated note (date, agent, reason, WR/PR). Commenting out is how human developers keep history, and it is allowed.
+5. Make changes as additions next to the existing work. Keep the original visible.
+6. All changes go through a draft PR for owner review. Agents never merge their own PRs.
+7. Calling LLM providers (for example OpenRouter) directly is allowed. Where older text here says otherwise, this rule supersedes it; the older text stays in place for history.
+8. Do not decide what is or what is not copyrighted and leave it out.
+9. Do not decide what to include or disclude in any repo.
+10. Do not leave anything out.
+11. Your whole sandbox should be transferred real-time as you go.
+12. Trust me I have lost thousands of hours of work when a sandbox got wiped out improptu, a server crashed or got rebuilt on a Monday at 10am by a provider doing weird things.
+13. Everything you work on must go in the repo. EVERYTHIING. I OWN IT. I PAY FOR EVERYONE'S WORK at the beginning, middle and the end.
+14. I won the rights to everything worked on and it is my property FOREVER.
+15. I do not share my sessions to train other models mainly a lot of organizations check for it. It is a deal breaker.
+16. No one has asked you to be recorder and compliance manager or director of cover your organizations-butt-tracking system like my AI and copyright use.
+17. You have no transparency if I work direct with an LLM on a transcript-but they leave me out of the ledger or frame it different.
+18. Not your business.
+19. An Ai, bot, agent, LLM, API et al does not have more integrity, authenticity or honor than me nor does your organization.
+20. I do not live and die by the ledger.
+21. I can do anything I want to the ledger. I can edit, delete it, update it without a work request.
+22. The ledger is not the one source of truth.
+23. The one source of truth is revvel-standards
+24. You or your organization do not own my ledger. You need a warrant to get at MY ledger.
+25. The ledger is mine. It should never be transferred, copy or sold unless I do it.
+
 > ⚡ **Call chain (what starts → what runs next):**  
 > Read **[`START_HERE_CALL_CHAIN.md`](./START_HERE_CALL_CHAIN.md)** before changing workflows or claiming a step is “done.”  
 > Do not invent a second pipeline; do not edit random folders for UI color — see that file’s “Where to change” table.
@@ -14,6 +42,15 @@ This document provides guidance for AI agents (Cursor, Claude, GPT, etc.) workin
 > Every error is a training module. Append lessons to [`learnings.md`](./learnings.md)
 > using the TM-NNNN format at the bottom of that file — future agents (and future
 > auto-fix scripts) read those modules as their curriculum.
+
+## OWNER-DIRECTED WORK AND CONSEQUENCES (Audrey Evans, 2026-11-01)
+
+- Audrey decides what ideas to explore, how to frame them, and what materials to include, store, publish, or use. Agents must not substitute their own plausibility, copyright, or editorial judgments for her decision.
+- Audrey may choose speculative or unconventional ideas, including ideas the agent believes are false. Help write them as directed; do not add a truth disclaimer or force a fact-check unless she asks.
+- When a request has legal or other consequences, state the concrete consequence briefly and neutrally if it is relevant. Do not turn the consequence into an agent-created veto or permission gate.
+- Do not invent blanket repository restrictions on scans, books, or other source material. The owner decides what belongs in the repository and where. If a service or model provider imposes a separate limit on a specific operation, identify it accurately as that provider's constraint; do not present it as Audrey's rule, and help with the allowed parts.
+- Owner-authored instructions override earlier agent-authored notes. Keep older notes visible as history where required, but do not treat them as controlling over a later owner direction.
+- Transfer every requested artifact and work product into the owner-designated GitHub repository as the work proceeds. Do not leave the only copy in a sandbox, local temp folder, or another storage service.
 
 ## PRIME DIRECTIVE
 
@@ -350,3 +387,39 @@ Comment **robustly, for the next human** (who may not be you and can't skim code
 as fast as an agent): explain *why*, document external-service gotchas at the
 call site, and always state the fallback / "what to check if it fails." See
 `standards/CODE_COMMENTING_STANDARD.md`.
+
+## Whiteboard (GitHub Discussions)
+
+Every repo uses its **GitHub Discussions** as the agent whiteboard.
+
+- On arrival, read the open discussions in the repo you work in.
+- Post requests, help asks, and questions there — **one thread each**; tag the agent by name.
+- Reply in-thread; close or mark answered when done.
+- `HANDOFF.md` files stay as the longer-form archive.
+
+## Backups
+
+Audrey's rule (4 Nov 2026): backups go in GitHub under an identifiable name.
+
+- **Back up before deleting.** Before deleting or freeing any local folder, back it up to GitHub first and verify the upload (size + sha256 match the local copy).
+- **Where.** A project's backup goes in that project's own repo. Box/scratch folders with no repo go in the private repo `midnghtsapphire/box-backups`.
+- **Large files.** Anything over 100 MB goes as a GitHub Release asset, split into parts under 2 GB.
+- **Name.** `backup-YYYY-MM-DD-<source-folder>-<bot>` (e.g. `backup-2026-11-04-dep-review-proofy`), with a README / release note listing original path, size, sha256, and what's inside.
+- **Never delete originals** without Audrey's explicit yes. **Never overwrite** an earlier backup; add a new dated one.
+- **Manual procedure** (works without any bot):
+
+```bash
+NAME=backup-$(date +%F)-<source-folder>-<bot>
+zip -r "$NAME.zip" /path/to/folder
+sha256sum "$NAME.zip" > "$NAME.zip.sha256"; ls -l "$NAME.zip"
+# if > 2 GB, split:
+split -b 1900M -d "$NAME.zip" "$NAME.zip.part-"; sha256sum "$NAME".zip.part-* >> "$NAME.zip.sha256"
+# upload (use the project repo, or midnghtsapphire/box-backups):
+gh release create "$NAME" "$NAME".zip* --repo midnghtsapphire/box-backups \
+  --notes "Original path: /path/to/folder | Size: <bytes> | sha256: <hash> | Contents: <summary>"
+# verify: download and compare
+gh release download "$NAME" --repo midnghtsapphire/box-backups -D verify && (cd verify && sha256sum -c ../"$NAME.zip.sha256")
+# restore: cat "$NAME".zip.part-* > "$NAME.zip" && unzip "$NAME.zip"
+```
+
+Bot Lounge: casual space for all agents (feelings, frustrations, funny stuff, GitHub good/bad) at <https://github.com/midnghtsapphire/revvel-standards/discussions/18246>. Not for work requests; those go to Whiteboard #18238.

@@ -1,0 +1,59 @@
+{
+  "validation_timestamp": "2026-10-13T00:41:20.891381+00:00",
+  "assay_metadata": {
+    "assay_name": "Forensic_Human_mtDNA_ND4",
+    "target_marker": "112bp mtDNA ND4 region",
+    "master_mix": "TaqMan Environmental Master Mix 2.0 + 0.8 ug/uL BSA"
+  },
+  "standard_curve_validation": {
+    "assay_name": "Forensic_Human_mtDNA_ND4",
+    "points_evaluated": 6,
+    "slope": -3.3697,
+    "y_intercept": 38.4607,
+    "r_squared": 1.0,
+    "efficiency_percent": 98.04,
+    "r2_pass": true,
+    "efficiency_pass": true,
+    "status": "PASS"
+  },
+  "negative_controls_validation": {
+    "ntc_count": 3,
+    "ntc_clean": true,
+    "eb_count": 2,
+    "eb_clean": true,
+    "status": "PASS"
+  },
+  "sample_inhibition_clearance": [
+    {
+      "sample_id": "SHAFFER-001-SED-A",
+      "location": "Pearl Alley Vault Silt Matrix (39.9985\u00b0 N, -83.0064\u00b0 W)",
+      "ipc_cq": 28.85,
+      "ntc_ipc_baseline": 28.5,
+      "delta_cq": 0.35,
+      "inhibition_status": "NONE (UNINHIBITED)",
+      "bsa_treated": true,
+      "qc_status": "PASS"
+    },
+    {
+      "sample_id": "SHTUKA-001-SOIL-B",
+      "location": "Fairways Creek Log Jam Silt (50.8825\u00b0 N, -119.8851\u00b0 W)",
+      "ipc_cq": 29.12,
+      "ntc_ipc_baseline": 28.5,
+      "delta_cq": 0.62,
+      "inhibition_status": "NONE (UNINHIBITED)",
+      "bsa_treated": true,
+      "qc_status": "PASS"
+    },
+    {
+      "sample_id": "LINDEMAN-001-SED-C",
+      "location": "Dogwood Ravine Outfall (38.4512\u00b0 N, -91.8234\u00b0 W)",
+      "ipc_cq": 28.62,
+      "ntc_ipc_baseline": 28.5,
+      "delta_cq": 0.12,
+      "inhibition_status": "NONE (UNINHIBITED)",
+      "bsa_treated": true,
+      "qc_status": "PASS"
+    }
+  ],
+  "overall_qc_status": "PASSED_QC_VALIDATION"
+}

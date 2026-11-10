@@ -1,0 +1,53 @@
+{
+  "type": "FeatureCollection",
+  "_comment": "SYNTHETIC test fixture in the shape of a CalTopo GeoJSON export (property names as used by the caltopo_python client). Invented geometry near 45 N 120 W; not a real search.",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "a-0001",
+      "geometry": {"type": "Polygon", "coordinates": [[[-120.0, 45.0], [-119.99, 45.0], [-119.99, 45.01], [-120.0, 45.01], [-120.0, 45.0]]]},
+      "properties": {"class": "Assignment", "title": "A 101", "letter": "A", "number": "101", "resourceType": "GROUND", "status": "COMPLETED",
+                     "description": "segment=A\nAssignment 101", "stroke": "#FF0000", "fill": "#FF0000", "stroke-opacity": 1, "fill-opacity": 0.3}
+    },
+    {
+      "type": "Feature",
+      "id": "a-0002",
+      "geometry": {"type": "Polygon", "coordinates": [
+        [[-119.99, 45.0], [-119.98, 45.0], [-119.98, 45.01], [-119.99, 45.01], [-119.99, 45.0]],
+        [[-119.987, 45.003], [-119.983, 45.003], [-119.983, 45.007], [-119.987, 45.007], [-119.987, 45.003]]
+      ]},
+      "properties": {"class": "Assignment", "title": "Renamed in CalTopo", "letter": "Renamed", "number": "102",
+                     "description": "segment=B\nAssignment 102 (polygon has a lake cut out)", "stroke": "#FFFF00", "fill": "#FFFF00"}
+    },
+    {
+      "type": "Feature",
+      "id": "t-0001",
+      "geometry": {"type": "LineString", "coordinates": [[-120.005, 45.005, 410.0], [-119.975, 45.005, 412.0]]},
+      "properties": {"class": "Shape", "title": "Team 1 track", "stroke": "#0000FF", "stroke-width": 2, "pattern": "solid"}
+    },
+    {
+      "type": "Feature",
+      "id": "t-0002",
+      "geometry": {"type": "MultiLineString", "coordinates": [[[-119.995, 44.995], [-119.995, 45.005]], [[-119.995, 45.005], [-119.995, 45.015]]]},
+      "properties": {"class": "AppTrack", "title": "Team 2 track", "sweep_width_km": 0.05}
+    },
+    {
+      "type": "Feature",
+      "id": "la-0001",
+      "geometry": {"type": "LineString", "coordinates": [[-119.999, 45.001], [-119.981, 45.009]]},
+      "properties": {"class": "Assignment", "title": "Line assignment 103", "number": "103", "description": "planned route, not walked"}
+    },
+    {
+      "type": "Feature",
+      "id": "m-0001",
+      "geometry": {"type": "Point", "coordinates": [-119.996, 45.002]},
+      "properties": {"class": "Marker", "title": "Clue 1", "description": "glove", "marker-color": "#FF0000", "marker-symbol": "clue"}
+    },
+    {
+      "type": "Feature",
+      "id": "m-0002",
+      "geometry": {"type": "Point", "coordinates": [-119.97, 45.02]},
+      "properties": {"class": "Marker", "title": "ICP"}
+    }
+  ]
+}

@@ -16,6 +16,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const { pythonBinOrThrow } = require('../scripts/lib/python-bin.js');
 const {
   buildResearchPrompt,
   callPerplexityNoKey,
@@ -96,7 +97,10 @@ async function run() {
 
     assert.strictEqual(output, 'Research answer');
     assert.strictEqual(calls.length, 1);
-    assert.strictEqual(calls[0].command, 'python3');
+    // Not the literal 'python3': the interpreter is resolved by running it, so
+    // on Windows this is 'py'. Pinning the literal here is what made the same
+    // assertion a false contract -- see scripts/lib/python-bin.js.
+    assert.strictEqual(calls[0].command, pythonBinOrThrow());
     assert.strictEqual(calls[0].args[2], 'research prompt');
     assert.strictEqual(calls[0].args[3], 'sonar');
     assert.strictEqual(calls[0].args[4], 'auto');

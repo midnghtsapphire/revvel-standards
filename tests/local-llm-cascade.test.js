@@ -29,6 +29,7 @@ const http = require('node:http');
 const path = require('node:path');
 const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
+const { pythonBinOrThrow } = require('../scripts/lib/python-bin.js');
 
 const execFileAsync = promisify(execFile);
 
@@ -85,7 +86,7 @@ function close(server) {
  */
 async function runAsk(env, prompt = 'hello') {
   try {
-    const { stdout, stderr } = await execFileAsync('python3', [SCRIPT, 'ask', prompt], {
+    const { stdout, stderr } = await execFileAsync(pythonBinOrThrow(), [SCRIPT, 'ask', prompt], {
       env: { ...process.env, ...env },
       encoding: 'utf8',
       timeout: 30000,
@@ -103,7 +104,7 @@ async function runAsk(env, prompt = 'hello') {
 /** Same, for the `doctor` subcommand. */
 async function runDoctor(env) {
   try {
-    const { stdout } = await execFileAsync('python3', [SCRIPT, 'doctor'], {
+    const { stdout } = await execFileAsync(pythonBinOrThrow(), [SCRIPT, 'doctor'], {
       env: { ...process.env, ...env },
       encoding: 'utf8',
       timeout: 30000,
@@ -476,7 +477,7 @@ test('`load` posts to the native /api/v1 surface, not the OpenAI-compatible one'
   const port = await listen(server);
   try {
     const { stdout } = await execFileAsync(
-      'python3',
+      pythonBinOrThrow(),
       [SCRIPT, 'load', 'gemma-3-4b-it'],
       {
         env: {
@@ -510,7 +511,7 @@ test('a 404 on load explains the LM Studio version requirement', async () => {
   try {
     let stderr = '';
     try {
-      await execFileAsync('python3', [SCRIPT, 'load', 'x'], {
+      await execFileAsync(pythonBinOrThrow(), [SCRIPT, 'load', 'x'], {
         env: { ...process.env, LMSTUDIO_ENDPOINT: `http://127.0.0.1:${port}/v1` },
         encoding: 'utf8',
         timeout: 30000,

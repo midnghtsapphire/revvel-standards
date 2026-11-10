@@ -1,0 +1,8 @@
+log_id,year_evaluated,tech_generation,target_id,previous_confidence_pct,reevaluated_confidence_pct,detection_gain_pct,key_enabling_technology,timestamp_updated
+LOG-2018,2018,Gen 1: Manual Visual & Thermal IR,TB-001,35.0,35.0,0.0,Snow probing & visual ground grid sweep,2026-09-25T13:39:44-07:00
+LOG-2019,2019,Gen 2: 3m PlanetScope Satellite,TD-001,45.0,52.0,7.0,3m optical satellite vegetation monitoring,2026-09-25T13:39:44-07:00
+LOG-2021,2021,Gen 3: Sentinel-2 Red-Edge NDVI,TD-001,52.0,78.0,26.0,Year 3 peak nitrogen chlorophyll spike (+0.30 NDVI),2026-09-25T13:39:44-07:00
+LOG-2023,2023,Gen 4: Bare-Earth Airborne LiDAR DTM,CAT-001,60.0,85.0,25.0,Sub-canopy bare-earth elevation extraction,2026-09-25T13:39:44-07:00
+LOG-2025,2025,Gen 5: High-Freq GPR & HRD K9,CAT-002,72.0,92.0,20.0,Dual-frequency GPR (400/900 MHz) dielectric contrast,2026-09-25T13:39:44-07:00
+LOG-2026,2026,Gen 6: Solid-State SPAD SoC + 3D PointNet++ NN,TB-001,75.0,94.8,19.8,RoboSense SPAD SoC + PointNet++ Sphericity Engine,2026-09-25T13:39:44-07:00
+LOG-2026B,2026,Gen 6: AEye 1km LiDAR + Quantum Sensor Stack,TG-001,62.0,88.5,26.5,AEye 1km BVLOS Swath + Micro-Gravity Scanner,2026-09-25T13:39:44-07:00

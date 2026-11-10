@@ -1,0 +1,32 @@
+[
+  {
+    "year": 2024,
+    "platform": "USGS 3DEP DEM & Sentinel-2 Pre-Disappearance",
+    "elev_diff_m": 0.0,
+    "ndvi_shift": 0.45,
+    "reip_shift_nm": 0.0,
+    "sar_backscatter_db": -12.1,
+    "gpr_dielectric": 9.2,
+    "classification": "Pre-disappearance baseline along Stoddard Wells drainage wash."
+  },
+  {
+    "year": 2025,
+    "platform": "PlanetScope & Sentinel-1 C-SAR (Post-Disappearance)",
+    "elev_diff_m": -0.52,
+    "ndvi_shift": 0.71,
+    "reip_shift_nm": 4.12,
+    "sar_backscatter_db": -15.8,
+    "gpr_dielectric": 17.1,
+    "classification": "Initial ground slump and organic nitrate shift downstream from vehicle anchor."
+  },
+  {
+    "year": 2026,
+    "platform": "USGS HRDEM LiDAR & 77.5 GHz FMCW Terahertz Radar",
+    "elev_diff_m": -0.41,
+    "ndvi_shift": 0.62,
+    "reip_shift_nm": 2.85,
+    "sar_backscatter_db": -13.7,
+    "gpr_dielectric": 15.4,
+    "classification": "Target locked (SNR 17.8 dB): Nike AF1 eyelets, brass zipper, and osteological void at 0.55m depth."
+  }
+]

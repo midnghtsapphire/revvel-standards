@@ -1,0 +1,19 @@
+<qgis version="3.28.0" hasScaleBasedVisibilityFlag="0">
+  <pipe>
+    <provider>
+      <resampling enabled="true" maxOversampling="2" stage="1"/>
+    </provider>
+    <rasterrenderer type="singlebandpseudocolor" opacity="0.9" alphaBand="-1" band="1" classificationMin="0" classificationMax="1">
+      <rastershader>
+        <colorrampshader colorRampType="INTERPOLATED" classificationMode="1" clip="0">
+          <item color="#000000" value="0.0" alpha="0" label="0.0 (Background Baseline)"/>
+          <item color="#313695" value="0.2" alpha="100" label="0.2 (Low Anomaly Signal)"/>
+          <item color="#e0f3f8" value="0.5" alpha="180" label="0.5 (Moderate Permittivity Shift)"/>
+          <item color="#fdae61" value="0.8" alpha="220" label="0.8 (High GPR / ERT Anomaly)"/>
+          <item color="#d73027" value="1.0" alpha="255" label="1.0 (Critical Target Peak)"/>
+        </colorrampshader>
+      </rastershader>
+    </rasterrenderer>
+  </pipe>
+  <blendMode>0</blendMode>
+</qgis>

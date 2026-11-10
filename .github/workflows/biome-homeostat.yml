@@ -30,6 +30,7 @@ env:
 
 jobs:
   regulate:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     name: Check AI-lane keys (credit-free)
     runs-on: ubuntu-latest
     timeout-minutes: 10

@@ -1,0 +1,104 @@
+# fleets.yml: registry for /<fleet> launcher (proposed; not installed)
+# Install path: revvel-standards/.github/fleets.yml
+# route types:
+#   dispatch  -> gh workflow run <workflow> (workflow_dispatch) with inputs
+#   repo_dispatch -> repository_dispatch event_type (for fleets with no workflow_dispatch)
+#   persona   -> already handled by persona-comment-trigger.yml; dispatcher only acks
+#   local     -> no CI entry point; dispatcher replies with the local command
+# cloud: true = spends LLM credits; dispatcher refuses unless vars.REVVEL_LLM_ALLOW_CLOUD == '1'
+version: 1
+owner: midnghtsapphire
+fleets:
+  security-fleet:
+    aliases: [security, redteam-fleet]
+    purpose: "5 deterministic AI-exploit red-team detectors (sentinel, exprwatch, exfil, permit, redteam)"
+    route: dispatch
+    workflow: security-fleet.yml
+    inputs: {}
+    model: none (deterministic)
+    cloud: false
+  biome:
+    aliases: [biome-crew, crew]
+    purpose: "Credit-free self-healing crew (sentinel, medic, homeostat, sheaf, inspector)"
+    route: dispatch
+    workflows: [biome-sentinel.yml, biome-medic.yml, biome-homeostat.yml, biome-sheaf.yml, biome-inspector.yml]
+    inputs: {}
+    model: none (rules only)
+    cloud: false
+  dragnet-team:
+    aliases: [dragnet-fleet]
+    purpose: "DRAGNET PLATO->MEDUSA->COUNTER->DARWIN->JUDGE on an issue"
+    route: dispatch
+    workflow: deep-search-research.yml          # dragnet-team-assignment.yml has no workflow_dispatch; see report
+    inputs: { issue_number: "{{issue}}", research_query: "{{args}}", profile: "triage" }
+    model: openai/gpt-4o-mini (triage profile) -> escalate manually
+    cloud: true
+  research:
+    aliases: [rnd, rnd-research, research-fleet]
+    purpose: "Research engine orchestrator (R&D research fleet lanes)"
+    route: dispatch
+    workflow: research-engine.yml
+    inputs: { issue_number: "{{issue}}", research_query: "{{args}}", research_depth: "standard" }
+    model: SSOT research profile (sonar-pro) / orchestrator
+    cloud: true
+  bernstein:
+    aliases: [octopus-orchestra, claude-octopus]
+    purpose: "Bernstein multi-agent orchestrator"
+    route: dispatch
+    workflow: bernstein-orchestrator.yml
+    inputs: { task: "{{args}}", budget: "1" }
+    model: OpenRouter (pass OPENROUTER_API_KEY only; see FIX-PLAN s8)
+    cloud: true
+  octopus:
+    aliases: [octo-review]
+    purpose: "Octopus review fallback on a PR"
+    route: dispatch
+    workflow: octopus-review-fallback.yml
+    inputs: { pr_number: "{{issue}}" }
+    model: SSOT review profile
+    cloud: true
+  coding-agents:
+    aliases: [openhands, swe, coder-fleet]
+    purpose: "Hand an issue to the OpenRouter-backed coding agents"
+    route: dispatch
+    workflow: openhands-resolver.yml           # alt: swe-agent.yml
+    inputs: { issue_number: "{{issue}}" }
+    model: qwen/qwen3-coder (proposed; today anthropic/claude-sonnet-4.5)
+    cloud: true
+  fleet-controller:
+    aliases: [fleet-ops, controller]
+    purpose: "Find/cancel stalled or runaway runs (dry-run by default here)"
+    route: dispatch
+    workflow: fleet-controller.yml
+    inputs: { preempt: "false" }
+    model: none
+    cloud: false
+  agent-creator-refresh:
+    aliases: [agentic-workflow-fleet, workflow-fleet]
+    purpose: "Rebuild agent-creator data from FLEET.yml / SECURITY_FLEET.yml (fleet has no runner of its own)"
+    route: dispatch
+    workflow: update-agent-creator-data.yml
+    inputs: {}
+    model: SSOT
+    cloud: true
+  personas:
+    aliases: [oaudrey, openrouter, mindmappr, professor, dragnet, coder, orbit, octo, mender]
+    purpose: "Persona fleet; already summoned by /<handle> via persona-comment-trigger.yml"
+    route: persona
+    workflow: persona-comment-trigger.yml
+    model: per persona (repo_surgery / cheap_batch_edits / perplexity sonar)
+    cloud: true
+  fraud-signal:
+    aliases: [fraud, fsv]
+    purpose: "Fraud-signal verification fleet (5 agents + judge), Python, local only"
+    route: local
+    command: "cd fraud-signal-verification-fleet && python3 src/orchestrator.py && python3 src/judge.py"
+    model: none in repo (offline scorer)
+    cloud: false
+  unfound-docket:
+    aliases: [docket]
+    purpose: "Prompt-only fleet (Clerk of the Rule, Statute Reader, Exhibit Mathematician...)"
+    route: local
+    command: "open docs/unfound-docket/FLEET.md and paste a role prompt into Claude"
+    model: none (paste-in)
+    cloud: false

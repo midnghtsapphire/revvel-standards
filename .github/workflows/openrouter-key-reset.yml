@@ -48,6 +48,7 @@ env:
 
 jobs:
   probe-and-reset:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     name: Probe key then reset failure labels
     runs-on: ubuntu-latest
     timeout-minutes: 60

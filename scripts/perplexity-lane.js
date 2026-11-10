@@ -41,6 +41,7 @@
 const http = require('node:http');
 const https = require('node:https');
 const { URL } = require('node:url');
+const { pythonBinOrThrow } = require('./lib/python-bin.js');
 
 const LANE = 'lane-2-perplexity-keyless';
 const DEFAULT_ENDPOINT = 'https://api.perplexity.ai/chat/completions';
@@ -117,7 +118,7 @@ async function chatViaNoKeyBridge(messages) {
   const { execFile } = require('node:child_process');
   return new Promise((resolve, reject) => {
     const child = execFile(
-      'python3',
+      pythonBinOrThrow(),
       ['-c', NO_KEY_BRIDGE, flattenMessages(messages), BRIDGE_MODEL, BRIDGE_FALLBACK, NO_KEY_INSTALL_HINT],
       { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024, timeout: timeoutMs() },
       (err, stdout, stderr) => {

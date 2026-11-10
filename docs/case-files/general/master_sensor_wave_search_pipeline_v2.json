@@ -1,0 +1,111 @@
+{
+  "pipeline_version": "2.0.0-ALL-BANDS-INTEGRATED",
+  "description": "Comprehensive 15-Waveband Multi-Sensor Fusion Pipeline for Forensic Target Detection and Missing Person Search",
+  "integrated_wave_bands": {
+    "X_Band_SAR": {
+      "frequency_GHz": 9.6,
+      "wavelength_cm": 3.1,
+      "resolution_m": 0.25,
+      "role": "Micro-reflector & gear detection"
+    },
+    "C_Band_SAR": {
+      "frequency_GHz": 5.4,
+      "wavelength_cm": 5.5,
+      "resolution_m": 10.0,
+      "role": "Coherent Change Detection (CCD) & InSAR"
+    },
+    "S_Band_SAR": {
+      "frequency_GHz": 3.2,
+      "wavelength_cm": 9.3,
+      "resolution_m": 6.0,
+      "role": "Intermediate canopy penetration"
+    },
+    "L_Band_SAR": {
+      "frequency_GHz": 1.25,
+      "wavelength_cm": 24.0,
+      "resolution_m": 3.0,
+      "role": "Sub-canopy forest penetration & soil moisture"
+    },
+    "P_Band_SAR": {
+      "frequency_GHz": 0.435,
+      "wavelength_cm": 70.0,
+      "resolution_m": 50.0,
+      "role": "Deep foliage penetration & TomoSAR 3D imaging"
+    },
+    "Ka_Band_Radar": {
+      "frequency_GHz": 35.7,
+      "wavelength_cm": 0.8,
+      "resolution_m": 10.0,
+      "role": "Water surface topography & outfall flooding"
+    },
+    "VSWIR_Hyperspectral": {
+      "band_range_nm": [
+        400,
+        2500
+      ],
+      "channels": 224,
+      "resolution_m": 5.0,
+      "role": "Clay mineral disturbance & lipid doublets (1200/1400/1720 nm)"
+    },
+    "SIF_Fluorescence": {
+      "band_range_nm": [
+        670,
+        780
+      ],
+      "resolution_m": 0.3,
+      "role": "Pre-visual plant chlorophyll stress from root leachates"
+    },
+    "GNSS_Reflectometry": {
+      "frequency_GHz": 1.575,
+      "wavelength_cm": 19.0,
+      "role": "Passive forward-scatter sub-canopy moisture mapping"
+    },
+    "Thermal_MWIR_LWIR": {
+      "microns": [
+        3.0,
+        12.0
+      ],
+      "resolution_m": 0.1,
+      "role": "High-resolution thermal decay & surface dissipation"
+    },
+    "GPR_Subsurface": {
+      "frequency_MHz": [
+        225,
+        500
+      ],
+      "penetration_m": 3.0,
+      "role": "Subsurface dielectric contrast (Adipocere \u03b5_r=3.0 vs Clay \u03b5_r=25.0)"
+    },
+    "ERT_Resistivity": {
+      "method": "Dipole-Dipole",
+      "role": "High-resistivity insulating wax shell (>150 \u03a9\u00b7m) vs leachate plume"
+    },
+    "Gravimetry_Magnetics": {
+      "sensors": [
+        "GRACE-FO",
+        "Quantum Magnetometer"
+      ],
+      "role": "Void mass displacement & buried ferromagnetic detection"
+    }
+  },
+  "empirical_calibration_baselines": {
+    "pig_proxy_studies": [
+      "Keele University 10-Year Study",
+      "REST[ES] Human Decomposition Facility 2024 Study"
+    ],
+    "adipocere_dielectric_constant": 3.0,
+    "wet_clay_dielectric_constant": 25.0,
+    "gpr_reflection_coefficient": 0.4286,
+    "gpr_wave_velocity_adipocere_m_ns": 0.173,
+    "gpr_wave_velocity_clay_m_ns": 0.06,
+    "swir_lipid_absorption_doublets_nm": [
+      1200,
+      1400,
+      1720
+    ],
+    "ftir_carboxylate_soap_bands_cm1": [
+      1540,
+      1570
+    ]
+  }
+}

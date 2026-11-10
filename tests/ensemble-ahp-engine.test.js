@@ -21,6 +21,7 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { pythonBinOrThrow } = require('../scripts/lib/python-bin.js');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SERVER_DIR = path.join(REPO_ROOT, 'mcp-servers', 'ensemble-ahp-engine');
@@ -61,7 +62,7 @@ function runPython(snippet, extraEnv = {}) {
     AHP_FORCE_MOCK: '1',
     ...extraEnv,
   };
-  const r = spawnSync('python3', ['-c', snippet], {
+  const r = spawnSync(pythonBinOrThrow(), ['-c', snippet], {
     encoding: 'utf8',
     env,
     cwd: REPO_ROOT,
@@ -99,7 +100,7 @@ test('package source files exist', () => {
 });
 
 test('server package compiles cleanly', () => {
-  const r = spawnSync('python3', ['-m', 'compileall', '-q', SERVER_DIR], {
+  const r = spawnSync(pythonBinOrThrow(), ['-m', 'compileall', '-q', SERVER_DIR], {
     encoding: 'utf8',
   });
   if (r.status !== 0) {
@@ -430,7 +431,7 @@ print(json.dumps(result.report))
 
 test('CLI sample run exits 0 and prints JSON report', () => {
   const r = spawnSync(
-    'python3',
+    pythonBinOrThrow(),
     ['-m', 'ensemble_ahp.cli', '--sample', '--mock', '--n-criteria', '4', '--n-alternatives', '3'],
     {
       encoding: 'utf8',

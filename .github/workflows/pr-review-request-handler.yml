@@ -17,9 +17,9 @@ jobs:
   handle-review-request:
     name: Handle Changes Requested
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'pull_request_review' && github.event.review.state == 'CHANGES_REQUESTED') ||
-      (github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'changes-requested')
+    if: >-
+      ((github.event_name == 'pull_request_review' && github.event.review.state == 'CHANGES_REQUESTED') || (github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'changes-requested')) &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0')
     steps:
       - name: Check out repository
         uses: actions/checkout@v7

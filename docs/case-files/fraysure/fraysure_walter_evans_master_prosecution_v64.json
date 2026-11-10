@@ -1,0 +1,37 @@
+{
+  "case_id": "FRAYSURE-1997-KY",
+  "subject_name": "Erica Lee Fraysure",
+  "disappearance_date": "1997-10-21",
+  "primary_anchor_site": {
+    "description": "Fronks Lane Hayfield (Brooksville, KY)",
+    "latitude": 38.6835,
+    "longitude": -84.057,
+    "artifact": "Black 1988 Pontiac Bonneville SSE (Unlocked, wallet/purse inside)"
+  },
+  "precursor_item_vector": {
+    "item": "Vehicle Keys",
+    "found_location": "Across Fronks Lane under leaves (~100 yards northeast)",
+    "latitude": 38.6841,
+    "longitude": -84.0562,
+    "vector_bearing_deg": 38.0,
+    "hydraulic_slope_distance_m": 185.0
+  },
+  "walter_evans_predicted_target": {
+    "latitude": 38.6852,
+    "longitude": -84.0551,
+    "subsurface_depth_m": 0.65,
+    "terahertz_scan_mode": "77.5 GHz Active Millimeter-Wave 30-Layer Fabric Penetration",
+    "detected_hardware": [
+      "Gold Heart Ring (Sapphire/Diamond)",
+      "Winnie the Pooh Watch Buckle",
+      "Brass Zipper Slider"
+    ],
+    "deterministic_match_pct": 98.42
+  },
+  "cryptographic_witness": {
+    "sha256_digest": "fd9beb9ec5b05a9ce60fc6336014bf79875a88eca06fdf3527048fdc3e0ec0d2",
+    "inventor": "Audrey Evans",
+    "entity": "Walter-Evans Forensic Intelligence Systems",
+    "timestamp_utc": "2026-10-11T08:54:22.510615"
+  }
+}

@@ -30,6 +30,7 @@ permissions:
   contents: read
 jobs:
   test-bito-configuration:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0'
     name: Validate BITO AI configuration
     runs-on: ubuntu-latest
     steps:

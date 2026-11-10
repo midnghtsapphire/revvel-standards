@@ -88,6 +88,92 @@ jobs:
           # js-yaml pinned so this gate is reproducible (no floating npx fetch).
           command: npx --yes js-yaml@4.1.0 skills/SKILLS_INDEX.yml > /dev/null && echo "SKILLS_INDEX.yml ok"
 
+  # VEINS monitoring snapshot — answers the three standing questions about the
+  # external V.E.I.N.S. self-healing engine: what is it changing, how frequently,
+  # and are the proposals doing anything? Runs on every push; never fails the
+  # pipeline (exit code swallowed with || true) — this is an observer, not a
+  # gate. Output is stored as a CircleCI artifact for trend tracking.
+  # Scripts: scripts/veins-snapshot.js, scripts/veins-tracker.js,
+  #          scripts/veins-state-log.js
+  # Doc: docs/VEINS_MONITORING_REPORT.md
+  veins-monitor:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: VEINS Activity Snapshot (human-readable)
+          command: node scripts/veins-snapshot.js || true
+      - run:
+          name: VEINS Activity Snapshot (JSON artifact)
+          command: |
+            mkdir -p /tmp/veins-artifacts
+            node scripts/veins-snapshot.js --json \
+              > /tmp/veins-artifacts/veins-snapshot.json || true
+      # Append a compact summary row to docs/veins-history.jsonl and store it as
+      # an artifact alongside veins-snapshot.json. The JSONL in-repo is the
+      # committed baseline; this artifact shows the per-build cumulative history
+      # (baseline + current row) so trends are readable across build artifacts.
+      - run:
+          name: VEINS State Log (trend tracking)
+          command: |
+            node scripts/veins-state-log.js \
+              > /tmp/veins-artifacts/veins-state-log.txt || true
+            cp docs/veins-history.jsonl \
+              /tmp/veins-artifacts/veins-history.jsonl || true
+      - store_artifacts:
+          path: /tmp/veins-artifacts
+          destination: veins-monitor
+
+  # Deploy to Railway on main-branch merges after lint-and-test passes.
+  # Division of labor: CircleCI = test gate; this job is the bridge to the
+  # Railway deploy target that GitHub Actions (ship-to-market.yml) also uses.
+  #
+  # Human setup required (one-time):
+  #   1. Get a Railway token: https://railway.app/account/tokens
+  #   2. Add RAILWAY_TOKEN to CircleCI project env vars:
+  #      app.circleci.com → Project Settings → Environment Variables
+  #   3. Also add RAILWAY_TOKEN to GitHub Actions secrets for ship-to-market.yml.
+  #
+  # If RAILWAY_TOKEN is absent the step exits 0 with a clear "SKIPPED" message
+  # so the rest of the main pipeline is not blocked. Once the token is set, a
+  # failed railway deploy exits non-zero and fails the job (RVS-VERIFY-001:
+  # exit codes reflect the postcondition, not process completion).
+  deploy-railway:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Deploy to Railway
+          command: |
+            if [[ -z "$RAILWAY_TOKEN" ]]; then
+              echo "============================================================"
+              echo "SKIPPED — RAILWAY_TOKEN not set in CircleCI project env vars."
+              echo "To activate: app.circleci.com → Project Settings"
+              echo "             → Environment Variables → Add RAILWAY_TOKEN"
+              echo "Get a token: https://railway.app/account/tokens"
+              echo "============================================================"
+              exit 0
+            fi
+            # npx, not npm install -g: cimg/node's global prefix is root-owned,
+            # so `npm install -g` dies EACCES for the circleci user. npx stages
+            # the CLI under the user-writable ~/.npm cache instead.
+            #
+            # The project must be linked explicitly: bare `railway up` opens an
+            # interactive "link a project" prompt, which hangs a CI step until
+            # the 10-minute no-output timeout kills it. Defaults below are the
+            # lucky-light project already wired to this repo's Railway GitHub
+            # integration (IDs are public in the commit status target_url);
+            # override via CircleCI env vars if the target ever changes.
+            PROJECT_ID="${RAILWAY_PROJECT_ID:-fda5db73-50e3-4a67-8b53-4e723630af43}"
+            SERVICE_ID="${RAILWAY_SERVICE_ID:-90cbc6dc-4cb2-4ae9-a631-48748455c970}"
+            npx --yes @railway/cli link --project "$PROJECT_ID" --service "$SERVICE_ID"
+            # `timeout` is the hang guard: any future prompt fails in 5 minutes
+            # instead of burning the full 10-minute no-output window.
+            timeout 300 npx --yes @railway/cli up --detach
+            echo "Deploy triggered. Check https://railway.app for service status."
+
   # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
   # and that every REVVEL-DISABLED block in changed files has all required
   # metadata fields (AGENT, MODEL, WR, DATE, STATUS).
@@ -134,6 +220,10 @@ workflows:
           filters:
             branches:
               ignore: main
+      - veins-monitor:
+          filters:
+            branches:
+              ignore: main
 
   # Run on main.
   main-workflow:
@@ -147,6 +237,18 @@ workflows:
             branches:
               only: main
       - policy-check:
+          filters:
+            branches:
+              only: main
+      - veins-monitor:
+          filters:
+            branches:
+              only: main
+      # deploy-railway runs only on main, only after the test gate is green.
+      # Skips silently if RAILWAY_TOKEN is not set in CircleCI project env vars.
+      - deploy-railway:
+          requires:
+            - lint-and-test
           filters:
             branches:
               only: main

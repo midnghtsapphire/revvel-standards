@@ -1,0 +1,930 @@
+{
+ "_fixture_note": "SYNTHETIC TEST FIXTURE. Structure follows the NWIS IV JSON (WaterML-as-JSON) layout; the numbers are made up to match the case-file narrative (~5,200 vs ~151 cfs, 18-22 C) and are NOT measurements. Site coordinates are approximate placeholders.",
+ "name": "ns1:timeSeriesResponseType",
+ "declaredType": "org.cuahsi.waterml.TimeSeriesResponseType",
+ "scope": "javax.xml.bind.JAXBElement$GlobalScope",
+ "value": {
+  "queryInfo": {
+   "queryURL": "http://waterservices.usgs.gov/nwis/iv/sites=12439500,12442500&startDT=2026-05-27T13:00-07:00&endDT=2026-05-27T15:45-07:00&parameterCd=00060,00065,00010&format=json",
+   "criteria": {
+    "locationParam": "[ALL:12439500, ALL:12442500]",
+    "variableParam": "[00060, 00065, 00010]",
+    "parameter": []
+   },
+   "note": [
+    {
+     "value": "[ALL:12439500, ALL:12442500]",
+     "title": "filter:sites"
+    }
+   ]
+  },
+  "timeSeries": [
+   {
+    "sourceInfo": {
+     "siteName": "OKANOGAN RIVER AT OROVILLE, WA",
+     "siteCode": [
+      {
+       "value": "12439500",
+       "network": "NWIS",
+       "agencyCode": "USGS"
+      }
+     ],
+     "timeZoneInfo": {
+      "defaultTimeZone": {
+       "zoneOffset": "-08:00",
+       "zoneAbbreviation": "PST"
+      },
+      "daylightSavingsTimeZone": {
+       "zoneOffset": "-07:00",
+       "zoneAbbreviation": "PDT"
+      },
+      "siteUsesDaylightSavingsTime": true
+     },
+     "geoLocation": {
+      "geogLocation": {
+       "srs": "EPSG:4326",
+       "latitude": 48.94,
+       "longitude": -119.43
+      },
+      "localSiteXY": []
+     },
+     "note": [],
+     "siteType": [],
+     "siteProperty": [
+      {
+       "value": "ST",
+       "name": "siteTypeCd"
+      }
+     ]
+    },
+    "variable": {
+     "variableCode": [
+      {
+       "value": "00060",
+       "network": "NWIS",
+       "vocabulary": "NWIS:UnitValues",
+       "variableID": 1,
+       "default": true
+      }
+     ],
+     "variableName": "Streamflow, ft&#179;/s",
+     "variableDescription": "Discharge, cubic feet per second",
+     "valueType": "Derived Value",
+     "unit": {
+      "unitCode": "ft3/s"
+     },
+     "options": {
+      "option": [
+       {
+        "name": "Statistic",
+        "optionCode": "00000"
+       }
+      ]
+     },
+     "note": [],
+     "noDataValue": -999999.0,
+     "variableProperty": [],
+     "oid": "1"
+    },
+    "values": [
+     {
+      "value": [
+       {
+        "value": "150",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:00:00.000-07:00"
+       },
+       {
+        "value": "151",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:15:00.000-07:00"
+       },
+       {
+        "value": "151",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:30:00.000-07:00"
+       },
+       {
+        "value": "152",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:45:00.000-07:00"
+       },
+       {
+        "value": "151",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:00:00.000-07:00"
+       },
+       {
+        "value": "151",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:15:00.000-07:00"
+       },
+       {
+        "value": "150",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:30:00.000-07:00"
+       },
+       {
+        "value": "151",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:45:00.000-07:00"
+       },
+       {
+        "value": "152",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:00:00.000-07:00"
+       },
+       {
+        "value": "151",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:15:00.000-07:00"
+       },
+       {
+        "value": "151",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:30:00.000-07:00"
+       },
+       {
+        "value": "150",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:45:00.000-07:00"
+       }
+      ],
+      "qualifier": [
+       {
+        "qualifierCode": "P",
+        "qualifierDescription": "Provisional data subject to revision.",
+        "qualifierID": 0,
+        "network": "NWIS",
+        "vocabulary": "uv_rmk_cd"
+       }
+      ],
+      "qualityControlLevel": [],
+      "method": [
+       {
+        "methodDescription": "",
+        "methodID": 100001
+       }
+      ],
+      "source": [],
+      "offset": [],
+      "sample": [],
+      "censorCode": []
+     }
+    ],
+    "name": "USGS:12439500:00060:00000"
+   },
+   {
+    "sourceInfo": {
+     "siteName": "OKANOGAN RIVER AT OROVILLE, WA",
+     "siteCode": [
+      {
+       "value": "12439500",
+       "network": "NWIS",
+       "agencyCode": "USGS"
+      }
+     ],
+     "timeZoneInfo": {
+      "defaultTimeZone": {
+       "zoneOffset": "-08:00",
+       "zoneAbbreviation": "PST"
+      },
+      "daylightSavingsTimeZone": {
+       "zoneOffset": "-07:00",
+       "zoneAbbreviation": "PDT"
+      },
+      "siteUsesDaylightSavingsTime": true
+     },
+     "geoLocation": {
+      "geogLocation": {
+       "srs": "EPSG:4326",
+       "latitude": 48.94,
+       "longitude": -119.43
+      },
+      "localSiteXY": []
+     },
+     "note": [],
+     "siteType": [],
+     "siteProperty": [
+      {
+       "value": "ST",
+       "name": "siteTypeCd"
+      }
+     ]
+    },
+    "variable": {
+     "variableCode": [
+      {
+       "value": "00065",
+       "network": "NWIS",
+       "vocabulary": "NWIS:UnitValues",
+       "variableID": 2,
+       "default": true
+      }
+     ],
+     "variableName": "Gage height, ft",
+     "variableDescription": "Gage height, feet",
+     "valueType": "Derived Value",
+     "unit": {
+      "unitCode": "ft"
+     },
+     "options": {
+      "option": [
+       {
+        "name": "Statistic",
+        "optionCode": "00000"
+       }
+      ]
+     },
+     "note": [],
+     "noDataValue": -999999.0,
+     "variableProperty": [],
+     "oid": "2"
+    },
+    "values": [
+     {
+      "value": [
+       {
+        "value": "3.10",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:00:00.000-07:00"
+       },
+       {
+        "value": "3.10",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:15:00.000-07:00"
+       },
+       {
+        "value": "3.11",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:30:00.000-07:00"
+       },
+       {
+        "value": "3.11",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:45:00.000-07:00"
+       },
+       {
+        "value": "3.11",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:00:00.000-07:00"
+       },
+       {
+        "value": "3.11",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:15:00.000-07:00"
+       },
+       {
+        "value": "3.10",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:30:00.000-07:00"
+       },
+       {
+        "value": "3.11",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:45:00.000-07:00"
+       },
+       {
+        "value": "3.11",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:00:00.000-07:00"
+       },
+       {
+        "value": "3.11",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:15:00.000-07:00"
+       },
+       {
+        "value": "3.11",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:30:00.000-07:00"
+       },
+       {
+        "value": "3.10",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:45:00.000-07:00"
+       }
+      ],
+      "qualifier": [
+       {
+        "qualifierCode": "P",
+        "qualifierDescription": "Provisional data subject to revision.",
+        "qualifierID": 0,
+        "network": "NWIS",
+        "vocabulary": "uv_rmk_cd"
+       }
+      ],
+      "qualityControlLevel": [],
+      "method": [
+       {
+        "methodDescription": "",
+        "methodID": 100002
+       }
+      ],
+      "source": [],
+      "offset": [],
+      "sample": [],
+      "censorCode": []
+     }
+    ],
+    "name": "USGS:12439500:00065:00000"
+   },
+   {
+    "sourceInfo": {
+     "siteName": "OKANOGAN RIVER AT OROVILLE, WA",
+     "siteCode": [
+      {
+       "value": "12439500",
+       "network": "NWIS",
+       "agencyCode": "USGS"
+      }
+     ],
+     "timeZoneInfo": {
+      "defaultTimeZone": {
+       "zoneOffset": "-08:00",
+       "zoneAbbreviation": "PST"
+      },
+      "daylightSavingsTimeZone": {
+       "zoneOffset": "-07:00",
+       "zoneAbbreviation": "PDT"
+      },
+      "siteUsesDaylightSavingsTime": true
+     },
+     "geoLocation": {
+      "geogLocation": {
+       "srs": "EPSG:4326",
+       "latitude": 48.94,
+       "longitude": -119.43
+      },
+      "localSiteXY": []
+     },
+     "note": [],
+     "siteType": [],
+     "siteProperty": [
+      {
+       "value": "ST",
+       "name": "siteTypeCd"
+      }
+     ]
+    },
+    "variable": {
+     "variableCode": [
+      {
+       "value": "00010",
+       "network": "NWIS",
+       "vocabulary": "NWIS:UnitValues",
+       "variableID": 3,
+       "default": true
+      }
+     ],
+     "variableName": "Temperature, water, &#176;C",
+     "variableDescription": "Temperature, water, degrees Celsius",
+     "valueType": "Derived Value",
+     "unit": {
+      "unitCode": "deg C"
+     },
+     "options": {
+      "option": [
+       {
+        "name": "Statistic",
+        "optionCode": "00000"
+       }
+      ]
+     },
+     "note": [],
+     "noDataValue": -999999.0,
+     "variableProperty": [],
+     "oid": "3"
+    },
+    "values": [
+     {
+      "value": [
+       {
+        "value": "21.0",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:00:00.000-07:00"
+       },
+       {
+        "value": "21.2",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:15:00.000-07:00"
+       },
+       {
+        "value": "21.4",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:30:00.000-07:00"
+       },
+       {
+        "value": "21.6",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:45:00.000-07:00"
+       },
+       {
+        "value": "21.7",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:00:00.000-07:00"
+       },
+       {
+        "value": "21.8",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:15:00.000-07:00"
+       },
+       {
+        "value": "21.9",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:30:00.000-07:00"
+       },
+       {
+        "value": "21.9",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:45:00.000-07:00"
+       },
+       {
+        "value": "21.8",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:00:00.000-07:00"
+       },
+       {
+        "value": "21.7",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:15:00.000-07:00"
+       },
+       {
+        "value": "21.6",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:30:00.000-07:00"
+       },
+       {
+        "value": "21.5",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:45:00.000-07:00"
+       }
+      ],
+      "qualifier": [
+       {
+        "qualifierCode": "P",
+        "qualifierDescription": "Provisional data subject to revision.",
+        "qualifierID": 0,
+        "network": "NWIS",
+        "vocabulary": "uv_rmk_cd"
+       }
+      ],
+      "qualityControlLevel": [],
+      "method": [
+       {
+        "methodDescription": "",
+        "methodID": 100003
+       }
+      ],
+      "source": [],
+      "offset": [],
+      "sample": [],
+      "censorCode": []
+     }
+    ],
+    "name": "USGS:12439500:00010:00000"
+   },
+   {
+    "sourceInfo": {
+     "siteName": "SIMILKAMEEN RIVER NEAR NIGHTHAWK, WA",
+     "siteCode": [
+      {
+       "value": "12442500",
+       "network": "NWIS",
+       "agencyCode": "USGS"
+      }
+     ],
+     "timeZoneInfo": {
+      "defaultTimeZone": {
+       "zoneOffset": "-08:00",
+       "zoneAbbreviation": "PST"
+      },
+      "daylightSavingsTimeZone": {
+       "zoneOffset": "-07:00",
+       "zoneAbbreviation": "PDT"
+      },
+      "siteUsesDaylightSavingsTime": true
+     },
+     "geoLocation": {
+      "geogLocation": {
+       "srs": "EPSG:4326",
+       "latitude": 48.98,
+       "longitude": -119.62
+      },
+      "localSiteXY": []
+     },
+     "note": [],
+     "siteType": [],
+     "siteProperty": [
+      {
+       "value": "ST",
+       "name": "siteTypeCd"
+      }
+     ]
+    },
+    "variable": {
+     "variableCode": [
+      {
+       "value": "00060",
+       "network": "NWIS",
+       "vocabulary": "NWIS:UnitValues",
+       "variableID": 4,
+       "default": true
+      }
+     ],
+     "variableName": "Streamflow, ft&#179;/s",
+     "variableDescription": "Discharge, cubic feet per second",
+     "valueType": "Derived Value",
+     "unit": {
+      "unitCode": "ft3/s"
+     },
+     "options": {
+      "option": [
+       {
+        "name": "Statistic",
+        "optionCode": "00000"
+       }
+      ]
+     },
+     "note": [],
+     "noDataValue": -999999.0,
+     "variableProperty": [],
+     "oid": "4"
+    },
+    "values": [
+     {
+      "value": [
+       {
+        "value": "5180",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:00:00.000-07:00"
+       },
+       {
+        "value": "5190",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:15:00.000-07:00"
+       },
+       {
+        "value": "5200",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:30:00.000-07:00"
+       },
+       {
+        "value": "5210",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:45:00.000-07:00"
+       },
+       {
+        "value": "5220",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:00:00.000-07:00"
+       },
+       {
+        "value": "5230",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:15:00.000-07:00"
+       },
+       {
+        "value": "-999999",
+        "qualifiers": [
+         "P",
+         "Eqp"
+        ],
+        "dateTime": "2026-05-27T14:30:00.000-07:00"
+       },
+       {
+        "value": "5210",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:45:00.000-07:00"
+       },
+       {
+        "value": "5200",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:00:00.000-07:00"
+       },
+       {
+        "value": "5190",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:15:00.000-07:00"
+       },
+       {
+        "value": "5200",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:30:00.000-07:00"
+       },
+       {
+        "value": "5210",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:45:00.000-07:00"
+       }
+      ],
+      "qualifier": [
+       {
+        "qualifierCode": "P",
+        "qualifierDescription": "Provisional data subject to revision.",
+        "qualifierID": 0,
+        "network": "NWIS",
+        "vocabulary": "uv_rmk_cd"
+       },
+       {
+        "qualifierCode": "Eqp",
+        "qualifierDescription": "Equipment malfunction",
+        "qualifierID": 1,
+        "network": "NWIS",
+        "vocabulary": "uv_rmk_cd"
+       }
+      ],
+      "qualityControlLevel": [],
+      "method": [
+       {
+        "methodDescription": "",
+        "methodID": 100004
+       }
+      ],
+      "source": [],
+      "offset": [],
+      "sample": [],
+      "censorCode": []
+     }
+    ],
+    "name": "USGS:12442500:00060:00000"
+   },
+   {
+    "sourceInfo": {
+     "siteName": "SIMILKAMEEN RIVER NEAR NIGHTHAWK, WA",
+     "siteCode": [
+      {
+       "value": "12442500",
+       "network": "NWIS",
+       "agencyCode": "USGS"
+      }
+     ],
+     "timeZoneInfo": {
+      "defaultTimeZone": {
+       "zoneOffset": "-08:00",
+       "zoneAbbreviation": "PST"
+      },
+      "daylightSavingsTimeZone": {
+       "zoneOffset": "-07:00",
+       "zoneAbbreviation": "PDT"
+      },
+      "siteUsesDaylightSavingsTime": true
+     },
+     "geoLocation": {
+      "geogLocation": {
+       "srs": "EPSG:4326",
+       "latitude": 48.98,
+       "longitude": -119.62
+      },
+      "localSiteXY": []
+     },
+     "note": [],
+     "siteType": [],
+     "siteProperty": [
+      {
+       "value": "ST",
+       "name": "siteTypeCd"
+      }
+     ]
+    },
+    "variable": {
+     "variableCode": [
+      {
+       "value": "00010",
+       "network": "NWIS",
+       "vocabulary": "NWIS:UnitValues",
+       "variableID": 5,
+       "default": true
+      }
+     ],
+     "variableName": "Temperature, water, &#176;C",
+     "variableDescription": "Temperature, water, degrees Celsius",
+     "valueType": "Derived Value",
+     "unit": {
+      "unitCode": "deg C"
+     },
+     "options": {
+      "option": [
+       {
+        "name": "Statistic",
+        "optionCode": "00000"
+       }
+      ]
+     },
+     "note": [],
+     "noDataValue": -999999.0,
+     "variableProperty": [],
+     "oid": "5"
+    },
+    "values": [
+     {
+      "value": [
+       {
+        "value": "19.6",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:00:00.000-07:00"
+       },
+       {
+        "value": "19.8",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:15:00.000-07:00"
+       },
+       {
+        "value": "20.0",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:30:00.000-07:00"
+       },
+       {
+        "value": "20.1",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T13:45:00.000-07:00"
+       },
+       {
+        "value": "20.3",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:00:00.000-07:00"
+       },
+       {
+        "value": "20.4",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:15:00.000-07:00"
+       },
+       {
+        "value": "20.5",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:30:00.000-07:00"
+       },
+       {
+        "value": "20.5",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T14:45:00.000-07:00"
+       },
+       {
+        "value": "20.4",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:00:00.000-07:00"
+       },
+       {
+        "value": "20.3",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:15:00.000-07:00"
+       },
+       {
+        "value": "20.2",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:30:00.000-07:00"
+       },
+       {
+        "value": "20.1",
+        "qualifiers": [
+         "P"
+        ],
+        "dateTime": "2026-05-27T15:45:00.000-07:00"
+       }
+      ],
+      "qualifier": [
+       {
+        "qualifierCode": "P",
+        "qualifierDescription": "Provisional data subject to revision.",
+        "qualifierID": 0,
+        "network": "NWIS",
+        "vocabulary": "uv_rmk_cd"
+       }
+      ],
+      "qualityControlLevel": [],
+      "method": [
+       {
+        "methodDescription": "",
+        "methodID": 100005
+       }
+      ],
+      "source": [],
+      "offset": [],
+      "sample": [],
+      "censorCode": []
+     }
+    ],
+    "name": "USGS:12442500:00010:00000"
+   }
+  ]
+ },
+ "nil": false,
+ "globalScope": true,
+ "typeSubstituted": false
+}

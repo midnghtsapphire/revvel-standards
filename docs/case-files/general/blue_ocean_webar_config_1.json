@@ -1,0 +1,36 @@
+{
+  "title": "Blue Ocean WebAR 3D Target Overlay",
+  "version": "1.0",
+  "target_coords": {
+    "latitude": 50.8825,
+    "longitude": -119.8851,
+    "elevation_offset_m": -0.65
+  },
+  "ar_anchors": [
+    {
+      "anchor_id": "EDNA_HUMAN_SPOT_01",
+      "type": "mitochondrial_dna_fluorescence",
+      "color_hex": "#800020",
+      "excitation_nm": 488,
+      "emission_nm": 520,
+      "confidence": 0.995,
+      "3d_bounding_box_meters": {
+        "x": 1.88,
+        "y": 0.55,
+        "z": 0.31
+      }
+    },
+    {
+      "anchor_id": "SOIL_RHEOLOGY_DRAINAGE_TRAP",
+      "type": "subsurface_liquefaction_mesh",
+      "color_hex": "#00FFFF",
+      "viscosity_pas": 4.9,
+      "water_content_pct": 88.63
+    }
+  ],
+  "openxr_features": {
+    "enable_depth_sensing": true,
+    "enable_plane_detection": true,
+    "aruco_marker_tracking": true
+  }
+}

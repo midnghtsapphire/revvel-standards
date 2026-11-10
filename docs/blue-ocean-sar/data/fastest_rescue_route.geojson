@@ -1,0 +1,44 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -122.9421,
+            49.3812,
+            285.4
+          ],
+          [
+            -122.94255,
+            49.381825,
+            291.6
+          ],
+          [
+            -122.943,
+            49.38245,
+            297.8
+          ],
+          [
+            -122.94345,
+            49.383075,
+            304.0
+          ],
+          [
+            -122.9439,
+            49.3837,
+            310.2
+          ]
+        ]
+      },
+      "properties": {
+        "name": "Fastest Rescue Approach Path",
+        "total_distance_m": 308.0,
+        "est_time_min": 4.9,
+        "bearing": 334.9
+      }
+    }
+  ]
+}

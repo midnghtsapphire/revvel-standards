@@ -1,0 +1,55 @@
+{
+  "_note": "Role tiers, NOT brand tiers. Models change monthly — run `dr models refresh` to re-propose. Seeded from OpenRouter rankings ~May 2026. Replace IDs as the leaderboard shifts. Each tier lists primary models (the panel) and fallbacks (used on error/ratelimit).",
+  "_refresh_source": "https://openrouter.ai/rankings  and  https://openrouter.ai/collections/programming",
+  "judge_rule": "The judge model MUST NOT be a member of the panel it is refereeing. Pick a judge from a different lab than the majority of the panel.",
+  "tiers": {
+    "reasoning": {
+      "primary": ["anthropic/claude-opus-4.7", "google/gemini-3-pro", "deepseek/deepseek-v3.2"],
+      "fallback": ["openai/gpt-5.4", "x-ai/grok-4"],
+      "reasoning_effort": "high",
+      "max_cost_per_call_usd": 2.00
+    },
+    "coding": {
+      "primary": ["anthropic/claude-opus-4.7", "qwen/qwen3-coder", "moonshot/kimi-k2"],
+      "fallback": ["deepseek/deepseek-v4-flash", "poolside/laguna-m.1"],
+      "reasoning_effort": "high",
+      "max_cost_per_call_usd": 2.00
+    },
+    "long_context": {
+      "primary": ["deepseek/deepseek-v4-flash", "qwen/qwen3-coder", "xiaomi/mimo-v2.5-pro"],
+      "fallback": ["google/gemini-3-pro"],
+      "reasoning_effort": "high",
+      "max_cost_per_call_usd": 1.50,
+      "_note": "1M-context models for whole-repo / whole-corpus passes"
+    },
+    "fast_cheap": {
+      "primary": ["deepseek/deepseek-v4-flash", "qwen/qwen3-coder", "openai/gpt-oss-120b"],
+      "fallback": ["meta-llama/llama-3.3-70b"],
+      "reasoning_effort": "medium",
+      "max_cost_per_call_usd": 0.25,
+      "_note": "breadth sweeps and first-pass triage"
+    },
+    "creative": {
+      "primary": ["minimax/minimax-m2.7", "google/gemini-3-pro", "anthropic/claude-opus-4.7"],
+      "fallback": ["x-ai/grok-4"],
+      "reasoning_effort": "medium",
+      "max_cost_per_call_usd": 1.00
+    },
+    "judge": {
+      "primary": ["google/gemini-3-pro"],
+      "fallback": ["openai/gpt-5.4", "anthropic/claude-opus-4.7"],
+      "reasoning_effort": "high",
+      "max_cost_per_call_usd": 2.00,
+      "_note": "referee role; cross-checks the panel; must differ from panel majority"
+    }
+  },
+  "defaults": {
+    "panel_size": 5,
+    "depth": 3,
+    "rounds": "auto",
+    "confidence_threshold": 0.8,
+    "web": true,
+    "chatter": false,
+    "discover_effort_split": { "operator_domain": 0.7, "adjacent": 0.2, "wildcard": 0.1 }
+  }
+}

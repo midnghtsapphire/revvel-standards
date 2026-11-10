@@ -1,0 +1,26 @@
+endpoint_id,name,format,module,health_status,grounding_ref_count,sellable_status
+GEO-001,Ryan Shtuka Spatial Analysis,Slides,Geospatial & LiDAR,Healthy,42,Premium
+GEO-002,Shtuka Geospatial Analysis,Slides,Geospatial & LiDAR,Healthy,38,Premium
+GEO-003,LiDAR Mapping and the Ryan Shtuka Search,Audio Overview,Geospatial & LiDAR,Healthy,31,Core Bundle
+GEO-004,Ryan Shtuka Disappearance Spatial Analysis,Infographic,Geospatial & LiDAR,Healthy,35,Premium
+GEO-005,Advanced Topographical Search Mapping,Slides,Geospatial & LiDAR,Healthy,48,Enterprise
+GEO-006,LiDAR Search for Ryan Shtuka,Infographic,Geospatial & LiDAR,Healthy,29,Core Bundle
+GEO-007,Ryan Shtuka LiDAR Search Strategy,Slides,Geospatial & LiDAR,Healthy,37,Enterprise
+GEO-008,Searching for Ryan Shtuka with LiDAR,Audio Overview,Geospatial & LiDAR,Healthy,22,Standard
+CHR-001,"Disappearance Profile, Timeline, and Search Factors",Table,Chronology & Timelines,Healthy,55,Enterprise
+CHR-002,Missing Persons Details and Last Known Sighting Locations,Table,Chronology & Timelines,Healthy,50,Enterprise
+CHR-003,The Five Minute Disappearance of Ryan Shtuka,Audio Overview,Chronology & Timelines,Healthy,28,Standard
+CHR-004,Ryan Shtuka Vanished 632 Feet From Home,Audio Overview,Chronology & Timelines,Healthy,41,Core Bundle
+THE-001,The Absolute Zero Case of Ryan Shtuka,Audio Overview,Theories & Forensics,Healthy,64,Core Bundle
+THE-002,Synthesis of Missing Persons Investigations and Geospatial Isotope Analysis,Report,Theories & Forensics,Healthy,72,Enterprise
+THE-003,Briefing Document: Investigations into Missing Persons and Isotopic Mapping,Report,Theories & Forensics,Healthy,68,Enterprise
+THE-004,The Ryan Shtuka Hit and Run,Audio Overview,Theories & Forensics,Healthy,45,Core Bundle
+THE-005,Ryan Shtuka Disappearance Case Theories,Infographic,Theories & Forensics,Healthy,33,Premium
+APP-001,Vanished at Sun Peaks: The Ryan Shtuka Case Profile,Interactive App,Engagement & Apps,Healthy,18,Premium
+APP-002,Ryan Shtuka Quiz,Interactive App,Engagement & Apps,Healthy,15,Standard
+APP-003,Shtuka Flashcards,Interactive App,Engagement & Apps,Healthy,20,Standard
+APP-004,Local Quiz,Interactive App,Engagement & Apps,Healthy,12,Standard
+MED-001,The Vanishing of Ryan Shtuka,Video,Media & Narratives,Healthy,52,Premium
+MED-002,The Disappearance of Ryan Shtuka,Video,Media & Narratives,Healthy,49,Premium
+MED-003,The Vanishing on the Mountain,Video,Media & Narratives,Healthy,44,Premium
+MED-004,The Vanishing at Sun Peaks (Healed Build),Video,Media & Narratives,Healed,46,Premium

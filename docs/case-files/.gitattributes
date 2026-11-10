@@ -1,0 +1,2 @@
+# Store uploads byte-for-byte so they match MANIFEST.csv SHA-256 values.
+* -text

@@ -1,0 +1,13 @@
+{
+  "slug": "certifixes",
+  "title": "Certifixes",
+  "domain_strategy": "path",
+  "own_domain": null,
+  "hub_path": "/certifixes/",
+  "hub_url": "https://oaudrey.com/certifixes/",
+  "redirect_from": [],
+  "repo": "midnghtsapphire/certifixes",
+  "status": "building",
+  "description": "Certifixes.",
+  "added": "2026-11-10"
+}

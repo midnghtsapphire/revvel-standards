@@ -1,0 +1,44 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "id": 1,
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -83.012,
+     39.961
+    ]
+   },
+   "properties": {
+    "OBJECTID": 1,
+    "STATUS": "Active",
+    "ROAD_NAME": "Broad St",
+    "DIAM_IN": 24.0,
+    "INSPECTED": 1688169600000
+   }
+  },
+  {
+   "type": "Feature",
+   "id": 2,
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -83.004,
+     39.957
+    ]
+   },
+   "properties": {
+    "OBJECTID": 2,
+    "STATUS": "Active",
+    "ROAD_NAME": "High St",
+    "DIAM_IN": 24.0,
+    "INSPECTED": 1688169600000
+   }
+  }
+ ],
+ "properties": {
+  "exceededTransferLimit": true
+ }
+}

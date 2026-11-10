@@ -37,6 +37,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   human-testing:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     name: Run Human Testing API
     runs-on: ubuntu-latest
     permissions:
@@ -47,7 +48,7 @@ jobs:
         uses: actions/checkout@v7
       - name: Generate GitHub App Token
         id: app-token
-        uses: actions/create-github-app-token@v3.2.0
+        uses: actions/create-github-app-token@v3.3.0
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}

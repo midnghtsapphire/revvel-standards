@@ -1,0 +1,41 @@
+[package]
+name = "opendata-rs"
+version = "0.1.0"
+edition = "2021"
+# rust-version = "1.80"
+# Replaced (review 2026-10-16): the evidence writer lock uses std::fs::File::try_lock (stable in 1.89).
+rust-version = "1.89"
+description = "Evidence-grade open-data fetcher (STAC, ArcGIS REST, NASA CMR, OpenTrafficCamMap) for blue-ocean-sar"
+license = "MIT"
+publish = false
+
+[lib]
+name = "opendata"
+path = "src/lib.rs"
+
+[[bin]]
+name = "opendata"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+clap = { version = "4", features = ["derive"] }
+futures = { version = "0.3", default-features = false, features = ["std", "async-await"] }
+hex = "0.4"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+sha2 = "0.10"
+thiserror = "2"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "time", "sync", "fs", "io-util"] }
+url = "2"
+
+[dev-dependencies]
+tempfile = "3"
+wiremock = "0.6"
+
+[profile.release]
+lto = "thin"
+codegen-units = 4
+strip = true

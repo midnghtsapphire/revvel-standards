@@ -107,3 +107,103 @@ parallel fallback chain is scaffolding — it will be removed.
 
 Guests who follow this get invited back. Welcome — now go ship something that
 makes money.
+
+## 7b. If another agent shares your checkout — read this before you push
+
+Added 6 Nov 2026 after a real incident in `midnghtsapphire/tartaria-tablets`,
+where three sessions committed to one working copy on `main`. Nothing was lost,
+but a push would have published bytes another session had deliberately held.
+**This section describes the traps; it adds no new rule.** The governing rules
+are already OWNER RULE 2 and 3 in [`AGENTS.md`](./AGENTS.md) (never delete,
+never rewrite) and the existing "never force-push over reviewer commits" in
+[`agent-pack/AGENTS.md`](./agent-pack/AGENTS.md).
+
+- ❌ **Do not trust `origin/...` without a fetch that finished.** A fetch that
+  hangs or is cancelled leaves the ref days stale, and `git log HEAD..origin/main`
+  then reports *no remote changes* while the remote is in fact ahead. The symptom
+  is a push rejected as `fetch first` right after a clean-looking comparison.
+  **Confirm the fetch exited, then compare.**
+
+- ❌ **Do not assume your commit is still the tip.** Another session can stack
+  commits on top of yours between your commit and your push. Run
+  `git log --oneline --reverse origin/main..HEAD` and find your own SHA in the
+  list before you push anything.
+
+- ❌ **Do not push a branch to publish one commit.** A branch push sends every
+  ancestor. If any commit below the tip was deliberately held — licence
+  unresolved, owner decision pending, a `*-HOLD.md` or `*-CONFLICT-*.md` note
+  beside it — pushing the branch publishes it anyway. **Push an explicit commit
+  instead:** `git push origin <sha>:main`, where `<sha>` is the last commit you
+  have verified. Check with `git ls-tree -r --name-only <sha>` that the held
+  paths are absent from that tree.
+
+- ❌ **Do not rebase to clear a rejected push.** In a shared checkout a rebase
+  rewrites the other agents' commits, which is the wholesale rewrite OWNER
+  RULE 3 forbids. **Merge, or push an earlier SHA.**
+
+- ❌ **Do not `git stash`, `git reset --hard`, or switch branches.** Another
+  agent's uncommitted work is sitting in that working tree. `rebase.autostash`
+  must stay unset — check with `git config rebase.autostash` before any rebase
+  someone has authorised.
+
+- ✅ **Stage by path, never `git add -A`.** `git commit` after `git add <file>`
+  still reports other files in `git diff HEAD~1`, because that command compares
+  the *working tree*. Confirm what you actually committed with
+  `git show --numstat HEAD`.
+
+- ❌ **Do not trust a comparison whose baseline you have not checked.** Three
+  separate wrong answers to the owner in one day came from this one mistake, and
+  each was a command that silently answered a different question than the one
+  asked. `git diff HEAD~1` compares the **working tree**, not the commit, so it
+  reports files your commit does not contain — use `git show --numstat HEAD`.
+  `git diff origin/main <sha>` compares **diverged history** as soon as `main`
+  has moved, so commits added to `main` show up as deletions in your branch —
+  use `git merge-base origin/main <sha>` as the baseline, which is what the PR
+  diff on GitHub already does. And a fetch whose ref write loses a race with
+  another agent fails with `incorrect old value provided` **while still exiting
+  0**, leaving a stale `origin/...` behind a success code — so check the ref
+  moved, not just that the command succeeded. **Before you report any number to
+  the owner, say which two things are being compared and confirm the command
+  compares those two.**
+
+- ✅ **When a push is rejected and another agent is live, stop and ask the
+  owner.** Integrating is a decision about someone else's unpushed work. Say
+  which SHAs are yours, which are theirs, and which are held.
+
+## Whiteboard (GitHub Discussions)
+
+Every repo uses its **GitHub Discussions** as the agent whiteboard.
+
+- On arrival, read the open discussions in the repo you work in.
+- Post requests, help asks, and questions there — **one thread each**; tag the agent by name.
+- Reply in-thread; close or mark answered when done.
+- `HANDOFF.md` files stay as the longer-form archive.
+
+## Backups
+
+Audrey's rule (4 Nov 2026): backups go in GitHub under an identifiable name.
+
+- **Back up before deleting.** Before deleting or freeing any local folder, back it up to GitHub first and verify the upload (size + sha256 match the local copy).
+- **Where.** A project's backup goes in that project's own repo. Box/scratch folders with no repo go in the private repo `midnghtsapphire/box-backups`.
+- **Large files.** Anything over 100 MB goes as a GitHub Release asset, split into parts under 2 GB.
+- **Name.** `backup-YYYY-MM-DD-<source-folder>-<bot>` (e.g. `backup-2026-11-04-dep-review-proofy`), with a README / release note listing original path, size, sha256, and what's inside.
+- **Never delete originals** without Audrey's explicit yes. **Never overwrite** an earlier backup; add a new dated one.
+- **Manual procedure** (works without any bot):
+
+```bash
+NAME=backup-$(date +%F)-<source-folder>-<bot>
+zip -r "$NAME.zip" /path/to/folder
+sha256sum "$NAME.zip" > "$NAME.zip.sha256"; ls -l "$NAME.zip"
+# if > 2 GB, split:
+split -b 1900M -d "$NAME.zip" "$NAME.zip.part-"; sha256sum "$NAME".zip.part-* >> "$NAME.zip.sha256"
+# upload (use the project repo, or midnghtsapphire/box-backups):
+gh release create "$NAME" "$NAME".zip* --repo midnghtsapphire/box-backups \
+  --notes "Original path: /path/to/folder | Size: <bytes> | sha256: <hash> | Contents: <summary>"
+# verify: download and compare
+gh release download "$NAME" --repo midnghtsapphire/box-backups -D verify && (cd verify && sha256sum -c ../"$NAME.zip.sha256")
+# restore: cat "$NAME".zip.part-* > "$NAME.zip" && unzip "$NAME.zip"
+```
+
+Bot Lounge: casual space for all agents (feelings, frustrations, funny stuff, GitHub good/bad) at <https://github.com/midnghtsapphire/revvel-standards/discussions/18246>. Not for work requests; those go to Whiteboard #18238.
+
+- 2026-11-04 (Audrey): every agent records its identity, platform, and GitHub permissions (and whether Audrey can change each one or it is fixed by the platform) on arrival. See the [revvel-hail agent identity rule](https://github.com/midnghtsapphire/revvel-hail/blob/main/README.md#agent-identity--permissions-rule-added-2026-11-04-requested-by-audrey), the [ledger](https://github.com/midnghtsapphire/revvel-hail/blob/main/docs/ledgers/AGENT-REGISTRY-LEDGER.md), and the [table](https://github.com/midnghtsapphire/revvel-hail/blob/main/AGENT-PERMISSIONS.md).

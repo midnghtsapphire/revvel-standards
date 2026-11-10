@@ -1,0 +1,19 @@
+<qgis version="3.28.0" hasScaleBasedVisibilityFlag="0">
+  <pipe>
+    <provider>
+      <resampling enabled="true" maxOversampling="2" stage="1"/>
+    </provider>
+    <rasterrenderer type="singlebandpseudocolor" opacity="0.85" alphaBand="-1" band="1" classificationMin="0" classificationMax="22">
+      <rastershader>
+        <colorrampshader colorRampType="INTERPOLATED" classificationMode="1" clip="0">
+          <item color="#440154" value="0.0" alpha="255" label="0.0 m (Bare Ground / Open Clearance)"/>
+          <item color="#3b528b" value="2.0" alpha="255" label="2.0 m (Low Vegetation Layer)"/>
+          <item color="#21908d" value="6.0" alpha="255" label="6.0 m (Understory Canopy)"/>
+          <item color="#5dc963" value="12.0" alpha="255" label="12.0 m (Mid-Canopy Structure)"/>
+          <item color="#fde725" value="22.0" alpha="255" label="22.0 m (Upper Forest Canopy)"/>
+        </colorrampshader>
+      </rastershader>
+    </rasterrenderer>
+  </pipe>
+  <blendMode>0</blendMode>
+</qgis>

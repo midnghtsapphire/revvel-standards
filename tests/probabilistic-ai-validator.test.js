@@ -12,6 +12,7 @@ const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
+const { pythonBinOrThrow } = require('../scripts/lib/python-bin.js');
 
 const ROOT = path.join(__dirname, '..');
 const VALIDATOR = path.join(
@@ -36,7 +37,7 @@ test('python_cuda package files exist', () => {
 });
 
 test('probabilistic_validator.py --self-test passes (pure-function contract)', () => {
-  const py = process.env.PYTHON || 'python3';
+  const py = pythonBinOrThrow();
   let out;
   try {
     out = execFileSync(py, [VALIDATOR, '--self-test'], {
@@ -59,7 +60,7 @@ test('probabilistic_validator.py --self-test passes (pure-function contract)', (
 });
 
 test('CLI validates well-formed JSON against a schema', () => {
-  const py = process.env.PYTHON || 'python3';
+  const py = pythonBinOrThrow();
   const schema = JSON.stringify({
     type: 'object',
     required: ['price', 'in_stock'],
@@ -86,7 +87,7 @@ test('CLI validates well-formed JSON against a schema', () => {
 });
 
 test('CLI rejects type-mismatched AI output (probabilistic failure path)', () => {
-  const py = process.env.PYTHON || 'python3';
+  const py = pythonBinOrThrow();
   const schema = JSON.stringify({
     type: 'object',
     required: ['price', 'in_stock'],

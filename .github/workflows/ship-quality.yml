@@ -29,7 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-    if: github.event_name == 'pull_request'
+    if: >-
+      (github.event_name == 'pull_request') &&
+      (vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_REVIEW != '0')
     steps:
       - name: Checkout PR
         uses: actions/checkout@v7

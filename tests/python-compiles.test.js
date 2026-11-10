@@ -30,6 +30,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
 const path = require('node:path');
+const { pythonBinOrThrow } = require('../scripts/lib/python-bin.js');
 
 const root = path.resolve(__dirname, '..');
 
@@ -43,6 +44,8 @@ const QUARANTINE = new Set([
   'products/ai-architecture-framework/market_evaluator.py',
 ]);
 
+const ARCHIVE_PREFIX = 'docs/case-files/';
+
 function trackedPythonFiles() {
   const fs = require('node:fs');
   return execFileSync('git', ['ls-files', '*.py'], { cwd: root, encoding: 'utf8' })
@@ -51,7 +54,13 @@ function trackedPythonFiles() {
     // `git ls-files` also lists files staged for deletion, which are gone from
     // disk. Reading one would crash this check with ENOENT instead of
     // reporting a syntax error, so drop anything not actually present.
-    .filter((f) => fs.existsSync(path.join(root, f)));
+    .filter((f) => fs.existsSync(path.join(root, f)))
+    // docs/case-files is an as-received upload archive whose files must stay
+    // byte-identical to MANIFEST.csv, so a broken upload cannot be repaired
+    // in place (e.g. farber/run_county_2.py does not compile as uploaded).
+    // It is excluded from flake8 and markdownlint for the same reason; the
+    // runnable, tested code lives in docs/blue-ocean-sar and docs/hfmr.
+    .filter((f) => !f.startsWith(ARCHIVE_PREFIX));
 }
 
 /** @returns {Map<string, string>} file -> syntax error message (only failures) */
@@ -69,7 +78,7 @@ function compileAll(files) {
     'print(json.dumps(bad))',
   ].join('\n');
 
-  const out = execFileSync('python3', ['-c', script, ...files], {
+  const out = execFileSync(pythonBinOrThrow('the Python compile gate'), ['-c', script, ...files], {
     cwd: root,
     encoding: 'utf8',
     maxBuffer: 32 * 1024 * 1024,

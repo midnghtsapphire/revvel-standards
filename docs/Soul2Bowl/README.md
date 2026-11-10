@@ -4,7 +4,7 @@
 
 **Repository:** `midnghtsapphire/Soul2Bowl`  
 **Website:** [soul2bowl.com](https://soul2bowl.com)  
-**Staging:** [soul2bowl.vercel.app](https://soul2bowl.vercel.app) — auto-deploys from `main`  
+**Staging:** [soul2bowl.vercel.app](https://soul2bowl.vercel.app) — auto-deploys from `main`   _(⚠️ NOT LIVE — verified 2026-10-30: <https://soul2bowl.vercel.app> returns HTTP 402)_
 **Status:** Pre-Build — Documentation Complete  
 **Version:** 1.0.0  
 **Parent Organization:** Freedom Angel Corp (EIN: 86-1209156)  

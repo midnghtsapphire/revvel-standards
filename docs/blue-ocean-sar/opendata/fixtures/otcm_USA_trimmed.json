@@ -1,0 +1,286 @@
+{
+ "Kentucky": {
+  "Warren": [
+   {
+    "description": "Russellville Rd and Campbell Ln",
+    "latitude": 36.96865,
+    "longitude": -86.480727,
+    "url": "http://www.trimarc.org/images/milestone/CCTV_03_RussellvilleRd_and_CampbellLn.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "Nashville Rd and Campbell Ln",
+    "latitude": 36.962272,
+    "longitude": -86.467938,
+    "url": "http://www.trimarc.org/images/milestone/CCTV_03_NashvilleRd_and_CampbellLn.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "I-65 SB @ MP 25.7",
+    "direction": "S",
+    "latitude": 36.97742,
+    "longitude": -86.3917,
+    "url": "https://www.trimarc.org/images/milestone/CCTV_03_65_0257.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "I-65 SB @ MP 32.7",
+    "direction": "S",
+    "latitude": 37.01453,
+    "longitude": -86.2857,
+    "url": "https://www.trimarc.org/images/milestone/CCTV_03_65_0327.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "KY 446 WB @ MP 0.2 - at US 31W",
+    "direction": "W",
+    "latitude": 37.00855,
+    "longitude": -86.37676,
+    "url": "https://www.trimarc.org/images/milestone/CCTV_03_KY446_0002.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "Scottsville Rd and Lovers Ln",
+    "latitude": 36.954659,
+    "longitude": -86.427169,
+    "url": "http://www.trimarc.org/images/milestone/CCTV_03_ScottsvilleRd_and_LoversLn.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "Morgantown Rd and Veterans Memorial Ln",
+    "latitude": 36.988637,
+    "longitude": -86.486435,
+    "url": "http://www.trimarc.org/images/milestone/CCTV_03_MorgantownRd_and_VeteransMemorialLn.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "I-65 NB @ MP 36.5",
+    "direction": "N",
+    "latitude": 37.039858,
+    "longitude": -86.228125,
+    "url": "https://www.trimarc.org/images/milestone/CCTV_03_65_0365.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "I-65 NB @ MP 17.8",
+    "direction": "N",
+    "latitude": 36.8725,
+    "longitude": -86.44817,
+    "url": "https://www.trimarc.org/images/milestone/CCTV_03_65_0178.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "I-65 NB @ MP 22.3 - at US 231",
+    "direction": "N",
+    "latitude": 36.93326,
+    "longitude": -86.41758,
+    "url": "https://www.trimarc.org/images/milestone/CCTV_03_65_0223.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "Natcher Pkwy SB @ MP 4.9",
+    "direction": "S",
+    "latitude": 36.953878,
+    "longitude": -86.496758,
+    "url": "https://www.trimarc.org/images/milestone/CCTV_03_NatP_0068.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "US 231 NB @ MP 5.3 - at Natcher Pkwy",
+    "direction": "N",
+    "latitude": 36.894242,
+    "longitude": -86.377939,
+    "url": "https://www.trimarc.org/images/milestone/CCTV_03_US231_0053.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "US 31W NB @ MP 7.0",
+    "direction": "N",
+    "latitude": 36.91903,
+    "longitude": -86.50375,
+    "url": "https://www.trimarc.org/images/milestone/CCTV_03_US31W_0070.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   }
+  ]
+ },
+ "Alabama": {
+  "Mobile": [
+   {
+    "description": "I-10 McDonald Rd",
+    "latitude": 30.53555,
+    "longitude": -88.23918,
+    "direction": "E",
+    "url": "https://cdn3.wowza.com/5/eEFlQ3ltMitMdTdk/mobile-fastly/mob-cam-c095.stream/playlist.m3u8",
+    "encoding": "H.264",
+    "format": "M3U8"
+   },
+   {
+    "description": "I-10 I-10 MP 11.7 EB",
+    "latitude": 30.54462,
+    "longitude": -88.22445,
+    "direction": "E",
+    "url": "https://cdn3.wowza.com/5/eEFlQ3ltMitMdTdk/mobile-fastly/mob-cam-c094.stream/playlist.m3u8",
+    "encoding": "H.264",
+    "format": "M3U8"
+   },
+   {
+    "description": "I-10 I-10 MP 12.3 WB",
+    "latitude": 30.55004,
+    "longitude": -88.21612,
+    "direction": "W",
+    "url": "https://cdn3.wowza.com/5/eEFlQ3ltMitMdTdk/mobile-fastly/mob-cam-c093.stream/playlist.m3u8",
+    "encoding": "H.264",
+    "format": "M3U8"
+   },
+   {
+    "description": "I-10 I-10 MP 12.3 EB",
+    "latitude": 30.54964,
+    "longitude": -88.21492,
+    "direction": "E",
+    "url": "https://cdn3.wowza.com/5/eEFlQ3ltMitMdTdk/mobile-fastly/mob-cam-c092.stream/playlist.m3u8",
+    "encoding": "H.264",
+    "format": "M3U8"
+   },
+   {
+    "description": "I-10 Theodore-Dawes Rd",
+    "latitude": 30.55877,
+    "longitude": -88.20214,
+    "direction": "E",
+    "url": "https://cdn3.wowza.com/5/eEFlQ3ltMitMdTdk/mobile-fastly/mob-cam-c091.stream/playlist.m3u8",
+    "encoding": "H.264",
+    "format": "M3U8"
+   },
+   {
+    "description": "I-10 Theodore Dawes Rd",
+    "latitude": 30.56705,
+    "longitude": -88.19211,
+    "direction": "E",
+    "url": "https://cdn3.wowza.com/5/eEFlQ3ltMitMdTdk/mobile-fastly/mob-cam-c090.stream/playlist.m3u8",
+    "encoding": "H.264",
+    "format": "M3U8"
+   }
+  ]
+ },
+ "Ohio": {
+  "other": [
+   {
+    "description": "SR-2 at S Ligtner Rd",
+    "latitude": 41.50557,
+    "longitude": -82.84921,
+    "url": "https://itscameras.dot.state.oh.us:443/images/toledo/SR2-EB-Approach.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "Colerain Ave at Springdale Rd",
+    "latitude": 39.2482,
+    "longitude": -84.59682,
+    "url": "https://itscameras.dot.state.oh.us:443/images/artimis/Colerain_Ave_at_Springdale.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "US-33 at W of Avery Rd",
+    "latitude": 40.098986,
+    "longitude": -83.160191,
+    "url": "https://itscameras.dot.state.oh.us:443/images/CMH/2134.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "I-70 WB Licking county rest area",
+    "latitude": 39.94731,
+    "longitude": -82.45306,
+    "url": "https://itscameras.dot.state.oh.us:443/images/rest_area/I-70_Licking_WB-4.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   },
+   {
+    "description": "I-90 at SR-252 / Columbia Rd",
+    "latitude": 41.4721,
+    "longitude": -81.90194,
+    "url": "https://itscameras.dot.state.oh.us:443/images/CLE/CLE104-L.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM"
+   }
+  ]
+ },
+ "California": {
+  "Mono": [
+   {
+    "description": "SR-203 : Mammoth Mountain",
+    "direction": "E",
+    "latitude": 37.64111,
+    "longitude": -118.91848,
+    "url": "https://cwwp2.dot.ca.gov/data/d9/cctv/image/sr203mammothmountain/sr203mammothmountain.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM",
+    "updateRate": 300000
+   },
+   {
+    "description": "US-395 : Conway Summit",
+    "direction": "N",
+    "latitude": 38.08782,
+    "longitude": -119.181251,
+    "markedForReview": true,
+    "url": "https://cwwp2.dot.ca.gov/data/d9/cctv/image/us395conwaysummit/us395conwaysummit.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM",
+    "updateRate": 300000
+   },
+   {
+    "description": "US-6 : State Line",
+    "direction": "W",
+    "latitude": 37.84225,
+    "longitude": -118.47842,
+    "url": "https://cwwp2.dot.ca.gov/data/d9/cctv/image/us6stateline/us6stateline.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM",
+    "updateRate": 300000
+   },
+   {
+    "description": "US-395 : Crestview",
+    "direction": "N",
+    "latitude": 37.75146,
+    "longitude": -118.98329,
+    "url": "https://cwwp2.dot.ca.gov/data/d9/cctv/image/us395crestview/us395crestview.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM",
+    "updateRate": 300000
+   },
+   {
+    "description": "US-395 : Tom's Place",
+    "direction": "N",
+    "latitude": 37.56213,
+    "longitude": -118.6774,
+    "url": "https://cwwp2.dot.ca.gov/data/d9/cctv/image/us395tomsplace/us395tomsplace.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM",
+    "updateRate": 300000
+   },
+   {
+    "description": "US-395 : McGee Creek Road",
+    "direction": "N",
+    "latitude": 37.58796,
+    "longitude": -118.78405,
+    "url": "https://cwwp2.dot.ca.gov/data/d9/cctv/image/us395mcgeecreekroad/us395mcgeecreekroad.jpg",
+    "encoding": "JPEG",
+    "format": "IMAGE_STREAM",
+    "updateRate": 300000
+   }
+  ]
+ }
+}

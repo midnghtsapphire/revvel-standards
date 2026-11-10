@@ -40,6 +40,11 @@ exclude =
     # findings over the flake8 baseline and turned `main` red; its author added
     # `.flake8ignore` intending exactly this exclusion, but flake8 never reads
     # that filename, so the intent silently did nothing (introduced by #17740).
-    mcp-servers/gemini-notebook-mcp-cli
+    mcp-servers/gemini-notebook-mcp-cli,
+    # As-received case-file archive: uploads stored byte-for-byte so their
+    # SHA-256 matches docs/case-files/MANIFEST.csv. Linting them would mean
+    # editing them; the corrected, tested versions live in
+    # docs/blue-ocean-sar/ and docs/hfmr/ and are linted there.
+    docs/case-files
 show-source = True
 statistics = True

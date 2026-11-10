@@ -32,6 +32,7 @@ permissions:
 
 jobs:
   score:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     name: Score agent PR
     runs-on: ubuntu-latest
     timeout-minutes: 15

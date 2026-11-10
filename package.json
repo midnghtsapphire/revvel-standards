@@ -9,18 +9,21 @@
     "node": ">=22 <25"
   },
   "scripts": {
-    "test": "node --test 'tests/**/*.test.js' && bash tests/social_post_formatter.test.sh",
-    "test:all": "node --test tests",
+    "test": "node --test \"tests/**/*.test.js\" && bash tests/social_post_formatter.test.sh",
+    "test:all": "node --test \"tests/**/*.test.js\"",
     "verify": "npm run workflows:validate && npm run lint && npm test",
     "verify:fast": "npm run workflows:validate && npm run lint",
     "engine": "node engines/runner-orchestrator/orchestrate.js",
-    "test:cov": "c8 --reporter=text --reporter=lcov node --test tests",
+    "test:cov": "c8 --reporter=text --reporter=lcov node --test \"tests/**/*.test.js\"",
     "test:sh": "bash tests/social_post_formatter.test.sh",
     "typecheck": "tsc -p tsconfig.json",
     "build": "npm run typecheck",
     "lint": "node scripts/markdownlint-repo.mjs",
-    "llm:doctor": "python3 scripts/local_llm.py doctor",
-    "llm:ask": "python3 scripts/local_llm.py ask",
+    "llm:doctor": "node scripts/run-python.js scripts/local_llm.py doctor",
+    "llm:ask": "node scripts/run-python.js scripts/local_llm.py ask",
+    "//retired-2026-11-07": "The two lines below are the ORIGINAL llm:doctor and llm:ask, retired in place and NOT deleted (OWNER RULE #4; owner instruction, Audrey Evans, 2026-11-07). package.json is strict JSON and cannot hold // comments, so they are preserved verbatim as these inert keys instead. Reason: on Windows bare `python3` hits the Microsoft Store App Execution Alias and exits 49 with 'Python was not found', so llm:doctor and llm:ask never ran. scripts/run-python.js resolves the interpreter by running it. Measured 2026-11-07: old form exit 49, wrapper exit 0. Do not delete these two keys; npm never invokes them.",
+    "//retired-2026-11-07-llm:doctor": "python3 scripts/local_llm.py doctor",
+    "//retired-2026-11-07-llm:ask": "python3 scripts/local_llm.py ask",
     "lint:fix": "node scripts/markdownlint-repo.mjs --fix",
     "format": "dprint fmt",
     "format:check": "dprint check",
@@ -41,7 +44,9 @@
     "deploy:vercel": "node scripts/deploy-vercel.js",
     "bootstrap:web": "echo Use: npm run deploy:vercel -- --repo=owner/project",
     "ui-engine": "node scripts/ui-creation-engine.js",
-    "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'"
+    "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'",
+    "veins:snapshot": "node scripts/veins-snapshot.js",
+    "veins:snapshot:json": "node scripts/veins-snapshot.js --json"
   },
   "bin": {
     "dashboard": "./scripts/dashboard-cli.js"
@@ -53,10 +58,13 @@
     "ajv-formats": "^3.0.1",
     "c8": "^12.0.0",
     "googleapis": "^173.0.0",
-    "markdownlint-cli2": "^0.23.2",
+    "markdownlint-cli2": "^0.24.0",
     "semver": "^7.8.5",
     "sitemap-generator-cli": "^7.5.0",
     "typescript": "^5.7.0",
-    "yaml": "^2.9.0"
+    "yaml": "^2.9.1"
+  },
+  "dependencies": {
+    "js-yaml": "^5.5.0"
   }
 }

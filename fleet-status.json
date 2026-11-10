@@ -1,0 +1,36 @@
+{
+  "updated": "initial deploy",
+  "agents": [
+    {
+      "id": "scout",
+      "role": "OSINT trends",
+      "state": "idle",
+      "task": ""
+    },
+    {
+      "id": "scribe",
+      "role": "chapter drafting",
+      "state": "idle",
+      "task": ""
+    },
+    {
+      "id": "linter",
+      "role": "regression checks",
+      "state": "idle",
+      "task": ""
+    },
+    {
+      "id": "packager",
+      "role": "KDP kits",
+      "state": "idle",
+      "task": ""
+    },
+    {
+      "id": "courier",
+      "role": "repo sync",
+      "state": "idle",
+      "task": ""
+    }
+  ],
+  "last_cycle": {}
+}

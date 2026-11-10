@@ -1,0 +1,94 @@
+{
+  "word": "KU-RO",
+  "rounds": [
+    {
+      "hypothesis": {
+        "word": "KU-RO",
+        "role": "toponym",
+        "claim": "The repeated appearance of KU-RO likely refers to a specific location or geographical feature.",
+        "reasoning": "Given its frequent occurrence across multiple contexts and sites, particularly at the heavily documented HT site, it is plausible that 'KU-RO' represents a place name. Further investigation into the surrounding inscriptions and archaeological context is needed to determine if this aligns with any known topographical features."
+      },
+      "verdict": {
+        "gates": [
+          {
+            "name": "attestation",
+            "passed": true,
+            "score": 1.0,
+            "note": "37 occurrences"
+          },
+          {
+            "name": "cross-site",
+            "passed": true,
+            "score": 0.9411764705882353,
+            "note": "concentration 0.94 at dominant site (toponyms localize)"
+          },
+          {
+            "name": "numeral-affinity",
+            "passed": true,
+            "score": 0.5,
+            "note": "76%; neutral for role=toponym"
+          },
+          {
+            "name": "arithmetic",
+            "passed": true,
+            "score": 0.5,
+            "note": "not a totaling claim; gate neutral"
+          }
+        ],
+        "score": 0.735,
+        "failed_gates": [],
+        "grade": "B"
+      },
+      "prosecution_argument": {
+        "strongest_objection": "The defense’s reliance solely on the frequency of ‘KU-RO’ and its concentration at the HT site is a significant oversimplification. While the evidence pack confirms 37 occurrences, primarily at HT (32), this doesn't automatically establish it as a toponym. The gate results indicate a neutral score for numeral-affinity (76%), suggesting alternative interpretations are possible.",
+        "alternative_hypothesis": "‘KU-RO’ could be a coded term, a repeated formulaic expression, or even a stylistic convention within the text’s broader context – perhaps related to a specific ritual or category. The substantial line lengths associated with ‘KU-RO’ (ranging from 97 to 1060) coupled with its frequent appearance at the end of lines and in the final third of documents suggests it might function as a delimiter, marker, or concluding phrase rather than a geographical reference. Furthermore, the lack of strong cross-site evidence beyond HT (only one occurrence each at PH and ZA) weakens the argument for a geographically significant toponym.",
+        "fatal": true
+      }
+    },
+    {
+      "hypothesis": {
+        "word": "KU-RO",
+        "role": "formulaic_expression",
+        "claim": "‘KU-RO’ functions as a recurring formulaic expression within the text, potentially marking transitions or delineating categories rather than representing a specific location.",
+        "reasoning": "Given the failed gates focusing on toponymy and the evidence of substantial line length variation associated with ‘KU-RO’, coupled with its frequent terminal placement, it is more plausible that ‘KU-RO’ represents a standardized phrase employed for ritualistic or categorical demarcation. The limited cross-site corroboration further supports this interpretation, suggesting a deliberate stylistic choice rather than a geographically determined term."
+      },
+      "verdict": {
+        "gates": [
+          {
+            "name": "attestation",
+            "passed": true,
+            "score": 1.0,
+            "note": "37 occurrences"
+          },
+          {
+            "name": "cross-site",
+            "passed": true,
+            "score": 0.5,
+            "note": "3 site(s); neutral for role=formulaic_expression"
+          },
+          {
+            "name": "numeral-affinity",
+            "passed": true,
+            "score": 0.5,
+            "note": "76%; neutral for role=formulaic_expression"
+          },
+          {
+            "name": "arithmetic",
+            "passed": true,
+            "score": 0.5,
+            "note": "not a totaling claim; gate neutral"
+          }
+        ],
+        "score": 0.625,
+        "failed_gates": [],
+        "grade": "B"
+      },
+      "prosecution_argument": {
+        "strongest_objection": "The defense’s interpretation hinges solely on the frequency and terminal placement of ‘KU-RO,’ ignoring critical contextual data. The evidence demonstrates a significant variation in line length associated with its occurrences, particularly within inscription HT102 (1060.0) and HT109 (129.0), suggesting a deliberate emphasis rather than simple demarcation.",
+        "alternative_hypothesis": "‘KU-RO’ likely functions as a mnemonic device or marker of specific actions or phases within the ritualistic practices documented, given its varied line lengths potentially representing different stages or levels of intensity within those activities. The consistent presence at inscription HT – which comprises 32 out of the 37 occurrences – strongly suggests a localized, operational function rather than a generic formula.",
+        "fatal": true
+      }
+    }
+  ],
+  "final_grade": "B"
+}
