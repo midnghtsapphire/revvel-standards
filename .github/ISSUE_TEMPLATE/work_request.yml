@@ -1,0 +1,306 @@
+name: Comprehensive Work Request (Product / Research / Infrastructure)
+description: Full WR form for product-class, research-class, and infrastructure-class work. Title-only intake is valid — the system generates everything else.
+title: "[WR] "
+labels:
+  - work-request
+  - deep-research
+  - openrouter
+  - role:orchestrator
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Comprehensive Work Request
+        > For product, research, and infrastructure WRs. For bug/style/docs, use the standard Work Request template.
+        > Title-only intake is valid. The system generates everything else via WR Field Filler.
+        > See `UPREV_METHOD.md` and `WR_RESEARCH_MANDATE.md` for methodology.
+
+  - type: dropdown
+    id: output_type
+    attributes:
+      label: Output Type
+      description: What are you asking to create or change?
+      options:
+        - production-app
+        - desktop-tool
+        - sellable-pdf
+        - technical-documentation
+        - client-code-task
+        - project-management-doc
+        - internal-script-automation
+        - cli-product
+        - mcp-product
+        - api-product
+        - invention-flow
+        - research-paper
+        - infrastructure-upgrade
+        - compliance-audit
+        - security-review
+      default: 0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Business impact and urgency
+      options:
+        - P0 — Revenue-blocking or security-critical
+        - P1 — High value, time-sensitive
+        - P2 — Standard work, queue normally
+        - P3 — Nice-to-have, backlog
+      default: 2
+    validations:
+      required: false
+
+  - type: dropdown
+    id: research_mode
+    attributes:
+      label: Research Mode
+      description: How aggressively should the system research?
+      options:
+        - standard
+        - deepresearch
+      default: 0
+    validations:
+      required: false
+
+  - type: input
+    id: title
+    attributes:
+      label: WR Title
+      description: Clear, outcome-oriented title. What will be true after this ships?
+      placeholder: "e.g., Add Stripe payment processing with webhook verification"
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue_context
+    attributes:
+      label: Issue Context
+      description: What triggered this WR? Link to bug, user request, or strategic goal. (Optional — system will infer.)
+      placeholder: |
+        - Bug report: #12345
+        - User request: "Customers can't pay with Apple Pay"
+        - Strategic: Q3 OKR — increase checkout conversion by 15%
+    validations:
+      required: false
+
+  - type: textarea
+    id: background_motivation
+    attributes:
+      label: Background & Motivation
+      description: Why is this work needed? (Optional — system will infer from title.)
+      placeholder: |
+        Current checkout only supports credit cards. 23% of cart abandonments
+        are on mobile devices where users prefer Apple Pay / Google Pay.
+    validations:
+      required: false
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What's in, what's out, boundaries with other WRs. (Optional — system will infer.)
+      placeholder: |
+        ## In Scope
+        - Apple Pay integration (Stripe Payment Request Button)
+        - Google Pay integration
+        - Webhook verification and idempotency
+
+        ## Out of Scope
+        - Buy Now Pay Later (separate WR)
+        - Cryptocurrency payments (separate WR)
+    validations:
+      required: false
+
+  - type: textarea
+    id: research_findings
+    attributes:
+      label: Research Findings
+      description: Summary of research. Tiered findings (A1/A2/B2/B3). (Optional — research orchestrator will populate.)
+      placeholder: |
+        ## A1 — Proven (>95%)
+        - Stripe Payment Request Button supports Apple Pay and Google Pay
+          (Source: stripe.com/docs/payments/payment-request-button)
+
+        ## A2 — Established (80-95%)
+        - Mobile wallet payments increase conversion 15-25% in e-commerce
+          (Source: Baymard Institute 2024, n=4,200 sites)
+
+        ## B2 — Emerging (60-80%)
+        - Passkey authentication reduces checkout friction further
+          (Source: FIDO Alliance whitepaper, 2023)
+    validations:
+      required: false
+
+  - type: textarea
+    id: approach
+    attributes:
+      label: Approach / Design Sketch
+      description: Proposed implementation. Alternatives considered. (Optional — system will infer.)
+      placeholder: |
+        ## Proposed Approach
+        1. Add Stripe Payment Request Button to checkout page
+        2. Implement webhook endpoint with signature verification
+        3. Add idempotency key handling for duplicate events
+
+        ## Alternatives Considered
+        - Braintree: Lower market share, fewer docs (rejected)
+        - Adyen: Enterprise pricing, overkill for current volume (rejected)
+    validations:
+      required: false
+
+  - type: textarea
+    id: artifact_requirements
+    attributes:
+      label: Artifact Requirements
+      description: What artifacts must this WR produce? (Optional — ARTIFACT_GENERATOR.md will infer from output_type.)
+      value: |
+        - [ ] Code (implementation)
+        - [ ] Tests (unit + integration)
+        - [ ] Docs (README, API reference, inline comments)
+        - [ ] Monitoring (metrics, alerts, logs)
+        - [ ] Ops (deployment notes, rollback plan, runbook)
+        - [ ] Skills (SKILL.md for agent reuse)
+        - [ ] MCP manifest (if agent-facing)
+        - [ ] OpenAPI spec (if API change)
+        - [ ] PDF / booklet (if user-facing product)
+        - [ ] Other: ___
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Measurable criteria for "done." (Optional — system will infer.)
+      placeholder: |
+        - [ ] Feature works end-to-end in production-like environment
+        - [ ] All new code has >80% test coverage
+        - [ ] Integration tests pass for all critical paths
+        - [ ] No regressions in existing functionality
+        - [ ] No scaffolding (no deferred work markers, no raw placeholders)
+        - [ ] wr-lint.mjs passes
+    validations:
+      required: false
+
+  - type: textarea
+    id: risks_mitigations
+    attributes:
+      label: Risks & Mitigations
+      description: Known risks, fragile files touched, rollback plan. (Optional — system will infer.)
+      placeholder: |
+        | Risk | Likelihood | Impact | Mitigation |
+        |------|-----------|--------|------------|
+        | Webhook endpoint DDoS | Low | High | Rate limiting + signature verification |
+        | Apple Pay cert expiry | Medium | High | Calendar reminder + monitoring alert |
+    validations:
+      required: false
+
+  - type: textarea
+    id: competitor_intelligence
+    attributes:
+      label: Competitor & Pricing Intelligence
+      description: Required for sellable-pdf and product-class WRs. Actual prices, not vague labels.
+      placeholder: |
+        | Competitor | Price | Key Features | Gap | Our Advantage |
+        |------------|-------|-------------|-----|---------------|
+        | Competitor X | $99/mo | Apple Pay only | No Google Pay | We support both |
+        | Competitor Y | $49/mo | None | No mobile wallets | First-mover advantage |
+    validations:
+      required: false
+
+  - type: textarea
+    id: sem_seo
+    attributes:
+      label: SEM / SEO Analysis
+      description: Required for product-class WRs. Discoverability analysis.
+      placeholder: |
+        ## Primary Keywords
+        - "accept apple pay on website"
+        - "google pay integration"
+        - "mobile wallet checkout"
+
+        ## Content Gaps
+        - Most tutorials only cover Stripe Checkout, not Payment Request Button
+        - Few guides cover webhook security best practices
+    validations:
+      required: false
+
+  - type: dropdown
+    id: checkpoint_gated
+    attributes:
+      label: Checkpoint-Gated Grid
+      description: Is this WR too large for one PR? Decompose into Blocks (D011).
+      options:
+        - "No — single PR, complete deliverable"
+        - "Yes — decomposed into Blocks, owner reviews between each"
+      default: 0
+    validations:
+      required: false
+
+  - type: textarea
+    id: blocks
+    attributes:
+      label: Blocks (if checkpoint-gated)
+      description: Ordered list of atomic, complete PRs. Each Block ships independently.
+      placeholder: |
+        ## Block 1: Backend — Webhook endpoint + verification
+        - Scope: Stripe webhook endpoint, signature verification, idempotency handling
+        - Deliverables: Endpoint code, tests, docs
+        - Acceptance criteria: Webhook signature verification rejects invalid signatures
+
+        ## Block 2: Frontend — Wallet button integration
+        - Scope: Payment Request Button component, device detection, checkout UI updates
+        - Deliverables: Component code, tests, docs
+        - Depends on: Block 1
+    validations:
+      required: false
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: What must be true before this WR can start? (Optional.)
+      placeholder: |
+        - [ ] Stripe account configured (production keys)
+        - [ ] Apple Pay merchant verification complete
+        - [ ] WR #12345 (checkout refactor) merged
+    validations:
+      required: false
+
+  - type: input
+    id: estimated_effort
+    attributes:
+      label: Estimated Effort
+      description: Rough estimate. The system will refine this.
+      placeholder: "e.g., 3-5 days, 2-3 PRs"
+    validations:
+      required: false
+
+  - type: textarea
+    id: learnings
+    attributes:
+      label: Learnings — What & Why
+      description: Filled post-completion. What was learned and why it matters.
+      placeholder: |
+        ## Filled by completing agent
+        - What: ___
+        - Why: ___
+        - Source PR: #NNNNN
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        **Agent Instructions:**
+        1. Read `UPREV_METHOD.md` before starting.
+        2. Read `WR_RESEARCH_MANDATE.md` — research first, build second.
+        3. Read `AGENT_BUILD_PROMPT.md` for execution standards.
+        4. All changes through draft PR. Never merge your own PR.
+        5. Update `learnings.md` with TM-NNNN format on completion.
+        6. Follow `WRITE_AS_YOU_GO_STANDARD.md` — update LEDGER, CHANGELOG, Library in same commit.
