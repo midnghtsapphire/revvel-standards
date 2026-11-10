@@ -10,7 +10,9 @@ export function staticHandler(assets) {
   return (request, response) => {
     response.setHeader('X-Content-Type-Options', 'nosniff');
     response.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    if (!['GET', 'HEAD'].includes(request.method)) {
+    // REVVEL-DISABLED 2026-11-10: method can be undefined under strict Node types.
+    // if (!['GET', 'HEAD'].includes(request.method)) {
+    if (!['GET', 'HEAD'].includes(request.method || '')) {
       response.writeHead(405, { Allow: 'GET, HEAD' }); response.end(); return;
     }
     let pathname;
@@ -44,6 +46,11 @@ export function staticHandler(assets) {
 export function startPackedSite(payload, port = Number(process.env.PORT || 8080)) {
   const assets = JSON.parse(gunzipSync(Buffer.from(payload, 'base64')).toString('utf8'));
   const server = createServer(staticHandler(assets));
-  server.listen(port, '0.0.0.0', () => console.log(`Static product listening on port ${server.address().port}`));
+  // REVVEL-DISABLED 2026-11-10: address may be null or a pipe name in Node types.
+  // server.listen(port, '0.0.0.0', () => console.log(`Static product listening on port ${server.address().port}`));
+  server.listen(port, '0.0.0.0', () => {
+    const address = server.address();
+    if (address && typeof address !== 'string') console.log(`Static product listening on port ${address.port}`);
+  });
   return server;
 }

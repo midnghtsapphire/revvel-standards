@@ -6,12 +6,15 @@ import { resolve, join, relative, dirname, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
+import { staticCarrier } from './static-carrier.mjs';
 
 // 2026-11-10 Codex: retain original catalog-only set; extend the same adapter.
 // const products = new Set(['affiliate-hub', 'ai-video-toolkit', 'screen-recorder-finder']);
 const products = new Set(['affiliate-hub', 'ai-video-toolkit', 'screen-recorder-finder', 'goap-swarm-console']);
 const allowed = new Set(['', '.html', '.css', '.js', '.json', '.txt', '.svg', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.woff', '.woff2']);
-export async function packageStatic({ repoRoot, product, output }) {
+// Historical signature: export async function packageStatic({ repoRoot, product, output }) {
+export async function packageStatic({ repoRoot, product, output, format = 'node-js' }) {
+  if (!['node-js', 'railway-ts'].includes(format)) throw new Error('Unsupported static carrier format');
   // 2026-11-10 Codex: original catalog-only validation retained for history.
   // if (!products.has(product)) throw new Error('Choose one of the three revenue catalog products');
   if (!products.has(product)) throw new Error('Choose one of the three revenue catalog products or goap-swarm-console');
@@ -47,7 +50,9 @@ export async function packageStatic({ repoRoot, product, output }) {
   } else if (!assets['/index.html'] || !assets['/pricing.html'] || (!assets['/health'] && !assets['/health.json'])) throw new Error('Build must contain home, pricing and health artifacts');
   const runtime = await readFile(new URL('./static-runtime.mjs', import.meta.url), 'utf8');
   const payload = gzipSync(Buffer.from(JSON.stringify(assets))).toString('base64');
-  const source = `${runtime}\n// Generated exclusively from products/${product}/out.\nstartPackedSite(${JSON.stringify(payload)});\n`;
+  // REVVEL-DISABLED 2026-11-10: direct JS-only concatenation retained for history.
+  // const source = `${runtime}\n// Generated exclusively from products/${product}/out.\nstartPackedSite(${JSON.stringify(payload)});\n`;
+  const source = staticCarrier({ runtime, payload, product, format });
   if (Buffer.byteLength(source) > 5 * 1024 * 1024) throw new Error('Packed source exceeds the 5 MiB deployment limit');
   await mkdir(dirname(output), { recursive: true });
   await writeFile(output, source, { flag: 'wx' });
@@ -55,12 +60,15 @@ export async function packageStatic({ repoRoot, product, output }) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const [product, destination] = process.argv.slice(2);
+  // Historical argv: const [product, destination] = process.argv.slice(2);
+  const [product, destination, format = 'node-js'] = process.argv.slice(2);
   if (!product || !destination) {
-    console.error('Usage: node templates/cicd/deploy-static.mjs PRODUCT OUTPUT.mjs (run npm build in product first)'); process.exitCode = 2;
+    // Historical usage: PRODUCT OUTPUT.mjs (run npm build in product first).
+    console.error('Usage: node templates/cicd/deploy-static.mjs PRODUCT OUTPUT [node-js|railway-ts] (build product first)'); process.exitCode = 2;
   } else {
     const repoRoot = fileURLToPath(new URL('../../', import.meta.url));
-    try { console.log(JSON.stringify(await packageStatic({ repoRoot, product, output: resolve(destination) }))); }
+    // Historical call: packageStatic({ repoRoot, product, output: resolve(destination) }).
+    try { console.log(JSON.stringify(await packageStatic({ repoRoot, product, output: resolve(destination), format }))); }
     catch (error) { console.error(error.message); process.exitCode = 1; }
   }
 }

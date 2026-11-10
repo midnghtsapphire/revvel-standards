@@ -431,3 +431,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   actual multiline billing-assertion false positive has regression coverage.
   Independent review checked 35,962 cases against the exact legacy distance.
   Final HULL/prosecution run passed 81 tests, zero findings/provider calls.
+
+- Codex investigation held separately: before Audrey clarified that "first
+  one" meant PR #18348, reproduced strict TypeScript diagnostics in the Railway
+  JavaScript carrier and prepared an opt-in typed carrier using the same asset
+  payloads. Six tests, strict compilation and Bun 1.4.4 HTTP checks passed.
+  Preserved this unrelated work on its own branch; no Railway source, deployment
+  or approval settings changed. The active fix addresses PR #18348's comment
+  handling instead.
