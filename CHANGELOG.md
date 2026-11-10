@@ -400,3 +400,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   handling, complete skill discovery, and bounded multi-batch billing drain.
   Added regression cases; no comparison budget, legacy allowance or merge gate
   was relaxed. Continued source-head validation is recorded with PR #18348.
+
+- Codex operational verification: installed the separate owned local-checks
+  Windows task, observed two zero-exit executions, retained the final 78-test
+  HULL/prosecution receipt in GIT-FLEET PR #2, and recorded actual CircleCI
+  job 23006 success on the implementation source head. Product hosting remains
+  staged; no deployment, transaction, benchmark or customer result invented.

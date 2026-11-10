@@ -1,5 +1,13 @@
 # Ship Status
 
+### Operational receipt — 2026-11-10 19:12 UTC
+
+The owned local-checks task is installed and executed successfully twice.
+Final source integration: 78 tests passed, zero findings/provider calls.
+Required CircleCI job 23006 passed on 58a2d52; implementation PR #18348 and
+GIT-FLEET PR #2 contain the reviewed code. Original revenue/research acceptance
+and four staged Railway product releases retain their open status below.
+
 ## Shipping continuation observation — 2026-11-10
 
 - revvel-standards PR #18347 and oaudrey PR #13: merged.

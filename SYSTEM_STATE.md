@@ -1,5 +1,22 @@
 # SYSTEM STATE — revvel-standards
 
+### Latest operational observation — 2026-11-10 19:12 UTC
+
+Owned local prosecution is now installed and observed running: the separate
+`GIT-FLEET local checks` Windows task polls every 15 minutes, runs on source
+changes or once per America/Denver day, and returned LastTaskResult=0 at
+12:09:14 and 12:10:11 MST. Its final HULL/prosecutor source run passed 78 tests
+with zero findings and provider calls. Exact operator snapshots and receipts
+are in GIT-FLEET PR #2, schedules/local/installed-20261110/.
+
+Required CircleCI lint-and-test job 23006 passed on implementation commit
+58a2d527183882c428e2255d56588e71bd4d26a0. GitGuardian passed; the existing
+owner-authored scaffolding job skipped without requesting a hosted runner.
+No gate or billing workaround was weakened. PR #18348 tracks this implementation.
+The four product releases remain staged in Railway; payment, production and
+the original remaining acceptance criteria are still unverified. Earlier
+observations below are preserved as the sequence of findings.
+
 ## Verified shipping continuation — 2026-11-10
 
 This dated observation supersedes older optimistic production labels below;
