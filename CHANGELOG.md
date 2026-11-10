@@ -431,3 +431,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   actual multiline billing-assertion false positive has regression coverage.
   Independent review checked 35,962 cases against the exact legacy distance.
   Final HULL/prosecution run passed 81 tests, zero findings/provider calls.
+
+- Codex, PR #18348 review follow-up: reproduced Cursor comment
+  discussion_r4529468829 against current main. Ordinary comments and JSDoc no
+  longer hide adjacent executable duplicates; partial comment state resets at
+  unknown diff boundaries. Only anchored, explicit retirement headers retain
+  the archive boundary. Added real regressions and preserved the old rules as
+  dated comments; no paid Cursor autofix or provider call used.

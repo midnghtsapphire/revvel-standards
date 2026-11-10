@@ -83,6 +83,41 @@ test('retained comments, unchanged context and separate hunks do not create adja
   assert.ok(detectDuplicatedBlocks('+++ b/run.js\n' + block + block).length > 0);
 });
 
+test('ordinary line comments and JSDoc cannot hide adjacent duplicate executable bodies', () => {
+  const block = '+executeTask(context);\n+recordTaskResult(context);\n';
+  for (const documentation of [
+    '+// Explain the next invocation\n',
+    '+/** Explain the next invocation */\n',
+    '+/**\n+ * Explain the next invocation.\n+ * No behavior changes here.\n+ */\n',
+    '+# Explain the next invocation\n',
+  ]) {
+    assert.ok(detectDuplicatedBlocks('+++ b/run.js\n' + block + documentation + block).length > 0, documentation);
+  }
+});
+
+test('ordinary retired/history prose is documentation while explicit archive headers retain boundaries', () => {
+  const block = '+executeTask(context);\n+recordTaskResult(context);\n';
+  for (const comment of [
+    '+// Process retired tasks before recording results.\n',
+    '+// Explain the retained history before proceeding.\n',
+    '+/** Read the historical implementation notes first. */\n',
+  ]) assert.ok(detectDuplicatedBlocks('+++ b/run.js\n' + block + comment + block).length > 0, comment);
+  for (const header of [
+    '+// retired historical implementation\n',
+    '+/* retained history */\n',
+    '+// historical implementation\n',
+    '+// REVVEL-DISABLED | AGENT: codex | DATE: 2026-11-10\n',
+  ]) assert.deepEqual(detectDuplicatedBlocks('+++ b/run.js\n' + block + header + block), [], header);
+});
+
+test('unclosed added block comment cannot hide executable duplicates in another hunk or context region', () => {
+  const block = '+executeTask(context);\n+recordTaskResult(context);\n';
+  for (const boundary of ['@@ -20,0 +22,4 @@\n', ' unchanged_source();\n']) {
+    const diff = '+++ b/run.js\n@@ -1,0 +1,1 @@\n+/* earlier partial comment\n' + boundary + block + block;
+    assert.ok(detectDuplicatedBlocks(diff).length > 0, boundary);
+  }
+});
+
 test('multiline JavaScript fixture content remains data while actual following copies are checked', () => {
   const block = '+executeTask(context);\n+recordTaskResult(context);\n';
   const fixture = '+++ b/arbitrary-source.js\n+const fixture = `\n' + block + block + '+`;\n';

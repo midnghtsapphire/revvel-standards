@@ -460,13 +460,22 @@ export function detectDuplicatedBlocks(diffText) {
       // if (/\.[cm]?[jt]sx?$/.test(currentFile)) multilineTemplate = templateStateAfter(content, multilineTemplate);
       // if (wasTemplate || multilineTemplate) { segment++; continue; }
       if (/\.[cm]?[jt]sx?$/.test(currentFile) && templateDataLines.has(lineIndex)) { segment++; continue; }
+      // 2026-11-10, PR #18348 discussion_r4529468829: ordinary documentation
+      // does not interrupt executable adjacency. Explicit retired archives
+      // remain excluded and retain their historical boundary.
+      // Earlier overbroad rule retained:
       // 2026-11-10 #18313: owner-retained commented history is not executing
       // twice. Keep it in source but exclude full comment lines, breaking the
       // candidate segment so active copies across an archive never align.
       if (blockComment || /^(?:\/\/|#|\/\*|\*\/|\*(?:\s|$)|<!--)/.test(content)) {
         if (content.startsWith('/*') && !content.includes('*/')) blockComment = true;
         if (blockComment && content.includes('*/')) blockComment = false;
-        segment++;
+        // Retired 2026-11-10: segment++; // ordinary comments hid duplicates.
+        // Retired 2026-11-10 review correction: bare words in ordinary prose
+        // are not archive declarations (e.g. "Process retired tasks").
+        // if (/\b(?:retired|retained history|historical implementation|REVVEL-DISABLED)\b/i.test(content)) segment++;
+        const commentHeader = content.replace(/^(?:\/\/|#|\/\*\*?|\*|<!--)\s*/, '');
+        if (/^(?:REVVEL-DISABLED\b|retired historical implementation\b|retained history\b|historical implementation\b)/i.test(commentHeader)) segment++;
         continue;
       }
       if (content.length > 5) {
@@ -475,6 +484,10 @@ export function detectDuplicatedBlocks(diffText) {
       }
     } else {
       segment++;
+      // A patch boundary/context gap does not prove the following source is
+      // still inside this added comment. Never carry that assumption into a
+      // different hunk and silently hide its executable additions.
+      blockComment = false;
     }
   }
 
