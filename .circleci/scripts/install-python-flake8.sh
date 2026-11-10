@@ -53,7 +53,10 @@ fi
 # interpreter externally-managed (PEP 668) and refuse --user installs outright.
 python3 -m venv "$VENV"
 "$VENV/bin/python" -m pip install --quiet --upgrade pip
-"$VENV/bin/python" -m pip install --quiet "flake8==${FLAKE8_VERSION}"
+# requests: .github/scripts/openrouter_coder.py imports it, and
+# tests/openrouter-coder-layer0.test.js spawns that script with the bare
+# python3 this venv provides — without it npm test dies on ModuleNotFoundError.
+"$VENV/bin/python" -m pip install --quiet "flake8==${FLAKE8_VERSION}" "requests==2.32.5"
 
 # The gate spawns a bare `python3`, so the venv has to win on PATH for every
 # subsequent step. BASH_ENV is sourced by each CircleCI step; exporting in this
@@ -67,6 +70,7 @@ touch "$BASH_ENV"
 echo "export PATH=\"${VENV}/bin:\$PATH\"" >> "$BASH_ENV"
 export PATH="${VENV}/bin:$PATH"
 
-# Assert, do not comment: prove the exact invocation the gate makes works.
+# Assert, do not comment: prove the exact invocations the tests make work.
 python3 -m flake8 --version
-echo "python + flake8 ready: $(command -v python3)"
+python3 -c "import requests"
+echo "python + flake8 + requests ready: $(command -v python3)"

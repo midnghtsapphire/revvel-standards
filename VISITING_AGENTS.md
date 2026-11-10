@@ -108,7 +108,6 @@ parallel fallback chain is scaffolding — it will be removed.
 Guests who follow this get invited back. Welcome — now go ship something that
 makes money.
 
-
 ## 7b. If another agent shares your checkout — read this before you push
 
 Added 6 Nov 2026 after a real incident in `midnghtsapphire/tartaria-tablets`,
