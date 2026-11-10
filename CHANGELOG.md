@@ -406,3 +406,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   HULL/prosecution receipt in GIT-FLEET PR #2, and recorded actual CircleCI
   job 23006 success on the implementation source head. Product hosting remains
   staged; no deployment, transaction, benchmark or customer result invented.
+
+- Codex final handoff: recorded confirmed implementation merges #18348 and
+  GIT-FLEET #2, exact reviewed/merged tree agreement, the installed local task,
+  successful required CircleCI job 23013 and retained final execution receipts.
+  Preserved an unstaged continuation-note appendix in a separate documentation
+  follow-up; original product/research/customer acceptance remains open.
+
+- Codex documentation completeness: added all nine Lago receiver environment
+  names to canonical .env.example, including explicit issuer/key/database
+  guidance. No credential values, live environment settings, listeners or
+  subscriptions were created or changed.
+
+- Codex follow-up gate repairs: registered Lago in the existing connections
+  source and canonical generated views, preserving README content outside its
+  generated marker. Corrected the timeout test's Linux postcondition to verify
+  absent or actually terminated zombie/dead state, never accept a live PID.
+  Retained the failing CI evidence and old assertion; no production timeout,
+  comparison budget, drift check or legacy allowance was weakened.
+
+- Codex prosecution integration: the larger 227 KB source packet now passes
+  within the unchanged comparison budget. A UTF-16 character-count lower bound
+  rejects mathematically impossible matches before edit-distance work; the
+  actual multiline billing-assertion false positive has regression coverage.
+  Independent review checked 35,962 cases against the exact legacy distance.
+  Final HULL/prosecution run passed 81 tests, zero findings/provider calls.

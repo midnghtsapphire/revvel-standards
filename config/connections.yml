@@ -329,6 +329,17 @@ connections:
     connects_to: [sentry]
 
   # ── Research / data / infra APIs (keys in .env.example) ───────────────────
+  - id: lago
+    name: Lago (owner-hosted billing authority)
+    type: api
+    auth: key
+    env: LAGO_API_URL, LAGO_API_KEY, LAGO_ORGANIZATION_ID, LAGO_WEBHOOK_ALGORITHM, LAGO_WEBHOOK_PUBLIC_KEY_FILE, LAGO_WEBHOOK_ISSUER, LAGO_WEBHOOK_HMAC_KEY, LAGO_WEBHOOK_DATABASE, LAGO_WEBHOOK_PORT
+    status: verified
+    access: [billing-reconciliation, signed-webhook-inbox, operator-billing-adapter]
+    connects_to: [owner-hosted-lago, stripe-via-lago]
+    used_by: [products/revenue-billing/lago.mjs, products/revenue-billing/webhook-server.mjs]
+    note: "Verified repository integration and environment contract only; no live Lago host, credentials or payment provider configuration verified. Prefer an existing owner-hosted Lago instance; no paid cloud default or provisioning. Lago remains the sole billing authority; public paid paths disabled pending account binding. Official self-hosted source: https://github.com/getlago/lago ; API key guidance (Developers -> API keys): https://github.com/getlago/lago-cli#configure . Receiver uses Node 24 private SQLite and pinned JWT or explicitly configured HMAC; keys stay server-side."
+
   - id: crewai
     name: CrewAI
     type: api

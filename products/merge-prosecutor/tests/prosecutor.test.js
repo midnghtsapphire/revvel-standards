@@ -35,6 +35,27 @@ test('bounded comparison aborts excessive work explicitly and skips impossible l
   assert.throws(() => boundedLevenshtein('a'.repeat(1000), 'b'.repeat(1000), 200, { remaining: 10 }), /work budget exceeded/);
 });
 
+test('character-count lower bound preserves exact distances on mixed Unicode and reordered strings', () => {
+  const strings = ['abcdabcd', 'dcbaabcd', 'aaaaaaa', 'bbbbbbb', 'a😀b', 'b😀a', 'e\u0301é', 'ééé', 'prefix-123-suffix', 'prefix-456-suffix'];
+  for (const a of strings) for (const b of strings) for (let limit = 0; limit <= 8; limit++) {
+    assert.equal(boundedLevenshtein(a, b, limit), Math.min(computeLevenshtein(a, b), limit + 1));
+  }
+});
+
+test('actual batched webhook retry observations with multiline expected primitives are distinct cases', () => {
+  const diff = `+++ b/arbitrary-observer.js
++assert.deepEqual(await drainPending(app, app.inbox), {
++  processed: 25, failed: 1, pending: 1, batches: 2,
++  status: 'retry_pending', exitCode: 1, publicCheckout: false,
++});
++assert.deepEqual(await drainPending(app, app.inbox), {
++  processed: 0, failed: 0, pending: 1, batches: 0,
++  status: 'retry_pending', exitCode: 1, publicCheckout: false,
++});
+`;
+  assert.deepEqual(detectDuplicatedBlocks(diff), []);
+});
+
 function newFileDiff(path, text) {
   const lines = text.split('\n');
   return `diff --git a/${path} b/${path}\n--- /dev/null\n+++ b/${path}\n@@ -0,0 +1,${lines.length} @@\n` + lines.map(line => '+' + line).join('\n');

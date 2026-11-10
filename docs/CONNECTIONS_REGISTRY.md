@@ -3,7 +3,7 @@
 
 Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what each can reach. **Generated from `config/connections.yml`** — edit the YAML, run `npm run connections`, never hand-edit this file.
 
-**46** connections · **42** verified · **4** unverified (confirm before relying on them).
+**49** connections · **44** verified · **5** unverified (confirm before relying on them).
 
 ## Agents & orchestration
 
@@ -47,8 +47,10 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `composio` (Composio) | ✅ verified | key | tool-integrations | — | — | — |
 | `crewai` (CrewAI) | ✅ verified | key | multi-agent-orchestration, workflow-automation | github | — | — |
 | `firecrawl` (Firecrawl) | ✅ verified | key | web-scrape, crawl | — | — | — |
+| `ghcr` (GitHub Container Registry (ghcr.io)) | ✅ verified | github-token | oci-push, oci-pull, package-visibility | github | ghcr-publish.yml, ghcr-setup-status.yml, products/ghcr-console, ship-to-market.yml | OCI images at ghcr.io. Same-repo push uses job GITHUB_TOKEN + permissions.packages: write (WR #17695). Optional GHCR_READ_TOKEN name documented in docs/SECRETS_MAP.md for private pulls on external hosts. Auditor: scripts/ghcr-setup.js. |
 | `google-maps` (Google Maps) | ✅ verified | key | geocoding, places | — | — | — |
 | `groq` (Groq) | ✅ verified | key | fast-llm-inference | — | — | — |
+| `lago` (Lago (owner-hosted billing authority)) | ✅ verified | key | billing-reconciliation, signed-webhook-inbox, operator-billing-adapter | owner-hosted-lago, stripe-via-lago | products/revenue-billing/lago.mjs, products/revenue-billing/webhook-server.mjs | Verified repository integration and environment contract only; no live Lago host, credentials or payment provider configuration verified. Prefer an existing owner-hosted Lago instance; no paid cloud default or provisioning. Lago remains the sole billing authority; public paid paths disabled pending account binding. Official self-hosted source: <https://github.com/getlago/lago> ; API key guidance (Developers -> API keys): <https://github.com/getlago/lago-cli#configure> . Receiver uses Node 24 private SQLite and pinned JWT or explicitly configured HMAC; keys stay server-side. |
 | `namecheap` (Namecheap) | ✅ verified | key | domains, dns | digitalocean | — | — |
 | `neon` (Neon) | ✅ verified | key | serverless-postgres, preview-branches | — | neon-branch.yml | Actions-only secret (plus vars.NEON_PROJECT_ID); creates/deletes per-PR preview branches. Not read by any app or MCP server. |
 | `noimosai` (NoimosAI) | ✅ verified | key | code-review | — | noimosai.yml | — |
@@ -73,7 +75,8 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `bito` (Bito AI) | ✅ verified | key | code-review | github | bito-ai.yml | — |
 | `mergeme` (MergeMe (mergeme.dev)) | ✅ verified | oauth | pr-slack-cards, review-thread-mirroring, mention-routing | github, slack | mergeme-status.yml, products/mergeme-status | Slack PR cards (one updating message per PR). Repo-side wiring audited by scripts/mergeme-wiring.js (WR #16824). GitHub App + Slack OAuth installed at <https://mergeme.dev> / marketplace — no MERGEME_API_KEY in this repo. |
 | `octopus` (Octopus Review) | ✅ verified | paid | pr-review | github | octopus-route.yml, octopus-cli.yml | Owner: found several different error classes in a single review. Currently over monthly AI quota — needs own API keys. |
+| `railway` (Railway) | ⚠️ unverified | key | deploy, hosting, preview-environments | github | ship-to-market.yml, .circleci/config.yml | Deploy target for deliver:api and deliver:mcp labels (ship-to-market.yml) and for the main-branch deploy-railway job in .circleci/config.yml. RAILWAY_TOKEN must be set in BOTH places: GitHub Actions repo secrets (Settings → Secrets → Actions) and CircleCI project environment variables (app.circleci.com → Project Settings → Environment Variables). Get a token at <https://railway.app/account/tokens>. Status unverified — flip to verified once a deploy actually succeeds. |
 | `stacker-bot` (Stacker (stacked PRs)) | ✅ verified | free | stacked-prs, pr-toc, merge-order-guard | github | stacker-bot[bot], docs/STACKER_BOT_INSTALLATION.md | Free stacked-PR GitHub App (installation 150619571). Bot login stacker-bot[bot]. Pairs with the stacker CLI (brew tap stackedpr/stacker). See docs/STACKER_BOT_INSTALLATION.md and skills/stacker-bot/SKILL.md. Complementary to Graphite (docs/GRAPHITE_INTEGRATION.md); Stacker is the free, already-installed lane for splitting large agent diffs. |
 | `vercel` (Vercel) | ⚠️ unverified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | BLOCKED as of 2026-08-17. All three projects (revvel-standards, standards, marketplace-relister) report "Account is blocked." on every commit, on main as well as PRs. No deploy has succeeded since at least 13:18 UTC that day. Downgraded from verified because the registry must not assert a working integration that demonstrably is not working. Cause is account-level (billing or a usage/abuse flag), not repo config — see <https://vercel.com/knowledge/why-is-my-account-deployment-blocked> Re-verify and restore status: verified only after a deploy actually succeeds. |
 
-*Last generated: 2026-08-18 from `config/connections.yml`.*
+*Last generated: 2026-11-10 from `config/connections.yml`.*
