@@ -76,7 +76,10 @@ test('strict JSON duplicate keys fail exactly including escaped aliases, distinc
 
 test('retained comments, unchanged context and separate hunks do not create adjacent copies', () => {
   const block = '+executeTask(context);\n+recordTaskResult(context);\n';
-  for (const separator of [' unchanged_source();\n', '@@ -30,0 +35,2 @@\n', '+// retired historical implementation\n']) {
+  // Retired 2026-11-10, PR #18350: a header between active copies does NOT
+  // retire either copy. Preserve that incorrect old expectation for history.
+  // for (const separator of [' unchanged_source();\n', '@@ -30,0 +35,2 @@\n', '+// retired historical implementation\n']) {
+  for (const separator of [' unchanged_source();\n', '@@ -30,0 +35,2 @@\n']) {
     assert.deepEqual(detectDuplicatedBlocks('+++ b/run.js\n' + block + separator + block), []);
   }
   assert.deepEqual(detectDuplicatedBlocks('+++ b/run.js\n+/* retained history\n' + block + block + '+*/\n'), []);
@@ -95,7 +98,8 @@ test('ordinary line comments and JSDoc cannot hide adjacent duplicate executable
   }
 });
 
-test('ordinary retired/history prose is documentation while explicit archive headers retain boundaries', () => {
+// Earlier test title: ordinary retired/history prose is documentation while explicit archive headers retain boundaries.
+test('ordinary prose and explicit archive headers cannot hide surrounding active duplicates', () => {
   const block = '+executeTask(context);\n+recordTaskResult(context);\n';
   for (const comment of [
     '+// Process retired tasks before recording results.\n',
@@ -107,7 +111,30 @@ test('ordinary retired/history prose is documentation while explicit archive hea
     '+/* retained history */\n',
     '+// historical implementation\n',
     '+// REVVEL-DISABLED | AGENT: codex | DATE: 2026-11-10\n',
-  ]) assert.deepEqual(detectDuplicatedBlocks('+++ b/run.js\n' + block + header + block), [], header);
+  // Incorrect prior assertion retained: ]) assert.deepEqual(detectDuplicatedBlocks('+++ b/run.js\n' + block + header + block), [], header);
+  ]) assert.ok(detectDuplicatedBlocks('+++ b/run.js\n' + block + header + block).length > 0, header);
+});
+
+test('actual commented archive payload stays nonexecuting without granting headers special privileges', () => {
+  const lineArchive = '+// REVVEL-DISABLED | AGENT: codex | DATE: 2026-11-10\n' +
+    '+// executeTask(context);\n+// recordTaskResult(context);\n';
+  const blockArchive = '+/* retained history\n+executeTask(context);\n+recordTaskResult(context);\n+*/\n';
+  for (const archive of [lineArchive, blockArchive]) {
+    assert.deepEqual(detectDuplicatedBlocks('+++ b/run.js\n' + archive + archive), []);
+    const active = '+executeTask(context);\n+recordTaskResult(context);\n';
+    assert.ok(detectDuplicatedBlocks('+++ b/run.js\n' + active + archive + active).length > 0);
+  }
+});
+
+test('executable tails after single-line and multiline block comments remain duplicate candidates', () => {
+  const tails = [
+    '+/* ordinary doc */ executeTask(context);\n+recordTaskResult(context);\n',
+    '+/**\n+ * ordinary documentation\n+ */ executeTask(context);\n+recordTaskResult(context);\n',
+    '+/* ordinary doc */ /* another doc */ executeTask(context);\n+recordTaskResult(context);\n',
+  ];
+  for (const body of tails) assert.ok(detectDuplicatedBlocks('+++ b/run.js\n' + body + body).length > 0, body);
+  const onlyComments = '+/* ordinary doc\n+executeTask(context);\n+recordTaskResult(context);\n+*/\n';
+  assert.deepEqual(detectDuplicatedBlocks('+++ b/run.js\n' + onlyComments + onlyComments), []);
 });
 
 test('unclosed added block comment cannot hide executable duplicates in another hunk or context region', () => {

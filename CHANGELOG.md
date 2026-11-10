@@ -438,3 +438,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unknown diff boundaries. Only anchored, explicit retirement headers retain
   the archive boundary. Added real regressions and preserved the old rules as
   dated comments; no paid Cursor autofix or provider call used.
+
+- Codex final comment correction: a retirement header alone cannot exempt
+  active code. Removed all comment/header segment barriers while retaining
+  exclusion of actual commented bodies; active tails after closing block
+  comments remain checked. Preserved the earlier incorrect archive assertion
+  and rule as dated history. Forty-seven child regressions pass.

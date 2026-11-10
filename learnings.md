@@ -1179,3 +1179,10 @@ only from explicit anchored headers. Ordinary prose mentioning retired tasks
 or history is not a retirement marker. Reset partial lexical assumptions when
 a diff no longer supplies continuous source. Preserve old rules and regression
 examples so this failure does not recur under another archive heuristic.
+
+Follow-up correction to the initial anchored-header proposal above: a label
+alone does not make executable code retired. Even REVVEL-DISABLED or a legacy
+archive heading between two active copies must not hide them. The final rule
+excludes only actual comment bodies, gives no comment/header a segment barrier,
+and retains active code after closing block-comment delimiters. Earlier header
+rules and assertions remain commented as evidence of the mistaken assumption.

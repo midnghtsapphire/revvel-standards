@@ -8,6 +8,8 @@ The isolated checkout starts at origin/main 7b0bc3f. The existing prosecutor inc
 
 The existing duplicate detector checks adjacent executable bodies across ordinary documentation while preserving explicit commented retirement archives and keeping lexical state confined to known diff regions.
 
+2026-11-10 clarification for PR #18350: an earlier implementation assumed an explicit archive header could interrupt executable adjacency. That assumption and its old assertion remain commented in source/tests for history, but are incorrect: both surrounding active copies still execute. Only actually commented payload is nonexecuting. No ordinary or retirement header grants an exception to active-code checks. Executable tails after closing block comments are retained for analysis.
+
 ## 3. Dependency map
 
 Node.js and the existing product/root regression suites are required. No database, API, credentials, external service, deployment or schema migration is required.
@@ -52,3 +54,12 @@ the shared journal. No budget was raised or incomplete review reported as pass.
 Railway TypeScript compatibility work prepared during the initial mistaken
 interpretation is held separately on codex/railway-ts-compat-held-20261110.
 It is not part of this correction and no Railway source/deployment changed.
+
+Final verification after removing header privileges and retaining executable
+tails: 47 product/local tests passed. HULL/prosecution run
+3940a1a3-7519-450a-ba5e-6c7c329348d9 passed 86 configured tests in 15.039
+seconds, zero findings/provider calls; scheduler attempt
+e994b73d-d381-4e35-b27a-ea26189c23ca passed. Independent review confirmed the
+original before/after reproductions, header cases and closing-tail behavior.
+The earlier narrowed-header proposal and its 45/84-test results remain above
+as historical evidence, superseded by this final actual-comment-only rule.
