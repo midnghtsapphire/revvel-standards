@@ -165,9 +165,119 @@ export function computeLevenshtein(a, b) {
   return matrix[a.length][b.length];
 }
 
+/** Exact through limit, otherwise limit+1. Two rows and a diagonal band avoid
+ * allocating the legacy quadratic matrix for each threshold comparison.
+ * Shared work accounting makes adversarial long near-matches fail closed with
+ * an explicit error instead of monopolizing an unattended local executor.
+ */
+export function boundedLevenshtein(a, b, limit, budget = { remaining: 200000000 }) {
+  if (!Number.isInteger(limit) || limit < 0) throw new Error('Edit limit must be a nonnegative integer');
+  if (Math.abs(a.length - b.length) > limit) return limit + 1;
+  if (a === b) return 0;
+  // Equal edges cannot affect edit distance. Trimming declaration boilerplate
+  // before band allocation avoids repeatedly visiting thousands of equal cells.
+  let prefix = 0;
+  while (prefix < Math.min(a.length, b.length) && a[prefix] === b[prefix]) prefix++;
+  let endA = a.length;
+  let endB = b.length;
+  while (endA > prefix && endB > prefix && a[endA - 1] === b[endB - 1]) { endA--; endB--; }
+  budget.remaining -= prefix + a.length - endA;
+  if (budget.remaining < 0) throw new Error('Prosecutor comparison work budget exceeded; split the review packet, never treat this as a clean pass');
+  a = a.slice(prefix, endA);
+  b = b.slice(prefix, endB);
+  if (!a.length) return b.length <= limit ? b.length : limit + 1;
+  if (!b.length) return a.length <= limit ? a.length : limit + 1;
+  // Keep columns on the shorter string, minimizing retained row memory.
+  if (b.length > a.length) [a, b] = [b, a];
+  const overflow = limit + 1;
+  let previous = new Uint32Array(b.length + 1);
+  let current = new Uint32Array(b.length + 1);
+  previous.fill(overflow);
+  for (let j = 0; j <= Math.min(b.length, limit); j++) previous[j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    const first = Math.max(1, i - limit);
+    const last = Math.min(b.length, i + limit);
+    budget.remaining -= last - first + 1;
+    if (budget.remaining < 0) throw new Error('Prosecutor comparison work budget exceeded; split the review packet, never treat this as a clean pass');
+    current[0] = i <= limit ? i : overflow;
+    if (first > 1) current[first - 1] = overflow;
+    if (last < b.length) current[last + 1] = overflow;
+    let rowMinimum = current[0];
+    for (let j = first; j <= last; j++) {
+      current[j] = Math.min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      rowMinimum = Math.min(rowMinimum, current[j]);
+    }
+    if (rowMinimum > limit) return overflow;
+    [previous, current] = [current, previous];
+  }
+  return Math.min(previous[b.length], overflow);
+}
+
 const KEEP_BOTH_MIN_LEN = 2;
 const KEEP_BOTH_MAX_LEN = 16;
 const KEEP_BOTH_MAX_GAP = 1;
+
+/**
+ * 2026-11-10, #18313: argparse registrations naturally repeat their type and
+ * required/default boilerplate. Distinct option keys are distinct operations,
+ * even when character similarity exceeds 85%. Recognize only whole, static
+ * registration lines, including all leading option aliases. Unknown syntax
+ * stays under the ordinary duplicate check; overlapping keys are never exempt.
+ */
+function argumentRegistrationKeys(lines) {
+  const keys = new Set();
+  for (const line of lines) {
+    const call = line.match(/^([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\.add_argument\((.*)\)\s*;?$/);
+    if (!call) return null;
+    let rest = call[2];
+    let count = 0;
+    while (true) {
+      const literal = rest.match(/^\s*(['"])([-A-Za-z0-9_]+)\1\s*(?:,|$)/);
+      if (!literal) break;
+      keys.add(`${call[1]}:${literal[2]}`);
+      count++;
+      rest = rest.slice(literal[0].length);
+    }
+    if (!count) return null;
+  }
+  return keys;
+}
+
+function distinctArgumentRegistrations(linesA, linesB) {
+  const a = argumentRegistrationKeys(linesA);
+  const b = argumentRegistrationKeys(linesB);
+  return a && b && ![...a].some(key => b.has(key));
+}
+
+function distinctAssertionCases(linesA, linesB) {
+  if (linesA.join('\n') === linesB.join('\n')) return false;
+  // Different expected observations in a sequence of assertions are separate
+  // state checks, not evidence of duplicated application logic. Exact repeated
+  // assertion blocks still qualify; enclosing executable copies still qualify.
+  if ([...linesA, ...linesB].every(line => /^assert\.[A-Za-z]+\(/.test(line))) return true;
+  // Python exception contexts can intentionally exercise distinct CLI options.
+  // Require both full two-line cases and non-overlapping concrete flag keys.
+  if (linesA.length !== 2 || linesB.length !== 2 ||
+      !/^with self\.assertRaises\([^)]*\):$/.test(linesA[0]) || linesA[0] !== linesB[0]) return false;
+  const flags = line => [...line.matchAll(/(['"])(--[A-Za-z0-9-]+)\1/g)].map(match => match[2]);
+  const a = flags(linesA[1]);
+  const b = flags(linesB[1]);
+  return a.length && b.length && !a.some(flag => b.includes(flag));
+}
+
+function templateStateAfter(line, insideTemplate) {
+  let quote = null;
+  for (let i = 0; i < line.length; i++) {
+    const character = line[i];
+    if (character === '\\') { i++; continue; }
+    if (insideTemplate) { if (character === '`') insideTemplate = false; continue; }
+    if (quote) { if (character === quote) quote = null; continue; }
+    if (character === '"' || character === "'") { quote = character; continue; }
+    if (character === '/' && line[i + 1] === '/') break;
+    if (character === '`') insideTemplate = true;
+  }
+  return insideTemplate;
+}
 
 /**
  * Keep-both means two similar copies sit back-to-back in the added lines
@@ -180,18 +290,35 @@ const KEEP_BOTH_MAX_GAP = 1;
  * If this starts missing a real keep-both, check that the two copies
  * are consecutive (or one added line apart) and at least 2 lines each.
  */
-function findConsecutiveKeepBoth(additions, start) {
+// Historical signature: function findConsecutiveKeepBoth(additions, start) {
+function findConsecutiveKeepBoth(additions, start, budget) {
   for (let gap = 0; gap <= KEEP_BOTH_MAX_GAP; gap++) {
     for (let len = KEEP_BOTH_MIN_LEN; len <= KEEP_BOTH_MAX_LEN; len++) {
       const j = start + len + gap;
       if (j + len > additions.length) break;
       if (additions[start].file !== additions[j].file) return null;
+      // Added lines separated by unchanged source or a new hunk are not two
+      // adjacent merge copies. Also never bridge a retained comment archive.
+      if (additions[start].segment !== additions[j + len - 1].segment) continue;
 
-      const blockA = additions.slice(start, start + len).map((a) => a.text).join(' ');
-      const blockB = additions.slice(j, j + len).map((a) => a.text).join(' ');
+      // Preserve the original joined text below for evidence and similarity,
+      // but retain line boundaries to recognize keyed declarations precisely.
+      // const blockA = additions.slice(start, start + len).map((a) => a.text).join(' ');
+      // const blockB = additions.slice(j, j + len).map((a) => a.text).join(' ');
+      const linesA = additions.slice(start, start + len).map((a) => a.text);
+      const linesB = additions.slice(j, j + len).map((a) => a.text);
+      const blockA = linesA.join(' ');
+      const blockB = linesB.join(' ');
       const maxLen = Math.max(blockA.length, blockB.length);
       if (!maxLen) continue;
-      const distance = computeLevenshtein(blockA, blockB);
+      // Earlier keyed filter: if (distinctArgumentRegistrations(linesA, linesB)) continue;
+      if (distinctArgumentRegistrations(linesA, linesB) || distinctAssertionCases(linesA, linesB)) continue;
+      // Retired quadratic threshold comparison, 2026-11-10, #18313:
+      // const distance = computeLevenshtein(blockA, blockB);
+      const distance = boundedLevenshtein(blockA, blockB, Math.ceil(maxLen * 0.15) - 1, budget);
+      // Historical fuzzy-only verdict: if (distance < maxLen * 0.15) {
+      // Earlier keyed check was after expensive comparison:
+      // if (distance < maxLen * 0.15 && !distinctArgumentRegistrations(linesA, linesB)) {
       if (distance < maxLen * 0.15) {
         return {
           file: additions[start].file,
@@ -209,22 +336,48 @@ export function detectDuplicatedBlocks(diffText) {
   const additions = [];
   const lines = diffText.split('\n');
   let currentFile = '';
+  let segment = 0;
+  let blockComment = false;
+  let multilineTemplate = false;
 
   for (const line of lines) {
     if (line.startsWith('+++ b/')) {
       currentFile = line.slice(6);
+      segment++;
+      blockComment = false;
+      multilineTemplate = false;
     } else if (line.startsWith('+') && !line.startsWith('+++')) {
       const content = line.slice(1).trim();
-      if (content.length > 5) {
-        additions.push({ file: currentFile, text: content });
+      // Template fixture payloads are string data, including deliberately bad
+      // merges. Do not interpret that data as executing source. Single-line
+      // templates stay in the source comparison; no test/file path is exempt.
+      const wasTemplate = multilineTemplate;
+      if (/\.[cm]?[jt]sx?$/.test(currentFile)) multilineTemplate = templateStateAfter(content, multilineTemplate);
+      if (wasTemplate || multilineTemplate) { segment++; continue; }
+      // 2026-11-10 #18313: owner-retained commented history is not executing
+      // twice. Keep it in source but exclude full comment lines, breaking the
+      // candidate segment so active copies across an archive never align.
+      if (blockComment || /^(?:\/\/|#|\/\*|\*\/|\*(?:\s|$)|<!--)/.test(content)) {
+        if (content.startsWith('/*') && !content.includes('*/')) blockComment = true;
+        if (blockComment && content.includes('*/')) blockComment = false;
+        segment++;
+        continue;
       }
+      if (content.length > 5) {
+        // Historical concatenation: additions.push({ file: currentFile, text: content });
+        additions.push({ file: currentFile, text: content, segment });
+      }
+    } else {
+      segment++;
     }
   }
 
   const duplicates = [];
   const seen = new Set();
+  const budget = { remaining: 200000000 };
   for (let i = 0; i < additions.length - KEEP_BOTH_MIN_LEN; i++) {
-    const hit = findConsecutiveKeepBoth(additions, i);
+    // Historical call: const hit = findConsecutiveKeepBoth(additions, i);
+    const hit = findConsecutiveKeepBoth(additions, i, budget);
     if (!hit) continue;
     const key = `${hit.file}\n${hit.blockA}\n${hit.blockB}`;
     if (seen.has(key)) continue;
@@ -277,11 +430,14 @@ export function extractCodeBlocks(body) {
  * Why: `aLine.includes(sLine)` flagged "log" inside "console.log" and any
  * short suggestion fragment that appeared as a substring.
  */
-export function suggestionLineMatches(suggestionLine, addedLine) {
+// Historical signature: export function suggestionLineMatches(suggestionLine, addedLine) {
+export function suggestionLineMatches(suggestionLine, addedLine, budget) {
   if (suggestionLine === addedLine) return true;
   const maxLen = Math.max(suggestionLine.length, addedLine.length);
   if (maxLen === 0) return false;
-  const distance = computeLevenshtein(suggestionLine, addedLine);
+  // Retired quadratic threshold call, 2026-11-10 #18313:
+  // const distance = computeLevenshtein(suggestionLine, addedLine);
+  const distance = boundedLevenshtein(suggestionLine, addedLine, Math.ceil(maxLen * 0.10) - 1, budget);
   return distance < maxLen * 0.10;
 }
 
@@ -315,6 +471,7 @@ export function isHumanReviewer(comment) {
 
 export function detectUnimplementedSuggestions(diffText, comments) {
   const additions = [];
+  const budget = { remaining: 200000000 };
   const lines = String(diffText || '').split('\n');
 
   for (const line of lines) {
@@ -340,7 +497,8 @@ export function detectUnimplementedSuggestions(diffText, comments) {
       for (const sLine of suggestionLines) {
         let lineFound = false;
         for (const aLine of additions) {
-          if (suggestionLineMatches(sLine, aLine)) {
+          // Historical call: if (suggestionLineMatches(sLine, aLine)) {
+          if (suggestionLineMatches(sLine, aLine, budget)) {
             lineFound = true;
             break;
           }
@@ -490,7 +648,13 @@ export async function main(env = process.env, fetchImpl = fetch) {
 
 // only run main if called directly
 if (process.argv[1] && process.argv[1].endsWith('run-prosecutor.mjs')) {
-    main().catch(err => {
+    // 2026-11-10, #18313: explicit local mode reuses these detectors through
+    // HULL/owned execution; the historical GitHub adapter remains available.
+    // Historical unconditional entrypoint retained: main().catch(err => {
+    const execution = process.argv.includes('--local')
+      ? import('./local-prosecution.mjs').then(async ({ localCLI }) => { process.exitCode = await localCLI(process.argv.slice(2)); })
+      : main();
+    execution.catch(err => {
         console.error(err);
         process.exit(1);
     });

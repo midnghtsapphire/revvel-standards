@@ -46,5 +46,9 @@ class LifecycleTests(unittest.TestCase):
                 self.assertEqual("test", result["status"])
 
 
+# 2026-11-10: moved below additive HULL integration tests.
+# if __name__ == "__main__":
+#     unittest.main()
+
 if __name__ == "__main__":
     unittest.main()

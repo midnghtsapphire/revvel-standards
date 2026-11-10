@@ -1,5 +1,33 @@
 # SYSTEM STATE — revvel-standards
 
+## Verified shipping continuation — 2026-11-10
+
+This dated observation supersedes older optimistic production labels below;
+the historical rows remain visible. Codex shipping owns this delivery work.
+Another Codex chat owns Cloudflare Tunnel and the direct Proofy setup.
+
+- Merged: revenue/static delivery and CI repairs in PR #18347, HULL local
+  execution in oaudrey PR #13. Merged does not mean live or paid checkout.
+- Railway lucky-light production: existing service sleeping; four reviewed
+  releases remain in staged patch f7d1ef3b-8a4b-4a8e-8665-5375c86116e3.
+  Automatic approval review rejected apply despite Audrey's explicit approval.
+  No alternate apply was attempted, no domains or running new services verified.
+- Canonical owned-host key ~/.ssh/agent-access and injected SSH_PRIVATE_KEY are
+  absent locally; prior growlingeyes key rejected. Credential presence in a
+  GitHub secret-name list is not proof of locally usable credentials.
+- Billing continuation: signed Lago receiver, durable SQLite inbox and current
+  provider reconciliation have offline/HTTP tests. No public paid checkout,
+  entitlements, live invoice, webhook ingress or customer revenue verified.
+- Optional lifecycle now calls the existing policy-bound HULL executor and
+  persists receipts/review state in SQLite. It is opt-in, not a migrated
+  production fleet or an untrusted-code sandbox.
+- Daily/event prosecution is being bound to the existing GIT-FLEET local tick.
+  Its local-only mode avoids model, GitHub and Airtable setup. Registration
+  and final integrated receipts must be observed before calling it running.
+- Remaining original acceptance is tracked in
+  wr/summaries/owned-shipping-continuation-2026-11-10.md. Original issues stay
+  open until their live, benchmark, assessment or customer criteria are proven.
+
 > **Read this first at the start of every agent session.**
 > **Update this last at the end of every agent session.**
 > See `standards/SYSTEM_STATE_STANDARD.md` for full rules.
