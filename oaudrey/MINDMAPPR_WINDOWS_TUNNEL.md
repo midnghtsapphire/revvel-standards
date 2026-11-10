@@ -49,6 +49,8 @@ There were three **places to run the server**. Pick one for each deployment.
 
 5. Start the app with `node --env-file=.env server.mjs` and leave it running. On the same computer, open `http://127.0.0.1:3005/mindmappr`, sign in, and send a short test message. Verify a reply and a matching request in LM Studio's server log. Finish this check before changing public DNS.
 
+LM Studio also offers native endpoints such as `GET /api/v1/models` and `POST /api/v1/chat`. This MindMappr build uses the OpenAI-compatible endpoints. In PowerShell, run `(Invoke-RestMethod http://127.0.0.1:1234/v1/models).data.id` and copy the exact ID. On the Windows host, the server listed both `google/gemma-3-4b` and `google/gemma-3-4b:2`. Use `LLM_MODEL=google/gemma-3-4b:2` for the selected instance.
+
 ## 3. Protect the hostname and add the route
 
 1. Review [the oaudrey DNS manifest](./dns-records.yml). It assigns the root domain and `www` to the static hub using `APP_TARGET`. Agree which app should own each hostname and reconcile the manifest before changing live DNS. In Cloudflare **DNS → Records**, check the current records for the root domain and any `www` hostname you intend to use. Record their type, target, TTL and proxy setting so you can restore them. Confirm an existing destination can be replaced before making the cutover.
