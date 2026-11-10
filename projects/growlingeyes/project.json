@@ -1,0 +1,15 @@
+{
+  "slug": "growlingeyes",
+  "title": "Growling Eyes",
+  "domain_strategy": "own-domain",
+  "own_domain": "growlingeyes.com",
+  "hub_path": "/growlingeyes/",
+  "hub_url": null,
+  "redirect_from": [
+    "growlingeye.com"
+  ],
+  "repo": "midnghtsapphire/growlingeyes",
+  "status": "building",
+  "description": "Growling Eyes project.",
+  "added": "2026-11-10"
+}

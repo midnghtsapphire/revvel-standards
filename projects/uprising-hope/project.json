@@ -1,0 +1,26 @@
+{
+  "slug": "uprising-hope",
+  "title": "Uprising Hope",
+  "domain_strategy": "own-domain",
+  "own_domain": "uprisinghope.com",
+  "hub_path": "/uprising-hope/",
+  "hub_url": null,
+  "redirect_from": [],
+  "repo": "midnghtsapphire/Uprising-Hope-LLC",
+  "status": "building",
+  "category": "recovery-coaching",
+  "tagline": "Recovery coaching. Life coaching in support.",
+  "description": "Recovery coaching first - peer recovery support with a Colorado Medicaid (H0038) billing path via CPFS certification. Life coaching secondary. Books and workbooks from the KDP pipeline serve as products and lead magnets.",
+  "revenue_model": [
+    "1:1 and group recovery coaching",
+    "subscription/group programs",
+    "Colorado Medicaid H0038 peer services (post-CPFS, via RSSO or agency partner)",
+    "KDP books/workbooks as products + lead magnets"
+  ],
+  "next_steps": [
+    "Research Colorado CPFS certification (60 training hrs + 200 exp hrs + exam)",
+    "Decide RSSO designation vs partner-agency billing",
+    "Pipeline: recovery-themed workbook as first lead-magnet product"
+  ],
+  "added": "2026-11-10"
+}
