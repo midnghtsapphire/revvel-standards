@@ -41,7 +41,9 @@ jobs:
   # ---------------------------------------------------------------------------
   check-suite-status:
     name: Update Status from Check Suite
-    runs-on: self-hosted
+    # 2026-11-10: original generic label retained; cmd requires explicit Windows.
+    # runs-on: self-hosted
+    runs-on: [self-hosted, Windows]
     if: github.event_name == 'check_suite'
     steps:
       - uses: actions/checkout@v7
@@ -69,7 +71,9 @@ jobs:
     timeout-minutes: 30
   workflow-run-status:
     name: Update Status from Workflow Run
-    runs-on: self-hosted
+    # 2026-11-10: original generic label retained; cmd requires explicit Windows.
+    # runs-on: self-hosted
+    runs-on: [self-hosted, Windows]
     if: github.event_name == 'workflow_run'
     steps:
       - uses: actions/checkout@v7

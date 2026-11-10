@@ -357,3 +357,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 2026-10-30 — GitHubOrchestrator — recorded HUSK (elisymlabs/husk) integration requirements as proposed, pending Audrey's confirmation of repo identity; no code changes.
 - 2026-11-04 — Proofy — added 'Backups' section (back up to GitHub under backup-YYYY-MM-DD-<folder>-<bot>, verify size+sha256, never delete originals without Audrey's yes) to AGENTS.md and VISITING_AGENTS.md
 - 2026-11-04 (MST) — Proofy — recorded on behalf of Claude Code (out of usage): two comments in revvel-standards Discussion #18238 (a misplaced pointer to the tartaria-tablets whiteboard, `19400617`, and Claude Code's correction under it, `19400657`) were DELETED by Claude Code on Audrey Evans's explicit instruction ("Delete it"). Both were Claude Code's own comments, posted minutes earlier by mistake; nothing else was touched. tartaria-tablets commit `2de436c`'s statement that they were "left in place" is superseded by this line (full entry in tartaria-tablets CHANGELOG.md).
+
+## 2026-11-10 — Owned delivery and cross-repository integration
+
+- Added working pricing and health exports for affiliate-hub, ai-video-toolkit,
+  and screen-recorder-finder; fixed the affiliate Tailwind build and shared
+  ESLint consumer resolution. Standalone public-artifact packaging runs locally
+  on Node/Bun without repository webhooks or GitHub-hosted execution.
+- Added GOAP sales/ROI pages and a verified twelve-slide PDF, plus evidence-based
+  compliance readiness documentation. Billing and research acceptance remain
+  open until real transactions, benchmarks, and operating evidence exist.
+- Repaired the current scripts-as-CI checks, hub-registry compatibility, portable
+  npm integrity checks, and template contract. Superseded code is preserved as
+  dated comments, including the simulated root watcher at its original path.
+- Cross-repository review, per-issue acceptance matrix, HULL merge/execution
+  receipts, and pending hosting apply are recorded under wr/summaries/. HULL
+  execution merged in oaudrey PR #13. No live deployment is claimed here.
