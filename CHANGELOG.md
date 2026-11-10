@@ -417,3 +417,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   names to canonical .env.example, including explicit issuer/key/database
   guidance. No credential values, live environment settings, listeners or
   subscriptions were created or changed.
+
+- Codex follow-up gate repairs: registered Lago in the existing connections
+  source and canonical generated views, preserving README content outside its
+  generated marker. Corrected the timeout test's Linux postcondition to verify
+  absent or actually terminated zombie/dead state, never accept a live PID.
+  Retained the failing CI evidence and old assertion; no production timeout,
+  comparison budget, drift check or legacy allowance was weakened.

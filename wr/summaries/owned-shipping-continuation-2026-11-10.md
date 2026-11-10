@@ -185,3 +185,26 @@ review rejected apply despite Audrey approving it; no alternate-interface
 bypass was attempted. Original live payment, protocol, research, assessment
 and customer requirements in the table above remain open. Cloudflare/Proofy
 connectivity remains with the other chat and was not changed here.
+
+Follow-up gate evidence: adding canonical Lago environment names correctly
+triggered the connection registry's drift guard. Lago is now registered in
+config/connections.yml with the explicit note that repository wiring is
+verified, while live hosting/credentials/payment remain unverified. Generated
+registry/dashboard and the existing README marker were refreshed; bytes
+outside that README marker were verified unchanged. The generator also
+surfaced two pre-existing registry records missing from its older views;
+no existing connection record was removed or reclassified.
+
+Linux CI also demonstrated that kill(pid,0) can still find a terminated zombie
+awaiting reaping. The timeout regression now requires ESRCH or an actually
+read, PID-matched Linux Z/X state after bounded polling; running, malformed,
+inaccessible or mismatched state does not pass. Production process-group kill
+and nonzero timeout status are unchanged. The earlier strict assertion remains
+commented alongside its observed failure. The child suite now has 40 cases;
+all twelve connection-registry cases pass, with strict drift zero.
+
+The first automatic changed-source task run at 12:25:12 MST completed with
+LastTaskResult=0 and scheduler attempt 0564c344-b172-47d1-b923-0f4cc448ccb1.
+Thus the timer was observed executing a real changed-source check as well as
+the initial idempotent unchanged-source checks. No new paid execution lane
+was enabled by these documentation/verification corrections.

@@ -12,6 +12,50 @@ function fixture(check = {}) {
   const workspace = mkdtempSync(join(tmpdir(), 'revvel-prosecution-'));
   return { version: 1, workspace, receipts: join(workspace, 'receipts'), checks: [{ name: 'actual-subprocess', argv: [process.execPath, '-e', 'process.exit(0)'], timeout_ms: 3000, ...check }] };
 }
+
+// Test-only observation: a Linux zombie retains a PID but cannot execute code.
+// Read the kernel state instead of confusing delayed PID1 reaping with a live
+// timed-out descendant. Missing/denied/malformed evidence is never a pass.
+function terminationEvidence(pid, { platform = process.platform, probe = process.kill, read = readFileSync } = {}) {
+  try { probe(pid, 0); }
+  catch (error) { return { terminated: error.code === 'ESRCH', proof: error.code }; }
+  if (platform === 'linux') {
+    try {
+      const stat = read(`/proc/${pid}/stat`, 'utf8');
+      // comm can contain spaces and parentheses; state follows its LAST ')'.
+      const state = stat.slice(stat.lastIndexOf(')') + 1).trimStart().split(/\s/)[0];
+      if (stat.startsWith(`${pid} (`) && ['Z', 'X'].includes(state)) {
+        return { terminated: true, proof: 'kernel-terminated-state', state };
+      }
+      return { terminated: false, proof: 'kernel-state', state };
+    } catch (error) { return { terminated: false, proof: error.code || 'stat-unreadable' }; }
+  }
+  return { terminated: false, proof: 'pid-present' };
+}
+
+async function waitForTermination(pid) {
+  const deadline = Date.now() + 3000;
+  let evidence;
+  do {
+    evidence = terminationEvidence(pid);
+    if (evidence.terminated) return evidence;
+    await new Promise(resolveWait => setTimeout(resolveWait, 25));
+  } while (Date.now() < deadline);
+  return evidence;
+}
+
+test('termination observer accepts only absent PIDs or proved Linux dead/zombie states', () => {
+  const pid = 123;
+  const observe = state => terminationEvidence(pid, {
+    platform: 'linux', probe: () => {}, read: () => `${pid} (name (with) parentheses) ${state} 1 2 3`,
+  });
+  for (const state of ['Z', 'X']) assert.equal(observe(state).terminated, true);
+  for (const state of ['R', 'S', 'D', 'T', 't', 'I', 'W', '?']) assert.equal(observe(state).terminated, false, state);
+  assert.equal(terminationEvidence(pid, { probe: () => { throw Object.assign(new Error(), { code: 'ESRCH' }); } }).terminated, true);
+  assert.equal(terminationEvidence(pid, { probe: () => { throw Object.assign(new Error(), { code: 'EPERM' }); } }).terminated, false);
+  assert.equal(terminationEvidence(pid, { platform: 'linux', probe: () => {}, read: () => 'malformed stat Z' }).terminated, false);
+  assert.equal(terminationEvidence(pid, { platform: 'linux', probe: () => {}, read: () => '999 (other pid) Z 1 2' }).terminated, false);
+});
 test('executes real fixed argv, records measured output, advisory snippets cannot execute', async () => {
   const policy = fixture();
   const result = await prosecuteLocal({ head: 'one', diff, argv: ['imaginary-command'], comments: [{ user: { login: 'reviewer', type: 'User' }, body: '```suggestion\nprocess.exit(123);\n```' }] }, policy);
@@ -64,7 +108,11 @@ test('timeout stops real process and fails closed', async () => {
   assert.equal(pids.length, 2, 'fixture must start both parent and descendant');
   for (const pid of pids) {
     assert.ok(Number.isInteger(pid) && pid > 0);
-    assert.throws(() => process.kill(pid, 0), error => error.code === 'ESRCH', `timed-out process ${pid} must be terminated`);
+    // Retired 2026-11-10, PR #18349 / CircleCI 23027: SIGKILL correctly
+    // terminated the descendant, but Linux PID1 had not yet reaped its zombie.
+    // assert.throws(() => process.kill(pid, 0), error => error.code === 'ESRCH', `timed-out process ${pid} must be terminated`);
+    const evidence = await waitForTermination(pid);
+    assert.equal(evidence.terminated, true, `timed-out process ${pid} must not be running: ${JSON.stringify(evidence)}`);
   }
 });
 test('exclusive overlap lock rejects execution and retains existing owner', async () => {
