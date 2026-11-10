@@ -452,7 +452,8 @@ export function detectDuplicatedBlocks(diffText) {
       // Historical reset: multilineTemplate = false;
     } else if (line.startsWith('+') && !line.startsWith('+++')) {
       if (jsonDataFiles.has(currentFile)) continue;
-      const content = line.slice(1).trim();
+      // Earlier immutable line: const content = line.slice(1).trim();
+      let content = line.slice(1).trim();
       // Template fixture payloads are string data, including deliberately bad
       // merges. Do not interpret that data as executing source. Single-line
       // templates stay in the source comparison; no test/file path is exempt.
@@ -460,14 +461,43 @@ export function detectDuplicatedBlocks(diffText) {
       // if (/\.[cm]?[jt]sx?$/.test(currentFile)) multilineTemplate = templateStateAfter(content, multilineTemplate);
       // if (wasTemplate || multilineTemplate) { segment++; continue; }
       if (/\.[cm]?[jt]sx?$/.test(currentFile) && templateDataLines.has(lineIndex)) { segment++; continue; }
+      // 2026-11-10, PR #18348 discussion_r4529468829: ordinary documentation
+      // does not interrupt executable adjacency. Explicit retired archives
+      // remain excluded and retain their historical boundary.
+      // Corrected later the same day, PR #18350: "boundary" above was an
+      // incorrect assumption. Headers never split active-code adjacency;
+      // only actual comment payload is excluded from executable comparison.
+      // Earlier overbroad rule retained:
       // 2026-11-10 #18313: owner-retained commented history is not executing
       // twice. Keep it in source but exclude full comment lines, breaking the
       // candidate segment so active copies across an archive never align.
-      if (blockComment || /^(?:\/\/|#|\/\*|\*\/|\*(?:\s|$)|<!--)/.test(content)) {
-        if (content.startsWith('/*') && !content.includes('*/')) blockComment = true;
-        if (blockComment && content.includes('*/')) blockComment = false;
-        segment++;
-        continue;
+      // Retired 2026-11-10, PR #18350: the unconditional continue below
+      // discarded executable tails after */ along with the actual comment.
+      // if (blockComment || /^(?:\/\/|#|\/\*|\*\/|\*(?:\s|$)|<!--)/.test(content)) {
+      //   if (content.startsWith('/*') && !content.includes('*/')) blockComment = true;
+      //   if (blockComment && content.includes('*/')) blockComment = false;
+      while (content && (blockComment || /^(?:\/\/|#|\/\*|\*\/|\*(?:\s|$)|<!--)/.test(content))) {
+        // Retired 2026-11-10: segment++; // ordinary comments hid duplicates.
+        // Retired 2026-11-10 review correction: bare words in ordinary prose
+        // are not archive declarations (e.g. "Process retired tasks").
+        // if (/\b(?:retired|retained history|historical implementation|REVVEL-DISABLED)\b/i.test(content)) segment++;
+        // Retired 2026-11-10, PR #18350: even an explicit archive HEADER
+        // cannot change whether surrounding active statements execute twice.
+        // Only actually commented payload is excluded; no magic marker gets
+        // to interrupt adjacency between active copies.
+        // const commentHeader = content.replace(/^(?:\/\/|#|\/\*\*?|\*|<!--)\s*/, '');
+        // if (/^(?:REVVEL-DISABLED\b|retired historical implementation\b|retained history\b|historical implementation\b)/i.test(commentHeader)) segment++;
+        // Historical whole-line discard: continue;
+        if (blockComment || content.startsWith('/*') || content.startsWith('*/')) {
+          const closing = content.indexOf('*/');
+          if (closing < 0) { blockComment = true; content = ''; break; }
+          blockComment = false;
+          content = content.slice(closing + 2).trim();
+          // Peel another leading comment, or compare the remaining executable
+          // tail normally. This is deliberately limited to leading comments.
+          continue;
+        }
+        content = ''; // //, # and documentation-only lines have no active tail.
       }
       if (content.length > 5) {
         // Historical concatenation: additions.push({ file: currentFile, text: content });
@@ -475,6 +505,10 @@ export function detectDuplicatedBlocks(diffText) {
       }
     } else {
       segment++;
+      // A patch boundary/context gap does not prove the following source is
+      // still inside this added comment. Never carry that assumption into a
+      // different hunk and silently hide its executable additions.
+      blockComment = false;
     }
   }
 
