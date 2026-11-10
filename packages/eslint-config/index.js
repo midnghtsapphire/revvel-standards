@@ -19,6 +19,8 @@
  * `npm install --save-dev eslint-config-next` inside the product first.
  */
 "use strict";
+const { createRequire } = require("node:module");
+const { join } = require("node:path");
 
 const IGNORE_PATTERNS = [
   "node_modules/**",
@@ -49,14 +51,23 @@ const IGNORE_PATTERNS = [
  * eslint-config-next`).  If ESLint still errors on the config shape, check
  * which major you're on with `npm ls eslint-config-next`.
  */
-function buildConfig() {
+// 2026-11-10 Codex: original signature retained for the consumer-resolution fix.
+// function buildConfig() {
+function buildConfig({ baseDirectory = process.cwd() } = {}) {
+  // 2026-11-10 Codex WR #18330: file: dependencies are symlinks locally.
+  // Resolve peer configs from the consumer, as this package's contract promises,
+  // rather than from this shared source directory. Keep lint enabled on builds.
+  const consumerRequire = createRequire(join(baseDirectory, "package.json"));
   // eslint-disable-next-line global-require -- lazy: peer dep lives in the consuming project
-  const coreWebVitals = require("eslint-config-next/core-web-vitals");
+  // const coreWebVitals = require("eslint-config-next/core-web-vitals");
+  const coreWebVitals = consumerRequire("eslint-config-next/core-web-vitals");
 
   // eslint-config-next ≥ 16: entry points export flat-config arrays directly.
   if (Array.isArray(coreWebVitals)) {
     // eslint-disable-next-line global-require -- lazy: peer dep lives in the consuming project
-    const nextTypescript = require("eslint-config-next/typescript");
+    // 2026-11-10 Codex: original source-relative resolution retained.
+    // const nextTypescript = require("eslint-config-next/typescript");
+    const nextTypescript = consumerRequire("eslint-config-next/typescript");
     if (!Array.isArray(nextTypescript)) {
       throw new Error(
         "@revvel/eslint-config: `eslint-config-next/typescript` did not export a " +
@@ -73,8 +84,11 @@ function buildConfig() {
 
   // eslint-config-next ≤ 15: legacy eslintrc format — adapt via FlatCompat.
   // eslint-disable-next-line global-require -- lazy: peer dep lives in the consuming project
-  const { FlatCompat } = require("@eslint/eslintrc");
-  const compat = new FlatCompat({ baseDirectory: process.cwd() });
+  // 2026-11-10 Codex: original source-relative resolution retained.
+  // const { FlatCompat } = require("@eslint/eslintrc");
+  // const compat = new FlatCompat({ baseDirectory: process.cwd() });
+  const { FlatCompat } = consumerRequire("@eslint/eslintrc");
+  const compat = new FlatCompat({ baseDirectory });
   return [
     { ignores: IGNORE_PATTERNS },
     ...compat.extends("next/core-web-vitals", "next/typescript"),

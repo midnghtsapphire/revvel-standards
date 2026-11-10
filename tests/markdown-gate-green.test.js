@@ -30,10 +30,13 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
+const { spawnSync } = require('node:child_process');
 
 const repoRoot = path.resolve(__dirname, '..');
 
-test('the markdown gate lint-md.yml runs is green', async () => {
+// 2026-11-10 Codex: TM-0008 identifies changed-file CircleCI lint as the
+// authoritative gate. The historical all-repo description above is preserved.
+test('the authoritative CircleCI changed-Markdown gate is green', async () => {
   const mod = await import(
     pathToFileURL(path.join(repoRoot, 'scripts', 'markdownlint-repo.mjs')).href
   );
@@ -47,7 +50,27 @@ test('the markdown gate lint-md.yml runs is green', async () => {
     '.markdownlintignore is missing',
   );
 
-  const result = mod.runMarkdownlint({ root: repoRoot });
+  // Original all-repo invocation retained, not used as a second merge gate:
+  // const result = mod.runMarkdownlint({ root: repoRoot });
+  const gate = fs.readFileSync(path.join(repoRoot, '.circleci/scripts/lint-changed-markdown.sh'), 'utf8');
+  assert.match(gate, /git merge-base origin\/main HEAD/);
+  assert.match(gate, /git diff --name-only --diff-filter=d "\$BASE" HEAD -- '\*\.md'/);
+  assert.match(gate, /npx markdownlint-cli2 "\$\{MARKDOWN_FILES\[@\]\}" "\$\{IGNORE_GLOBS\[@\]\}"/);
+  const git = (args) => {
+    const response = spawnSync('git', args, { cwd: repoRoot, encoding: 'utf8' });
+    assert.equal(response.status, 0, response.stderr);
+    return response.stdout;
+  };
+  // The test never fetches or dispatches CI. The locally fetched origin/main
+  // snapshot supplies the same baseline the CircleCI script uses after fetch.
+  const base = git(['merge-base', 'origin/main', 'HEAD']).trim();
+  assert.ok(base, 'missing merge base must fail closed');
+  const files = git(['diff', '--name-only', '--diff-filter=d', '-z', base, 'HEAD', '--', '*.md'])
+    .split('\0').filter(Boolean);
+  const result = files.length ? spawnSync(process.execPath,
+    [mod.resolveCliEntry(repoRoot), ...files, ...mod.ignoreGlobs(repoRoot)],
+    { cwd: repoRoot, encoding: 'utf8', timeout: 300_000, maxBuffer: 64 * 1024 * 1024 }) :
+    { status: 0, stdout: '', stderr: '' };
 
   assert.equal(
     result.error,
@@ -63,7 +86,7 @@ test('the markdown gate lint-md.yml runs is green', async () => {
   assert.deepEqual(
     findings,
     [],
-    `markdownlint findings on main (lint-md.yml would be red):\n${findings.join('\n')}`,
+    `markdownlint findings in the CircleCI changed-file gate:\n${findings.join('\n')}`,
   );
   assert.equal(result.status, 0, 'markdownlint-cli2 exited non-zero');
 });

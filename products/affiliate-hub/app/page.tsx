@@ -195,7 +195,9 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<'name' | 'ltv'>('ltv');
 
   const filteredAndSortedPrograms = useMemo(() => {
-    let filtered = affiliatePrograms.filter(program => {
+    // 2026-11-10 Codex WR #18330: retained mutable declaration; lint requires const.
+    // let filtered = affiliatePrograms.filter(program => {
+    const filtered = affiliatePrograms.filter(program => {
       const matchesSearch = program.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            program.audience.some(a => a.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesType = filterType === 'all' || program.type === filterType;

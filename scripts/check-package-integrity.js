@@ -41,6 +41,35 @@ const path = require("path");
 const { execFileSync } = require("child_process");
 
 /**
+ * Resolve npm's JavaScript entry point for direct, shell-free execution.
+ *
+ * 2026-11-10 Codex, #18313: Windows execFileSync('npm') cannot execute npm.cmd,
+ * and this workstation also has an unrelated System32/npm ahead of Node. Run
+ * npm-cli.js with the current Node binary instead. npm test provides its own
+ * npm_execpath; a direct node invocation resolves the adjacent installation.
+ * Unix retains the original executable fallback when npm lives elsewhere.
+ */
+function npmInvocation(npmBin = "npm", options = {}) {
+  const platform = options.platform || process.platform;
+  const env = options.env || process.env;
+  const node = options.node || process.execPath;
+  const exists = options.exists || fs.existsSync;
+  if (!["npm", "npm.cmd"].includes(npmBin)) {
+    return npmBin.endsWith(".js") ? { command: node, prefix: [npmBin] } : { command: npmBin, prefix: [] };
+  }
+  const candidates = [
+    env.npm_execpath,
+    path.join(path.dirname(node), "node_modules", "npm", "bin", "npm-cli.js"),
+    path.resolve(path.dirname(node), "..", "lib", "node_modules", "npm", "bin", "npm-cli.js"),
+    ...(platform === "win32" && env.APPDATA ? [path.join(env.APPDATA, "npm", "node_modules", "npm", "bin", "npm-cli.js")] : []),
+  ];
+  const cli = candidates.find(candidate => candidate && path.basename(candidate) === "npm-cli.js" && exists(candidate));
+  if (cli) return { command: node, prefix: [cli] };
+  if (platform === "win32") throw new Error("Cannot locate npm-cli.js. Run through npm test or set npm_execpath to the installed npm/bin/npm-cli.js; npm.cmd cannot be spawned without a shell.");
+  return { command: npmBin, prefix: [] };
+}
+
+/**
  * Tokenizing scan for duplicate object keys at every object depth.
  * Tracks brace depth so the same key name in sibling nested objects is fine,
  * but two `"c8":` lines inside the same object (e.g. devDependencies) are not.
@@ -229,9 +258,11 @@ function checkLockfileSync(opts = {}) {
   }
 
   try {
+    const invocation = npmInvocation(npmBin);
     const output = execFileSync(
-      npmBin,
-      ["ci", "--dry-run", "--ignore-scripts", "--no-audit", "--no-fund"],
+      // Retired 2026-11-10 #18313: npmBin, ["ci", ...] failed on Windows.
+      invocation.command,
+      [...invocation.prefix, "ci", "--dry-run", "--ignore-scripts", "--no-audit", "--no-fund"],
       {
         cwd,
         encoding: "utf8",
@@ -390,6 +421,7 @@ module.exports = {
   findDuplicateKeys,
   checkPackageJsonText,
   checkLockfileSync,
+  npmInvocation,
   runChecks,
   main,
 };

@@ -114,6 +114,12 @@
 
 *If price is unknown: "Pricing data pending — competitive benchmark research required."*
 
+<!-- 2026-11-10 Codex, #18313: restore the same concrete-pricing rule the
+research synthesis prompt enforces; a missing example caused cross-file drift. -->
+Use actual currency amounts and billing periods instead of vague labels such as
+"Paid tiers". Keep the exact unknown-price sentence above when research has not
+established a price.
+
 ## SEM / SEO Analysis
 
 <!-- Required for product-class WRs. Discoverability analysis. -->

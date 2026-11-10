@@ -112,7 +112,9 @@ jobs:
   # ---------------------------------------------------------------------------
   pr-state:
     if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
-    runs-on: self-hosted
+    # 2026-11-10: original generic label retained; cmd requires explicit Windows.
+    # runs-on: self-hosted
+    runs-on: [self-hosted, Windows]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
@@ -129,7 +131,9 @@ jobs:
 
   check-state:
     if: github.event_name == 'check_suite' || github.event_name == 'workflow_run'
-    runs-on: self-hosted
+    # 2026-11-10: original generic label retained; cmd requires explicit Windows.
+    # runs-on: self-hosted
+    runs-on: [self-hosted, Windows]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7

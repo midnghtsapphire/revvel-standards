@@ -1,0 +1,12 @@
+# 2026-11-10 Codex WR #18330-18332: retired configuration retained in place.
+# Active independent deployment: templates/cicd/deploy-static.mjs (no GitHub or external base image).
+# services:
+#   web:
+#     build:
+#       context: ../..
+#       dockerfile: products/affiliate-hub/Dockerfile
+#     ports:
+#       - "${PORT:-8080}:8080"
+#     restart: unless-stopped
+#
+#
