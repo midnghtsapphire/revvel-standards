@@ -1,6 +1,6 @@
 # SYSTEM STATE — revvel-standards
 
-### Latest operational observation — 2026-11-10 19:12 UTC
+## Latest operational observation — 2026-11-10 19:12 UTC
 
 Owned local prosecution is now installed and observed running: the separate
 `GIT-FLEET local checks` Windows task polls every 15 minutes, runs on source

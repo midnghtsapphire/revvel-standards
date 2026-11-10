@@ -1,6 +1,6 @@
 # Ship Status
 
-### Operational receipt — 2026-11-10 19:12 UTC
+## Operational receipt — 2026-11-10 19:12 UTC
 
 The owned local-checks task is installed and executed successfully twice.
 Final source integration: 78 tests passed, zero findings/provider calls.
