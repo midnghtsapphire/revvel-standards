@@ -18,6 +18,12 @@ on:
   check_run:
     types:
       - completed
+  # Periodic drift repair: labels can drift when events are missed (API
+  # outages, rate-limit storms, cancelled runs). The resync-all-prs job is
+  # gated on github.event_name == 'schedule' — without this trigger that job
+  # could NEVER run automatically.
+  schedule:
+    - cron: '17 */6 * * *'
   workflow_dispatch:
     inputs:
       pr_number:
@@ -36,1235 +42,120 @@ concurrency:
   group: pr-state-orchestrator-${{ github.event_name }}-${{ github.event.pull_request.number || github.event.check_suite.head_sha || github.event.check_run.head_sha || github.ref }}
   cancel-in-progress: true
 jobs:
+  # ---------------------------------------------------------------------------
+  # METAL Scripts-as-CI (oaudrey governance/METAL principle #3): ALL logic lives
+  # in scripts/ci/pr-state-orchestrator.js — versioned, reviewable, and runnable
+  # identically on any runner, a laptop, or client infrastructure. These jobs
+  # are thin invokers only.
+  #
+  # shell: cmd — CARESSE's PowerShell execution policy blocks runner temp
+  # scripts (PSSecurityException); cmd has no execution policy.
+  # runs-on: self-hosted (CARESSE) — METAL principle #1 (no GitHub-hosted
+  # compute for governance we own) and immune to the 2026-11 GitHub-hosted
+  # billing lock: self-hosted job dispatch still works while hosted minutes
+  # are blocked (verified 2026-11-10, probe run 42686663155).
+  # ---------------------------------------------------------------------------
   pr-lifecycle:
     name: 🔄 PR Lifecycle Labels
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Determine draft vs ready state
-        uses: actions/github-script@v9.0.0
+      - uses: actions/checkout@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const pr = context.payload.pull_request;
-            const prNumber = pr.number;
-            const isDraft = pr.draft;
-            const action = context.payload.action;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-
-            // Guard fallible reads so token or permission hiccups degrade
-            // gracefully instead of failing the whole "PR Lifecycle Labels"
-            // check; full behavior is preserved whenever the default
-            // GITHUB_TOKEN is valid for the call. On failure the fallback
-            // value is returned and a core.warning is surfaced in the run.
-            async function safeApi(callName, fn, fallback) {
-              try {
-                return await fn();
-              } catch (e) {
-                // Rate-limit 403s are expected under event storms (see the
-                // attached WR snippet): degrade gracefully instead of letting
-                // an unhandled HttpError fail the whole job.
-                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
-                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
-                return fallback;
-              }
-            }
-
-            const labelResult = await safeApi(
-              `listLabelsOnIssue for PR #${prNumber}`,
-              () => github.rest.issues.listLabelsOnIssue({
-                owner, repo, issue_number: prNumber
-              }),
-              { data: [] }
-            );
-            let currentLabels = labelResult.data.map(l => l.name);
-
-            const ALL_STATUS = [
-              'status:draft','status:waiting-for-review','status:approved',
-              'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
-            ];
-
-            async function ensureLabelsExist(labels) {
-              const palette = {
-                'status:draft':              { color: 'BFD4F2', description: '🚧 Draft — not ready for review' },
-                'status:waiting-for-review': { color: '0075CA', description: '👀 Ready — awaiting review' },
-                'status:approved':           { color: '0E8A16', description: '✅ Approved by reviewer' },
-                'status:needs-action':       { color: 'E4E669', description: '🔧 Changes requested' },
-                'status:checks-failing':     { color: 'D93F0B', description: '❌ CI checks failing' },
-                'status:checks-passing':     { color: '0E8A16', description: '✅ CI checks passing' },
-                'status:ready-to-merge':     { color: '6F42C1', description: '🚀 Approved + checks passing' },
-              };
-              const repoLabelsResult = await safeApi(
-                'listLabelsForRepo',
-                () => github.rest.issues.listLabelsForRepo({ owner, repo, per_page: 100 }),
-                { data: [] }
-              );
-              const repoLabels = repoLabelsResult.data;
-              const existing = new Set(repoLabels.map(l => l.name));
-              for (const label of labels) {
-                if (!existing.has(label) && palette[label]) {
-                  try {
-                    await github.rest.issues.createLabel({ owner, repo, name: label, ...palette[label] });
-                    console.log(`🏷️ Created label: ${label}`);
-                  } catch(e) { console.log(`⚠️ Could not create label "${label}": ${e.message}`); }
-                }
-              }
-            }
-
-            async function addLabel(label) {
-              await ensureLabelsExist([label]);
-              if (!currentLabels.includes(label)) {
-                try {
-                  await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] });
-                  currentLabels.push(label);
-                  console.log(`✅ Added: ${label}`);
-                } catch (e) {
-                  console.log(`⚠️ Could not add "${label}": ${e.message}`);
-                }
-              }
-            }
-            async function removeLabel(label) {
-              if (currentLabels.includes(label)) {
-                // The label already being absent is the desired end state, so a 404
-                // is success (LABEL-RACE-001, CLAUDE.md gotcha #1). Anything else —
-                // 401/403 on a restricted token, a 5xx — means the label may still
-                // be there, and must not be recorded as removed (gotcha #6).
-                await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
-                  .catch((err) => { if (err.status !== 404) throw err; });
-                currentLabels = currentLabels.filter(l => l !== label);
-                console.log(`🗑️ Removed: ${label}`);
-              }
-            }
-
-            async function upsertStatusBadge(prNum, labels) {
-              const BADGE_MARKER = '<!-- revvel-status-badge -->';
-              const BADGE_MAP = {
-                'status:draft':              `![status](https://img.shields.io/badge/status-draft-BFD4F2?style=flat-square) 🚧 This PR is a **draft** and not yet ready for review.`,
-                'status:waiting-for-review': `![status](https://img.shields.io/badge/status-waiting%20for%20review-0075CA?style=flat-square&labelColor=0075CA&color=white) 👀 This PR is **awaiting review**.`,
-                'status:approved':           `![status](https://img.shields.io/badge/status-approved-0E8A16?style=flat-square&labelColor=0E8A16&color=white) ✅ This PR is **approved**.`,
-                'status:needs-action':       `![status](https://img.shields.io/badge/status-needs%20action-E4E669?style=flat-square) 🔧 This PR has **changes requested** and needs action.`,
-                'status:checks-failing':     `![status](https://img.shields.io/badge/status-checks%20failing-D93F0B?style=flat-square&labelColor=D93F0B&color=white) ❌ CI checks are **failing** — please investigate.`,
-                'status:ready-to-merge':     `![status](https://img.shields.io/badge/status-ready%20to%20merge-6F42C1?style=flat-square&labelColor=6F42C1&color=white) 🚀 This PR is **approved + passing** and is **ready to merge**!`,
-              };
-              const STATUS_PRIORITY = [
-                'status:ready-to-merge','status:checks-failing','status:approved',
-                'status:needs-action','status:waiting-for-review','status:draft'
-              ];
-              const activeStatus = STATUS_PRIORITY.find(s => labels.includes(s));
-              if (!activeStatus) return;
-              const badgeBody = `${BADGE_MARKER}\n${BADGE_MAP[activeStatus]}`;
-              try {
-                const { data: comments } = await github.rest.issues.listComments({
-                  owner, repo, issue_number: prNum, per_page: 100
-                });
-                const existing = comments.find(c => c.body && c.body.includes(BADGE_MARKER));
-                if (existing) {
-                  if (existing.body === badgeBody) { console.log(`🏷️ PR #${prNum}: badge unchanged`); return; }
-                  await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: badgeBody });
-                  console.log(`🏷️ PR #${prNum}: updated status badge → ${activeStatus}`);
-                } else {
-                  await github.rest.issues.createComment({ owner, repo, issue_number: prNum, body: badgeBody });
-                  console.log(`🏷️ PR #${prNum}: created status badge → ${activeStatus}`);
-                }
-              } catch(e) {
-                console.log(`⚠️ PR #${prNum}: could not upsert badge — ${e.message}`);
-              }
-            }
-
-            // Skip label events that are just our own automation echoing back
-            if (action === 'labeled' || action === 'unlabeled') {
-              console.log('🏷️ Label event — skipping to avoid echo loops');
-              return;
-            }
-
-            if (action === 'converted_to_draft' || (action === 'opened' && isDraft)) {
-              await addLabel('status:draft');
-              for (const l of ['status:waiting-for-review','status:approved','status:ready-to-merge','status:needs-action']) await removeLabel(l);
-              await upsertStatusBadge(prNumber, currentLabels);
-              return;
-            }
-
-            if (action === 'ready_for_review') {
-              await addLabel('status:waiting-for-review');
-              for (const l of ['status:draft','status:approved','status:needs-action']) await removeLabel(l);
-              await upsertStatusBadge(prNumber, currentLabels);
-              return;
-            }
-
-            if (action === 'opened' && !isDraft) {
-              await addLabel('status:waiting-for-review');
-              await removeLabel('status:draft');
-              await upsertStatusBadge(prNumber, currentLabels);
-              return;
-            }
-
-            if (action === 'reopened') {
-              await (isDraft ? addLabel('status:draft') : addLabel('status:waiting-for-review'));
-              for (const l of ['status:approved','status:ready-to-merge']) await removeLabel(l);
-              await upsertStatusBadge(prNumber, currentLabels);
-              return;
-            }
-
-            if (action === 'synchronize') {
-              for (const l of ['status:approved','status:ready-to-merge']) await removeLabel(l);
-              if (!isDraft) await addLabel('status:waiting-for-review');
-              console.log('📤 New commits — approval invalidated, back to review');
-              await upsertStatusBadge(prNumber, currentLabels);
-              return;
-            }
-
-            if (action === 'closed') {
-              for (const l of ALL_STATUS) await removeLabel(l);
-              console.log(pr.merged ? '🎉 Merged — all status labels cleared' : '🚫 Closed — labels cleared');
-            }
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
+      - name: PR Lifecycle Labels
+        shell: cmd
+        run: node scripts/ci/pr-state-orchestrator.js lifecycle
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     timeout-minutes: 10
   review-handler:
     name: 🔍 Review State Labels
     if: github.event_name == 'pull_request_review'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Apply review state labels
-        uses: actions/github-script@v9.0.0
+      - uses: actions/checkout@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const review = context.payload.review;
-            const pr = context.payload.pull_request;
-            const prNumber = pr.number;
-            const state = review.state.toLowerCase();
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-
-            // Wrap fallible reads so a transient API error degrades to a
-            // warning instead of failing the whole review-handler job.
-            async function safeApi(callName, fn, fallback) {
-              try {
-                return await fn();
-              } catch (e) {
-                // Rate-limit 403s are expected under event storms (see the
-                // attached WR snippet): degrade gracefully instead of letting
-                // an unhandled HttpError fail the whole job.
-                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
-                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
-                return fallback;
-              }
-            }
-
-            if (state === 'commented') { console.log('💬 Comment only — no state change'); return; }
-
-            const labelResult = await safeApi(
-              `listLabelsOnIssue for PR #${prNumber}`,
-              () => github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }),
-              { data: [] }
-            );
-            let currentLabels = labelResult.data.map(l => l.name);
-
-            async function addLabel(label) {
-              if (!currentLabels.includes(label)) {
-                try {
-                  await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] });
-                  currentLabels.push(label);
-                } catch(e) {}
-              }
-            }
-            async function removeLabel(label) {
-              if (currentLabels.includes(label)) {
-                // The label already being absent is the desired end state, so a 404
-                // is success (LABEL-RACE-001, CLAUDE.md gotcha #1). Anything else —
-                // 401/403 on a restricted token, a 5xx — means the label may still
-                // be there, and must not be recorded as removed (gotcha #6).
-                await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
-                  .catch((err) => { if (err.status !== 404) throw err; });
-                currentLabels = currentLabels.filter(l => l !== label);
-              }
-            }
-
-            async function upsertStatusBadge(prNum, labels) {
-              const BADGE_MARKER = '<!-- revvel-status-badge -->';
-              const BADGE_MAP = {
-                'status:draft':              `![status](https://img.shields.io/badge/status-draft-BFD4F2?style=flat-square) 🚧 This PR is a **draft** and not yet ready for review.`,
-                'status:waiting-for-review': `![status](https://img.shields.io/badge/status-waiting%20for%20review-0075CA?style=flat-square&labelColor=0075CA&color=white) 👀 This PR is **awaiting review**.`,
-                'status:approved':           `![status](https://img.shields.io/badge/status-approved-0E8A16?style=flat-square&labelColor=0E8A16&color=white) ✅ This PR is **approved**.`,
-                'status:needs-action':       `![status](https://img.shields.io/badge/status-needs%20action-E4E669?style=flat-square) 🔧 This PR has **changes requested** and needs action.`,
-                'status:checks-failing':     `![status](https://img.shields.io/badge/status-checks%20failing-D93F0B?style=flat-square&labelColor=D93F0B&color=white) ❌ CI checks are **failing** — please investigate.`,
-                'status:ready-to-merge':     `![status](https://img.shields.io/badge/status-ready%20to%20merge-6F42C1?style=flat-square&labelColor=6F42C1&color=white) 🚀 This PR is **approved + passing** and is **ready to merge**!`,
-              };
-              const STATUS_PRIORITY = [
-                'status:ready-to-merge','status:checks-failing','status:approved',
-                'status:needs-action','status:waiting-for-review','status:draft'
-              ];
-              const activeStatus = STATUS_PRIORITY.find(s => labels.includes(s));
-              if (!activeStatus) return;
-              const badgeBody = `${BADGE_MARKER}\n${BADGE_MAP[activeStatus]}`;
-              try {
-                const { data: comments } = await github.rest.issues.listComments({
-                  owner, repo, issue_number: prNum, per_page: 100
-                });
-                const existing = comments.find(c => c.body && c.body.includes(BADGE_MARKER));
-                if (existing) {
-                  if (existing.body === badgeBody) { console.log(`🏷️ PR #${prNum}: badge unchanged`); return; }
-                  await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: badgeBody });
-                  console.log(`🏷️ PR #${prNum}: updated status badge → ${activeStatus}`);
-                } else {
-                  await github.rest.issues.createComment({ owner, repo, issue_number: prNum, body: badgeBody });
-                  console.log(`🏷️ PR #${prNum}: created status badge → ${activeStatus}`);
-                }
-              } catch(e) {
-                console.log(`⚠️ PR #${prNum}: could not upsert badge — ${e.message}`);
-              }
-            }
-
-            async function enableAutoMerge(prNum, nodeId) {
-              // Never arm auto-merge on a PR that delivers nothing, or on one
-              // that says of itself that it is unfinished (#17756).
-              //
-              // PR #17058 merged with ZERO changed files. An empty diff is the
-              // easiest thing in this repository to get green — no code to fail
-              // a test, no file to fail a lint, no line to fail a scan — so
-              // every quality gate we own passed unanimously on a PR that did
-              // nothing. "Checks passing" was being read as evidence of
-              // delivery when it is compatible with total non-delivery.
-              //
-              // `[WIP]` was invisible too: the gates read `pr.draft`, and that
-              // PR was marked ready-for-review while still titled `[WIP]`.
-              //
-              // Re-read the PR rather than trusting the event payload —
-              // `changed_files` is absent from some webhook payloads and stale
-              // in others, and a guard that reads `undefined === 0` as false
-              // would wave through the exact case it exists to stop.
-              try {
-                const { data: fresh } = await github.rest.pulls.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: prNum,
-                });
-                if (typeof fresh.changed_files !== 'number') {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — could not read changed_files.`);
-                  return;
-                }
-                if (fresh.changed_files === 0) {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the diff is empty (0 changed files).`);
-                  return;
-                }
-                if (/\[wip\]|\bwip\s*:|do not merge/i.test(fresh.title || '')) {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the title marks it unfinished: ${fresh.title}`);
-                  return;
-                }
-              } catch (e) {
-                // Fail closed. An unverified PR is not an eligible PR.
-                core.warning(`PR #${prNum}: auto-merge NOT enabled — could not verify the diff: ${e.message}`);
-                return;
-              }
-
-              try {
-                await github.graphql(`
-                  mutation($pullRequestId: ID!) {
-                    enablePullRequestAutoMerge(input: { pullRequestId: $pullRequestId, mergeMethod: SQUASH }) {
-                      pullRequest { number autoMergeRequest { mergeMethod } }
-                    }
-                  }
-                `, { pullRequestId: nodeId });
-                console.log(`🤖 PR #${prNum}: auto-merge (SQUASH) enabled`);
-              } catch(e) {
-                console.log(`⚠️ PR #${prNum}: could not enable auto-merge — ${e.message}`);
-              }
-            }
-
-            if (state === 'approved') {
-              await addLabel('status:approved');
-              for (const l of ['status:waiting-for-review','status:needs-action']) await removeLabel(l);
-              // Re-check live CI status to immediately promote to ready-to-merge if checks already passed
-              const { data: checkRuns } = await safeApi(
-                `checks.listForRef for PR #${prNumber}`,
-                () => github.rest.checks.listForRef({ owner, repo, ref: pr.head.sha, per_page: 100 }),
-                { data: { check_runs: [] } }
-              );
-              const runs = checkRuns.check_runs.filter(r => r.status === 'completed');
-              const failing = runs.filter(r => ['failure','timed_out'].includes(r.conclusion));
-              const passing = runs.filter(r => r.conclusion === 'success');
-              if (failing.length === 0 && passing.length > 0) {
-                await addLabel('status:checks-passing');
-                await removeLabel('status:checks-failing');
-                await addLabel('status:ready-to-merge');
-                await enableAutoMerge(prNumber, pr.node_id);
-                console.log('🚀 Approved + checks already passing = READY TO MERGE');
-              } else if (failing.length > 0) {
-                await addLabel('status:checks-failing');
-                await removeLabel('status:checks-passing');
-                console.log('✅ Approved — but checks are failing; not yet ready');
-              } else {
-                console.log('✅ Approved — CI still running; will promote when checks complete');
-              }
-            }
-
-            if (state === 'changes_requested') {
-              await addLabel('status:needs-action');
-              for (const l of ['status:waiting-for-review','status:approved','status:ready-to-merge']) await removeLabel(l);
-              console.log('🔧 Changes requested — needs action');
-            }
-
-            await upsertStatusBadge(prNumber, currentLabels);
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
+      - name: Review State Labels
+        shell: cmd
+        run: node scripts/ci/pr-state-orchestrator.js review
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     timeout-minutes: 10
   check-suite-handler:
     name: ✅ CI Check Suite Labels
     if: github.event_name == 'check_suite'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Apply check result labels to matching PRs
-        uses: actions/github-script@v9.0.0
+      - uses: actions/checkout@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const suite = context.payload.check_suite;
-            const conclusion = suite.conclusion;
-            const headSha = suite.head_sha;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-
-            // Wrap fallible reads so one flaky API call doesn't fail label
-            // syncing for every other matching PR in this run.
-            async function safeApi(callName, fn, fallback) {
-              try {
-                return await fn();
-              } catch (e) {
-                // Rate-limit 403s are expected under event storms (see the
-                // attached WR snippet): degrade gracefully instead of letting
-                // an unhandled HttpError fail the whole job.
-                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
-                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
-                return fallback;
-              }
-            }
-
-            // Small pause between PRs (150ms keeps sequential mutations under
-            // GitHub's secondary rate limit guidance for rapid content writes).
-            async function sleep(ms) {
-              return new Promise(resolve => setTimeout(resolve, ms));
-            }
-
-            if (!conclusion || ['skipped','neutral','stale','cancelled'].includes(conclusion)) {
-              console.log(`ℹ️ Suite conclusion: ${conclusion} — no action`);
-              return;
-            }
-
-            const { data: prs } = await safeApi(
-              'pulls.list (open PRs)',
-              () => github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 }),
-              { data: [] }
-            );
-            const matchingPRs = prs.filter(pr => pr.head.sha === headSha);
-
-            if (matchingPRs.length === 0) {
-              console.log(`No open PRs for SHA ${headSha}`);
-              return;
-            }
-
-            async function upsertStatusBadge(prNum, labels) {
-              const BADGE_MARKER = '<!-- revvel-status-badge -->';
-              const BADGE_MAP = {
-                'status:draft':              `![status](https://img.shields.io/badge/status-draft-BFD4F2?style=flat-square) 🚧 This PR is a **draft** and not yet ready for review.`,
-                'status:waiting-for-review': `![status](https://img.shields.io/badge/status-waiting%20for%20review-0075CA?style=flat-square&labelColor=0075CA&color=white) 👀 This PR is **awaiting review**.`,
-                'status:approved':           `![status](https://img.shields.io/badge/status-approved-0E8A16?style=flat-square&labelColor=0E8A16&color=white) ✅ This PR is **approved**.`,
-                'status:needs-action':       `![status](https://img.shields.io/badge/status-needs%20action-E4E669?style=flat-square) 🔧 This PR has **changes requested** and needs action.`,
-                'status:checks-failing':     `![status](https://img.shields.io/badge/status-checks%20failing-D93F0B?style=flat-square&labelColor=D93F0B&color=white) ❌ CI checks are **failing** — please investigate.`,
-                'status:ready-to-merge':     `![status](https://img.shields.io/badge/status-ready%20to%20merge-6F42C1?style=flat-square&labelColor=6F42C1&color=white) 🚀 This PR is **approved + passing** and is **ready to merge**!`,
-              };
-              const STATUS_PRIORITY = [
-                'status:ready-to-merge','status:checks-failing','status:approved',
-                'status:needs-action','status:waiting-for-review','status:draft'
-              ];
-              const activeStatus = STATUS_PRIORITY.find(s => labels.includes(s));
-              if (!activeStatus) return;
-              const badgeBody = `${BADGE_MARKER}\n${BADGE_MAP[activeStatus]}`;
-              try {
-                const { data: comments } = await github.rest.issues.listComments({
-                  owner, repo, issue_number: prNum, per_page: 100
-                });
-                const existing = comments.find(c => c.body && c.body.includes(BADGE_MARKER));
-                if (existing) {
-                  if (existing.body === badgeBody) { console.log(`🏷️ PR #${prNum}: badge unchanged`); return; }
-                  await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: badgeBody });
-                  console.log(`🏷️ PR #${prNum}: updated status badge → ${activeStatus}`);
-                } else {
-                  await github.rest.issues.createComment({ owner, repo, issue_number: prNum, body: badgeBody });
-                  console.log(`🏷️ PR #${prNum}: created status badge → ${activeStatus}`);
-                }
-              } catch(e) {
-                console.log(`⚠️ PR #${prNum}: could not upsert badge — ${e.message}`);
-              }
-            }
-
-            async function enableAutoMerge(prNum, nodeId) {
-              // Never arm auto-merge on a PR that delivers nothing, or on one
-              // that says of itself that it is unfinished (#17756).
-              //
-              // PR #17058 merged with ZERO changed files. An empty diff is the
-              // easiest thing in this repository to get green — no code to fail
-              // a test, no file to fail a lint, no line to fail a scan — so
-              // every quality gate we own passed unanimously on a PR that did
-              // nothing. "Checks passing" was being read as evidence of
-              // delivery when it is compatible with total non-delivery.
-              //
-              // `[WIP]` was invisible too: the gates read `pr.draft`, and that
-              // PR was marked ready-for-review while still titled `[WIP]`.
-              //
-              // Re-read the PR rather than trusting the event payload —
-              // `changed_files` is absent from some webhook payloads and stale
-              // in others, and a guard that reads `undefined === 0` as false
-              // would wave through the exact case it exists to stop.
-              try {
-                const { data: fresh } = await github.rest.pulls.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: prNum,
-                });
-                if (typeof fresh.changed_files !== 'number') {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — could not read changed_files.`);
-                  return;
-                }
-                if (fresh.changed_files === 0) {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the diff is empty (0 changed files).`);
-                  return;
-                }
-                if (/\[wip\]|\bwip\s*:|do not merge/i.test(fresh.title || '')) {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the title marks it unfinished: ${fresh.title}`);
-                  return;
-                }
-              } catch (e) {
-                // Fail closed. An unverified PR is not an eligible PR.
-                core.warning(`PR #${prNum}: auto-merge NOT enabled — could not verify the diff: ${e.message}`);
-                return;
-              }
-
-              try {
-                await github.graphql(`
-                  mutation($pullRequestId: ID!) {
-                    enablePullRequestAutoMerge(input: { pullRequestId: $pullRequestId, mergeMethod: SQUASH }) {
-                      pullRequest { number autoMergeRequest { mergeMethod } }
-                    }
-                  }
-                `, { pullRequestId: nodeId });
-                console.log(`🤖 PR #${prNum}: auto-merge (SQUASH) enabled`);
-              } catch(e) {
-                console.log(`⚠️ PR #${prNum}: could not enable auto-merge — ${e.message}`);
-              }
-            }
-
-            for (const pr of matchingPRs) {
-              const prNumber = pr.number;
-              const labelResult = await safeApi(
-                `listLabelsOnIssue for PR #${prNumber}`,
-                () => github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }),
-                { data: [] }
-              );
-              let currentLabels = labelResult.data.map(l => l.name);
-
-              async function addLabel(label) {
-                if (!currentLabels.includes(label)) {
-                  try {
-                    await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] });
-                    currentLabels.push(label);
-                  } catch(e) {}
-                }
-              }
-              async function removeLabel(label) {
-                if (currentLabels.includes(label)) {
-                  // The label already being absent is the desired end state, so a 404
-                  // is success (LABEL-RACE-001, CLAUDE.md gotcha #1). Anything else —
-                  // 401/403 on a restricted token, a 5xx — means the label may still
-                  // be there, and must not be recorded as removed (gotcha #6).
-                  await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
-                    .catch((err) => { if (err.status !== 404) throw err; });
-                  currentLabels = currentLabels.filter(l => l !== label);
-                }
-              }
-
-              if (conclusion === 'success') {
-                await addLabel('status:checks-passing');
-                await removeLabel('status:checks-failing');
-                console.log(`✅ PR #${prNumber}: checks PASSING`);
-                if (currentLabels.includes('status:approved')) {
-                  await addLabel('status:ready-to-merge');
-                  await enableAutoMerge(prNumber, pr.node_id);
-                  console.log(`🚀 PR #${prNumber}: approved + passing = READY TO MERGE`);
-                }
-              } else if (['failure','timed_out'].includes(conclusion)) {
-                await addLabel('status:checks-failing');
-                for (const l of ['status:checks-passing','status:ready-to-merge']) await removeLabel(l);
-                console.log(`❌ PR #${prNumber}: checks FAILING (${conclusion})`);
-              }
-              await upsertStatusBadge(prNumber, currentLabels);
-              await sleep(150);
-            }
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
+      - name: CI Check Suite Labels
+        shell: cmd
+        run: node scripts/ci/pr-state-orchestrator.js check-suite
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     timeout-minutes: 15
   check-run-handler:
     name: ✅ CI Check Run Labels
     if: github.event_name == 'check_run'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Apply check_run result labels to matching PRs
-        uses: actions/github-script@v9.0.0
+      - uses: actions/checkout@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const run = context.payload.check_run;
-            const conclusion = run.conclusion;
-            const headSha = run.head_sha;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-
-            // Wrap fallible reads so one flaky API call doesn't fail label
-            // syncing for every other matching PR in this run.
-            async function safeApi(callName, fn, fallback) {
-              try {
-                return await fn();
-              } catch (e) {
-                // Rate-limit 403s are expected under event storms (see the
-                // attached WR snippet): degrade gracefully instead of letting
-                // an unhandled HttpError fail the whole job.
-                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
-                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
-                return fallback;
-              }
-            }
-
-            // Small pause between PRs (150ms keeps sequential mutations under
-            // GitHub's secondary rate limit guidance for rapid content writes).
-            async function sleep(ms) {
-              return new Promise(resolve => setTimeout(resolve, ms));
-            }
-
-            if (!conclusion || ['skipped','neutral','stale','action_required','cancelled'].includes(conclusion)) {
-              console.log(`ℹ️ check_run conclusion: ${conclusion} — no action`);
-              return;
-            }
-
-            const { data: prs } = await safeApi(
-              'pulls.list (open PRs)',
-              () => github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 }),
-              { data: [] }
-            );
-            const matchingPRs = prs.filter(pr => pr.head.sha === headSha);
-            if (matchingPRs.length === 0) return;
-
-            async function upsertStatusBadge(prNum, labels) {
-              const BADGE_MARKER = '<!-- revvel-status-badge -->';
-              const BADGE_MAP = {
-                'status:draft':              `![status](https://img.shields.io/badge/status-draft-BFD4F2?style=flat-square) 🚧 This PR is a **draft** and not yet ready for review.`,
-                'status:waiting-for-review': `![status](https://img.shields.io/badge/status-waiting%20for%20review-0075CA?style=flat-square&labelColor=0075CA&color=white) 👀 This PR is **awaiting review**.`,
-                'status:approved':           `![status](https://img.shields.io/badge/status-approved-0E8A16?style=flat-square&labelColor=0E8A16&color=white) ✅ This PR is **approved**.`,
-                'status:needs-action':       `![status](https://img.shields.io/badge/status-needs%20action-E4E669?style=flat-square) 🔧 This PR has **changes requested** and needs action.`,
-                'status:checks-failing':     `![status](https://img.shields.io/badge/status-checks%20failing-D93F0B?style=flat-square&labelColor=D93F0B&color=white) ❌ CI checks are **failing** — please investigate.`,
-                'status:ready-to-merge':     `![status](https://img.shields.io/badge/status-ready%20to%20merge-6F42C1?style=flat-square&labelColor=6F42C1&color=white) 🚀 This PR is **approved + passing** and is **ready to merge**!`,
-              };
-              const STATUS_PRIORITY = [
-                'status:ready-to-merge','status:checks-failing','status:approved',
-                'status:needs-action','status:waiting-for-review','status:draft'
-              ];
-              const activeStatus = STATUS_PRIORITY.find(s => labels.includes(s));
-              if (!activeStatus) return;
-              const badgeBody = `${BADGE_MARKER}\n${BADGE_MAP[activeStatus]}`;
-              try {
-                const { data: comments } = await github.rest.issues.listComments({
-                  owner, repo, issue_number: prNum, per_page: 100
-                });
-                const existing = comments.find(c => c.body && c.body.includes(BADGE_MARKER));
-                if (existing) {
-                  if (existing.body === badgeBody) { console.log(`🏷️ PR #${prNum}: badge unchanged`); return; }
-                  await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: badgeBody });
-                  console.log(`🏷️ PR #${prNum}: updated status badge → ${activeStatus}`);
-                } else {
-                  await github.rest.issues.createComment({ owner, repo, issue_number: prNum, body: badgeBody });
-                  console.log(`🏷️ PR #${prNum}: created status badge → ${activeStatus}`);
-                }
-              } catch(e) {
-                console.log(`⚠️ PR #${prNum}: could not upsert badge — ${e.message}`);
-              }
-            }
-
-            async function enableAutoMerge(prNum, nodeId) {
-              // Never arm auto-merge on a PR that delivers nothing, or on one
-              // that says of itself that it is unfinished (#17756).
-              //
-              // PR #17058 merged with ZERO changed files. An empty diff is the
-              // easiest thing in this repository to get green — no code to fail
-              // a test, no file to fail a lint, no line to fail a scan — so
-              // every quality gate we own passed unanimously on a PR that did
-              // nothing. "Checks passing" was being read as evidence of
-              // delivery when it is compatible with total non-delivery.
-              //
-              // `[WIP]` was invisible too: the gates read `pr.draft`, and that
-              // PR was marked ready-for-review while still titled `[WIP]`.
-              //
-              // Re-read the PR rather than trusting the event payload —
-              // `changed_files` is absent from some webhook payloads and stale
-              // in others, and a guard that reads `undefined === 0` as false
-              // would wave through the exact case it exists to stop.
-              try {
-                const { data: fresh } = await github.rest.pulls.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: prNum,
-                });
-                if (typeof fresh.changed_files !== 'number') {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — could not read changed_files.`);
-                  return;
-                }
-                if (fresh.changed_files === 0) {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the diff is empty (0 changed files).`);
-                  return;
-                }
-                if (/\[wip\]|\bwip\s*:|do not merge/i.test(fresh.title || '')) {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the title marks it unfinished: ${fresh.title}`);
-                  return;
-                }
-              } catch (e) {
-                // Fail closed. An unverified PR is not an eligible PR.
-                core.warning(`PR #${prNum}: auto-merge NOT enabled — could not verify the diff: ${e.message}`);
-                return;
-              }
-
-              try {
-                await github.graphql(`
-                  mutation($pullRequestId: ID!) {
-                    enablePullRequestAutoMerge(input: { pullRequestId: $pullRequestId, mergeMethod: SQUASH }) {
-                      pullRequest { number autoMergeRequest { mergeMethod } }
-                    }
-                  }
-                `, { pullRequestId: nodeId });
-                console.log(`🤖 PR #${prNum}: auto-merge (SQUASH) enabled`);
-              } catch(e) {
-                console.log(`⚠️ PR #${prNum}: could not enable auto-merge — ${e.message}`);
-              }
-            }
-
-            for (const pr of matchingPRs) {
-              const prNumber = pr.number;
-
-              // Fetch labels fresh first (prevents stale-cache race when multiple check_run events fire simultaneously)
-              const labelResult = await safeApi(
-                `listLabelsOnIssue for PR #${prNumber}`,
-                () => github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }),
-                { data: [] }
-              );
-              let currentLabels = labelResult.data.map(l => l.name);
-
-              // Get full picture of ALL checks for this SHA before deciding
-              const { data: checkRuns } = await safeApi(
-                `checks.listForRef for PR #${prNumber}`,
-                () => github.rest.checks.listForRef({ owner, repo, ref: headSha, per_page: 100 }),
-                { data: { check_runs: [] } }
-              );
-              const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
-              const failing = completed.filter(r => ['failure','timed_out'].includes(r.conclusion));
-              const passing = completed.filter(r => r.conclusion === 'success');
-              const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
-
-              async function addLabel(label) {
-                if (!currentLabels.includes(label)) {
-                  try {
-                    await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] });
-                    currentLabels.push(label);
-                  } catch(e) {}
-                }
-              }
-              async function removeLabel(label) {
-                if (currentLabels.includes(label)) {
-                  // The label already being absent is the desired end state, so a 404
-                  // is success (LABEL-RACE-001, CLAUDE.md gotcha #1). Anything else —
-                  // 401/403 on a restricted token, a 5xx — means the label may still
-                  // be there, and must not be recorded as removed (gotcha #6).
-                  await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
-                    .catch((err) => { if (err.status !== 404) throw err; });
-                  currentLabels = currentLabels.filter(l => l !== label);
-                }
-              }
-
-              if (failing.length > 0) {
-                await addLabel('status:checks-failing');
-                for (const l of ['status:checks-passing','status:ready-to-merge']) await removeLabel(l);
-                console.log(`❌ PR #${prNumber}: ${failing.length} check(s) failing`);
-              } else if (pending.length === 0 && passing.length > 0) {
-                // All checks done and all passing
-                await addLabel('status:checks-passing');
-                await removeLabel('status:checks-failing');
-                console.log(`✅ PR #${prNumber}: ALL checks PASSING`);
-                if (currentLabels.includes('status:approved')) {
-                  await addLabel('status:ready-to-merge');
-                  await enableAutoMerge(prNumber, pr.node_id);
-                  console.log(`🚀 PR #${prNumber}: approved + passing = READY TO MERGE`);
-                }
-              } else {
-                console.log(`⏳ PR #${prNumber}: ${pending.length} check(s) still running`);
-              }
-              await upsertStatusBadge(prNumber, currentLabels);
-              await sleep(150);
-            }
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
+      - name: CI Check Run Labels
+        shell: cmd
+        run: node scripts/ci/pr-state-orchestrator.js check-run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     timeout-minutes: 15
   resync-all-prs:
     name: 🔄 Re-sync All Open PRs
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number == '')
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Re-evaluate every open PR
-        uses: actions/github-script@v9.0.0
+      - uses: actions/checkout@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const ALL_STATUS = [
-              'status:draft','status:waiting-for-review','status:approved',
-              'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
-            ];
-
-            // Wrap fallible reads so one flaky API call doesn't abort the
-            // re-sync sweep for every remaining open PR.
-            async function safeApi(callName, fn, fallback) {
-              try {
-                return await fn();
-              } catch (e) {
-                // Rate-limit 403s are expected under event storms (see the
-                // attached WR snippet): degrade gracefully instead of letting
-                // an unhandled HttpError fail the whole job.
-                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
-                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
-                return fallback;
-              }
-            }
-
-            // Small pause between PRs (150ms keeps sequential mutations under
-            // GitHub's secondary rate limit guidance for rapid content writes).
-            async function sleep(ms) {
-              return new Promise(resolve => setTimeout(resolve, ms));
-            }
-
-            const { data: openPRs } = await safeApi(
-              'pulls.list (open PRs)',
-              () => github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 }),
-              { data: [] }
-            );
-            console.log(`🔍 Re-syncing ${openPRs.length} open PRs...`);
-
-            async function upsertStatusBadge(prNum, labels) {
-              const BADGE_MARKER = '<!-- revvel-status-badge -->';
-              const BADGE_MAP = {
-                'status:draft':              `![status](https://img.shields.io/badge/status-draft-BFD4F2?style=flat-square) 🚧 This PR is a **draft** and not yet ready for review.`,
-                'status:waiting-for-review': `![status](https://img.shields.io/badge/status-waiting%20for%20review-0075CA?style=flat-square&labelColor=0075CA&color=white) 👀 This PR is **awaiting review**.`,
-                'status:approved':           `![status](https://img.shields.io/badge/status-approved-0E8A16?style=flat-square&labelColor=0E8A16&color=white) ✅ This PR is **approved**.`,
-                'status:needs-action':       `![status](https://img.shields.io/badge/status-needs%20action-E4E669?style=flat-square) 🔧 This PR has **changes requested** and needs action.`,
-                'status:checks-failing':     `![status](https://img.shields.io/badge/status-checks%20failing-D93F0B?style=flat-square&labelColor=D93F0B&color=white) ❌ CI checks are **failing** — please investigate.`,
-                'status:ready-to-merge':     `![status](https://img.shields.io/badge/status-ready%20to%20merge-6F42C1?style=flat-square&labelColor=6F42C1&color=white) 🚀 This PR is **approved + passing** and is **ready to merge**!`,
-              };
-              const STATUS_PRIORITY = [
-                'status:ready-to-merge','status:checks-failing','status:approved',
-                'status:needs-action','status:waiting-for-review','status:draft'
-              ];
-              const activeStatus = STATUS_PRIORITY.find(s => labels.includes(s));
-              if (!activeStatus) return;
-              const badgeBody = `${BADGE_MARKER}\n${BADGE_MAP[activeStatus]}`;
-              try {
-                const { data: comments } = await github.rest.issues.listComments({
-                  owner, repo, issue_number: prNum, per_page: 100
-                });
-                const existing = comments.find(c => c.body && c.body.includes(BADGE_MARKER));
-                if (existing) {
-                  if (existing.body === badgeBody) { console.log(`🏷️ PR #${prNum}: badge unchanged`); return; }
-                  await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: badgeBody });
-                  console.log(`🏷️ PR #${prNum}: updated status badge → ${activeStatus}`);
-                } else {
-                  await github.rest.issues.createComment({ owner, repo, issue_number: prNum, body: badgeBody });
-                  console.log(`🏷️ PR #${prNum}: created status badge → ${activeStatus}`);
-                }
-              } catch(e) {
-                console.log(`⚠️ PR #${prNum}: could not upsert badge — ${e.message}`);
-              }
-            }
-
-            async function enableAutoMerge(prNum, nodeId) {
-              // Never arm auto-merge on a PR that delivers nothing, or on one
-              // that says of itself that it is unfinished (#17756).
-              //
-              // PR #17058 merged with ZERO changed files. An empty diff is the
-              // easiest thing in this repository to get green — no code to fail
-              // a test, no file to fail a lint, no line to fail a scan — so
-              // every quality gate we own passed unanimously on a PR that did
-              // nothing. "Checks passing" was being read as evidence of
-              // delivery when it is compatible with total non-delivery.
-              //
-              // `[WIP]` was invisible too: the gates read `pr.draft`, and that
-              // PR was marked ready-for-review while still titled `[WIP]`.
-              //
-              // Re-read the PR rather than trusting the event payload —
-              // `changed_files` is absent from some webhook payloads and stale
-              // in others, and a guard that reads `undefined === 0` as false
-              // would wave through the exact case it exists to stop.
-              try {
-                const { data: fresh } = await github.rest.pulls.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: prNum,
-                });
-                if (typeof fresh.changed_files !== 'number') {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — could not read changed_files.`);
-                  return;
-                }
-                if (fresh.changed_files === 0) {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the diff is empty (0 changed files).`);
-                  return;
-                }
-                if (/\[wip\]|\bwip\s*:|do not merge/i.test(fresh.title || '')) {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the title marks it unfinished: ${fresh.title}`);
-                  return;
-                }
-              } catch (e) {
-                // Fail closed. An unverified PR is not an eligible PR.
-                core.warning(`PR #${prNum}: auto-merge NOT enabled — could not verify the diff: ${e.message}`);
-                return;
-              }
-
-              try {
-                await github.graphql(`
-                  mutation($pullRequestId: ID!) {
-                    enablePullRequestAutoMerge(input: { pullRequestId: $pullRequestId, mergeMethod: SQUASH }) {
-                      pullRequest { number autoMergeRequest { mergeMethod } }
-                    }
-                  }
-                `, { pullRequestId: nodeId });
-                console.log(`🤖 PR #${prNum}: auto-merge (SQUASH) enabled`);
-              } catch(e) {
-                console.log(`⚠️ PR #${prNum}: could not enable auto-merge — ${e.message}`);
-              }
-            }
-
-            for (const pr of openPRs) {
-              const prNumber = pr.number;
-              try {
-                const labelResult = await safeApi(
-                  `listLabelsOnIssue for PR #${prNumber}`,
-                  () => github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }),
-                  { data: [] }
-                );
-                let currentLabels = labelResult.data.map(l => l.name);
-
-                async function addLabel(label) {
-                  if (!currentLabels.includes(label)) {
-                    try {
-                      await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] });
-                      currentLabels.push(label);
-                    } catch(e) {}
-                  }
-                }
-                async function removeLabel(label) {
-                  if (currentLabels.includes(label)) {
-                    // The label already being absent is the desired end state, so a 404
-                    // is success (LABEL-RACE-001, CLAUDE.md gotcha #1). Anything else —
-                    // 401/403 on a restricted token, a 5xx — means the label may still
-                    // be there, and must not be recorded as removed (gotcha #6).
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
-                      .catch((err) => { if (err.status !== 404) throw err; });
-                    currentLabels = currentLabels.filter(l => l !== label);
-                  }
-                }
-
-                // 1. Draft?
-                if (pr.draft) {
-                  await addLabel('status:draft');
-                  for (const l of ALL_STATUS.filter(s => s !== 'status:draft')) await removeLabel(l);
-                  console.log(`  PR #${prNumber}: DRAFT`);
-                  await upsertStatusBadge(prNumber, currentLabels);
-                  continue;
-                }
-                await removeLabel('status:draft');
-
-                // 2. Review state — latest per-reviewer decision wins
-                const { data: reviews } = await safeApi(
-                  `pulls.listReviews for PR #${prNumber}`,
-                  () => github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber }),
-                  { data: [] }
-                );
-                const latestReviews = {};
-                for (const r of reviews) {
-                  if (r.state !== 'COMMENTED') latestReviews[r.user.login] = r.state;
-                }
-                const states = Object.values(latestReviews);
-                const isApproved = states.includes('APPROVED') && !states.includes('CHANGES_REQUESTED');
-                const needsChanges = states.includes('CHANGES_REQUESTED');
-
-                if (needsChanges) {
-                  await addLabel('status:needs-action');
-                  for (const l of ['status:waiting-for-review','status:approved','status:ready-to-merge']) await removeLabel(l);
-                } else if (isApproved) {
-                  await addLabel('status:approved');
-                  for (const l of ['status:waiting-for-review','status:needs-action']) await removeLabel(l);
-                } else {
-                  await addLabel('status:waiting-for-review');
-                  for (const l of ['status:approved','status:needs-action','status:ready-to-merge']) await removeLabel(l);
-                }
-
-                // 3. CI state — full picture from check runs
-                const { data: checkRuns } = await safeApi(
-                  `checks.listForRef for PR #${prNumber}`,
-                  () => github.rest.checks.listForRef({ owner, repo, ref: pr.head.sha, per_page: 100 }),
-                  { data: { check_runs: [] } }
-                );
-                const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
-                const failing = completed.filter(r => ['failure','timed_out'].includes(r.conclusion));
-                const passing = completed.filter(r => r.conclusion === 'success');
-                const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
-
-                if (failing.length > 0) {
-                  await addLabel('status:checks-failing');
-                  for (const l of ['status:checks-passing','status:ready-to-merge']) await removeLabel(l);
-                  console.log(`  PR #${prNumber}: ❌ ${failing.length} check(s) failing`);
-                } else if (pending.length === 0 && passing.length > 0) {
-                  await addLabel('status:checks-passing');
-                  await removeLabel('status:checks-failing');
-                  if (isApproved) {
-                    await addLabel('status:ready-to-merge');
-                    await enableAutoMerge(prNumber, pr.node_id);
-                    console.log(`  PR #${prNumber}: 🚀 READY TO MERGE`);
-                  } else {
-                    console.log(`  PR #${prNumber}: ✅ checks passing, awaiting approval`);
-                  }
-                } else if (pending.length > 0) {
-                  console.log(`  PR #${prNumber}: ⏳ ${pending.length} check(s) still running`);
-                } else {
-                  console.log(`  PR #${prNumber}: no check runs found`);
-                }
-
-                await upsertStatusBadge(prNumber, currentLabels);
-              } catch(err) {
-                console.log(`  PR #${prNumber}: ⚠️ error — ${err.message}`);
-              }
-              await sleep(150);
-            }
-            console.log('✅ Re-sync complete');
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
+      - name: Re-sync All Open PRs
+        shell: cmd
+        run: node scripts/ci/pr-state-orchestrator.js resync
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     timeout-minutes: 30
   manual-reevaluate:
     name: 🔄 Manual Re-evaluate Single PR
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number != ''
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Re-evaluate PR state from scratch
-        uses: actions/github-script@v9.0.0
+      - uses: actions/checkout@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const rawPrNumber = context.payload.inputs.pr_number;
-            const prNumber = parseInt(rawPrNumber, 10);
-            if (Number.isNaN(prNumber) || prNumber <= 0) {
-              // Fail fast with a friendly message — otherwise a NaN surfaces
-              // later as a confusing API 404 from pulls.get.
-              core.setFailed(`Invalid pr_number input: "${rawPrNumber}" — expected a positive integer PR number.`);
-              return;
-            }
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-
-            // Wrap fallible reads so a transient labels-read failure doesn't
-            // abort the manual re-evaluation (the pulls.get above stays
-            // unguarded on purpose — a missing PR is a legitimate hard stop).
-            async function safeApi(callName, fn, fallback) {
-              try {
-                return await fn();
-              } catch (e) {
-                // Rate-limit 403s are expected under event storms (see the
-                // attached WR snippet): degrade gracefully instead of letting
-                // an unhandled HttpError fail the whole job.
-                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
-                core.warning(`${callName} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
-                return fallback;
-              }
-            }
-
-            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
-            const { data: reviews } = await safeApi(
-              `pulls.listReviews for PR #${prNumber}`,
-              () => github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber }),
-              { data: [] }
-            );
-            const labelResult = await safeApi(
-              `listLabelsOnIssue for PR #${prNumber}`,
-              () => github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber }),
-              { data: [] }
-            );
-            let currentLabels = labelResult.data.map(l => l.name);
-
-            const ALL_STATUS = [
-              'status:draft','status:waiting-for-review','status:approved',
-              'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
-            ];
-
-            async function addLabel(label) {
-              if (!currentLabels.includes(label)) {
-                try {
-                  await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: [label] });
-                  currentLabels.push(label);
-                  console.log(`✅ Added: ${label}`);
-                } catch(e) {}
-              }
-            }
-            async function removeLabel(label) {
-              if (currentLabels.includes(label)) {
-                // The label already being absent is the desired end state, so a 404
-                // is success (LABEL-RACE-001, CLAUDE.md gotcha #1). Anything else —
-                // 401/403 on a restricted token, a 5xx — means the label may still
-                // be there, and must not be recorded as removed (gotcha #6).
-                await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
-                  .catch((err) => { if (err.status !== 404) throw err; });
-                currentLabels = currentLabels.filter(l => l !== label);
-                console.log(`🗑️ Removed: ${label}`);
-              }
-            }
-
-            async function upsertStatusBadge(prNum, labels) {
-              const BADGE_MARKER = '<!-- revvel-status-badge -->';
-              const BADGE_MAP = {
-                'status:draft':              `![status](https://img.shields.io/badge/status-draft-BFD4F2?style=flat-square) 🚧 This PR is a **draft** and not yet ready for review.`,
-                'status:waiting-for-review': `![status](https://img.shields.io/badge/status-waiting%20for%20review-0075CA?style=flat-square&labelColor=0075CA&color=white) 👀 This PR is **awaiting review**.`,
-                'status:approved':           `![status](https://img.shields.io/badge/status-approved-0E8A16?style=flat-square&labelColor=0E8A16&color=white) ✅ This PR is **approved**.`,
-                'status:needs-action':       `![status](https://img.shields.io/badge/status-needs%20action-E4E669?style=flat-square) 🔧 This PR has **changes requested** and needs action.`,
-                'status:checks-failing':     `![status](https://img.shields.io/badge/status-checks%20failing-D93F0B?style=flat-square&labelColor=D93F0B&color=white) ❌ CI checks are **failing** — please investigate.`,
-                'status:ready-to-merge':     `![status](https://img.shields.io/badge/status-ready%20to%20merge-6F42C1?style=flat-square&labelColor=6F42C1&color=white) 🚀 This PR is **approved + passing** and is **ready to merge**!`,
-              };
-              const STATUS_PRIORITY = [
-                'status:ready-to-merge','status:checks-failing','status:approved',
-                'status:needs-action','status:waiting-for-review','status:draft'
-              ];
-              const activeStatus = STATUS_PRIORITY.find(s => labels.includes(s));
-              if (!activeStatus) return;
-              const badgeBody = `${BADGE_MARKER}\n${BADGE_MAP[activeStatus]}`;
-              try {
-                const { data: comments } = await github.rest.issues.listComments({
-                  owner, repo, issue_number: prNum, per_page: 100
-                });
-                const existing = comments.find(c => c.body && c.body.includes(BADGE_MARKER));
-                if (existing) {
-                  if (existing.body === badgeBody) { console.log(`🏷️ PR #${prNum}: badge unchanged`); return; }
-                  await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: badgeBody });
-                  console.log(`🏷️ PR #${prNum}: updated status badge → ${activeStatus}`);
-                } else {
-                  await github.rest.issues.createComment({ owner, repo, issue_number: prNum, body: badgeBody });
-                  console.log(`🏷️ PR #${prNum}: created status badge → ${activeStatus}`);
-                }
-              } catch(e) {
-                console.log(`⚠️ PR #${prNum}: could not upsert badge — ${e.message}`);
-              }
-            }
-
-            async function enableAutoMerge(prNum, nodeId) {
-              // Never arm auto-merge on a PR that delivers nothing, or on one
-              // that says of itself that it is unfinished (#17756).
-              //
-              // PR #17058 merged with ZERO changed files. An empty diff is the
-              // easiest thing in this repository to get green — no code to fail
-              // a test, no file to fail a lint, no line to fail a scan — so
-              // every quality gate we own passed unanimously on a PR that did
-              // nothing. "Checks passing" was being read as evidence of
-              // delivery when it is compatible with total non-delivery.
-              //
-              // `[WIP]` was invisible too: the gates read `pr.draft`, and that
-              // PR was marked ready-for-review while still titled `[WIP]`.
-              //
-              // Re-read the PR rather than trusting the event payload —
-              // `changed_files` is absent from some webhook payloads and stale
-              // in others, and a guard that reads `undefined === 0` as false
-              // would wave through the exact case it exists to stop.
-              try {
-                const { data: fresh } = await github.rest.pulls.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: prNum,
-                });
-                if (typeof fresh.changed_files !== 'number') {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — could not read changed_files.`);
-                  return;
-                }
-                if (fresh.changed_files === 0) {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the diff is empty (0 changed files).`);
-                  return;
-                }
-                if (/\[wip\]|\bwip\s*:|do not merge/i.test(fresh.title || '')) {
-                  core.warning(`PR #${prNum}: auto-merge NOT enabled — the title marks it unfinished: ${fresh.title}`);
-                  return;
-                }
-              } catch (e) {
-                // Fail closed. An unverified PR is not an eligible PR.
-                core.warning(`PR #${prNum}: auto-merge NOT enabled — could not verify the diff: ${e.message}`);
-                return;
-              }
-
-              try {
-                await github.graphql(`
-                  mutation($pullRequestId: ID!) {
-                    enablePullRequestAutoMerge(input: { pullRequestId: $pullRequestId, mergeMethod: SQUASH }) {
-                      pullRequest { number autoMergeRequest { mergeMethod } }
-                    }
-                  }
-                `, { pullRequestId: nodeId });
-                console.log(`🤖 PR #${prNum}: auto-merge (SQUASH) enabled`);
-              } catch(e) {
-                console.log(`⚠️ PR #${prNum}: could not enable auto-merge — ${e.message}`);
-              }
-            }
-
-            // Clear all status labels first
-            for (const l of ALL_STATUS) await removeLabel(l);
-
-            if (pr.draft) {
-              await addLabel('status:draft');
-              console.log(`PR #${prNumber}: DRAFT`);
-              await upsertStatusBadge(prNumber, currentLabels);
-              return;
-            }
-
-            // Determine review state
-            const latestReviews = {};
-            for (const r of reviews) {
-              if (r.state !== 'COMMENTED') latestReviews[r.user.login] = r.state;
-            }
-            const states = Object.values(latestReviews);
-            const isApproved = states.includes('APPROVED') && !states.includes('CHANGES_REQUESTED');
-            const needsChanges = states.includes('CHANGES_REQUESTED');
-
-            if (needsChanges) {
-              await addLabel('status:needs-action');
-            } else if (isApproved) {
-              await addLabel('status:approved');
-            } else {
-              await addLabel('status:waiting-for-review');
-            }
-
-            // Determine CI state from check runs
-            const { data: checkRuns } = await safeApi(
-              `checks.listForRef for PR #${prNumber}`,
-              () => github.rest.checks.listForRef({ owner, repo, ref: pr.head.sha, per_page: 100 }),
-              { data: { check_runs: [] } }
-            );
-            const completed = checkRuns.check_runs.filter(r => r.status === 'completed');
-            const failing = completed.filter(r => ['failure','timed_out'].includes(r.conclusion));
-            const passing = completed.filter(r => r.conclusion === 'success');
-            const pending = checkRuns.check_runs.filter(r => r.status !== 'completed');
-
-            if (failing.length > 0) {
-              await addLabel('status:checks-failing');
-              console.log(`PR #${prNumber}: ${failing.length} check(s) failing`);
-            } else if (pending.length === 0 && passing.length > 0) {
-              await addLabel('status:checks-passing');
-              if (isApproved) {
-                await addLabel('status:ready-to-merge');
-                await enableAutoMerge(prNumber, pr.node_id);
-                console.log(`PR #${prNumber}: READY TO MERGE 🚀`);
-              } else {
-                console.log(`PR #${prNumber}: checks passing, awaiting approval`);
-              }
-            } else if (pending.length > 0) {
-              console.log(`PR #${prNumber}: ${pending.length} check(s) still running`);
-            }
-            await upsertStatusBadge(prNumber, currentLabels);
-            console.log(`PR #${prNumber} re-evaluated successfully`);
+          # Run trusted scripts from the default branch, never event-SHA code,
+          # on the self-hosted runner (a PR could otherwise ship its own
+          # version of the script and have it execute with a write token).
+          ref: main
+      - name: Re-evaluate PR state from scratch
+        shell: cmd
+        run: node scripts/ci/pr-state-orchestrator.js reevaluate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     timeout-minutes: 10
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

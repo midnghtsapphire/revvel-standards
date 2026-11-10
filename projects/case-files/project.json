@@ -1,0 +1,13 @@
+{
+  "slug": "case-files",
+  "title": "Case Files",
+  "domain_strategy": "path",
+  "own_domain": null,
+  "hub_path": "/case-files/",
+  "hub_url": "https://oaudrey.com/case-files/",
+  "redirect_from": [],
+  "repo": "midnghtsapphire/case-files",
+  "status": "building",
+  "description": "Case files.",
+  "added": "2026-11-10"
+}

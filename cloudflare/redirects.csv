@@ -1,0 +1,13 @@
+# Cloudflare Bulk Redirects - source list
+# Import at: Cloudflare dashboard -> Bulk Redirects -> Upload CSV
+source_url,target_url,status_code,preserve_query_string
+freedomangelcorps.com/*,https://oaudrey.com/freedom-angel-corps/$1,301,true
+www.freedomangelcorps.com/*,https://oaudrey.com/freedom-angel-corps/$1,301,true
+freedomangelcorp.org/*,https://oaudrey.com/freedom-angel-corps/$1,301,true
+www.freedomangelcorp.org/*,https://oaudrey.com/freedom-angel-corps/$1,301,true
+growlingeye.com/*,https://growlingeyes.com/$1,301,true
+www.growlingeye.com/*,https://growlingeyes.com/$1,301,true
+uprisinghope.com/*,https://oaudrey.com/uprising-hope/$1,301,true
+www.uprisinghope.com/*,https://oaudrey.com/uprising-hope/$1,301,true
+risingaloha.com/*,https://oaudrey.com/rising-aloha/$1,301,true
+www.risingaloha.com/*,https://oaudrey.com/rising-aloha/$1,301,true

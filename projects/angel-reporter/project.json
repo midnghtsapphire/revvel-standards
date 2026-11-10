@@ -1,0 +1,13 @@
+{
+  "slug": "angel-reporter",
+  "title": "Angel Reporter",
+  "domain_strategy": "path",
+  "own_domain": null,
+  "hub_path": "/angel-reporter/",
+  "hub_url": "https://oaudrey.com/angel-reporter/",
+  "redirect_from": [],
+  "repo": "midnghtsapphire/angel-reporter",
+  "status": "building",
+  "description": "Angel Reporter.",
+  "added": "2026-11-10"
+}

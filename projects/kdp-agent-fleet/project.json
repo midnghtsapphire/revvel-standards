@@ -1,0 +1,13 @@
+{
+  "slug": "kdp-agent-fleet",
+  "title": "KDP Agent Fleet",
+  "domain_strategy": "path",
+  "own_domain": null,
+  "hub_path": "/kdp-agent-fleet/",
+  "hub_url": "https://oaudrey.com/kdp-agent-fleet/",
+  "redirect_from": [],
+  "repo": "midnghtsapphire/kdp-agent-fleet",
+  "status": "building",
+  "description": "KDP agent fleet.",
+  "added": "2026-11-10"
+}
