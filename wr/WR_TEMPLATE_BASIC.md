@@ -2,7 +2,7 @@
 
 > **WR Class:** bug | style | docs  
 > **Priority:** P0 | P1 | P2 | P3  
-> **Domain:** {domain}  
+> **Output Type:** {OUTPUT_TYPE}  
 > **WR ID:** WR-NNNNN  
 > **Opened:** YYYY-MM-DD  
 > **Agent:** @{agent}  
@@ -53,7 +53,7 @@
 - [ ] Regression test added (for bugs)
 - [ ] Tests updated / added where applicable
 - [ ] Docs updated where applicable
-- [ ] No scaffolding (no TODO, FIXME, placeholders)
+- [ ] No scaffolding (no deferred work markers, no raw placeholders)
 - [ ] wr-lint.mjs passes
 
 ## Risks & Mitigations
@@ -77,11 +77,15 @@
 
 ## Learnings — What & Why
 
-<!-- Filled by completing agent. Capture what was learned and why it matters. -->
+{LEARNINGS}
 
-- **What:** 
-- **Why:** 
-- **Source PR:** #NNNNN
+<!--
+Guidance: agents completing this WR should fill this in once done — capture what
+was learned and *why* it matters, not just what changed.
+For follow-up-generated WRs this section is populated automatically by the
+Follow-up Checkbox Router with the original follow-up text and a link to the
+source PR/issue.
+-->
 
 ---
 

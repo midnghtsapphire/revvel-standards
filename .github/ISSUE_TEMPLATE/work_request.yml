@@ -1,30 +1,41 @@
-name: Work Request (WR)
-description: Submit a new work request. The system generates everything else.
+name: Comprehensive Work Request (Product / Research / Infrastructure)
+description: Full WR form for product-class, research-class, and infrastructure-class work. Title-only intake is valid — the system generates everything else.
 title: "[WR] "
-labels: []
+labels:
+  - work-request
+  - deep-research
+  - openrouter
+  - role:orchestrator
 body:
   - type: markdown
     attributes:
       value: |
-        ## Work Request
-        > Form-driven, not label-driven. Every field is a contractual commitment.
-        > Blank fields are not allowed (D013). The system will auto-fill missing fields.
+        ## Comprehensive Work Request
+        > For product, research, and infrastructure WRs. For bug/style/docs, use the standard Work Request template.
+        > Title-only intake is valid. The system generates everything else via WR Field Filler.
         > See `UPREV_METHOD.md` and `WR_RESEARCH_MANDATE.md` for methodology.
 
   - type: dropdown
-    id: wr_class
+    id: output_type
     attributes:
-      label: WR Class
-      description: What kind of work is this?
+      label: Output Type
+      description: What are you asking to create or change?
       options:
-        - bug
-        - style
-        - docs
-        - product
-        - research
-        - infrastructure
-        - compliance
-        - security
+        - production-app
+        - desktop-tool
+        - sellable-pdf
+        - technical-documentation
+        - client-code-task
+        - project-management-doc
+        - internal-script-automation
+        - cli-product
+        - mcp-product
+        - api-product
+        - invention-flow
+        - research-paper
+        - infrastructure-upgrade
+        - compliance-audit
+        - security-review
       default: 0
     validations:
       required: true
@@ -41,35 +52,19 @@ body:
         - P3 — Nice-to-have, backlog
       default: 2
     validations:
-      required: true
+      required: false
 
   - type: dropdown
-    id: domain
+    id: research_mode
     attributes:
-      label: Domain
-      description: Which area of the system?
+      label: Research Mode
+      description: How aggressively should the system research?
       options:
-        - agent-system
-        - automation
-        - ci-cd
-        - distribution
-        - docs
-        - frontend
-        - infrastructure
-        - intelligence-layer
-        - marketplace
-        - mobile
-        - monitoring
-        - osint
-        - payments
-        - product-pipeline
-        - research
-        - security
-        - standards
-        - other
+        - standard
+        - deepresearch
       default: 0
     validations:
-      required: true
+      required: false
 
   - type: input
     id: title
@@ -84,58 +79,51 @@ body:
     id: issue_context
     attributes:
       label: Issue Context
-      description: What triggered this WR? Link to bug, user request, or strategic goal.
+      description: What triggered this WR? Link to bug, user request, or strategic goal. (Optional — system will infer.)
       placeholder: |
         - Bug report: #12345
         - User request: "Customers can't pay with Apple Pay"
         - Strategic: Q3 OKR — increase checkout conversion by 15%
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: background_motivation
     attributes:
       label: Background & Motivation
-      description: Why is this work needed? What's the underlying problem or opportunity?
+      description: Why is this work needed? (Optional — system will infer from title.)
       placeholder: |
         Current checkout only supports credit cards. 23% of cart abandonments
         are on mobile devices where users prefer Apple Pay / Google Pay.
-        Competitor X added wallet payments and saw 18% conversion lift.
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: scope
     attributes:
       label: Scope
-      description: What's in, what's out, boundaries with other WRs. Be specific.
+      description: What's in, what's out, boundaries with other WRs. (Optional — system will infer.)
       placeholder: |
         ## In Scope
         - Apple Pay integration (Stripe Payment Request Button)
         - Google Pay integration
         - Webhook verification and idempotency
-        - Checkout UI updates for wallet options
-        - Tests for all payment flows
-        - Docs update (README + API reference)
 
         ## Out of Scope
         - Buy Now Pay Later (separate WR)
         - Cryptocurrency payments (separate WR)
-        - Subscription billing (separate WR)
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: research_findings
     attributes:
       label: Research Findings
-      description: Summary of research. Tiered findings (A1/A2/B2/B3). Required before build.
+      description: Summary of research. Tiered findings (A1/A2/B2/B3). (Optional — research orchestrator will populate.)
       placeholder: |
         ## A1 — Proven (>95%)
         - Stripe Payment Request Button supports Apple Pay and Google Pay
           (Source: stripe.com/docs/payments/payment-request-button)
-        - Webhook signature verification prevents replay attacks
-          (Source: stripe.com/docs/webhooks/signatures)
 
         ## A2 — Established (80-95%)
         - Mobile wallet payments increase conversion 15-25% in e-commerce
@@ -144,37 +132,31 @@ body:
         ## B2 — Emerging (60-80%)
         - Passkey authentication reduces checkout friction further
           (Source: FIDO Alliance whitepaper, 2023)
-
-        ## B3 — Speculative (<60%)
-        - None identified
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: approach
     attributes:
       label: Approach / Design Sketch
-      description: Proposed implementation. Alternatives considered. Why this approach?
+      description: Proposed implementation. Alternatives considered. (Optional — system will infer.)
       placeholder: |
         ## Proposed Approach
         1. Add Stripe Payment Request Button to checkout page
         2. Implement webhook endpoint with signature verification
         3. Add idempotency key handling for duplicate events
-        4. Update checkout UI to show wallet options on supported devices
-        5. Add integration tests for full payment flow
 
         ## Alternatives Considered
         - Braintree: Lower market share, fewer docs (rejected)
         - Adyen: Enterprise pricing, overkill for current volume (rejected)
-        - Custom wallet integration: Too complex, high maintenance (rejected)
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: artifact_requirements
     attributes:
       label: Artifact Requirements
-      description: What artifacts must this WR produce? Check all that apply.
+      description: What artifacts must this WR produce? (Optional — ARTIFACT_GENERATOR.md will infer from output_type.)
       value: |
         - [ ] Code (implementation)
         - [ ] Tests (unit + integration)
@@ -187,48 +169,44 @@ body:
         - [ ] PDF / booklet (if user-facing product)
         - [ ] Other: ___
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: acceptance_criteria
     attributes:
       label: Acceptance Criteria
-      description: Measurable criteria for "done." Each must be verifiable.
+      description: Measurable criteria for "done." (Optional — system will infer.)
       placeholder: |
-        - [ ] Apple Pay button appears on checkout for Safari/iOS users
-        - [ ] Google Pay button appears on checkout for Chrome/Android users
-        - [ ] Payment completes end-to-end in test environment
-        - [ ] Webhook signature verification rejects invalid signatures
-        - [ ] Idempotency prevents duplicate charge on retry
+        - [ ] Feature works end-to-end in production-like environment
         - [ ] All new code has >80% test coverage
-        - [ ] README updated with wallet payment setup instructions
-        - [ ] No regressions in existing payment flows (credit card still works)
+        - [ ] Integration tests pass for all critical paths
+        - [ ] No regressions in existing functionality
+        - [ ] No scaffolding (no deferred work markers, no raw placeholders)
+        - [ ] wr-lint.mjs passes
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: risks_mitigations
     attributes:
       label: Risks & Mitigations
-      description: Known risks, fragile files touched, rollback plan.
+      description: Known risks, fragile files touched, rollback plan. (Optional — system will infer.)
       placeholder: |
         | Risk | Likelihood | Impact | Mitigation |
         |------|-----------|--------|------------|
         | Webhook endpoint DDoS | Low | High | Rate limiting + signature verification |
         | Apple Pay cert expiry | Medium | High | Calendar reminder + monitoring alert |
-        | Checkout UI regression | Medium | Medium | Visual regression tests + manual QA |
-        | Payment flow breakage | Low | Critical | Feature flag + instant rollback |
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: competitor_intelligence
     attributes:
       label: Competitor & Pricing Intelligence
-      description: Required for product-class WRs. Actual prices, not vague labels.
+      description: Required for sellable-pdf and product-class WRs. Actual prices, not vague labels.
       placeholder: |
-        | Competitor | Price | Wallet Support | Gap | Our Advantage |
-        |------------|-------|---------------|-----|---------------|
+        | Competitor | Price | Key Features | Gap | Our Advantage |
+        |------------|-------|-------------|-----|---------------|
         | Competitor X | $99/mo | Apple Pay only | No Google Pay | We support both |
         | Competitor Y | $49/mo | None | No mobile wallets | First-mover advantage |
     validations:
@@ -248,7 +226,6 @@ body:
         ## Content Gaps
         - Most tutorials only cover Stripe Checkout, not Payment Request Button
         - Few guides cover webhook security best practices
-        - Opportunity: comprehensive guide with security checklist
     validations:
       required: false
 
@@ -262,7 +239,7 @@ body:
         - "Yes — decomposed into Blocks, owner reviews between each"
       default: 0
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: blocks
@@ -271,22 +248,14 @@ body:
       description: Ordered list of atomic, complete PRs. Each Block ships independently.
       placeholder: |
         ## Block 1: Backend — Webhook endpoint + verification
-        - Stripe webhook endpoint
-        - Signature verification
-        - Idempotency handling
-        - Tests + docs
+        - Scope: Stripe webhook endpoint, signature verification, idempotency handling
+        - Deliverables: Endpoint code, tests, docs
+        - Acceptance criteria: Webhook signature verification rejects invalid signatures
 
         ## Block 2: Frontend — Wallet button integration
-        - Payment Request Button component
-        - Device detection (Apple Pay vs Google Pay)
-        - Checkout UI updates
-        - Tests + docs
-
-        ## Block 3: Ops — Monitoring + rollout
-        - Metrics and alerts
-        - Feature flag
-        - Rollback runbook
-        - Production verification
+        - Scope: Payment Request Button component, device detection, checkout UI updates
+        - Deliverables: Component code, tests, docs
+        - Depends on: Block 1
     validations:
       required: false
 
@@ -294,11 +263,10 @@ body:
     id: dependencies
     attributes:
       label: Dependencies
-      description: What must be true before this WR can start?
+      description: What must be true before this WR can start? (Optional.)
       placeholder: |
         - [ ] Stripe account configured (production keys)
         - [ ] Apple Pay merchant verification complete
-        - [ ] Google Pay merchant ID registered
         - [ ] WR #12345 (checkout refactor) merged
     validations:
       required: false

@@ -16,9 +16,33 @@ Closes <!-- WR issue number -->
 
 <!-- bug | style | docs | product | research | infrastructure | compliance | security -->
 
+## Priority
+
+<!-- P0 | P1 | P2 | P3 -->
+
+## Output Type
+
+<!-- production-app | desktop-tool | sellable-pdf | technical-documentation | client-code-task | project-management-doc | internal-script-automation | cli-product | mcp-product | api-product | invention-flow | research-paper | infrastructure-upgrade | compliance-audit | security-review -->
+
+## Domain
+
+<!-- agent-system | automation | ci-cd | distribution | docs | frontend | infrastructure | intelligence-layer | marketplace | mobile | monitoring | osint | payments | product-pipeline | research | security | standards | other -->
+
 ## Summary
 
 <!-- One paragraph: what does this PR do? Outcome-oriented, not process-oriented. -->
+
+## Issue Context
+
+<!-- What triggered this WR? Link to bug, user request, or strategic goal. -->
+
+## Background & Motivation
+
+<!-- Why is this work needed? What's the underlying problem or opportunity? -->
+
+## Scope
+
+<!-- What's in, what's out, boundaries with other WRs. -->
 
 ## Changes
 
@@ -83,6 +107,13 @@ Closes <!-- WR issue number -->
 |------|--------|-------------------|
 | | | |
 
+## Estimated Effort
+
+<!-- Actual effort vs. estimate. -->
+
+- **Estimated:** {e.g., 3-5 days}
+- **Actual:** {e.g., 4 days}
+
 ## Checkpoint Status (if checkpoint-gated)
 
 <!-- Only for Grid PRs. Which Block is this? -->
@@ -116,7 +147,7 @@ Closes <!-- WR issue number -->
 - [ ] No hardcoded secrets or credentials (verified by `secrets-health-check.yml`)
 - [ ] PR title uses conventional-commit format (`feat:`, `fix:`, `docs:`, `chore:`, etc.)
 - [ ] WR scope is delivered in full — no deferred items without explicit documentation above
-- [ ] No scaffolding: no `TODO`, no `FIXME`, no raw `[placeholders]`, no `coming soon`
+- [ ] No scaffolding: no deferred work markers, no raw `[placeholders]`, no `coming soon`
 - [ ] No orphaned artifacts: every file is referenced and used
 - [ ] Research brief is attached and tiered
 - [ ] Agent scorecard updated (if applicable)

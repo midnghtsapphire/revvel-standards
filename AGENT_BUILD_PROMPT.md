@@ -184,7 +184,7 @@ When executing a WR, structure your work as follows:
 | `// Coming soon` | Incomplete | Ship complete or decompose |
 | Hardcoded API keys | Security risk | Use env vars or secret manager |
 | `console.log` in production | Noise | Use structured logging |
-| Commented-out code | Clutter | Delete it (git has history) |
+| Commented-out code | May destroy history | Comment out with dated note per AGENTS.md |
 | Copy-paste without attribution | Copyright risk | Cite source or rewrite |
 | Agent merges own PR | No review | Mark ready, wait for owner |
 | Deletes existing files | Destroys history | Comment out with dated note |

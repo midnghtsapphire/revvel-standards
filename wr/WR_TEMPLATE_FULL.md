@@ -2,7 +2,7 @@
 
 > **WR Class:** product | research | infrastructure  
 > **Priority:** P0 | P1 | P2 | P3  
-> **Domain:** {domain}  
+> **Output Type:** {OUTPUT_TYPE}  
 > **WR ID:** WR-NNNNN  
 > **Opened:** YYYY-MM-DD  
 > **Agent:** @{agent}  
@@ -93,7 +93,7 @@
 - [ ] Docs complete and accurate
 - [ ] Monitoring operational (alerts firing correctly)
 - [ ] No regressions in existing functionality
-- [ ] No scaffolding (no TODO, FIXME, placeholders)
+- [ ] No scaffolding (no deferred work markers, no raw placeholders)
 - [ ] wr-lint.mjs passes
 
 ## Risks & Mitigations
@@ -106,7 +106,7 @@
 
 ## Competitor & Pricing Intelligence
 
-<!-- Required for product-class WRs. Actual prices, not vague labels. -->
+<!-- Required for sellable-pdf and product-class WRs. Actual prices, not vague labels. -->
 
 | Competitor | Price | Key Features | Gap | Our Advantage |
 |------------|-------|-------------|-----|---------------|
@@ -206,12 +206,15 @@
 
 ## Learnings — What & Why
 
-<!-- Filled by completing agent. Capture what was learned and why it matters. -->
+{LEARNINGS}
 
-- **What:** 
-- **Why:** 
-- **Source PR:** #NNNNN
-- **Follow-up WRs:** {if any}
+<!--
+Guidance: agents completing this WR should fill this in once done — capture what
+was learned and *why* it matters, not just what changed.
+For follow-up-generated WRs this section is populated automatically by the
+Follow-up Checkbox Router with the original follow-up text, a link to the
+source PR/issue, and (if applicable) a note that this is a chained follow-up.
+-->
 
 ---
 
