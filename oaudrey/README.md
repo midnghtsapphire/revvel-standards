@@ -16,6 +16,8 @@ This directory holds the **concept landing page** for the hub — a single
 static `index.html` (Tailwind CSS via CDN), matching the authoring convention
 used by `/fieldwork` in this repository.
 
+For the MindMappr installation on Windows, see [Set up and verify the oaudrey Cloudflare Tunnel](./MINDMAPPR_WINDOWS_TUNNEL.md).
+
 ---
 
 ## Giving Pledge (mission-linked)
