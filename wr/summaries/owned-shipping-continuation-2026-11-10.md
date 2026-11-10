@@ -208,3 +208,20 @@ LastTaskResult=0 and scheduler attempt 0564c344-b172-47d1-b923-0f4cc448ccb1.
 Thus the timer was observed executing a real changed-source check as well as
 the initial idempotent unchanged-source checks. No new paid execution lane
 was enabled by these documentation/verification corrections.
+
+The expanded 227 KB review packet legitimately exhausted the shared comparison
+budget even though individual files completed. The limit was not raised.
+A rigorous UTF-16 character-histogram lower bound now rejects impossible
+distance matches early, preserving the exact legacy distance API. Independent
+review compared 35,962 deterministic randomized/boundary cases, including
+surrogates and NUL, with zero mismatches. Another real multiline billing-test
+assertion false positive received a narrow static-primitive regression; actual
+executable continuations and identical duplicate assertions remain checked.
+
+Final HULL/prosecution invocation 9b10a68e-3398-43ad-af7a-d789b6617c36 passed
+81 tests in 7.464 seconds, zero findings and provider calls. Scheduler attempt
+78c74cea-086b-4896-8ee9-0422a932d756 passed. That receipt names implementation
+head 45171cd plus its actual worktree-diff hash, including the final comparison
+correction. Earlier 63/78-test and failure records are historical, not replaced.
+The prosecutor child suite now has 42 cases. The final follow-up PR's required
+gate is verified independently before merge; no production release is implied.

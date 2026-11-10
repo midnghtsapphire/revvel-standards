@@ -187,6 +187,18 @@ export function boundedLevenshtein(a, b, limit, budget = { remaining: 200000000 
   b = b.slice(prefix, endB);
   if (!a.length) return b.length <= limit ? b.length : limit + 1;
   if (!b.length) return a.length <= limit ? a.length : limit + 1;
+  // A substitution changes at most two character counts; insert/delete at
+  // most one. Therefore ceil(histogram L1 / 2) is a rigorous LOWER bound on
+  // edit distance. Rejecting only when it exceeds the limit cannot hide a hit.
+  // Count UTF-16 code units, matching the exact legacy algorithm's semantics.
+  budget.remaining -= a.length + b.length;
+  if (budget.remaining < 0) throw new Error('Prosecutor comparison work budget exceeded; split the review packet, never treat this as a clean pass');
+  const counts = new Map();
+  for (let i = 0; i < a.length; i++) counts.set(a[i], (counts.get(a[i]) || 0) + 1);
+  for (let i = 0; i < b.length; i++) counts.set(b[i], (counts.get(b[i]) || 0) - 1);
+  let difference = 0;
+  for (const count of counts.values()) difference += Math.abs(count);
+  if (Math.ceil(difference / 2) > limit) return limit + 1;
   // Keep columns on the shorter string, minimizing retained row memory.
   if (b.length > a.length) [a, b] = [b, a];
   const overflow = limit + 1;
@@ -254,7 +266,16 @@ function distinctAssertionCases(linesA, linesB) {
   // Different expected observations in a sequence of assertions are separate
   // state checks, not evidence of duplicated application logic. Exact repeated
   // assertion blocks still qualify; enclosing executable copies still qualify.
-  if ([...linesA, ...linesB].every(line => /^assert\.[A-Za-z]+\(/.test(line))) return true;
+  // Earlier only single-line assertions were recognized:
+  // if ([...linesA, ...linesB].every(line => /^assert\.[A-Za-z]+\(/.test(line))) return true;
+  // Expected-result objects can span lines. Only primitive key/value
+  // continuations qualify; executable statements/calls remain analyzed.
+  const primitiveFields = /^(?:[A-Za-z_$]\w*\s*:\s*(?:true|false|null|undefined|-?\d+(?:\.\d+)?|'[^'\\]*'|"[^"\\]*")\s*,?\s*)+$/;
+  // A sliding window may start inside the expected object rather than at
+  // assert.*. Distinct primitive records contain no executable operations.
+  if ([...linesA, ...linesB].every(line => primitiveFields.test(line))) return true;
+  if ([linesA, linesB].every(lines => /^assert\.[A-Za-z]+\(/.test(lines[0]) &&
+    lines.every(line => /^assert\.[A-Za-z]+\(/.test(line) || primitiveFields.test(line)))) return true;
   // Python exception contexts can intentionally exercise distinct CLI options.
   // Require both full two-line cases and non-overlapping concrete flag keys.
   if (linesA.length !== 2 || linesB.length !== 2 ||

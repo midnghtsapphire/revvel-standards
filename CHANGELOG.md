@@ -424,3 +424,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   absent or actually terminated zombie/dead state, never accept a live PID.
   Retained the failing CI evidence and old assertion; no production timeout,
   comparison budget, drift check or legacy allowance was weakened.
+
+- Codex prosecution integration: the larger 227 KB source packet now passes
+  within the unchanged comparison budget. A UTF-16 character-count lower bound
+  rejects mathematically impossible matches before edit-distance work; the
+  actual multiline billing-assertion false positive has regression coverage.
+  Independent review checked 35,962 cases against the exact legacy distance.
+  Final HULL/prosecution run passed 81 tests, zero findings/provider calls.
