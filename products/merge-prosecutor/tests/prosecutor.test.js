@@ -12,8 +12,98 @@ import {
   parseNextLink,
   fetchPaginatedJson,
   resolveDiff,
-  GitHubApiError
+  GitHubApiError,
+  computeLevenshtein,
+  boundedLevenshtein
 } from '../action/run-prosecutor.mjs';
+
+test('bounded edit distance agrees with exact legacy distance for small strings and all limits', () => {
+  const strings = [''];
+  for (let length = 1; length <= 4; length++) {
+    for (let bits = 0; bits < 2 ** length; bits++) strings.push(bits.toString(2).padStart(length, '0'));
+  }
+  for (const a of strings) for (const b of strings) {
+    const exact = computeLevenshtein(a, b);
+    for (let limit = 0; limit <= 5; limit++) {
+      assert.equal(boundedLevenshtein(a, b, limit), Math.min(exact, limit + 1), JSON.stringify({ a, b, limit }));
+    }
+  }
+});
+
+test('bounded comparison aborts excessive work explicitly and skips impossible length gaps', () => {
+  assert.equal(boundedLevenshtein('a'.repeat(10000), 'b', 2, { remaining: 0 }), 3);
+  assert.throws(() => boundedLevenshtein('a'.repeat(1000), 'b'.repeat(1000), 200, { remaining: 10 }), /work budget exceeded/);
+});
+
+function newFileDiff(path, text) {
+  const lines = text.split('\n');
+  return `diff --git a/${path} b/${path}\n--- /dev/null\n+++ b/${path}\n@@ -0,0 +1,${lines.length} @@\n` + lines.map(line => '+' + line).join('\n');
+}
+
+test('whole strict JSON records are data independent of path, while code in .json remains checked', () => {
+  const records = Array.from({ length: 96 }, (_, index) => ({ path: `standards/${index}.md`, bytes: 4558, sha256: String(index).padStart(64, '0'), status: 'read-complete' }));
+  assert.deepEqual(detectDuplicatedBlocks(newFileDiff('arbitrary-runtime.js', JSON.stringify(records, null, 2))), []);
+  const code = 'executeTask(context);\nrecordTaskResult(context);\nexecuteTask(context);\nrecordTaskResult(context);';
+  assert.ok(detectDuplicatedBlocks(newFileDiff('records.json', code)).length > 0);
+});
+
+test('strict JSON duplicate keys fail exactly including escaped aliases, distinct object keys remain valid', () => {
+  assert.throws(() => detectDuplicatedBlocks(newFileDiff('records.json', '{"key":1,"key":2}')), /Duplicate JSON object key/);
+  assert.throws(() => detectDuplicatedBlocks(newFileDiff('records.json', '{"key":1,"\\u006bey":2}')), /Duplicate JSON object key/);
+  assert.deepEqual(detectDuplicatedBlocks(newFileDiff('records.json', JSON.stringify([{ key: 'brace } and escaped " quote' }, { key: 2 }]))), []);
+});
+
+test('retained comments, unchanged context and separate hunks do not create adjacent copies', () => {
+  const block = '+executeTask(context);\n+recordTaskResult(context);\n';
+  for (const separator of [' unchanged_source();\n', '@@ -30,0 +35,2 @@\n', '+// retired historical implementation\n']) {
+    assert.deepEqual(detectDuplicatedBlocks('+++ b/run.js\n' + block + separator + block), []);
+  }
+  assert.deepEqual(detectDuplicatedBlocks('+++ b/run.js\n+/* retained history\n' + block + block + '+*/\n'), []);
+  assert.ok(detectDuplicatedBlocks('+++ b/run.js\n' + block + block).length > 0);
+});
+
+test('multiline JavaScript fixture content remains data while actual following copies are checked', () => {
+  const block = '+executeTask(context);\n+recordTaskResult(context);\n';
+  const fixture = '+++ b/arbitrary-source.js\n+const fixture = `\n' + block + block + '+`;\n';
+  assert.deepEqual(detectDuplicatedBlocks(fixture), []);
+  assert.ok(detectDuplicatedBlocks(fixture + block + block).length > 0);
+});
+
+test('template interpolations and tagged templates remain executable duplicate candidates', () => {
+  const interpolation = '+${executeTask(context)}\n+${recordTaskResult(context)}\n';
+  const diff = '+++ b/active.js\n+const results = `\n' + interpolation + interpolation + '+`;\n';
+  assert.ok(detectDuplicatedBlocks(diff).length > 0, 'all four interpolation calls execute');
+  const tagged = '+++ b/active.js\n+const results = executeTemplate`\n' + interpolation + interpolation + '+`;\n';
+  assert.ok(detectDuplicatedBlocks(tagged).length > 0, 'tagged templates are never classified as inert data');
+  const block = '+executeTask(context);\n+recordTaskResult(context);\n';
+  assert.deepEqual(detectDuplicatedBlocks('+++ b/active.js\n+const fixture = `\n' + block + block + '+`;\n'), []);
+});
+
+test('odd backticks in a regex literal cannot hide following executable duplicates', () => {
+  const diff = '+++ b/active.js\n+const CODE_BLOCK_RE = /```[^`]*```/g;\n' +
+    '+executeTask(context);\n+recordTaskResult(context);\n+executeTask(context);\n+recordTaskResult(context);\n';
+  assert.ok(detectDuplicatedBlocks(diff).length > 0);
+});
+
+test('distinct state assertions and CLI exception cases are not keep-both application logic', () => {
+  const states = `+++ b/observer.js
++assert.deepEqual(await app.processPending(), { processed: 0, failed: 1 });
++assert.equal((await fetch(\`\${app.base}/health\`)).status, 503);
++assert.equal(app.inbox.db.prepare('SELECT last_error FROM inbox').get().last_error, 'reconciliation_failed');
++assert.deepEqual(await app.processPending(), { processed: 0, failed: 0 });
++assert.equal((await fetch(\`\${app.base}/health\`)).status, 503);
+`;
+  assert.deepEqual(detectDuplicatedBlocks(states), []);
+  const cli = `+++ b/cli.py
++with self.assertRaises(ValueError):
++    main([*arguments, '--issue', '18337'])
++with self.assertRaises(ValueError):
++    main([*arguments, '--resume', 'continue'])
+`;
+  assert.deepEqual(detectDuplicatedBlocks(cli), []);
+  const repeated = '+assert.equal(first, expected);\n+assert.equal(second, expected);\n';
+  assert.ok(detectDuplicatedBlocks('+++ b/check.js\n' + repeated + repeated).length > 0);
+});
 
 test('detects duplicate added blocks', () => {
   const diffText = `
@@ -31,6 +121,50 @@ diff --git a/test.js b/test.js
 
   const duplicates = detectDuplicatedBlocks(diffText);
   assert.ok(duplicates.length > 0, 'Should detect duplicate block');
+});
+
+test('distinct real HULL parser option identities are not duplicate merge blocks', () => {
+  const diff = `+++ b/scripts/wr_langgraph.py
++parser.add_argument('--skills-dir', type=Path, required=True)
++parser.add_argument('--mapping', type=Path, required=True)
++parser.add_argument('--policy', type=Path, required=True)
++parser.add_argument('--receipts', type=Path, required=True)
+`;
+  assert.deepEqual(detectDuplicatedBlocks(diff), []);
+});
+
+test('repeated parser option identities remain a duplicate even with changed defaults', () => {
+  const diff = `+++ b/cli.py
++parser.add_argument('--policy', type=Path, required=True, default='one')
++parser.add_argument('--receipts', type=Path, required=True)
++parser.add_argument('--policy', type=Path, required=True, default='two')
++parser.add_argument('--receipts', type=Path, required=True)
+`;
+  assert.ok(detectDuplicatedBlocks(diff).length > 0);
+});
+
+test('overlapping option aliases are not exempted as distinct first literals', () => {
+  const diff = `+++ b/cli.py
++parser.add_argument('-p', '--policy', type=Path, required=True)
++parser.add_argument('--receipts', type=Path, required=True)
++parser.add_argument('-P', '--policy', type=Path, required=True)
++parser.add_argument('--reports', type=Path, required=True)
+`;
+  assert.ok(detectDuplicatedBlocks(diff).length > 0);
+});
+
+test('near duplicate executable blocks still detect a real keep-both merge', () => {
+  const diff = `+++ b/run.js
++function dispatchTask(context) {
++  const result = executeTask(context, 'primary');
++  recordTaskResult(context, result);
++}
++function dispatchTask(context) {
++  const result = executeTask(context, 'secondary');
++  recordTaskResult(context, result);
++}
+`;
+  assert.ok(detectDuplicatedBlocks(diff).length > 0);
 });
 
 test('does not flag a reused fail-closed idiom in two distant functions', () => {

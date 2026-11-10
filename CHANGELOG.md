@@ -373,3 +373,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cross-repository review, per-issue acceptance matrix, HULL merge/execution
   receipts, and pending hosting apply are recorded under wr/summaries/. HULL
   execution merged in oaudrey PR #13. No live deployment is claimed here.
+
+## 2026-11-10 — Shipping continuation after Cloudflare handoff
+
+- Codex revenue specialist added the signed Lago HTTP receiver, durable SQLite
+  inbox, authoritative invoice/subscription reconciliation, persisted retry
+  backoff, degraded health and actual crash/replay tests. Public paid checkout
+  remains disabled until authenticated identity and live billing are verified.
+- Codex intelligence specialist connected the existing optional LangGraph
+  lifecycle to actual HULL policy execution, durable receipt references and
+  explicit recovery/review commands; no second command executor was introduced.
+- Codex prosecution specialist extended the existing prosecutor with local
+  operator policy, real bounded subprocess checks, retained per-run receipts,
+  stable repair IDs and advisory reviewer snippets. Fixed the root test wrapper
+  that previously inherited NODE_TEST_CONTEXT and silently missed child tests.
+- All 96 standards files were read across the assigned specialists before new
+  implementation. This closes the standards-directory reading gap; it does not
+  claim full semantic reading of the entire 824 MB archived corpus.
+- Existing GIT-FLEET scheduling is extended in its own repository; no Cloudflare,
+  Proofy, paid model, subscription, production access or DNS configuration changed.
+  Live deployment and original issue acceptance remain explicitly open.
+
+- Codex integration review retained the initial failed prosecution and passed
+  63-test HULL receipt. Corrected full-diff work bounds, strict JSON evidence
+  classification with duplicate-key rejection, executable template/regex
+  handling, complete skill discovery, and bounded multi-batch billing drain.
+  Added regression cases; no comparison budget, legacy allowance or merge gate
+  was relaxed. Continued source-head validation is recorded with PR #18348.
+
+- Codex operational verification: installed the separate owned local-checks
+  Windows task, observed two zero-exit executions, retained the final 78-test
+  HULL/prosecution receipt in GIT-FLEET PR #2, and recorded actual CircleCI
+  job 23006 success on the implementation source head. Product hosting remains
+  staged; no deployment, transaction, benchmark or customer result invented.

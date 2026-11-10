@@ -1146,3 +1146,21 @@ the code to come back.
 line 48), `.github/copilot-instructions.md:7`, PR #18296, CLAUDE.md gotcha #9
 (*a marker nobody checks is decoration* — its mirror image: a guard that looks
 like decoration may be the only thing holding a lane open).
+
+## TM-0009 — Prove execution and retain failed evidence
+
+2026-11-10, Codex shipping team, PR #18348 and GIT-FLEET #2.
+
+The root prosecutor test inherited NODE_TEST_CONTEXT and returned success
+without executing its child tests. The real HULL integration then exposed an
+argparse false positive, unbounded edit-matrix work and strict-JSON records
+misclassified as executable copies. Independent review also found executable
+template interpolation hidden by a data heuristic and missing customer IDs
+comparing equal. These were reproducible defects, not reasons to delete tests.
+
+Recovery verifies child test summaries, bounded comparison properties, actual
+process-tree termination, signed HTTP identities and transaction rollback.
+Scheduler receipts bind immutable input and actual local head/diff; concurrent
+edits or interrupted execution are uncertain, never automatic success/replay.
+Keep earlier failed receipts beside final results so a later agent can see
+what was learned. Do not weaken legacy allowances or required merge checks.

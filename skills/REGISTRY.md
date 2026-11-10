@@ -26,6 +26,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 | If the task involves...                                                                                                 | Load this skill                                               |
 | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Local merge prosecution, owned daily/event checks, HULL prosecution receipts | [`merge-prosecutor`](#merge-prosecutor) |
 | RecurseML, autonomous PR review, bug detection, code standards                                                          | [`recurse-ml`](#recurse-ml)                                   |
 | Knowledge sheaf, sheaf consistency, H¹, Laplacian energy, persistent homology, barcodes, imprint-at-spawn, MOTU, BNAT   | [`bnatsheaf`](#bnatsheaf)                                     |
 | BITO AI, persistent-memory code review, desktop API procurement, bito cli, bito secret, repo memory, agentic review     | [`bito-ai`](#bito-ai)                                         |
@@ -735,3 +736,12 @@ _This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: Ma
 - **Path:** `skills/probabilistic-orchestration/SKILL.md`
 - **Persona:** DRAGNET (PROBABILISTIC MODE)
 - **Description:** Defensive guardrails, validation layers, and self-correction loops for handling unpredictable AI outputs. Use this skill when parsing LLM outputs or building AI-driven pipelines.
+
+### Merge Prosecutor
+
+- **Path:** `skills/merge-prosecutor/`
+- **Files:** `SKILL.md`, `merge-prosecutor.skill.yml`
+- **Persona:** verifier
+- **Description:** Existing deterministic conflict/duplicate prosecution and bounded operator checks through the owned HULL executor. Local packets are data; reviewer suggestions remain advisory. Actual check results, stable repair requests and append-only receipts establish execution evidence.
+- **Triggers:** "merge prosecution", "local prosecution", "merge-prosecutor", "owned daily and event checks"
+- **Runtime:** Node plus existing Python HULL bridge; exact operator policy required. No GitHub execution, Apps, cloud/model calls or automatic deployment.

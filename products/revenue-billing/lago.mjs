@@ -28,7 +28,23 @@ export class LagoClient {
       error.status = response.status;
       throw error;
     }
-    return response.json();
+    // REVVEL-DISABLED | AGENT: codex | MODEL: GPT-6 | WR: #18333 | DATE: 2026-11-10 | STATUS: REPLACED
+    // REASON: response.json() could buffer an unbounded provider response.
+    // return response.json();
+    // REVVEL-DISABLED-END
+    const limit = 1024 * 1024;
+    if (Number(response.headers.get('content-length')) > limit) {
+      await response.body?.cancel();
+      throw new Error('Lago response exceeds 1 MiB bound');
+    }
+    const chunks = [];
+    let bytes = 0;
+    for await (const chunk of response.body) {
+      bytes += chunk.length;
+      if (bytes > limit) throw new Error('Lago response exceeds 1 MiB bound');
+      chunks.push(chunk);
+    }
+    return JSON.parse(Buffer.concat(chunks).toString('utf8'));
   }
 
   createCustomer({ externalId, email, name, stripeProviderCode }) {
@@ -53,6 +69,26 @@ export class LagoClient {
 
   portal(externalCustomerId) {
     return this.request('GET', `/customers/${encoded(externalCustomerId)}/portal_url`);
+  }
+
+  // 2026-11-10 Codex WR #18333: notifications are hints; reconcile current
+  // provider state rather than trusting an old signed payment-status snapshot.
+  invoice(lagoId) {
+    required(lagoId, 'lagoId');
+    return this.request('GET', `/invoices/${encodeURIComponent(lagoId)}`);
+  }
+
+  subscription(externalId) {
+    required(externalId, 'externalId');
+    return this.request('GET', `/subscriptions/${encodeURIComponent(externalId)}`);
+  }
+
+  // Generates a provider-hosted invoice payment URL; never invokes a charge.
+  // This is an operator-only API helper until authenticated account binding exists.
+  // The legacy checkout() method above still means payment-method setup.
+  invoicePaymentUrl(lagoId) {
+    required(lagoId, 'lagoId');
+    return this.request('POST', `/invoices/${encodeURIComponent(lagoId)}/payment_url`);
   }
 
   recordUsage({ transactionId, externalSubscriptionId, code, properties = {} }) {

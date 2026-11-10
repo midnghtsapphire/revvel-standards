@@ -54,3 +54,22 @@ test('plan currency amounts are integer cents', async () => {
   assert.equal(calls[0].body.plan.amount_cents, 9900);
   assert.throws(() => client.createPlan({ code: 'pro', name: 'Pro', amountCents: -1 }), /nonnegative/);
 });
+
+test('invoice and subscription reads reconcile documented encoded resource paths', async () => {
+  const { client, calls } = fixture();
+  await client.invoice('invoice/a ?');
+  await client.subscription('subscription/a ?');
+  await client.invoicePaymentUrl('invoice/a ?');
+  assert.equal(calls[0].url, 'https://billing.example/api/v1/invoices/invoice%2Fa%20%3F');
+  assert.equal(calls[0].method, 'GET');
+  assert.equal(calls[1].url, 'https://billing.example/api/v1/subscriptions/subscription%2Fa%20%3F');
+  assert.equal(calls[1].method, 'GET');
+  assert.equal(calls[2].url, 'https://billing.example/api/v1/invoices/invoice%2Fa%20%3F/payment_url');
+  assert.equal(calls[2].method, 'POST');
+  assert.throws(() => client.invoice(''), /lagoId/);
+});
+
+test('oversized provider JSON is refused without buffering an unbounded response', async () => {
+  const client = new LagoClient({ baseUrl: 'https://billing.example/api/v1', apiKey: 'test', fetchImpl: async () => new Response('x'.repeat(1048577)) });
+  await assert.rejects(client.invoice('invoice-1'), /1 MiB/);
+});
