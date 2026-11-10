@@ -8,7 +8,7 @@ import { once } from 'node:events';
 import { spawn } from 'node:child_process';
 import { request } from 'node:http';
 import { LagoInbox } from './webhook-inbox.mjs';
-import { createLagoReceiver } from './webhook-server.mjs';
+import { createLagoReceiver, drainPending } from './webhook-server.mjs';
 
 const secret = 'offline-only-test-key';
 const organization = 'org-test';
@@ -221,4 +221,38 @@ test('signed subscription events reconcile only with present matching provider/c
       } finally { await app.close(); }
     }
   }
+});
+
+test('bounded drain completes healthy multi-batch HTTP backlog and distinguishes continuation', async () => {
+  const app = await fixture();
+  try {
+    for (let i = 0; i < 45; i++) assert.equal((await send(app, notification({ offline_delivery: i }), `drain-${i}`)).status, 202);
+    assert.deepEqual(await app.processPending(), { processed: 20, failed: 0 });
+    assert.equal(app.inbox.counts().find(row => row.status === 'pending').count, 25);
+    assert.deepEqual(await drainPending(app, app.inbox, { maxBatches: 1 }), {
+      processed: 20, failed: 0, pending: 5, batches: 1, status: 'bounded_continuation', exitCode: 2, publicCheckout: false,
+    });
+    for (let i = 45; i < 70; i++) assert.equal((await send(app, notification({ offline_delivery: i }), `drain-${i}`)).status, 202);
+    assert.deepEqual(await drainPending(app, app.inbox), {
+      processed: 30, failed: 0, pending: 0, batches: 2, status: 'complete', exitCode: 0, publicCheckout: false,
+    });
+  } finally { await app.close(); }
+});
+
+test('drain preserves retry backoff while completing other due batches', async () => {
+  let calls = 0;
+  const healthy = provider();
+  const app = await fixture({ lago: { ...healthy, invoice: async id => { calls++; if (calls === 1) throw new Error('offline transient'); return healthy.invoice(id); } } });
+  try {
+    for (let i = 0; i < 26; i++) assert.equal((await send(app, notification({ offline_delivery: i }), `retry-${i}`)).status, 202);
+    assert.deepEqual(await drainPending(app, app.inbox), {
+      processed: 25, failed: 1, pending: 1, batches: 2, status: 'retry_pending', exitCode: 1, publicCheckout: false,
+    });
+    assert.equal(calls, 26);
+    assert.deepEqual(await drainPending(app, app.inbox), {
+      processed: 0, failed: 0, pending: 1, batches: 0, status: 'retry_pending', exitCode: 1, publicCheckout: false,
+    });
+    assert.equal(calls, 26, 'backoff is never bypassed by drain');
+    assert.equal(app.inbox.db.prepare("SELECT COUNT(*) AS n FROM inbox WHERE status='pending' AND attempts=1").get().n, 1);
+  } finally { await app.close(); }
 });

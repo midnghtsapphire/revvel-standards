@@ -393,3 +393,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Existing GIT-FLEET scheduling is extended in its own repository; no Cloudflare,
   Proofy, paid model, subscription, production access or DNS configuration changed.
   Live deployment and original issue acceptance remain explicitly open.
+
+- Codex integration review retained the initial failed prosecution and passed
+  63-test HULL receipt. Corrected full-diff work bounds, strict JSON evidence
+  classification with duplicate-key rejection, executable template/regex
+  handling, complete skill discovery, and bounded multi-batch billing drain.
+  Added regression cases; no comparison budget, legacy allowance or merge gate
+  was relaxed. Continued source-head validation is recorded with PR #18348.

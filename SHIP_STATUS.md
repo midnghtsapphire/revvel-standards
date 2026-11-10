@@ -1,5 +1,19 @@
 # Ship Status
 
+## Shipping continuation observation — 2026-11-10
+
+- revvel-standards PR #18347 and oaudrey PR #13: merged.
+- revvel-standards PR #18348 and GIT-FLEET PR #2: implementation pushed;
+  final integration/review in progress, not a live product claim.
+- Original #18330–#18343: acceptance remains open as enumerated in
+  wr/summaries/owned-shipping-continuation-2026-11-10.md.
+- Four Railway releases: staged; automatic approval review rejected apply
+  despite explicit owner approval. Existing production service preserved.
+- Dependabot #18344 and PostCSS cleanup #18345: already closed by prior triage.
+
+Historical workstream tables below remain visible and are not silently updated
+from this task's metadata-only observations.
+
 > Machine-readable tracking of every active workstream with terminal states.
 > Updated by agents before declaring done. Nothing sits in limbo.
 

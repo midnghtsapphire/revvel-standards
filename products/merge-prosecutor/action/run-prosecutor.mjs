@@ -265,18 +265,48 @@ function distinctAssertionCases(linesA, linesB) {
   return a.length && b.length && !a.some(flag => b.includes(flag));
 }
 
-function templateStateAfter(line, insideTemplate) {
-  let quote = null;
-  for (let i = 0; i < line.length; i++) {
-    const character = line[i];
-    if (character === '\\') { i++; continue; }
-    if (insideTemplate) { if (character === '`') insideTemplate = false; continue; }
-    if (quote) { if (character === quote) quote = null; continue; }
-    if (character === '"' || character === "'") { quote = character; continue; }
-    if (character === '/' && line[i + 1] === '/') break;
-    if (character === '`') insideTemplate = true;
+// Retired 2026-11-10, #18313: this boolean lexer hid executable interpolation
+// and tagged-template bodies. Keep its original text visible for review.
+// function templateStateAfter(line, insideTemplate) {
+//   let quote = null;
+//   for (let i = 0; i < line.length; i++) {
+//     const character = line[i];
+//     if (character === '\\') { i++; continue; }
+//     if (insideTemplate) { if (character === '`') insideTemplate = false; continue; }
+//     if (quote) { if (character === quote) quote = null; continue; }
+//     if (character === '"' || character === "'") { quote = character; continue; }
+//     if (character === '/' && line[i + 1] === '/') break;
+//     if (character === '`') insideTemplate = true;
+//   }
+//   return insideTemplate;
+// }
+
+function plainTemplateDataLines(lines) {
+  const data = new Set();
+  for (let start = 0; start < lines.length; start++) {
+    // Prove the entire literal is untagged and interpolation-free before
+    // exempting any line. Unknown syntax remains under executable analysis.
+    const opening = lines[start].match(/^\+\s*(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*`/);
+    if (!opening) continue;
+    let safe = true;
+    let closed = false;
+    let end = start;
+    for (; end < lines.length && lines[end].startsWith('+') && !lines[end].startsWith('+++'); end++) {
+      const line = lines[end];
+      for (let i = end === start ? opening[0].length : 1; i < line.length; i++) {
+        if (line[i] === '\\') { i++; continue; }
+        if (line[i] === '$' && line[i + 1] === '{') safe = false;
+        if (line[i] === '`') {
+          closed = true;
+          if (!/^\s*;?\s*$/.test(line.slice(i + 1))) safe = false;
+          break;
+        }
+      }
+      if (closed) break;
+    }
+    if (safe && closed && end > start) for (let index = start; index <= end; index++) data.add(index);
   }
-  return insideTemplate;
+  return data;
 }
 
 /**
@@ -332,28 +362,83 @@ function findConsecutiveKeepBoth(additions, start, budget) {
   return null;
 }
 
+function validateJSONKeys(document, file) {
+  const containers = [];
+  for (let i = 0; i < document.length; i++) {
+    const character = document[i];
+    if (character === '{') containers.push(new Set());
+    else if (character === '[') containers.push(null);
+    else if (character === '}' || character === ']') containers.pop();
+    else if (character === '"') {
+      const start = i++;
+      while (i < document.length) {
+        if (document[i] === '\\') i += 2;
+        else if (document[i] === '"') break;
+        else i++;
+      }
+      let next = i + 1;
+      while (/\s/.test(document[next] || '') && next < document.length) next++;
+      if (document[next] === ':') {
+        const key = JSON.parse(document.slice(start, i + 1));
+        const keys = containers.at(-1);
+        if (keys.has(key)) throw new Error(`Duplicate JSON object key ${JSON.stringify(key)} in ${file}`);
+        keys.add(key);
+      }
+    }
+  }
+}
+
+function completeJSONDataFiles(diffText) {
+  const data = new Set();
+  for (const section of diffText.split(/(?=^diff --git )/m)) {
+    const file = section.match(/^\+\+\+ b\/(.+)$/m)?.[1];
+    const lines = section.split('\n');
+    const hunks = lines.filter(line => line.startsWith('@@ '));
+    // Only complete new-file content can be classified from a patch. Partial
+    // hunks never establish a document's language or bypass code analysis.
+    const header = hunks.length === 1 && hunks[0].match(/^@@ -0,0 \+1(?:,(\d+))? @@/);
+    if (!file || !header) continue;
+    const body = lines.slice(lines.indexOf(hunks[0]) + 1).filter(line => line.startsWith('+')).map(line => line.slice(1));
+    if (body.length !== Number(header[1] || 1)) continue;
+    const document = body.join('\n');
+    if (!/^\s*[\[{]/.test(document)) continue;
+    try { JSON.parse(document); } catch { continue; }
+    // JSON records are data, regardless of file path/extension. Key collisions
+    // are a separate exact parser error, not a fuzzy executable duplicate.
+    validateJSONKeys(document, file);
+    data.add(file);
+  }
+  return data;
+}
+
 export function detectDuplicatedBlocks(diffText) {
   const additions = [];
   const lines = diffText.split('\n');
+  const jsonDataFiles = completeJSONDataFiles(diffText);
+  const templateDataLines = plainTemplateDataLines(lines);
   let currentFile = '';
   let segment = 0;
   let blockComment = false;
-  let multilineTemplate = false;
+  // Historical state: let multilineTemplate = false;
 
-  for (const line of lines) {
+  // Historical loop: for (const line of lines) {
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+    const line = lines[lineIndex];
     if (line.startsWith('+++ b/')) {
       currentFile = line.slice(6);
       segment++;
       blockComment = false;
-      multilineTemplate = false;
+      // Historical reset: multilineTemplate = false;
     } else if (line.startsWith('+') && !line.startsWith('+++')) {
+      if (jsonDataFiles.has(currentFile)) continue;
       const content = line.slice(1).trim();
       // Template fixture payloads are string data, including deliberately bad
       // merges. Do not interpret that data as executing source. Single-line
       // templates stay in the source comparison; no test/file path is exempt.
-      const wasTemplate = multilineTemplate;
-      if (/\.[cm]?[jt]sx?$/.test(currentFile)) multilineTemplate = templateStateAfter(content, multilineTemplate);
-      if (wasTemplate || multilineTemplate) { segment++; continue; }
+      // const wasTemplate = multilineTemplate;
+      // if (/\.[cm]?[jt]sx?$/.test(currentFile)) multilineTemplate = templateStateAfter(content, multilineTemplate);
+      // if (wasTemplate || multilineTemplate) { segment++; continue; }
+      if (/\.[cm]?[jt]sx?$/.test(currentFile) && templateDataLines.has(lineIndex)) { segment++; continue; }
       // 2026-11-10 #18313: owner-retained commented history is not executing
       // twice. Keep it in source but exclude full comment lines, breaking the
       // candidate segment so active copies across an archive never align.

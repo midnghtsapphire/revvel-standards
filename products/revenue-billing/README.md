@@ -86,7 +86,7 @@ operator-owned HULL policy for a receiver run. Offline checks inherit no keys.
 
 ```sh
 node products/revenue-billing/webhook-server.mjs
-# One bounded batch of already-verified pending events, without an HTTP listener:
+# Up to 50 batches of verified due events, without an HTTP listener:
 node products/revenue-billing/webhook-server.mjs --drain
 ```
 
@@ -113,7 +113,11 @@ events are recorded as ignored. Observations and processed status commit in
 one transaction; a crash during processing leaves the event pending, without
 partial snapshots. Failed reads retain pending work with persisted exponential
 backoff, capped at five minutes; periodic processing and `--drain` resume it.
-Drain exits nonzero while pending events remain, including backoff-delayed ones.
+Drain processes up to 50 batches of 20 due events, preserving retry backoff.
+Its JSON status and exit code distinguish complete (0), retry_pending (1: failed
+work remains, including backoff-delayed events), and bounded_continuation (2:
+healthy backlog remains at the batch limit; rerun the same command).
+It never waits for retry delays.
 
 Keep the database, WAL and SHM together on a private persistent local volume;
 do not include them in product exports, source control, logs or public backups.

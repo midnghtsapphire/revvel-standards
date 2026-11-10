@@ -35,6 +35,24 @@ test('bounded comparison aborts excessive work explicitly and skips impossible l
   assert.throws(() => boundedLevenshtein('a'.repeat(1000), 'b'.repeat(1000), 200, { remaining: 10 }), /work budget exceeded/);
 });
 
+function newFileDiff(path, text) {
+  const lines = text.split('\n');
+  return `diff --git a/${path} b/${path}\n--- /dev/null\n+++ b/${path}\n@@ -0,0 +1,${lines.length} @@\n` + lines.map(line => '+' + line).join('\n');
+}
+
+test('whole strict JSON records are data independent of path, while code in .json remains checked', () => {
+  const records = Array.from({ length: 96 }, (_, index) => ({ path: `standards/${index}.md`, bytes: 4558, sha256: String(index).padStart(64, '0'), status: 'read-complete' }));
+  assert.deepEqual(detectDuplicatedBlocks(newFileDiff('arbitrary-runtime.js', JSON.stringify(records, null, 2))), []);
+  const code = 'executeTask(context);\nrecordTaskResult(context);\nexecuteTask(context);\nrecordTaskResult(context);';
+  assert.ok(detectDuplicatedBlocks(newFileDiff('records.json', code)).length > 0);
+});
+
+test('strict JSON duplicate keys fail exactly including escaped aliases, distinct object keys remain valid', () => {
+  assert.throws(() => detectDuplicatedBlocks(newFileDiff('records.json', '{"key":1,"key":2}')), /Duplicate JSON object key/);
+  assert.throws(() => detectDuplicatedBlocks(newFileDiff('records.json', '{"key":1,"\\u006bey":2}')), /Duplicate JSON object key/);
+  assert.deepEqual(detectDuplicatedBlocks(newFileDiff('records.json', JSON.stringify([{ key: 'brace } and escaped " quote' }, { key: 2 }]))), []);
+});
+
 test('retained comments, unchanged context and separate hunks do not create adjacent copies', () => {
   const block = '+executeTask(context);\n+recordTaskResult(context);\n';
   for (const separator of [' unchanged_source();\n', '@@ -30,0 +35,2 @@\n', '+// retired historical implementation\n']) {
@@ -49,6 +67,22 @@ test('multiline JavaScript fixture content remains data while actual following c
   const fixture = '+++ b/arbitrary-source.js\n+const fixture = `\n' + block + block + '+`;\n';
   assert.deepEqual(detectDuplicatedBlocks(fixture), []);
   assert.ok(detectDuplicatedBlocks(fixture + block + block).length > 0);
+});
+
+test('template interpolations and tagged templates remain executable duplicate candidates', () => {
+  const interpolation = '+${executeTask(context)}\n+${recordTaskResult(context)}\n';
+  const diff = '+++ b/active.js\n+const results = `\n' + interpolation + interpolation + '+`;\n';
+  assert.ok(detectDuplicatedBlocks(diff).length > 0, 'all four interpolation calls execute');
+  const tagged = '+++ b/active.js\n+const results = executeTemplate`\n' + interpolation + interpolation + '+`;\n';
+  assert.ok(detectDuplicatedBlocks(tagged).length > 0, 'tagged templates are never classified as inert data');
+  const block = '+executeTask(context);\n+recordTaskResult(context);\n';
+  assert.deepEqual(detectDuplicatedBlocks('+++ b/active.js\n+const fixture = `\n' + block + block + '+`;\n'), []);
+});
+
+test('odd backticks in a regex literal cannot hide following executable duplicates', () => {
+  const diff = '+++ b/active.js\n+const CODE_BLOCK_RE = /```[^`]*```/g;\n' +
+    '+executeTask(context);\n+recordTaskResult(context);\n+executeTask(context);\n+recordTaskResult(context);\n';
+  assert.ok(detectDuplicatedBlocks(diff).length > 0);
 });
 
 test('distinct state assertions and CLI exception cases are not keep-both application logic', () => {

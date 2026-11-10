@@ -97,6 +97,23 @@ export function createLagoReceiver({ inbox, lago, verification, maxBodyBytes = 6
   };
 }
 
+// Bound draining independently of queue growth and persisted retry delays.
+export async function drainPending(app, inbox, { maxBatches = 50 } = {}) {
+  if (!Number.isSafeInteger(maxBatches) || maxBatches < 1 || maxBatches > 500) throw new Error('Drain batch limit must be 1..500');
+  let processed = 0, failed = 0, batches = 0;
+  while (batches < maxBatches && inbox.pending(1).length) {
+    const result = await app.processPending();
+    batches++;
+    processed += result.processed;
+    failed += result.failed;
+    if (!result.processed && !result.failed) break;
+  }
+  const pending = inbox.counts().find(row => row.status === 'pending')?.count || 0;
+  const retryPending = inbox.hasFailures();
+  const status = retryPending ? 'retry_pending' : pending ? 'bounded_continuation' : 'complete';
+  return { processed, failed, pending, batches, status, exitCode: retryPending ? 1 : pending ? 2 : 0, publicCheckout: false };
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const verification = { algorithm: process.env.LAGO_WEBHOOK_ALGORITHM, hmacKey: process.env.LAGO_WEBHOOK_HMAC_KEY, issuer: process.env.LAGO_WEBHOOK_ISSUER };
@@ -105,10 +122,16 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     const drain = process.argv.includes('--drain');
     const app = createLagoReceiver({ inbox, lago: new LagoClient(), verification, autoProcess: !drain });
     if (drain) {
-      const result = await app.processPending();
-      const pending = inbox.counts().find(row => row.status === 'pending')?.count || 0;
-      console.log(JSON.stringify({ ...result, pending, publicCheckout: false }));
-      process.exitCode = pending ? 1 : 0;
+      // REVVEL-DISABLED | AGENT: codex-revenue | MODEL: platform-selected | WR: #18333 | DATE: 2026-11-10 | STATUS: REPLACED
+      // REASON: one batch mislabeled healthy >20-event backlogs as failures.
+      // const result = await app.processPending();
+      // const pending = inbox.counts().find(row => row.status === 'pending')?.count || 0;
+      // console.log(JSON.stringify({ ...result, pending, publicCheckout: false }));
+      // process.exitCode = pending ? 1 : 0;
+      // REVVEL-DISABLED-END
+      const result = await drainPending(app, inbox);
+      console.log(JSON.stringify(result));
+      process.exitCode = result.exitCode;
       await app.close();
     } else {
     const port = Number(process.env.LAGO_WEBHOOK_PORT || 8090);
