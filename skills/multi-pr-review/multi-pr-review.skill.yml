@@ -1,0 +1,42 @@
+name: multi-pr-review
+title: "Multi-pass pull request review"
+version: "1.0.0"
+description: "Review one pull request in three passes and post a signed summary. The verdict does not merge."
+
+metadata:
+  author: "TriageChief"
+  category: "Developer Workflow"
+  tags: ["github", "multi-pr-review"]
+  created_at: "2026-11-11"
+  updated_at: "2026-11-11"
+  license: "Apache-2.0"
+  copyright: "Copyright (c) Dyad contributors"
+  source: "https://github.com/dyad-sh/dyad/tree/main/.claude/skills/multi-pr-review"
+
+triggers:
+  - "multi-pr review"
+  - "review this pull request"
+  - "correctness pass"
+  - "code health"
+  - "review verdict"
+
+dependencies:
+  skills: ["github-read-write-admin"]
+  tools: ["gh"]
+  pip_packages: []
+
+documentation:
+  skill_file: "docs/skills/multi-pr-review/SKILL.md"
+  loader: "skills/multi-pr-review/SKILL.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load docs/skills/multi-pr-review/SKILL.md and follow it.
+    That file is the canonical playbook. This YAML is discovery metadata.
+    Sign every write as **BotName** at the start and — BotName at the end.
+    Do not delete, force-push, or print a secret.
+    CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
+    Merge only when an assignee is set, the work is done, the pull request is not a draft,
+    required checks are green on the head SHA, and you are not the author.

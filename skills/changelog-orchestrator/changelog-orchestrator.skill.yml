@@ -1,0 +1,41 @@
+name: changelog-orchestrator
+title: "Changelog orchestrator"
+version: "1.0.0"
+description: "Append changelog bullets from git history and merged pull requests without rewriting older bullets."
+
+metadata:
+  author: "TriageChief"
+  category: "Developer Workflow"
+  tags: ["github", "changelog-orchestrator"]
+  created_at: "2026-11-11"
+  updated_at: "2026-11-11"
+  license: "MIT"
+  copyright: "Copyright (c) 2025 Jeremy Longshore"
+  source: "https://github.com/jeremylongshore/claude-code-plugins-plus-skills/tree/main/plugins/automation/mattyp-changelog/skills/changelog-orchestrator"
+
+triggers:
+  - "changelog"
+  - "release notes"
+  - "append CHANGELOG"
+  - "weekly notes"
+
+dependencies:
+  skills: ["github-read-write-admin"]
+  tools: ["git", "gh"]
+  pip_packages: []
+
+documentation:
+  skill_file: "docs/skills/changelog-orchestrator/SKILL.md"
+  loader: "skills/changelog-orchestrator/SKILL.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load docs/skills/changelog-orchestrator/SKILL.md and follow it.
+    That file is the canonical playbook. This YAML is discovery metadata.
+    Sign every write as **BotName** at the start and — BotName at the end.
+    Do not delete, force-push, or print a secret.
+    CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
+    Merge only when an assignee is set, the work is done, the pull request is not a draft,
+    required checks are green on the head SHA, and you are not the author.

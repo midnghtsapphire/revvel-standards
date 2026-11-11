@@ -1,0 +1,42 @@
+name: tdd-workflow
+title: "Test-first workflow"
+version: "1.0.0"
+description: "Write a failing test, then the code that makes it pass, in the runner the repo already uses."
+
+metadata:
+  author: "TriageChief"
+  category: "Developer Workflow"
+  tags: ["github", "tdd-workflow"]
+  created_at: "2026-11-11"
+  updated_at: "2026-11-11"
+  license: "MIT"
+  copyright: "Copyright (c) 2025 cfrs2005"
+  source: "https://github.com/cfrs2005/claude-init/tree/main/templates/.claude/skills/tdd-workflow"
+
+triggers:
+  - "tdd"
+  - "test first"
+  - "failing test"
+  - "reproduce the bug"
+  - "node:test"
+
+dependencies:
+  skills: ["github-read-write-admin"]
+  tools: ["node"]
+  pip_packages: []
+
+documentation:
+  skill_file: "docs/skills/tdd-workflow/SKILL.md"
+  loader: "skills/tdd-workflow/SKILL.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load docs/skills/tdd-workflow/SKILL.md and follow it.
+    That file is the canonical playbook. This YAML is discovery metadata.
+    Sign every write as **BotName** at the start and — BotName at the end.
+    Do not delete, force-push, or print a secret.
+    CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
+    Merge only when an assignee is set, the work is done, the pull request is not a draft,
+    required checks are green on the head SHA, and you are not the author.

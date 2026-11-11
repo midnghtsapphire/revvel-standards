@@ -1,0 +1,41 @@
+name: sast-configuration
+title: "SAST configuration"
+version: "1.0.0"
+description: "Run Semgrep on the paths you changed and suppress a finding only with the rule id on the adjacent line."
+
+metadata:
+  author: "TriageChief"
+  category: "Developer Workflow"
+  tags: ["github", "sast-configuration"]
+  created_at: "2026-11-11"
+  updated_at: "2026-11-11"
+  license: "MIT"
+  copyright: "Copyright (c) 2024 Seth Hobson"
+  source: "https://github.com/wshobson/agents/tree/main/plugins/security-scanning/skills/sast-configuration"
+
+triggers:
+  - "semgrep"
+  - "sast"
+  - "static analysis"
+  - "security scan"
+
+dependencies:
+  skills: ["github-read-write-admin"]
+  tools: ["semgrep"]
+  pip_packages: []
+
+documentation:
+  skill_file: "docs/skills/sast-configuration/SKILL.md"
+  loader: "skills/sast-configuration/SKILL.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load docs/skills/sast-configuration/SKILL.md and follow it.
+    That file is the canonical playbook. This YAML is discovery metadata.
+    Sign every write as **BotName** at the start and — BotName at the end.
+    Do not delete, force-push, or print a secret.
+    CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
+    Merge only when an assignee is set, the work is done, the pull request is not a draft,
+    required checks are green on the head SHA, and you are not the author.

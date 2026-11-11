@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 2026-11-11
 
 - 2026-11-11 — TriageChief — `docs/skills/github-read-write-admin/SKILL.md`: in-repo GitHub read, write, and admin playbook for cloud agents, Cursor IDE agents, and CI bots (`git`, `gh`, REST and GraphQL), with `self-check.sh`. Indexed from `docs/skills/README.md`, `skills/REGISTRY.md`, and `skills/SKILLS_INDEX.yml`. Vault loader: `skills/github-read-write-admin/`.
+- 2026-11-11 — TriageChief — `docs/skills/`: fourteen GitHub-relevant agent skills (gh-issue-triage, resolve-conflicts, git-advanced-workflows, changelog-orchestrator, pr-review-reply, multi-pr-review, octocode-pr-review, pr-create-from-body, deployment-pipeline-design, sast-configuration, lint-and-validate, tdd-workflow, karpathy-guidelines, agentic-eval). Each has a vault loader under `skills/<name>/`. License recorded in `docs/skills/README.md`.
 
 ## 2026-11-04
 

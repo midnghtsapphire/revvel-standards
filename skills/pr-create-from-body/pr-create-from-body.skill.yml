@@ -1,0 +1,40 @@
+name: pr-create-from-body
+title: "Create a pull request from a body file"
+version: "1.0.0"
+description: "Open a pull request whose body comes from a local Markdown file, signed, into the daily branch."
+
+metadata:
+  author: "TriageChief"
+  category: "Developer Workflow"
+  tags: ["github", "pr-create-from-body"]
+  created_at: "2026-11-11"
+  updated_at: "2026-11-11"
+  license: "MIT"
+  copyright: "Copyright (c) 2023 Bytedance, Inc. and its affiliates."
+  source: "https://github.com/VisActor/VChart/tree/develop/.trae/skills/pr-create-from-body"
+
+triggers:
+  - "create pull request from body file"
+  - "body-file"
+  - "open a pr from markdown"
+
+dependencies:
+  skills: ["github-read-write-admin"]
+  tools: ["git", "gh"]
+  pip_packages: []
+
+documentation:
+  skill_file: "docs/skills/pr-create-from-body/SKILL.md"
+  loader: "skills/pr-create-from-body/SKILL.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load docs/skills/pr-create-from-body/SKILL.md and follow it.
+    That file is the canonical playbook. This YAML is discovery metadata.
+    Sign every write as **BotName** at the start and — BotName at the end.
+    Do not delete, force-push, or print a secret.
+    CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
+    Merge only when an assignee is set, the work is done, the pull request is not a draft,
+    required checks are green on the head SHA, and you are not the author.

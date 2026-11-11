@@ -1,0 +1,41 @@
+name: pr-review-reply
+title: "Pull request review reply"
+version: "1.0.0"
+description: "Reply to pull request review comments and resolve a thread only after a signed reply."
+
+metadata:
+  author: "TriageChief"
+  category: "Developer Workflow"
+  tags: ["github", "pr-review-reply"]
+  created_at: "2026-11-11"
+  updated_at: "2026-11-11"
+  license: "Apache-2.0"
+  copyright: "Copyright 2025 Stacklok, Inc."
+  source: "https://github.com/stacklok/toolhive/tree/main/.claude/skills/pr-review-reply"
+
+triggers:
+  - "reply to review"
+  - "resolve review thread"
+  - "review comment"
+  - "fixed in SHA"
+
+dependencies:
+  skills: ["github-read-write-admin"]
+  tools: ["gh"]
+  pip_packages: []
+
+documentation:
+  skill_file: "docs/skills/pr-review-reply/SKILL.md"
+  loader: "skills/pr-review-reply/SKILL.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load docs/skills/pr-review-reply/SKILL.md and follow it.
+    That file is the canonical playbook. This YAML is discovery metadata.
+    Sign every write as **BotName** at the start and — BotName at the end.
+    Do not delete, force-push, or print a secret.
+    CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
+    Merge only when an assignee is set, the work is done, the pull request is not a draft,
+    required checks are green on the head SHA, and you are not the author.

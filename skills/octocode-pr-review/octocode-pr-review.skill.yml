@@ -1,0 +1,41 @@
+name: octocode-pr-review
+title: "Pull request review with proof"
+version: "1.0.0"
+description: "Review a pull request or local diff with a stated scope and a proof line for every finding."
+
+metadata:
+  author: "TriageChief"
+  category: "Developer Workflow"
+  tags: ["github", "octocode-pr-review"]
+  created_at: "2026-11-11"
+  updated_at: "2026-11-11"
+  license: "MIT"
+  copyright: "Copyright (c) 2026 Guy Bary"
+  source: "https://github.com/bgauryy/octocode-mcp/tree/main/packages/octocode-cli/skills/octocode-pr-review"
+
+triggers:
+  - "review the pull request"
+  - "safe to merge"
+  - "review my diff"
+  - "proof the finding"
+
+dependencies:
+  skills: ["github-read-write-admin"]
+  tools: ["git", "gh"]
+  pip_packages: []
+
+documentation:
+  skill_file: "docs/skills/octocode-pr-review/SKILL.md"
+  loader: "skills/octocode-pr-review/SKILL.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load docs/skills/octocode-pr-review/SKILL.md and follow it.
+    That file is the canonical playbook. This YAML is discovery metadata.
+    Sign every write as **BotName** at the start and — BotName at the end.
+    Do not delete, force-push, or print a secret.
+    CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
+    Merge only when an assignee is set, the work is done, the pull request is not a draft,
+    required checks are green on the head SHA, and you are not the author.

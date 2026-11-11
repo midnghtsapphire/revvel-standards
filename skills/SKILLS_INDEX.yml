@@ -1454,3 +1454,236 @@ skills:
       - "actions secret"
       - "webhook"
       - "discussion 18238"
+
+  - name: gh-issue-triage
+    title: "GitHub issue triage"
+    version: "1.0.0"
+    path: "docs/skills/gh-issue-triage/"
+    skill_file: "docs/skills/gh-issue-triage/SKILL.md"
+    loader: "skills/gh-issue-triage/SKILL.md"
+    config: "skills/gh-issue-triage/gh-issue-triage.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "MIT"
+    triggers:
+      - "triage this issue"
+      - "label this issue"
+      - "priority"
+      - "duplicate issue"
+      - "needs-human"
+      - "labels-allowlist"
+
+  - name: resolve-conflicts
+    title: "Resolve merge conflicts"
+    version: "1.0.0"
+    path: "docs/skills/resolve-conflicts/"
+    skill_file: "docs/skills/resolve-conflicts/SKILL.md"
+    loader: "skills/resolve-conflicts/SKILL.md"
+    config: "skills/resolve-conflicts/resolve-conflicts.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "Apache-2.0"
+    triggers:
+      - "merge conflict"
+      - "unmerged paths"
+      - "union merge"
+      - "conflict marker"
+
+  - name: git-advanced-workflows
+    title: "Git advanced workflows"
+    version: "1.0.0"
+    path: "docs/skills/git-advanced-workflows/"
+    skill_file: "docs/skills/git-advanced-workflows/SKILL.md"
+    loader: "skills/git-advanced-workflows/SKILL.md"
+    config: "skills/git-advanced-workflows/git-advanced-workflows.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "MIT"
+    triggers:
+      - "rebase unpushed"
+      - "git bisect"
+      - "git worktree"
+      - "git reflog"
+      - "recover a local commit"
+
+  - name: changelog-orchestrator
+    title: "Changelog orchestrator"
+    version: "1.0.0"
+    path: "docs/skills/changelog-orchestrator/"
+    skill_file: "docs/skills/changelog-orchestrator/SKILL.md"
+    loader: "skills/changelog-orchestrator/SKILL.md"
+    config: "skills/changelog-orchestrator/changelog-orchestrator.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "MIT"
+    triggers:
+      - "changelog"
+      - "release notes"
+      - "append CHANGELOG"
+      - "weekly notes"
+
+  - name: pr-review-reply
+    title: "Pull request review reply"
+    version: "1.0.0"
+    path: "docs/skills/pr-review-reply/"
+    skill_file: "docs/skills/pr-review-reply/SKILL.md"
+    loader: "skills/pr-review-reply/SKILL.md"
+    config: "skills/pr-review-reply/pr-review-reply.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "Apache-2.0"
+    triggers:
+      - "reply to review"
+      - "resolve review thread"
+      - "review comment"
+      - "fixed in SHA"
+
+  - name: multi-pr-review
+    title: "Multi-pass pull request review"
+    version: "1.0.0"
+    path: "docs/skills/multi-pr-review/"
+    skill_file: "docs/skills/multi-pr-review/SKILL.md"
+    loader: "skills/multi-pr-review/SKILL.md"
+    config: "skills/multi-pr-review/multi-pr-review.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "Apache-2.0"
+    triggers:
+      - "multi-pr review"
+      - "review this pull request"
+      - "correctness pass"
+      - "code health"
+      - "review verdict"
+
+  - name: octocode-pr-review
+    title: "Pull request review with proof"
+    version: "1.0.0"
+    path: "docs/skills/octocode-pr-review/"
+    skill_file: "docs/skills/octocode-pr-review/SKILL.md"
+    loader: "skills/octocode-pr-review/SKILL.md"
+    config: "skills/octocode-pr-review/octocode-pr-review.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "MIT"
+    triggers:
+      - "review the pull request"
+      - "safe to merge"
+      - "review my diff"
+      - "proof the finding"
+
+  - name: pr-create-from-body
+    title: "Create a pull request from a body file"
+    version: "1.0.0"
+    path: "docs/skills/pr-create-from-body/"
+    skill_file: "docs/skills/pr-create-from-body/SKILL.md"
+    loader: "skills/pr-create-from-body/SKILL.md"
+    config: "skills/pr-create-from-body/pr-create-from-body.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "MIT"
+    triggers:
+      - "create pull request from body file"
+      - "body-file"
+      - "open a pr from markdown"
+
+  - name: deployment-pipeline-design
+    title: "Deployment pipeline design"
+    version: "1.0.0"
+    path: "docs/skills/deployment-pipeline-design/"
+    skill_file: "docs/skills/deployment-pipeline-design/SKILL.md"
+    loader: "skills/deployment-pipeline-design/SKILL.md"
+    config: "skills/deployment-pipeline-design/deployment-pipeline-design.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "MIT"
+    triggers:
+      - "deployment pipeline"
+      - "canary"
+      - "rollback plan"
+      - "promotion gate"
+      - "health check"
+
+  - name: sast-configuration
+    title: "SAST configuration"
+    version: "1.0.0"
+    path: "docs/skills/sast-configuration/"
+    skill_file: "docs/skills/sast-configuration/SKILL.md"
+    loader: "skills/sast-configuration/SKILL.md"
+    config: "skills/sast-configuration/sast-configuration.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "MIT"
+    triggers:
+      - "semgrep"
+      - "sast"
+      - "static analysis"
+      - "security scan"
+
+  - name: lint-and-validate
+    title: "Lint and validate"
+    version: "1.0.0"
+    path: "docs/skills/lint-and-validate/"
+    skill_file: "docs/skills/lint-and-validate/SKILL.md"
+    loader: "skills/lint-and-validate/SKILL.md"
+    config: "skills/lint-and-validate/lint-and-validate.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "MIT"
+    triggers:
+      - "lint"
+      - "validate"
+      - "typecheck"
+      - "markdownlint"
+      - "npm test"
+      - "flake8 baseline"
+
+  - name: tdd-workflow
+    title: "Test-first workflow"
+    version: "1.0.0"
+    path: "docs/skills/tdd-workflow/"
+    skill_file: "docs/skills/tdd-workflow/SKILL.md"
+    loader: "skills/tdd-workflow/SKILL.md"
+    config: "skills/tdd-workflow/tdd-workflow.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "MIT"
+    triggers:
+      - "tdd"
+      - "test first"
+      - "failing test"
+      - "reproduce the bug"
+      - "node:test"
+
+  - name: karpathy-guidelines
+    title: "Karpathy guidelines"
+    version: "1.0.0"
+    path: "docs/skills/karpathy-guidelines/"
+    skill_file: "docs/skills/karpathy-guidelines/SKILL.md"
+    loader: "skills/karpathy-guidelines/SKILL.md"
+    config: "skills/karpathy-guidelines/karpathy-guidelines.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "MIT"
+    triggers:
+      - "karpathy"
+      - "surgical edit"
+      - "simplicity"
+      - "success criteria"
+      - "do not rewrite"
+
+  - name: agentic-eval
+    title: "Agentic evaluation"
+    version: "1.0.0"
+    path: "docs/skills/agentic-eval/"
+    skill_file: "docs/skills/agentic-eval/SKILL.md"
+    loader: "skills/agentic-eval/SKILL.md"
+    config: "skills/agentic-eval/agentic-eval.skill.yml"
+    category: "Developer Workflow"
+    access: all
+    license: "MIT"
+    triggers:
+      - "agentic eval"
+      - "rubric"
+      - "self-check loop"
+      - "evaluator"
+      - "refine until the test passes"
