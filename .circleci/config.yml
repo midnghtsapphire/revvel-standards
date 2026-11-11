@@ -332,6 +332,10 @@ workflows:
       # in pr-workflow, so opening the PR does not create an app. They run
       # only on main, and do-app-update.sh still no-ops without
       # DIGITALOCEAN_ACCESS_TOKEN. Added 2026-11-11 by MarketShipper.
+      # deploy_on_push: true
+      # Needs Audrey's yes. The product specs on #18366, #18368, and #18369
+      # set deploy_on_push to false so those merges do not auto-deploy.
+      # Do not flip it here until she says yes. Do not mark this draft ready.
       - affiliate-hub-do-deploy:
           filters:
             branches:
