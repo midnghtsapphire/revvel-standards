@@ -313,7 +313,7 @@ Exposes Chrome DevTools Protocol (CDP) capabilities as MCP tools. AI agents can 
 
 ## DigitalOcean action-gateway (remote HTTP)
 
-Claude and Codex both register one DigitalOcean action-gateway endpoint. The work requests are [#18288](https://github.com/midnghtsapphire/revvel-standards/issues/18288) (Claude) and [#18290](https://github.com/midnghtsapphire/revvel-standards/issues/18290) (Codex). The endpoint URL is already public on those issues. It is not a token. Nothing in git holds a key, a bearer token, or an `Authorization` header. Claude auth is `claude mcp login action-gateway` on the operator machine. Codex auth is the DigitalOcean sign-in that operator runs on that same machine. CI does not run either command.
+Claude and Codex both register one DigitalOcean action-gateway endpoint. The work requests are [#18288](https://github.com/midnghtsapphire/revvel-standards/issues/18288) (Claude) and [#18290](https://github.com/midnghtsapphire/revvel-standards/issues/18290) (Codex). The endpoint URL is already public on those issues. It is not a token. Nothing in git holds a key, a bearer token, or an `Authorization` header. Claude auth is `claude mcp login action-gateway` on the operator machine. Codex auth is the DigitalOcean sign-in that operator runs on that same machine, started with `codex mcp login action-gateway`. Adding the URL does not start that OAuth login. CI does not run either command.
 
 | Client | Checked-in config | Shape |
 |---|---|---|
@@ -343,10 +343,11 @@ claude mcp login action-gateway
 url = "https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"
 ```
 
-Operator command for Codex:
+Operator commands for Codex. `codex mcp add` stores the URL. `codex mcp login` is the separate OAuth step:
 
 ```bash
 codex mcp add action-gateway --url "https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"
+codex mcp login action-gateway
 ```
 
 This endpoint stays out of `templates/mcp/mcp.*.json`. Those files are the stdio profiles `scripts/setup-mcp.sh` copies onto a new project, and a copy would publish this repository's DigitalOcean endpoint into unrelated projects. The registration for this repository is the root `.mcp.json` entry and `.codex/config.toml`. The same decision is recorded in `docs/Master_Inventory/MCP_STANDARD.md` section 14.

@@ -1184,8 +1184,9 @@ Codex:
 
 ```bash
 codex mcp add action-gateway --url "https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"
+codex mcp login action-gateway
 ```
 
-No token, key, or `.env` entry belongs with this server. The URL is the endpoint id from the work requests, not a secret. `claude mcp login action-gateway` is the auth step.
+No token, key, or `.env` entry belongs with this server. The URL is the endpoint id from the work requests, not a secret. `claude mcp login action-gateway` is the Claude auth step. `codex mcp login action-gateway` is the Codex OAuth step. Adding the URL does not start that login.
 
 Section 13's template update does not apply here. `templates/mcp/mcp.*.json` are the stdio profiles that `scripts/setup-mcp.sh` copies over a project's `.mcp.json`. Putting this URL in those profiles would publish this repository's DigitalOcean endpoint into every new project. The checked-in registration is the root `.mcp.json` and `.codex/config.toml` only. Removing either file drops the client registration the two work requests asked for.

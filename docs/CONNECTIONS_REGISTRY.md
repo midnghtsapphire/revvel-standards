@@ -26,7 +26,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `mcp-airtable` (Airtable MCP) | ✅ verified | oauth | bases, tables, records | airtable | — | — |
 | `mcp-canva` (Canva MCP) | ✅ verified | oauth | design, export, brand-templates | canva | — | — |
 | `mcp-clickup` (ClickUp MCP) | ✅ verified | oauth | tasks, docs, time-tracking | clickup | — | — |
-| `mcp-action-gateway` (DigitalOcean action-gateway MCP) | ✅ verified | oauth | digitalocean-actions | digitalocean | .mcp.json, .codex/config.toml | Public HTTP endpoint shared by Claude (type http in .mcp.json) and Codex (url in .codex/config.toml). WRs 18288 and 18290. No token in git. Claude auth is the operator command claude mcp login action-gateway. Endpoint <https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a> |
+| `mcp-action-gateway` (DigitalOcean action-gateway MCP) | ✅ verified | oauth | digitalocean-actions | digitalocean | .mcp.json, .codex/config.toml | Public HTTP endpoint shared by Claude (type http in .mcp.json) and Codex (url in .codex/config.toml). WRs 18288 and 18290. No token in git. Claude auth is the operator command claude mcp login action-gateway. Codex OAuth is the operator command codex mcp login action-gateway. Adding the URL does not start that login. Endpoint <https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a> |
 | `mcp-figma` (Figma MCP) | ✅ verified | oauth | design-read, design-write, code-connect | figma | — | — |
 | `mcp-github` (GitHub MCP) | ✅ verified | oauth | pr, issues, ci, code-search, releases, merge | github | — | — |
 | `mcp-google` (Google Workspace MCP (Gmail / Calendar / Drive)) | ✅ verified | oauth | email, calendar, files | google | — | — |

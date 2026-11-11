@@ -17,6 +17,7 @@ const ENDPOINT = 'https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b
 const CLAUDE_ADD = 'claude mcp add --transport http action-gateway "' + ENDPOINT + '"';
 const CLAUDE_LOGIN = 'claude mcp login action-gateway';
 const CODEX_ADD = 'codex mcp add action-gateway --url "' + ENDPOINT + '"';
+const CODEX_LOGIN = 'codex mcp login action-gateway';
 
 test('Claude .mcp.json registers action-gateway as HTTP with the public URL and no secret', () => {
   const cfg = JSON.parse(fs.readFileSync(path.join(ROOT, '.mcp.json'), 'utf8'));
@@ -35,6 +36,7 @@ test('Claude .mcp.json registers action-gateway as HTTP with the public URL and 
 
 test('Codex .codex/config.toml registers action-gateway by url and no secret', () => {
   const toml = fs.readFileSync(path.join(ROOT, '.codex/config.toml'), 'utf8');
+  assert.match(toml, /codex mcp login action-gateway/);
   assert.match(toml, /\[mcp_servers\.action-gateway\]/);
   assert.match(toml, new RegExp('url = "' + ENDPOINT.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '"'));
   const assignments = toml
@@ -51,5 +53,6 @@ test('existing MCP docs include the Claude login step and both client commands',
     assert.ok(doc.includes(CLAUDE_ADD), 'missing Claude add command');
     assert.ok(doc.includes(CLAUDE_LOGIN), 'missing Claude login step');
     assert.ok(doc.includes(CODEX_ADD), 'missing Codex add command');
+    assert.ok(doc.includes(CODEX_LOGIN), 'missing Codex login step');
   }
 });

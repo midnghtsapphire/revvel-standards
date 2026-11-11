@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-11 15:40 UTC — Cloudy — Codex OAuth login command
+
+- **Actor:** Cloudy (Cursor cloud agent, Grok 4.7)
+- **Requested by:** Gitar review on PR #18373
+- **Role:** executed
+- **Files:** `docs/MCP_REVVEL_CATALOG.md` (added the login command beside the existing add command); `docs/Master_Inventory/MCP_STANDARD.md` (same); `.codex/config.toml` (comment only); `tests/action-gateway-mcp.test.js` (asserts the login command); `config/connections.yml` (note); generated registry views; `CHANGELOG.md`; `LEDGER.md`
+- **What was done:** Codex `mcp add --url` stores the endpoint and does not start OAuth. The operator command is `codex mcp login action-gateway`. The earlier 15:31 entry still describes the registration. This entry adds the login command. No token was added.
+- **Decisions:** Keep the add command from WR #18290 and add the login command next to it — because the Codex MCP docs say login is a separate step for an OAuth server.
+- **Sources:** [Codex MCP](https://developers.openai.com/codex/mcp) (read 2026-11-11): "Run `codex mcp login <server-name>` separately to start an MCP OAuth login." Gitar review on PR #18373.
+- **Commits / PRs:** [PR #18373](https://github.com/midnghtsapphire/revvel-standards/pull/18373)
+- **Open / handoff:** Audrey runs both the Claude login and `codex mcp login action-gateway` on her machine. TriageChief merges. Do not merge from this agent.
+- **Credit note:** Gitar named the missing command. Cloudy added it. Audrey owns the login.
+
 ## 2026-11-11 15:31 UTC — Cloudy — DigitalOcean action-gateway for Claude and Codex
 
 - **Actor:** Cloudy (Cursor cloud agent, Grok 4.7)

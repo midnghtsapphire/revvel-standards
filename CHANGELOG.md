@@ -1,3 +1,7 @@
+## 2026-11-11 (2) — Cloudy — Codex action-gateway OAuth login command
+
+- Documented `codex mcp login action-gateway` next to `codex mcp add`. Adding the URL does not start OAuth. Source: Codex MCP docs. No token in git.
+
 ## 2026-11-11 — Cloudy — DigitalOcean action-gateway for Claude and Codex
 
 - Registered the public action-gateway endpoint in `.mcp.json` (Claude, HTTP transport) and `.codex/config.toml` (Codex, url). Documented `claude mcp login action-gateway` and both client commands. WRs #18288 and #18290. No token in git.
