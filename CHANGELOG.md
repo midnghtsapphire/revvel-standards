@@ -5,6 +5,41 @@
 ## 2026-11-11 — MarketShipper — screen-recorder-finder deploy path (WR #18332)
 
 - Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `screen-recorder-finder.revvel.co` under `products/screen-recorder-finder/`. CircleCI job `screen-recorder-finder-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/screen-recorder-finder/CHANGELOG.md`.
+## 2026-11-11 (4) — MarketShipper — one static Stripe server for affiliate-hub and ai-video-toolkit
+
+- `packages/static-stripe-server/` is the server, the checkout button, and the image-gate cases. Each product file names its service and keeps the previous copy as line comments. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
+
+## 2026-11-11 (3) — MarketShipper — ai-video-toolkit image gate does not write to App Platform
+
+- Restacked onto main `7aceb6284` (#18364 and #18365 kept). CircleCI keeps `demo-kit-test`, `affiliate-hub-build`, and `ai-video-toolkit-image`. The DigitalOcean create/update job is not on this branch. `npm ci` in the image uses `--ignore-scripts`. Checkout rate limit keys on `do-connecting-ip`, then the first `X-Forwarded-For` hop.
+
+## 2026-11-11 — MarketShipper — ai-video-toolkit deploy path (WR #18331)
+
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `ai-video-toolkit.revvel.co` under `products/ai-video-toolkit/`. CircleCI job `ai-video-toolkit-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/ai-video-toolkit/CHANGELOG.md`.
+## 2026-11-11 (4) — ResearchRodneyAIArchitect — PUCT priors reach the strategy entry point
+
+- `runPot` forwards `priorFor` into the search. Lane runs read `context.potPriorFor`. A test goes through `runStrategy`, not only `search`.
+
+## 2026-11-11 (3) — ResearchRodneyAIArchitect — MCTS uses the seed and PUCT follows the prior
+
+- Expansion and rollouts read the search seed. PUCT picks the next untried action from the prior, including the first move. Without `potReward` the lane order is that seeded sample, not a quality ranking.
+
+## 2026-11-11 (2) — ResearchRodneyAIArchitect — pot lane execution matches the linear fan-out
+
+- `RESEARCH_STRATEGY=pot` runs the chosen lanes with `Promise.all` and reuses the Ralph retry/merge helpers. Without `potReward` the order matches definition order and the trace says so (`rewardConfigured: false`).
+
+## 2026-11-11 — ResearchRodneyAIArchitect — Policy-of-Thoughts CPU engine (WR #18341)
+
+- Added `scripts/pot-research/`: UCT Monte Carlo tree search, a GRPO step on a transient adapter, a frozen base-weight vector, and a deterministic stub policy. The linear lane fan-out in `scripts/research-engine.js` stays the default; `RESEARCH_STRATEGY=pot` opts in.
+- Added `tests/pot-research.test.js`, `docs/research/pot-research-engine.md` (GPU budget marked as an estimate), `scripts/pot-research/LEDGER.md`, and `scripts/pot-research/benchmark.js`. The harness reports the +20-30% criterion as not measured. No quality delta is invented.
+- CircleCI already runs `tests/**/*.test.js`. No new job and no GitHub-hosted workflow.
+## 2026-11-11 (3) — MarketShipper — affiliate-hub image gate does not write to App Platform
+
+- Restacked onto main `7aceb6284` (#18364 and #18365 kept). CircleCI keeps `demo-kit-test`, `affiliate-hub-build`, and `affiliate-hub-image`. The DigitalOcean create/update job is not on this branch. `npm ci` in the image uses `--ignore-scripts`. Checkout rate limit keys on `do-connecting-ip`, then the first `X-Forwarded-For` hop.
+
+## 2026-11-11 — MarketShipper — affiliate-hub deploy path (WR #18330)
+
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `affiliate-hub.revvel.co` under `products/affiliate-hub/`. CircleCI job `affiliate-hub-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/affiliate-hub/CHANGELOG.md`.
 
 ## 2026-11-11 — MarketShipper (Grok 4.7, Cursor Cloud) — GOAP agent-as-FTE sales deck and landing
 
