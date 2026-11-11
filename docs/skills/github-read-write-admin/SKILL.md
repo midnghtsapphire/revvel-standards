@@ -281,13 +281,15 @@ Append-only files (ledgers, receipts, `wr/memory/decisions.jsonl`, and anything 
 
 <!-- 2026-11-11 TriageChief: retired. Git has no strategy named union, so `git merge -s union origin/the-other-branch` exits with "Could not find merge strategy 'union'". Use `git merge-file --union` below. `CHANGELOG.md`, `AUTHORS`, and `CONTRIBUTORS` already have `merge=union` in `.gitattributes`, so a normal `git merge` keeps both sides of those files. -->
 
+For a whole-branch merge, run a normal `git merge`. Do not run `git merge -s union`. `CHANGELOG.md`, `AUTHORS`, and `CONTRIBUTORS` already have `merge=union` in `.gitattributes`, so that merge keeps both sides of those files. Any other append-only file uses `git merge-file --union` below.
+
 For one file that is already in conflict:
 
 ```bash
 git merge-file --union --stdout ours.jsonl base.jsonl theirs.jsonl > merged.jsonl
 ```
 
-Read the file after a union merge. Union can reorder lines. Confirm both sides' new lines are present and that no conflict marker remains. Do not `git checkout --ours` or `--theirs` on a ledger. That drops a side.
+Copy `merged.jsonl` onto the conflicted path, then `git add` that path. A result that stays only in `merged.jsonl` leaves the conflict markers in the commit. Read the file after a union merge. Union can reorder lines. Confirm both sides' new lines are present and that no conflict marker remains. Do not `git checkout --ours` or `--theirs` on a ledger. That drops a side.
 
 ### Pull requests, comments, and reviews
 

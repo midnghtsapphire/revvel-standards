@@ -39,7 +39,7 @@ test('playbook covers the three tiers, gates, and house rules', () => {
     'isDraft',
     'assignee',
     'git push --force',
-    'git merge -s union',
+    'git merge-file --union',
     'gh auth token',
     'admin:repo_hook',
     'delete_repo',
