@@ -1,0 +1,50 @@
+name: github-read-write-admin
+title: "GitHub read / write / admin"
+version: "1.0.0"
+description: "In-repo GitHub playbook for cloud agents, Cursor IDE agents, and CI bots. Three tiers (read, write, admin) using git, gh, and the REST/GraphQL APIs, with identity, merge gates, and never-delete rules."
+
+metadata:
+  author: "TriageChief"
+  category: "Developer Workflow"
+  tags: ["github", "gh", "git", "pull-request", "issues", "rulesets", "actions-secrets", "never-delete"]
+  created_at: "2026-11-11"
+  updated_at: "2026-11-11"
+
+triggers:
+  - "github read"
+  - "github write"
+  - "github admin"
+  - "gh pr"
+  - "gh issue"
+  - "open a pull request"
+  - "merge a pull request"
+  - "ruleset"
+  - "branch protection"
+  - "actions secret"
+  - "webhook"
+  - "discussion 18238"
+
+dependencies:
+  skills: []
+  tools: ["git", "gh", "jq"]
+  pip_packages: []
+
+documentation:
+  skill_file: "docs/skills/github-read-write-admin/SKILL.md"
+  self_check: "docs/skills/github-read-write-admin/self-check.sh"
+  loader: "skills/github-read-write-admin/SKILL.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load docs/skills/github-read-write-admin/SKILL.md and follow it.
+    That file is the canonical playbook. This YAML is discovery metadata.
+    Use git, gh, and the GitHub REST/GraphQL APIs. Do not call connector tool names.
+    Lowest tier that does the job. Tier 3 needs the owner's explicit yes plus a before and after read.
+    Sign every write as **BotName** at the start and — BotName at the end.
+    Merge only when an assignee is set, the work is done, the PR is not a draft,
+    required checks are green on the head SHA, and you are not the PR author.
+    Pass --match-head-commit. Do not delete, force-push, squash-merge, or print a secret.
+    If unsure, post on Discussion 18238 and stop.
+    Run bash docs/skills/github-read-write-admin/self-check.sh before the first call that matters.

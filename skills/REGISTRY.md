@@ -735,3 +735,10 @@ _This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: Ma
 - **Path:** `skills/probabilistic-orchestration/SKILL.md`
 - **Persona:** DRAGNET (PROBABILISTIC MODE)
 - **Description:** Defensive guardrails, validation layers, and self-correction loops for handling unpredictable AI outputs. Use this skill when parsing LLM outputs or building AI-driven pipelines.
+
+### `github-read-write-admin`
+
+- **Path:** `docs/skills/github-read-write-admin/SKILL.md` (canonical). Loader: `skills/github-read-write-admin/SKILL.md`. Machine config: `skills/github-read-write-admin/github-read-write-admin.skill.yml`.
+- **Description:** In-repo GitHub read, write, and admin for cloud agents, Cursor IDE agents, and CI bots. Uses `git`, `gh`, and the REST/GraphQL APIs. Three tiers, identity signature, merge gates, never-delete, union merges for append-only files. Self-check: `docs/skills/github-read-write-admin/self-check.sh`.
+- **Trigger:** "github read", "github write", "github admin", "gh pr", "gh issue", "open a pull request", "merge a pull request", "ruleset", "branch protection", "actions secret", "webhook", "discussion 18238"
+- **Status:** Active (2026-11-11, TriageChief)

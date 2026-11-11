@@ -65,5 +65,9 @@ test('the markdown gate lint-md.yml runs is green', async () => {
     [],
     `markdownlint findings on main (lint-md.yml would be red):\n${findings.join('\n')}`,
   );
-  assert.equal(result.status, 0, 'markdownlint-cli2 exited non-zero');
+  assert.equal(
+    result.status,
+    0,
+    `markdownlint-cli2 exited ${result.status}\n${result.stderr || ''}\n${result.stdout || ''}`,
+  );
 });
