@@ -204,4 +204,12 @@ done
 
 ---
 
+## GitHub operations (2026-11-11)
+
+| Skill | Description |
+| --- | --- |
+| [`github-read-write-admin`](../docs/skills/github-read-write-admin/SKILL.md) | In-repo `git` and `gh` playbook: read, write, and admin. Canonical text is under `docs/skills/`. Loader: [`github-read-write-admin/`](github-read-write-admin/). |
+
+---
+
 *Maintained by Audrey Evans (MIDNGHTSAPPHIRE). See [`REGISTRY.md`](REGISTRY.md) for the full skill catalog.*

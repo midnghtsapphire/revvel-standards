@@ -467,6 +467,7 @@ These skills are required for **every** session, without exception:
 | Breaking down features | `skills/todo-breakdown/SKILL.md` |
 | Multi-agent coordination | `skills/parallel-development/SKILL.md` |
 | Git worktrees / branches | `skills/using-git-worktrees/SKILL.md` |
+| GitHub read, write, or admin (issues, pull requests, checks, rulesets, secrets) | `docs/skills/github-read-write-admin/SKILL.md` |
 | Architecture decisions | `skills/dare-log/SKILL.md` |
 | Generating docs | `skills/auto-documentation/SKILL.md` |
 | Concurrent branches | `skills/concurrent-development/SKILL.md` |

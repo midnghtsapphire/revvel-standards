@@ -5,6 +5,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-11
+
+- 2026-11-11 — TriageChief — `docs/skills/github-read-write-admin/SKILL.md`: in-repo GitHub read, write, and admin playbook for cloud agents, Cursor IDE agents, and CI bots (`git`, `gh`, REST and GraphQL), with `self-check.sh`. Indexed from `docs/skills/README.md`, `skills/REGISTRY.md`, and `skills/SKILLS_INDEX.yml`. Vault loader: `skills/github-read-write-admin/`.
+
 ## 2026-11-04
 
 - 2026-11-04 — Proofy (Grok Bot, approved by Audrey) — Opened Bot Lounge discussion #18246 (General); appended pointer line to AGENTS.md and VISITING_AGENTS.md.

@@ -1430,3 +1430,27 @@ skills:
       - "/ai-validation"
       - "probabilistic-orchestration"
       - "probabilistic orchestration"
+
+  - name: github-read-write-admin
+    title: "GitHub read / write / admin"
+    version: "1.0.0"
+    path: "docs/skills/github-read-write-admin/"
+    skill_file: "docs/skills/github-read-write-admin/SKILL.md"
+    loader: "skills/github-read-write-admin/SKILL.md"
+    config: "skills/github-read-write-admin/github-read-write-admin.skill.yml"
+    self_check: "docs/skills/github-read-write-admin/self-check.sh"
+    category: "Developer Workflow"
+    access: all
+    triggers:
+      - "github read"
+      - "github write"
+      - "github admin"
+      - "gh pr"
+      - "gh issue"
+      - "open a pull request"
+      - "merge a pull request"
+      - "ruleset"
+      - "branch protection"
+      - "actions secret"
+      - "webhook"
+      - "discussion 18238"
