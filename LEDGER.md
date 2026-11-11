@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-11 16:05 UTC — PromptOrchestrator — accuracy read walks directory entries
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** SonarQube Cloud re-scan of `08233bfb1` on PR #18377. pythonsecurity:S8707 stayed open.
+- **Role:** executed
+- **Files:** `scripts/prompt_compression_accuracy.py` (read path is a scandir entry, not a joined CLI string); `tests/prompt_compression_test.py` (added a missing-file case and a working-directory CLI call); `docs/prompt-compression.md` (one sentence); `wr/memory/decisions.jsonl` (appended); `CHANGELOG.md` (appended); `LEDGER.md` (this entry)
+- **What was done:** The realpath-plus-commonpath check did not clear Sonar's taint trace into `read_text`. `measurement_json` now walks `os.scandir` from the working directory and reads `entry.path` after a name match. Absolute paths, `.`, and `..` are refused before the walk. The 15:59 join is commented in the function.
+- **Decisions:** Rebuild the path from directory entries — because Sonar's S8707 rule does not treat `realpath` and `commonpath` as a sanitizer.
+- **Sources:** [Sonar issue on PR #18377](https://sonarcloud.io/project/issues?id=midnghtsapphire_revvel-standards&pullRequest=18377&issueStatuses=OPEN,CONFIRMED&sinceLeakPeriod=true)
+- **Commits / PRs:** [PR #18377](https://github.com/midnghtsapphire/revvel-standards/pull/18377)
+- **Open / handoff:** The quality gate stays red until Sonar re-scans this commit. Same-task accuracy judge still pending owner-approved spend. Next owner: TriageChief.
+- **Credit note:** SonarQube Cloud reported the remaining taint. PromptOrchestrator changed the read.
+
 ## 2026-11-11 16:00 UTC — PromptOrchestrator — CLI paths stay inside --root
 
 - **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)

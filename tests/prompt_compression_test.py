@@ -241,8 +241,13 @@ class CompressionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "measure.json"
             path.write_text(json.dumps(payload), encoding="utf-8")
-            code = accuracy.main(["--measurement", "measure.json", "--root", tmp])
-            paid = accuracy.main(["--measurement", "measure.json", "--root", tmp, "--execute-paid-judge"])
+            previous = os.getcwd()
+            os.chdir(tmp)
+            try:
+                code = accuracy.main(["--measurement", "measure.json"])
+                paid = accuracy.main(["--measurement", "measure.json", "--execute-paid-judge"])
+            finally:
+                os.chdir(previous)
         self.assertEqual(0, code)
         self.assertEqual(3, paid)
         scored = accuracy.score_measurement(payload)
@@ -263,6 +268,8 @@ class CompressionTests(unittest.TestCase):
             nested.mkdir()
             with self.assertRaises(ValueError):
                 accuracy.measurement_json("../ok.json", nested)
+            with self.assertRaises(FileNotFoundError):
+                accuracy.measurement_json("missing.json", root)
 
 
 if __name__ == "__main__":

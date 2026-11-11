@@ -85,8 +85,10 @@ both sets. The same-task accuracy judge was not run.
 
 ## Accuracy
 
-`--measurement` and `compress --file` must be relative paths inside `--root`
-(the working directory by default). An absolute path or a `..` escape is refused.
+`--measurement` is a relative path under the working directory. The harness
+walks directory entries by name and reads the entry it finds. An absolute
+path or a `..` segment is refused. `compress --file` must be a relative path
+inside `--root` (the working directory by default).
 
 `scripts/prompt_compression_accuracy.py` prints the token ratio and the
 term-preservation rate. The same-task judge is
