@@ -51,12 +51,14 @@ A rebase edits commits. Run it only on local commits that have not been pushed.
 ```bash
 git fetch origin
 git status -sb
-git rev-list --left-right --count origin/HEAD...HEAD
+git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}'
 ```
 
-Confirm the fetch exited 0 before you trust `origin/...`. If the commits are contained in any remote ref (`git branch -r --contains SHA` prints a line), stop. The cleanup is a new commit on top, not a rebase. Do not `git reset --hard` a checkout another agent is using. Do not `git stash` that checkout.
+Confirm the fetch exited 0 before you trust `origin/...`. `origin/HEAD` is the default branch, not this branch. A count against `origin/HEAD` can look unpushed while `origin/your-branch` already has the commits. If `@{upstream}` resolves, this branch has been pushed. Stop. Do not rebase it. If `@{upstream}` fails because there is no upstream, the branch has not been pushed. Then, for each SHA in the range you would rewrite, `git branch -r --contains SHA` must print nothing. A printed remote name means that commit is already on a remote. Stop. The cleanup is a new commit on top, not a rebase. Do not `git reset --hard` a checkout another agent is using. Do not `git stash` that checkout.
 
 ## Rebase, local and unpushed only
+
+Run this only after the scope check says there is no upstream and no remote contains those SHAs.
 
 ```bash
 git rebase -i HEAD~5

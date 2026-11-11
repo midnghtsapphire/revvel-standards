@@ -66,13 +66,15 @@ git status
 git diff --name-only --diff-filter=U
 ```
 
-Append-only file, when you have ours, base, and theirs:
+Append-only file, when you have ours, base, and theirs. `CONFLICTED` is the unmerged path from `git status`, not a side file. Write the union result onto that path, then stage that path. A result left in another file leaves the conflict markers in the commit.
 
 ```bash
-git merge-file --union --stdout ours.jsonl base.jsonl theirs.jsonl > merged.jsonl
+CONFLICTED=path/from/git-status
+git merge-file --union --stdout ours.jsonl base.jsonl theirs.jsonl > "$CONFLICTED"
+git add "$CONFLICTED"
 ```
 
-Search the result for conflict markers before you stage it. Union can reorder lines. Confirm both new blocks are present.
+Search `"$CONFLICTED"` for conflict markers before you commit. Union can reorder lines. Confirm both new blocks are present.
 
 A whole-branch merge does not take `-s union`. Git reports `Could not find merge strategy 'union'`. Merge the branch with the default strategy. For a ledger that is not already `merge=union` in `.gitattributes`, resolve that file with `git merge-file --union` as above. `CHANGELOG.md` already has the attribute, so the default merge keeps both sides of that file.
 
@@ -89,7 +91,7 @@ A hit that is a real marker is not done. A hit inside a string or a doc that is 
 Run the test that covers the files you touched. Then:
 
 ```bash
-git add path/to/file
+git add "$CONFLICTED"
 git commit -m "$(signed_body "fix: resolve merge conflict in path")"
 ```
 

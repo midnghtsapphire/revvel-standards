@@ -53,13 +53,18 @@ Read the threads before you write.
 
 ```bash
 FULL=midnghtsapphire/revvel-standards
+OWNER=${FULL%%/*}
+REPO=${FULL#*/}
 gh pr view NUMBER --repo "$FULL" --json number,url,headRefOid,author,isDraft
 gh api --paginate "repos/$FULL/pulls/NUMBER/comments" --jq '.[] | {id, path, line, user:.user.login, body}'
 ```
 
-Thread ids and resolved state come from GraphQL. Keep the query fixed and pass names as variables.
+Thread ids and resolved state come from GraphQL. Keep the query fixed and pass names as variables. Set `OWNER` and `REPO` in the same shell as the query. An empty owner or name returns no threads.
 
 ```bash
+FULL=midnghtsapphire/revvel-standards
+OWNER=${FULL%%/*}
+REPO=${FULL#*/}
 gh api graphql -f owner="$OWNER" -f name="$REPO" -F number=NUMBER -f query='
 query($owner:String!, $name:String!, $number:Int!) {
   repository(owner:$owner, name:$name) {

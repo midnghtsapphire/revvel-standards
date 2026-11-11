@@ -62,12 +62,21 @@ No secrets in output. Do not run `gh auth token`. Do not echo `GH_TOKEN` or `GIT
 
    ```bash
    FULL=midnghtsapphire/revvel-standards
+   BODY_FILE=./.trae/output/pr.body.local.md
+   SIGNED_FILE=$(mktemp)
+   {
+     printf '**%s**\n\n' "$BOT"
+     cat "$BODY_FILE"
+     printf '\n— %s\n' "$BOT"
+   } > "$SIGNED_FILE"
    git push -u origin HEAD
    gh pr create --repo "$FULL" --base daily/YYYY-MM-DD --head "$(git branch --show-current)" \
      --assignee LOGIN \
      --title "$(signed_line "docs: subject")" \
      --body-file "$SIGNED_FILE"
    ```
+
+   `BODY_FILE` is the file the task named when it is not the default path. `SIGNED_FILE` is the `mktemp` path. Do not pass an empty `--body-file`. If the body file already starts with `**BotName**` and ends with `— BotName`, pass that file as `--body-file` and skip the wrap.
 
    Do not pass `--draft` unless the task said to open a draft. Do not pass `--delete-branch`. `--label` adds a label. Do not send a labels array that drops labels already on the pull request.
 
