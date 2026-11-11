@@ -21,3 +21,5 @@ node scripts/pot-research/benchmark.js
 - `Base weights hash changed` means something wrote the frozen vector. Stop. Do not continue with that process.
 - `This adapter was discarded` means a caller kept the per-problem adapter and used it on the next problem. Open a new adapter.
 - A paid model call still goes through `callOpenRouter` in `scripts/research-engine.js`, which consults the spend gate. This directory does not add a provider call.
+
+`benchmark.js` also validates `products/rnd-research-fleet/eval/fixtures/research-gold-v1.jsonl` and prints `gold_count`, `gold_shortfall` and per-source counts. It does not score either strategy. See `products/rnd-research-fleet/eval/fixtures/RESEARCH_GOLD_V1.md` for provenance, what is public, and how to attach the private rows.
