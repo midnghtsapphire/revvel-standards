@@ -85,6 +85,9 @@ both sets. The same-task accuracy judge was not run.
 
 ## Accuracy
 
+`--measurement` and `compress --file` must be relative paths inside `--root`
+(the working directory by default). An absolute path or a `..` escape is refused.
+
 `scripts/prompt_compression_accuracy.py` prints the token ratio and the
 term-preservation rate. The same-task judge is
 `pending-owner-approved-spend`. `--execute-paid-judge` exits 3 and does not

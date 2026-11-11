@@ -289,6 +289,22 @@ def measurement_payload(root, rate, compressor, force_tokens, model_name, progre
     }
 
 
+def contained_path(raw: str, root) -> Path:
+    """Resolve a CLI path and require it to stay inside root.
+
+    An agent-supplied argument can name `/etc/passwd` or `../` out of the
+    repo. Absolute paths are refused. `realpath` plus `commonpath` is the
+    check: after it passes, the path cannot escape `root`.
+    """
+    if not isinstance(raw, str) or not raw.strip() or "\x00" in raw or os.path.isabs(raw):
+        raise ValueError("path must be a relative path inside the working directory")
+    base = os.path.realpath(root)
+    resolved = os.path.realpath(os.path.join(base, raw))
+    if os.path.commonpath([resolved, base]) != base:
+        raise ValueError(f"{raw} escapes {base}")
+    return Path(resolved)
+
+
 def measurement_destination(output):
     """None writes nothing. An existing path is refused.
 
@@ -334,6 +350,20 @@ def _stderr_progress(name) -> None:
 
 
 def run_measure(args) -> int:
+    # Check the output path before loading the model. A bad or existing path
+    # must not spend a compression run and then throw the result away.
+    try:
+        output = measurement_destination(args.output)
+        if output is not None:
+            output = contained_path(args.output, Path(args.root))
+            if output.exists():
+                raise FileExistsError(
+                    f"{output} already exists. Pass a new dated path. "
+                    "The committed measurement is not overwritten."
+                )
+    except (FileExistsError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
     if args.provision:
         print(provision_model(args.model))
     payload = measurement_payload(
@@ -341,11 +371,6 @@ def run_measure(args) -> int:
         progress=_stderr_progress,
     )
     payload["measured_at"] = args.measured_at
-    try:
-        output = measurement_destination(args.output)
-    except FileExistsError as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
     if output:
         write_measurement(payload, output)
     guarded = payload["full_governance"]["guarded"]
@@ -365,7 +390,11 @@ def run_measure(args) -> int:
 def run_compress(args) -> int:
     if args.provision:
         print(provision_model(args.model))
-    text = Path(args.file).read_text(encoding="utf-8")
+    try:
+        text = contained_path(args.file, Path(args.root)).read_text(encoding="utf-8")
+    except (ValueError, OSError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
     result = compress_context(
         text, rate=args.rate, compressor=local_compressor(args.model),
         force_tokens=args.force_token,
@@ -431,6 +460,8 @@ def build_parser() -> argparse.ArgumentParser:
     compress = sub.add_parser("compress", help="Compress one UTF-8 file and print counts.",
                               parents=[shared])
     compress.add_argument("--file", required=True)
+    compress.add_argument("--root", default=".",
+                          help="--file must be a relative path inside this directory.")
     compress.set_defaults(func=run_compress)
     return parser
 

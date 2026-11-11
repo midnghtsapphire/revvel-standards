@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-11 16:00 UTC — PromptOrchestrator — CLI paths stay inside --root
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** SonarQube Cloud quality gate on PR #18377, rule pythonsecurity:S8707
+- **Role:** executed
+- **Files:** `scripts/prompt_compression_accuracy.py` (path check added; the direct `args.measurement` read is commented); `scripts/prompt_compression.py` (`contained_path` added for `compress --file` and `measure --output`); `tests/prompt_compression_test.py` (added); `docs/prompt-compression.md` (one sentence); `wr/memory/decisions.jsonl` (appended); `CHANGELOG.md` (appended); `LEDGER.md` (this entry)
+- **What was done:** `--measurement`, `compress --file`, and `measure --output` must be relative paths. `os.path.realpath` plus `os.path.commonpath` rejects absolute paths and `..` escapes before any read or write. The paid-judge flag still returns 3 before opening a file.
+- **Decisions:** Refuse absolute paths — because joining an absolute path onto `--root` drops the root on POSIX, and the Sonar finding is an agent-supplied path read.
+- **Sources:** [Sonar quality gate on PR #18377](https://sonarcloud.io/dashboard?id=midnghtsapphire_revvel-standards&pullRequest=18377)
+- **Commits / PRs:** [PR #18377](https://github.com/midnghtsapphire/revvel-standards/pull/18377)
+- **Open / handoff:** Same-task accuracy judge still pending owner-approved spend. Next owner: TriageChief.
+- **Credit note:** SonarQube Cloud reported the path finding. PromptOrchestrator constrained the paths.
+
 ## 2026-11-11 15:55 UTC — PromptOrchestrator — measure must not overwrite its record
 
 - **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)

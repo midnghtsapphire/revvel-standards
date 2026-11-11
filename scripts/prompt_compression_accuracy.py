@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 
 
@@ -72,13 +73,34 @@ def score_measurement(payload) -> dict:
     return scored
 
 
+def measurement_json(raw: str, root) -> dict:
+    """Load a measurement file that stays inside root.
+
+    Sonar pythonsecurity:S8707: an agent can pass a CLI path. Absolute paths
+    and `..` escapes are refused. `realpath` plus `commonpath` is the check
+    that makes the later read safe.
+    """
+    if not isinstance(raw, str) or not raw.strip() or "\x00" in raw or os.path.isabs(raw):
+        raise ValueError("measurement path must be a relative path inside --root")
+    base = os.path.realpath(root)
+    resolved = os.path.realpath(os.path.join(base, raw))
+    if os.path.commonpath([resolved, base]) != base:
+        raise ValueError(f"{raw} escapes {base}")
+    if not resolved.endswith(".json"):
+        raise ValueError("measurement file must end in .json")
+    # 2026-11-11 first cut read args.measurement directly.
+    # payload = json.loads(Path(args.measurement).read_text(encoding="utf-8"))
+    return json.loads(Path(resolved).read_text(encoding="utf-8"))
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Score a local LLMLingua-2 measurement. No paid calls.")
     parser.add_argument("--measurement", required=True)
+    parser.add_argument("--root", default=".",
+                        help="--measurement must be a relative path inside this directory.")
     parser.add_argument("--execute-paid-judge", action="store_true",
                         help="Refuses. A paid judge is pending owner-approved spend.")
     args = parser.parse_args(argv)
-    payload = json.loads(Path(args.measurement).read_text(encoding="utf-8"))
     if args.execute_paid_judge:
         print(json.dumps({
             "status": "pending-owner-approved-spend",
@@ -86,6 +108,11 @@ def main(argv=None) -> int:
             "reason": "Paid judge refused. No provider was contacted.",
         }, indent=2))
         return 3
+    try:
+        payload = measurement_json(args.measurement, args.root)
+    except (ValueError, OSError) as exc:
+        print(str(exc))
+        return 2
     print(json.dumps(score_measurement(payload), indent=2))
     return 0
 

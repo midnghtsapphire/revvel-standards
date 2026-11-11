@@ -151,6 +151,17 @@ class CompressionTests(unittest.TestCase):
         self.assertAlmostEqual(1.0, summary["guarded"]["ratio"])
         self.assertAlmostEqual(100 / 30, summary["raw_model"]["ratio"])
 
+    def test_contained_path_stays_inside_root(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            note = root / "note.md"
+            note.write_text("WR", encoding="utf-8")
+            self.assertEqual(note.resolve(), compression.contained_path("note.md", root))
+            with self.assertRaises(ValueError):
+                compression.contained_path("/etc/passwd", root)
+            with self.assertRaises(ValueError):
+                compression.contained_path("../note.md", root)
+
     def test_measure_does_not_write_or_clobber_by_default(self):
         args = compression.build_parser().parse_args(["measure"])
         self.assertIsNone(args.output)
@@ -230,14 +241,28 @@ class CompressionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "measure.json"
             path.write_text(json.dumps(payload), encoding="utf-8")
-            code = accuracy.main(["--measurement", str(path)])
-            paid = accuracy.main(["--measurement", str(path), "--execute-paid-judge"])
+            code = accuracy.main(["--measurement", "measure.json", "--root", tmp])
+            paid = accuracy.main(["--measurement", "measure.json", "--root", tmp, "--execute-paid-judge"])
         self.assertEqual(0, code)
         self.assertEqual(3, paid)
         scored = accuracy.score_measurement(payload)
         self.assertEqual(1.0, scored["full_governance"]["term_preservation_rate"])
         self.assertEqual(3.0, scored["full_governance"]["guarded_ratio"])
         self.assertEqual("pending-owner-approved-spend", scored["model_quality"]["status"])
+
+    def test_accuracy_path_cannot_escape_root(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "ok.json").write_text("{}", encoding="utf-8")
+            self.assertEqual({}, accuracy.measurement_json("ok.json", root))
+            with self.assertRaises(ValueError):
+                accuracy.measurement_json("/etc/passwd", root)
+            with self.assertRaises(ValueError):
+                accuracy.measurement_json("../ok.json", root)
+            nested = root / "sub"
+            nested.mkdir()
+            with self.assertRaises(ValueError):
+                accuracy.measurement_json("../ok.json", nested)
 
 
 if __name__ == "__main__":

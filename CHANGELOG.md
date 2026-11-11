@@ -15,6 +15,10 @@
 - Added `scripts/pot-research/`: UCT Monte Carlo tree search, a GRPO step on a transient adapter, a frozen base-weight vector, and a deterministic stub policy. The linear lane fan-out in `scripts/research-engine.js` stays the default; `RESEARCH_STRATEGY=pot` opts in.
 - Added `tests/pot-research.test.js`, `docs/research/pot-research-engine.md` (GPU budget marked as an estimate), `scripts/pot-research/LEDGER.md`, and `scripts/pot-research/benchmark.js`. The harness reports the +20-30% criterion as not measured. No quality delta is invented.
 - CircleCI already runs `tests/**/*.test.js`. No new job and no GitHub-hosted workflow.
+## 2026-11-11 — PromptOrchestrator — CLI paths stay inside --root
+
+- `scripts/prompt_compression_accuracy.py` and `scripts/prompt_compression.py`: relative paths only. Absolute paths and `..` escapes are refused before a read or write. Sonar pythonsecurity:S8707 on PR #18377.
+
 ## 2026-11-11 — PromptOrchestrator — measure refuses to overwrite its record
 
 - `scripts/prompt_compression.py`: `measure` writes only with `--output`, refuses an existing path, and exits 2 when any document lost a force token. Review on PR #18377. The 2026-11-11 JSON was not rewritten.
