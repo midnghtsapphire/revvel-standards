@@ -34,7 +34,8 @@ x-lago-front-url: &lago-front-url
   LAGO_FRONT_URL: ${LAGO_FRONT_URL:-http://localhost}
 
 x-backend-environment: &backend-env
-  DATABASE_URL: postgresql://${POSTGRES_USER:-lago}:${POSTGRES_PASSWORD:?required}@db:5432/${POSTGRES_DB:-lago}?search_path=public
+  # Compose variable references only; no password value is stored in this file.
+  DATABASE_URL: postgresql://${POSTGRES_USER:-lago}:${POSTGRES_PASSWORD:?required}@db:5432/${POSTGRES_DB:-lago}?search_path=public # ggignore
   REDIS_URL: redis://redis:6379
   SECRET_KEY_BASE: ${SECRET_KEY_BASE:?required}
   RAILS_ENV: production
