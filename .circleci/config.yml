@@ -22,6 +22,11 @@ executors:
   node-executor:
     docker:
       - image: cimg/node:22.11
+  # Next 15's build needs require(esm) (Node >= 22.12); 22.11 dies with
+  # ERR_REQUIRE_ESM in magic-string (CircleCI build 23308, WR #18342).
+  node-next-executor:
+    docker:
+      - image: cimg/node:22.14
 
 jobs:
   lint-and-test:
@@ -189,7 +194,7 @@ jobs:
   # WR #18342 moved affiliate-hub's catalogue into app/lib/programs.mjs; this
   # proves the product still builds. Lockfile-pinned install, no scripts.
   affiliate-hub-build:
-    executor: node-executor
+    executor: node-next-executor
     steps:
       - checkout
       - run:
