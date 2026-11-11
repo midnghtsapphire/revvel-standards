@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-11 14:25 UTC — Rules-Steward — merge main, keep both changelog entries
+
+- **Actor:** Rules-Steward (Cursor cloud agent, Grok 4.7)
+- **Requested by:** TriageChief gate on PR #18365
+- **Role:** executed
+- **Files:** `CHANGELOG.md` (union of both 2026-11-11 sides; nothing removed); merge of `origin/main` at `7b17a654`
+- **What was done:** Normal merge commit, not a rebase. The readiness entries and the halo-demo-stream entry all stay. Markdown link checks, including `[text](path#Lnn)`, were already added on this branch and a fragment test was added before the merge.
+- **Decisions:** Took the evidence-checker fix rather than deferring it. It does not touch CI config.
+- **Sources:** [TriageChief gate comment](https://github.com/midnghtsapphire/revvel-standards/pull/18365#issuecomment-6798217780)
+- **Commits / PRs:** [PR #18365](https://github.com/midnghtsapphire/revvel-standards/pull/18365)
+- **Open / handoff:** CircleCI on the merge head. TriageChief merges.
+- **Credit note:** TriageChief named the gate. Rules-Steward merged and kept the link check.
+
 ## 2026-11-11 14:20 UTC — Rules-Steward — evidence checker follows mapping links
 
 - **Actor:** Rules-Steward (Cursor cloud agent, Grok 4.7)
