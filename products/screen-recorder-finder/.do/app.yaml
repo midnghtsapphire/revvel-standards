@@ -28,7 +28,9 @@ services:
     github:
       repo: midnghtsapphire/revvel-standards
       branch: main
-      deploy_on_push: true
+      # false so merging this branch does not make App Platform deploy on push.
+      # Turning this on is only proposed on draft #18372 and needs Audrey's yes.
+      deploy_on_push: false
     source_dir: /
     dockerfile_path: products/screen-recorder-finder/Dockerfile
     http_port: 8080
