@@ -43,3 +43,10 @@ The local evidence checker reports file presence and missing references and neve
 turns file presence into an assessed-control result.
 
 Catalog source: [NIST SP 800-53 Rev. 5](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final).
+
+## Rescope note (2026-11-11, Rules-Steward, WR #18343)
+
+TriageChief approved a rescope the same day. The table above stays as written.
+This overlay draft is deferred until NISTIR 8605D is published.
+The labelled readiness mapping is [NIST_READINESS.md](NIST_READINESS.md).
+This file is not a compliance attestation.
