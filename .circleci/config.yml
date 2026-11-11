@@ -43,6 +43,14 @@ jobs:
           command: node scripts/check-package-integrity.js
       - node/install-packages:
           pkg-manager: npm
+      # Visiting-agent rule (VISITING_AGENTS.md section 1b): flags tracker,
+      # marketing, affiliate and agent-branding strings in app code. Node
+      # built-ins only. Patterns, allowlist and baseline live in
+      # config/visiting-agent-patterns.json. Also runnable by hand:
+      # `node scripts/visiting-agent-scan.js --report`.
+      - run:
+          name: Visiting-agent rule check
+          command: node scripts/visiting-agent-scan.js
       # Real gate, scoped to changed Markdown so it enforces standards on new
       # work without drowning in the repo's large pre-existing lint backlog.
       - run:
