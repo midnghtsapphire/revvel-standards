@@ -1,0 +1,81 @@
+# DigitalOcean App Platform spec for screen-recorder-finder.
+# Added 2026-11-11 by MarketShipper for WR #18332.
+# Spec reference retrieved 2026-11-11:
+# https://docs.digitalocean.com/products/app-platform/reference/app-spec/
+#
+# Secrets are names only. Do not put key material in this file. Set
+# STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY, STRIPE_WEBHOOK_SECRET, and
+# STRIPE_PRICE_ID in the App Platform control panel (type SECRET).
+# STRIPE_MODE stays test until Audrey changes it. A spec in git is not
+# evidence the app exists.
+#
+# source_dir is / because dockerfile_path is relative to the repo root and
+# the Dockerfile copies products/screen-recorder-finder/. DigitalOcean uses source_dir as
+# the Docker build context.
+# The retired spec in deploy/app.yaml stays commented.
+
+name: screen-recorder-finder
+region: nyc
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+domains:
+  - domain: screen-recorder-finder.revvel.co
+    type: PRIMARY
+    minimum_tls_version: "1.2"
+services:
+  - name: web
+    github:
+      repo: midnghtsapphire/revvel-standards
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    dockerfile_path: products/screen-recorder-finder/Dockerfile
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 10
+      period_seconds: 30
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+      port: 8080
+    envs:
+      - key: STRIPE_MODE
+        scope: RUN_TIME
+        value: test
+        type: GENERAL
+      - key: PUBLIC_BASE_URL
+        scope: RUN_TIME
+        value: https://screen-recorder-finder.revvel.co
+        type: GENERAL
+      - key: STRIPE_SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: STRIPE_PUBLISHABLE_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: STRIPE_WEBHOOK_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: STRIPE_PRICE_ID
+        scope: RUN_TIME
+        type: SECRET
+    alerts:
+      - rule: CPU_UTILIZATION
+        disabled: false
+        operator: GREATER_THAN
+        value: 80
+        window: FIVE_MINUTES
+      - rule: MEM_UTILIZATION
+        disabled: false
+        operator: GREATER_THAN
+        value: 80
+        window: FIVE_MINUTES
+      - rule: RESTART_COUNT
+        disabled: false
+        operator: GREATER_THAN
+        value: 2
+        window: FIVE_MINUTES

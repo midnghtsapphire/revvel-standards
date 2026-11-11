@@ -17,3 +17,7 @@ products/ghcr-console/tests
 **/.env
 **/.env.*
 **/npm-debug.log*
+# 2026-11-11 MarketShipper WR #18332: this image copies products/screen-recorder-finder.
+# The ** rule above would hide it, and Docker then fails COPY.
+!products/screen-recorder-finder/
+!products/screen-recorder-finder/**
