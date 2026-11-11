@@ -33,7 +33,10 @@ WORKDIR /repo
 COPY packages ./packages
 COPY products/affiliate-hub/package.json products/affiliate-hub/package-lock.json ./products/affiliate-hub/
 WORKDIR /repo/products/affiliate-hub
-RUN npm ci --legacy-peer-deps
+# --ignore-scripts: this static export does not need dependency lifecycle
+# scripts, and running them would execute code from the lockfile.
+# --legacy-peer-deps: eslint and next ranges in this product disagree.
+RUN npm ci --ignore-scripts --legacy-peer-deps
 COPY products/affiliate-hub/ ./
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build

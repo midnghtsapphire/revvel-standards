@@ -2,6 +2,16 @@
 
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only.
 
+## 2026-11-11 14:35 UTC — MarketShipper (Cursor Grok 4.7) — restack, no App Platform write from this branch
+
+- **Actor:** MarketShipper (Cursor cloud agent, Grok 4.7)
+- **Requested by:** 1-Git-Triage-Chief hold on PR #18366, then Audrey's merge-gate update
+- **Role:** executed
+- **Files:** `.circleci/config.yml` (image gate kept; `affiliate-hub-do-deploy` removed; `demo-kit-test` and `affiliate-hub-build` from main kept), `.circleci/scripts/do-app-update.sh` (removed from this branch; it moves to a draft PR), `.dockerignore` (re-exclude `node_modules`, `.next`, `.env*` after the un-ignore), `products/affiliate-hub/Dockerfile` (`npm ci --ignore-scripts`), `products/affiliate-hub/server/static-stripe-server.mjs` (client IP for the rate limit; `handle` split), `CHANGELOG.md`, `wr/memory/decisions.jsonl`
+- **What was done:** Merged origin/main `7aceb6284` (includes `7b17a654`, PR #18364, and #18365) with a normal merge. No force-push. Checkout rate limiting now prefers `do-connecting-ip`, then the first `X-Forwarded-For` hop, then the socket. A merge of this branch cannot call `doctl`.
+- **Decisions:** The deploy job does not belong on a branch that merges to main until Audrey approves it. `npm ci --ignore-scripts` is the fix for the SonarCloud Docker finding, matching the `affiliate-hub-build` job already on main.
+- **Open / handoff:** Draft PR holds `do-app-update.sh` and the deploy jobs. It stays draft. Audrey must approve it and set `DIGITALOCEAN_ACCESS_TOKEN`.
+
 ## 2026-11-11 14:30 UTC — MarketShipper (Cursor Grok 4.7) — container, Stripe test checkout, CircleCI health gate
 
 - **Actor:** MarketShipper (Cursor cloud agent, Grok 4.7)
