@@ -66,15 +66,20 @@ git status
 git diff --name-only --diff-filter=U
 ```
 
-Append-only file, when you have ours, base, and theirs. `CONFLICTED` is the unmerged path from `git status`, not a side file. Write the union result onto that path, then stage that path. A result left in another file leaves the conflict markers in the commit.
+Append-only file. `CONFLICTED` is the unmerged path from `git status`. Read the three index stages into a temp directory. Stage 1 is the base, stage 2 is ours, stage 3 is theirs. Do not redirect `git merge-file` onto `$CONFLICTED`. The shell truncates the target of `>` before the command runs, so that redirect empties the ledger and then stages the empty file when the inputs were never written.
 
 ```bash
 CONFLICTED=path/from/git-status
-git merge-file --union --stdout ours.jsonl base.jsonl theirs.jsonl > "$CONFLICTED"
+STAGE=$(mktemp -d)
+git show ":2:$CONFLICTED" > "$STAGE/ours"
+git show ":1:$CONFLICTED" > "$STAGE/base"
+git show ":3:$CONFLICTED" > "$STAGE/theirs"
+git merge-file --union --stdout "$STAGE/ours" "$STAGE/base" "$STAGE/theirs" > "$STAGE/merged"
+cp "$STAGE/merged" "$CONFLICTED"
 git add "$CONFLICTED"
 ```
 
-Search `"$CONFLICTED"` for conflict markers before you commit. Union can reorder lines. Confirm both new blocks are present.
+If `git merge-file` exits non-zero, do not `cp` and do not `git add`. Search `"$CONFLICTED"` for conflict markers before you commit. Union can reorder lines. Confirm both new blocks are present.
 
 A whole-branch merge does not take `-s union`. Git reports `Could not find merge strategy 'union'`. Merge the branch with the default strategy. For a ledger that is not already `merge=union` in `.gitattributes`, resolve that file with `git merge-file --union` as above. `CHANGELOG.md` already has the attribute, so the default merge keeps both sides of that file.
 
