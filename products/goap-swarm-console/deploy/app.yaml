@@ -4,7 +4,10 @@
 # Same shape as oaudrey/.do/app.yaml: a static site component, GitHub source,
 # and a custom domain. This file does not deploy anything by itself. Audrey
 # applies it with doctl after DIGITALOCEAN_ACCESS_TOKEN is set, then adds the
-# DNS records App Platform prints to Namecheap for agent-as-fte.revvel.co.
+# DNS records App Platform prints to Cloudflare DNS for agent-as-fte.revvel.co.
+# 2026-11-11 MarketShipper: this comment previously said Namecheap. Audrey said
+# DNS for her domains is on Cloudflare. The pre-change sentence is in git history.
+# This host was not given a new name.
 #
 # deploy_on_push stays false until that DNS exists. Turning it on earlier
 # would attach a hostname that does not resolve.

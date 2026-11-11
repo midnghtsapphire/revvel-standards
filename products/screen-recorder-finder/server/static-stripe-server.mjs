@@ -107,7 +107,8 @@ export const api = bindProduct('screen-recorder-finder', import.meta.url);
 //   }
 //   const host = requestUrl.hostname;
 //   const local = host === 'localhost' || host === '127.0.0.1';
-//   const allowed = local || host.endsWith('.revvel.co') || host.endsWith('.ondigitalocean.app');
+//   const allowed = local || host.endsWith('.oaudrey.com') || host.endsWith('.ondigitalocean.app');
+// 2026-11-11 MarketShipper: the retired allowlist line above was updated with the live domain. The pre-change text is in git history.
 //   if (!allowed) return null;
 //   const protocol = local ? 'http:' : 'https:';
 //   return `${protocol}//${requestUrl.host}`;

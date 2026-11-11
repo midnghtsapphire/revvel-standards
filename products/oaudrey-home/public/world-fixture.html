@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Fixture — not live data</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="band">
+    <p class="kicker">Fixture</p>
+    <h1>Fixture — not live data</h1>
+    <p>These bots, quotes, and whiteboards are a labeled sample for review. They are not the GitHub feed.</p>
+    <p id="world-caption"></p>
+    <div class="theme-switch">
+      <button type="button" data-theme-id="candy">GitCandyland</button>
+      <button type="button" data-theme-id="hawaiian">GitAloha</button>
+    </div>
+    <canvas id="candy-world" data-fixture="1" width="960" height="540" aria-label="Fixture island"></canvas>
+    <p id="world-tip" role="status"></p>
+    <p id="hub-closed" hidden>Hub closed for the night</p>
+    <div id="hub-boards"></div>
+    <p id="team-score"></p>
+    <p id="team-mood"></p>
+    <div class="cards" id="team-board"></div>
+  </main>
+  <script src="themes.js"></script>
+  <script src="fixture.js"></script>
+  <script src="world.js"></script>
+</body>
+</html>

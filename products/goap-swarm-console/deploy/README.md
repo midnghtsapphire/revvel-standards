@@ -26,10 +26,12 @@ doctl apps create --spec deploy/app.yaml
 
 If an app already exists, update it with `doctl apps update APP_ID --spec
 deploy/app.yaml` instead of creating a second one. Copy the DNS records
-DigitalOcean shows into Namecheap for `agent-as-fte.revvel.co`. Leave
+DigitalOcean shows into Cloudflare DNS for `agent-as-fte.revvel.co`. Leave
 `deploy_on_push` false until that name resolves. Set `CALENDLY_URL` in the
 App Platform UI to an `https://calendly.com/...` path and rebuild. Stripe is
 not part of this page.
+
+<!-- 2026-11-11 MarketShipper: the DNS sentence above previously said Namecheap. Audrey said DNS for her domains is on Cloudflare. -->
 
 The in-app routes `/agent-as-fte` and `/agent-as-fte/deck` remain on the GOAP
 Swarm Console. `templates/cicd/deploy-static.mjs` still packages that Next

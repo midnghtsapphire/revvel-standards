@@ -14,7 +14,7 @@ This document is the authoritative deployment guide for the **oAudrey Hub** (`oa
 1. Architecture
 2. Required credentials and BOM
 3. DigitalOcean App Platform setup
-4. DNS configuration (Namecheap → DigitalOcean)
+4. DNS configuration (Cloudflare)
 5. GitHub Actions CI/CD pipeline
 6. Self-improvement / retrospective loop
 7. Adding a new product tab and subdomain
@@ -42,9 +42,11 @@ This document is the authoritative deployment guide for the **oAudrey Hub** (`oa
               ├── agents.oaudrey.com        (future)
               └── market.oaudrey.com        (future)
 
-DNS: Namecheap (username: uprisinghope) → DigitalOcean nameservers
+DNS: Cloudflare for oaudrey.com (2026-11-11). Do not move the zone to DigitalOcean nameservers.
 Secrets: GitHub Actions repo secrets → Doppler (revvel-standards project)
 ```
+
+<!-- 2026-11-11 MarketShipper: the DNS line in the diagram previously said Namecheap to DigitalOcean nameservers. Audrey said DNS for her domains is on Cloudflare. The pre-change line is in git history. -->
 
 ---
 
@@ -229,22 +231,26 @@ python3 -m http.server 8080
 
 ---
 
-## DNS Configuration (Namecheap → DigitalOcean)
+## DNS Configuration (Cloudflare)
 
+<!-- 2026-11-11 MarketShipper: this section previously told an operator to point Namecheap nameservers at DigitalOcean. Audrey said DNS for her domains is on Cloudflare. The retired steps are commented below. The pre-change heading was "DNS Configuration (Namecheap → DigitalOcean)". -->
+
+### Step 1: Add the App Platform records in Cloudflare DNS
+
+1. Open the Cloudflare zone for `oaudrey.com`.
+2. Add the records App Platform prints for `oaudrey.com`, `www.oaudrey.com`, and any product subdomain in this repo (`affiliate-hub`, `ai-video-toolkit`, `screen-recorder-finder`).
+3. Leave the zone on Cloudflare. Do not switch nameservers to `ns1.digitalocean.com`, `ns2.digitalocean.com`, or `ns3.digitalocean.com`.
+4. Propagation is often minutes and can take up to 48 hours.
+
+<!--
+Retired 2026-11-11 MarketShipper. Kept so the old procedure stays visible.
 ### Step 1: Point Namecheap to DigitalOcean nameservers
-
-1. Log in to [namecheap.com](https://www.namecheap.com/myaccount/login/) (username: `uprisinghope`)
-2. Go to **Domain List** → click **Manage** next to `oaudrey.com`
-3. Under **Nameservers**, select **Custom DNS**
-4. Enter DigitalOcean nameservers:
-
-   ```text
-   ns1.digitalocean.com
-   ns2.digitalocean.com
-   ns3.digitalocean.com
-   ```
-
+1. Log in to namecheap.com (username: uprisinghope)
+2. Go to Domain List → Manage next to oaudrey.com
+3. Under Nameservers, select Custom DNS
+4. Enter DigitalOcean nameservers: ns1.digitalocean.com, ns2.digitalocean.com, ns3.digitalocean.com
 5. Save. DNS propagation takes 0–48 hours.
+-->
 
 ### Step 2: Add domain in DigitalOcean
 
@@ -483,8 +489,9 @@ Ensure the app name in `oaudrey/.do/app.yaml` matches exactly `oaudrey-hub`.
 ### DNS not propagating
 
 - Use [whatsmydns.net](https://www.whatsmydns.net) to check propagation globally
-- Namecheap DNS changes propagate in minutes; full global propagation can take up to 48 hours
-- Verify nameservers are set to DO's nameservers (not Namecheap's BasicDNS)
+- Cloudflare DNS changes propagate in minutes; full global propagation can take up to 48 hours
+- Verify the records are in the Cloudflare zone (not DigitalOcean nameservers, and not a registrar's default DNS)
+<!-- 2026-11-11 MarketShipper: the two bullets above previously said Namecheap DNS and Namecheap BasicDNS. Audrey said DNS for her domains is on Cloudflare. -->
 
 ### App Platform returns 404 on custom domain
 
@@ -537,10 +544,10 @@ would be `4xx`/`5xx`). Triage in this order:
    dig +short fieldwork.oaudrey.com
    ```
 
-   Empty output → DNS not provisioned. Confirm Namecheap nameservers point
-   to DigitalOcean (`ns1.digitalocean.com`, `ns2.digitalocean.com`, and
-   `ns3.digitalocean.com`) and that the records exist in DO → Networking →
-   Domains. See [DNS Configuration](#dns-configuration-namecheap--digitalocean).
+   Empty output → DNS not provisioned. Confirm the Cloudflare zone for
+   `oaudrey.com` has the App Platform records. Do not move the zone to
+   DigitalOcean nameservers. See [DNS Configuration](#dns-configuration-cloudflare).
+<!-- 2026-11-11 MarketShipper: the paragraph above previously said to confirm Namecheap nameservers point at DigitalOcean. Audrey said DNS for her domains is on Cloudflare. -->
 
 2. **App Platform deploy state** — confirm the app exists and is healthy:
 
@@ -658,7 +665,8 @@ Once both bootstrap secrets are present, the daily sentinel (`secrets-sentinel.y
 2. Trigger `secrets-sentinel.yml` manually to restore `DIGITALOCEAN_API_TOKEN` and other missing secrets
 3. Run `deploy-oaudrey.yml` via `workflow_dispatch` to deploy to DigitalOcean App Platform
 4. In DigitalOcean dashboard: confirm `oaudrey.com` and `fieldwork.oaudrey.com` are custom domains on the app
-5. In Namecheap: confirm nameservers point to `ns1-3.digitalocean.com`
+5. In Cloudflare DNS: confirm the App Platform records exist for `oaudrey.com`. Do not point nameservers at `ns1-3.digitalocean.com`.
+<!-- 2026-11-11 MarketShipper: item 5 previously said to confirm Namecheap nameservers. Audrey said DNS for her domains is on Cloudflare. -->
 6. Re-run `oaudrey-retro.yml` — expect `HTTP 200`/`301`/`302` for both domains
 
 ---
@@ -682,7 +690,8 @@ Once both bootstrap secrets are present, the daily sentinel (`secrets-sentinel.y
 1. Set `DIGITALOCEAN_API_TOKEN` in GitHub repo secrets
 2. Run `deploy-oaudrey.yml` manually via `workflow_dispatch`
 3. In DigitalOcean dashboard: add `oaudrey.com` and `fieldwork.oaudrey.com` as custom domains on the app
-4. In Namecheap: point `oaudrey.com` nameservers to `ns1-3.digitalocean.com`
+4. In Cloudflare DNS: add the App Platform records for `oaudrey.com`. Do not point nameservers at `ns1-3.digitalocean.com`.
+<!-- 2026-11-11 MarketShipper: item 4 previously said to point Namecheap nameservers at DigitalOcean. Audrey said DNS for her domains is on Cloudflare. The 2026-04-28 finding text above is the historical note and stays. -->
 5. Re-run `oaudrey-retro.yml` — expect `HTTP 200`/`301`/`302` for both domains
 
 ---

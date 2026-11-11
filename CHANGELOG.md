@@ -1,3 +1,7 @@
+## 2026-11-11 (6) — MarketShipper — oaudrey.com hosts and front page
+
+- Audrey chose oaudrey.com subdomains for affiliate-hub, ai-video-toolkit, and screen-recorder-finder. DNS notes that named Namecheap as the DNS host now say Cloudflare. `products/oaudrey-home/` is the static front page for `oaudrey.com` and `www.oaudrey.com`, with `/health`, `GET /api/team`, `GET /api/hub`, `deploy_on_push: false`, and a CircleCI image gate. No DigitalOcean deploy job was added. Earlier bullets in this file that named the previous product hosts were edited so those host strings do not remain; that wording is in git history.
+
 ## 2026-11-11 (5) — MarketShipper — screen-recorder-finder binds the shared Stripe server
 
 - Restacked onto main `3d6ae9a8`. CircleCI keeps every job from main and adds `screen-recorder-finder-image`. The product calls `bindProduct('screen-recorder-finder')` in `packages/static-stripe-server`. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
@@ -8,7 +12,7 @@
 
 ## 2026-11-11 — MarketShipper — screen-recorder-finder deploy path (WR #18332)
 
-- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `screen-recorder-finder.revvel.co` under `products/screen-recorder-finder/`. CircleCI job `screen-recorder-finder-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/screen-recorder-finder/CHANGELOG.md`.
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `screen-recorder-finder.oaudrey.com` under `products/screen-recorder-finder/`. CircleCI job `screen-recorder-finder-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/screen-recorder-finder/CHANGELOG.md`.
 ## 2026-11-11 (4) — MarketShipper — one static Stripe server for affiliate-hub and ai-video-toolkit
 
 - `packages/static-stripe-server/` is the server, the checkout button, and the image-gate cases. Each product file names its service and keeps the previous copy as line comments. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
@@ -19,7 +23,7 @@
 
 ## 2026-11-11 — MarketShipper — ai-video-toolkit deploy path (WR #18331)
 
-- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `ai-video-toolkit.revvel.co` under `products/ai-video-toolkit/`. CircleCI job `ai-video-toolkit-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/ai-video-toolkit/CHANGELOG.md`.
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `ai-video-toolkit.oaudrey.com` under `products/ai-video-toolkit/`. CircleCI job `ai-video-toolkit-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/ai-video-toolkit/CHANGELOG.md`.
 ## 2026-11-11 (4) — ResearchRodneyAIArchitect — PUCT priors reach the strategy entry point
 
 - `runPot` forwards `priorFor` into the search. Lane runs read `context.potPriorFor`. A test goes through `runStrategy`, not only `search`.
@@ -43,7 +47,7 @@
 
 ## 2026-11-11 — MarketShipper — affiliate-hub deploy path (WR #18330)
 
-- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `affiliate-hub.revvel.co` under `products/affiliate-hub/`. CircleCI job `affiliate-hub-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/affiliate-hub/CHANGELOG.md`.
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `affiliate-hub.oaudrey.com` under `products/affiliate-hub/`. CircleCI job `affiliate-hub-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/affiliate-hub/CHANGELOG.md`.
 
 ## 2026-11-11 — MarketShipper (Grok 4.7, Cursor Cloud) — GOAP agent-as-FTE sales deck and landing
 
