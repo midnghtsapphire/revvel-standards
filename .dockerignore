@@ -17,3 +17,7 @@ products/ghcr-console/tests
 **/.env
 **/.env.*
 **/npm-debug.log*
+# 2026-11-11 MarketShipper WR #18331: this image copies products/ai-video-toolkit.
+# The ** rule above would hide it, and Docker then fails COPY.
+!products/ai-video-toolkit/
+!products/ai-video-toolkit/**
