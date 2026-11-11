@@ -58,7 +58,7 @@ const PINS = {
 
 // Errata entries whose "As printed" text already states the finding, so the question would leak the answer.
 const ERRATA_EXCLUDED = {
-  A1: "the As-printed text states the finding (it names the drawing as a Tordos hut section), so the question would leak the answer",
+  A1: "the As-printed text already states the finding, so the question would leak the answer",
 };
 
 // A pointer such as "As recorded there" is not an answer.
@@ -181,6 +181,14 @@ function ledgerRows(sourcesDir, skipped) {
   return rows;
 }
 
+function verdictKind(verdict) {
+  if (/unverified/i.test(verdict)) return "unverified";
+  if (/plausible/i.test(verdict)) return "plausible only";
+  if (/partly/i.test(verdict)) return "partly confirmed";
+  if (/consistent/i.test(verdict)) return "consistent with another document, no verdict of its own";
+  return "mixed or partial";
+}
+
 // ---- linear-a wine claim check --------------------------------------------
 
 function wineRows(sourcesDir, skipped) {
@@ -198,7 +206,7 @@ function wineRows(sourcesDir, skipped) {
     const [claim, verdict, source] = cells;
     const decided = /^\*\*(Confirmed|Wrong)/.test(verdict);
     if (!decided) {
-      skipped.push({ source: `linear-a/${file}`, locator: match[1], reason: `verdict not decided: ${verdict.slice(0, 50)}` });
+      skipped.push({ source: `linear-a/${file}`, locator: match[1], reason: `verdict not decided (${verdictKind(verdict)})` });
       continue;
     }
     rows.push(
@@ -232,7 +240,7 @@ function errataRows(sourcesDir, skipped) {
     if (!asPrinted || !original || !checked || !status) continue;
     const statusText = status[1].trim().replace(/\.$/, "");
     if (!/^Settled/i.test(statusText) || /\bOpen\b/i.test(statusText)) {
-      skipped.push({ source: `tartaria-tablets/${file}`, locator: head[1], reason: `status not settled: ${statusText.slice(0, 60)}` });
+      skipped.push({ source: `tartaria-tablets/${file}`, locator: head[1], reason: `status not settled (${/reconcil/i.test(statusText) ? "not reconciled" : "partly open"})` });
       continue;
     }
     if (ERRATA_EXCLUDED[head[1]]) {
