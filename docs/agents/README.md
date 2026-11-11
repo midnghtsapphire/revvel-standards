@@ -63,3 +63,7 @@ If you ever want to stop committing them, add `docs/agents/*/transcripts/` to
 `scripts/agent-fingerprint-scan.js` blocks PRs that ship agent fingerprints
 (watermarks, default starter pages, unsolicited READMEs, generic test
 scaffolding). Rules are in `standards/AGENT_SCAFFOLDING_BAN.md`.
+
+## Audrey's bots and teams (call names)
+
+The bot and team backup lives beside this index, one folder per call name. See [`../CALL-NAMES.md`](../CALL-NAMES.md) (added 2026-11-10, Proofy).
