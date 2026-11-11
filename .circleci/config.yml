@@ -22,6 +22,11 @@ executors:
   node-executor:
     docker:
       - image: cimg/node:22.11
+  # Next 15's build needs require(esm) (Node >= 22.12); 22.11 dies with
+  # ERR_REQUIRE_ESM in magic-string (CircleCI build 23308, WR #18342).
+  node-next-executor:
+    docker:
+      - image: cimg/node:22.14
 
 jobs:
   lint-and-test:
@@ -174,6 +179,31 @@ jobs:
             timeout 300 npx --yes @railway/cli up --detach
             echo "Deploy triggered. Check https://railway.app for service status."
 
+  # WR #18342: AG-UI streaming + session-resume demo kit. Zero dependencies,
+  # so there is nothing to install: node built-ins only. Runs the kit's own
+  # tests (stream event order, second-device resume, page load < 2 s, 7:1
+  # contrast). Also runnable by hand: `cd products/halo-demo-stream && npm test`.
+  demo-kit-test:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: halo-demo-stream tests
+          command: cd products/halo-demo-stream && npm test
+
+  # WR #18342 moved affiliate-hub's catalogue into app/lib/programs.mjs; this
+  # proves the product still builds. Lockfile-pinned install, no scripts.
+  affiliate-hub-build:
+    executor: node-next-executor
+    steps:
+      - checkout
+      - run:
+          name: affiliate-hub npm ci
+          command: cd products/affiliate-hub && npm ci --ignore-scripts
+      - run:
+          name: affiliate-hub next build
+          command: cd products/affiliate-hub && npx next build
+
   # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
   # and that every REVVEL-DISABLED block in changed files has all required
   # metadata fields (AGENT, MODEL, WR, DATE, STATUS).
@@ -224,6 +254,14 @@ workflows:
           filters:
             branches:
               ignore: main
+      - demo-kit-test:
+          filters:
+            branches:
+              ignore: main
+      - affiliate-hub-build:
+          filters:
+            branches:
+              ignore: main
 
   # Run on main.
   main-workflow:
@@ -241,6 +279,14 @@ workflows:
             branches:
               only: main
       - veins-monitor:
+          filters:
+            branches:
+              only: main
+      - demo-kit-test:
+          filters:
+            branches:
+              only: main
+      - affiliate-hub-build:
           filters:
             branches:
               only: main
