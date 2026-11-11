@@ -36,13 +36,17 @@ From the repository root, with that virtualenv's Python:
 
 ```bash
 python3 scripts/prompt_compression.py provision
-python3 scripts/prompt_compression.py measure --root . \
-  --output wr/measurements/llmlingua2-governance-2026-11-11.json
+python3 scripts/prompt_compression.py measure --root .
 python3 scripts/prompt_compression.py compress --file AGENTS.md
 python3 scripts/prompt_compression_accuracy.py \
   --measurement wr/measurements/llmlingua2-governance-2026-11-11.json
 python3 -m unittest discover -s tests -p prompt_compression_test.py -v
 ```
+
+`measure` with no `--output` prints the summary and writes no file. `--output`
+is refused when that path already exists, so the 2026-11-11 record stays.
+A new run uses a new dated path. Exit 2 means at least one document dropped a
+force token and was kept whole. Exit 0 means every document was accepted.
 
 `measure` walks the same Markdown set as `scripts/context_graph.py`: root
 `*.md` plus `standards/**/*.md`. The JSON records two guarded totals.

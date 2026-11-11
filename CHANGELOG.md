@@ -15,6 +15,10 @@
 - Added `scripts/pot-research/`: UCT Monte Carlo tree search, a GRPO step on a transient adapter, a frozen base-weight vector, and a deterministic stub policy. The linear lane fan-out in `scripts/research-engine.js` stays the default; `RESEARCH_STRATEGY=pot` opts in.
 - Added `tests/pot-research.test.js`, `docs/research/pot-research-engine.md` (GPU budget marked as an estimate), `scripts/pot-research/LEDGER.md`, and `scripts/pot-research/benchmark.js`. The harness reports the +20-30% criterion as not measured. No quality delta is invented.
 - CircleCI already runs `tests/**/*.test.js`. No new job and no GitHub-hosted workflow.
+## 2026-11-11 — PromptOrchestrator — measure refuses to overwrite its record
+
+- `scripts/prompt_compression.py`: `measure` writes only with `--output`, refuses an existing path, and exits 2 when any document lost a force token. Review on PR #18377. The 2026-11-11 JSON was not rewritten.
+
 ## 2026-11-11 — PromptOrchestrator — LLMLingua-2 governance compression (WR #18335)
 
 - Local MeetingBank compression at keep-rate 0.3 with whole-token preservation of UPREV, WR, and MCP. Measured 299,593 tokens down to 89,978 (3.33x) on 141 indexed governance files, 0 term-loss rejections. CircleCI job `prompt-compression`. Same-task accuracy judge not run (pending owner-approved spend). Runbook: `docs/prompt-compression.md`.

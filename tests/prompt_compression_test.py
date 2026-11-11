@@ -151,6 +151,27 @@ class CompressionTests(unittest.TestCase):
         self.assertAlmostEqual(1.0, summary["guarded"]["ratio"])
         self.assertAlmostEqual(100 / 30, summary["raw_model"]["ratio"])
 
+    def test_measure_does_not_write_or_clobber_by_default(self):
+        args = compression.build_parser().parse_args(["measure"])
+        self.assertIsNone(args.output)
+        self.assertIsNone(compression.measurement_destination(None))
+        self.assertIsNone(compression.measurement_destination(""))
+        record = Path(__file__).resolve().parents[1] / "wr/measurements/llmlingua2-governance-2026-11-11.json"
+        with self.assertRaises(FileExistsError):
+            compression.measurement_destination(record)
+        with tempfile.TemporaryDirectory() as tmp:
+            fresh = Path(tmp) / "next.json"
+            self.assertEqual(fresh, compression.measurement_destination(fresh))
+            fresh.write_text("{}\n", encoding="utf-8")
+            with self.assertRaises(FileExistsError):
+                compression.write_measurement({}, fresh)
+
+    def test_measure_status_is_nonzero_when_terms_were_lost(self):
+        clean = {"full_governance": {"rejected_files": 0}}
+        lost = {"full_governance": {"rejected_files": 3}}
+        self.assertEqual(0, compression.measure_status(clean))
+        self.assertEqual(2, compression.measure_status(lost))
+
     def test_committed_governance_measurement(self):
         # Numbers from the local CPU run on 2026-11-11. Compared values are
         # the JSON file versus these literals, and each ratio versus

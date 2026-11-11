@@ -12,6 +12,10 @@ Runbook: docs/prompt-compression.md.
         --output wr/measurements/llmlingua2-governance-2026-11-11.json
     python3 scripts/prompt_compression.py compress --file AGENTS.md --provision
 
+A later `measure` with no --output prints the summary and writes nothing.
+--output refuses an existing file (the 2026-11-11 record stays). A run that
+rejects any document for term loss exits 2.
+
 What to check if it fails: llmlingua is importable, the Hugging Face cache
 holds the model id this process selected, and local_files_only is still True
 so a missing cache is an error rather than a silent download inside compress.
@@ -285,7 +289,41 @@ def measurement_payload(root, rate, compressor, force_tokens, model_name, progre
     }
 
 
+def measurement_destination(output):
+    """None writes nothing. An existing path is refused.
+
+    The 2026-11-11 JSON is the committed measurement. A later run on another
+    day, model, or cache must not replace it. Pass a new dated path.
+    """
+    if not output:
+        return None
+    path = Path(output)
+    if path.exists():
+        raise FileExistsError(
+            f"{path} already exists. Pass a new dated path. "
+            "The committed measurement is not overwritten."
+        )
+    return path
+
+
+def measure_status(payload) -> int:
+    """0 only when no document fell back for term loss.
+
+    compress already exits 2 on a rejected file. measure used to exit 0
+    anyway, so a wrapper could not tell a clean run from a fallback.
+    """
+    rejected = payload["full_governance"]["rejected_files"]
+    return 0 if rejected == 0 else 2
+
+
 def write_measurement(payload, output: Path) -> None:
+    # Caller must use measurement_destination first. This still refuses, so a
+    # direct call cannot clobber the committed record either.
+    if output.exists():
+        raise FileExistsError(
+            f"{output} already exists. Pass a new dated path. "
+            "The committed measurement is not overwritten."
+        )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
@@ -303,7 +341,11 @@ def run_measure(args) -> int:
         progress=_stderr_progress,
     )
     payload["measured_at"] = args.measured_at
-    output = Path(args.output) if args.output else None
+    try:
+        output = measurement_destination(args.output)
+    except FileExistsError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
     if output:
         write_measurement(payload, output)
     guarded = payload["full_governance"]["guarded"]
@@ -317,7 +359,7 @@ def run_measure(args) -> int:
         "reference_files": payload["reference_subset"]["files"],
         "rejected_full": payload["full_governance"]["rejected_files"],
     }, indent=2))
-    return 0
+    return measure_status(payload)
 
 
 def run_compress(args) -> int:
@@ -373,7 +415,16 @@ def build_parser() -> argparse.ArgumentParser:
     measure = sub.add_parser("measure", help="Compress indexed governance docs and print counts.",
                              parents=[shared])
     measure.add_argument("--root", default=".")
-    measure.add_argument("--output", default=str(MEASUREMENT_PATH))
+    # 2026-11-11 first cut wrote the committed record by default. PromptOrchestrator,
+    # same day, review on PR #18377: that overwrites the record on the next run.
+    # measure.add_argument("--output", default=str(MEASUREMENT_PATH))
+    measure.add_argument(
+        "--output", default=None,
+        help=(
+            "Write JSON to this new path. Refused if the file exists. "
+            f"Committed record: {MEASUREMENT_PATH}. Omit to print only."
+        ),
+    )
     measure.add_argument("--measured-at", default=None,
                          help="ISO timestamp recorded in the JSON. Default: current UTC.")
     measure.set_defaults(func=_measure_with_clock)

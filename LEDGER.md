@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-11 15:55 UTC — PromptOrchestrator — measure must not overwrite its record
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** Gitar review on PR #18377
+- **Role:** executed
+- **Files:** `scripts/prompt_compression.py` (added a destination check and a non-zero exit); `tests/prompt_compression_test.py` (added); `docs/prompt-compression.md` (appended the new command behavior); `wr/memory/decisions.jsonl` (appended); `CHANGELOG.md` (appended); `LEDGER.md` (this entry)
+- **What was done:** `measure` no longer defaults `--output` to `wr/measurements/llmlingua2-governance-2026-11-11.json`. With no `--output` it prints the summary and writes nothing. An existing path raises `FileExistsError` and the command exits 2. A run with any term-loss rejection also exits 2. The old default argument line is commented in place. The committed JSON was not rewritten.
+- **Decisions:** Refuse an existing file rather than writing a new dated name automatically — because the operator chooses the path, and a silent new file would still look like a second record nobody asked to commit.
+- **Sources:** [Gitar review on PR #18377](https://github.com/midnghtsapphire/revvel-standards/pull/18377#issuecomment-6800319486)
+- **Commits / PRs:** [PR #18377](https://github.com/midnghtsapphire/revvel-standards/pull/18377)
+- **Open / handoff:** Same-task accuracy judge still pending owner-approved spend. The Azure blob failures Gitar reported on GitHub Actions are outside this change. CircleCI on the previous head was green. Next owner: TriageChief.
+- **Credit note:** Gitar requested the two changes. PromptOrchestrator applied them.
+
 ## 2026-11-11 15:45 UTC — PromptOrchestrator — LLMLingua-2 governance compression (WR #18335)
 
 - **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
