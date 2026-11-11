@@ -33,7 +33,9 @@ FROM node:22-alpine AS build
 WORKDIR /repo
 COPY products/ai-video-toolkit/package.json products/ai-video-toolkit/package-lock.json ./products/ai-video-toolkit/
 WORKDIR /repo/products/ai-video-toolkit
-RUN npm ci
+# --ignore-scripts: this static export does not need dependency lifecycle
+# scripts, and running them would execute code from the lockfile.
+RUN npm ci --ignore-scripts
 COPY products/ai-video-toolkit/ ./
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build

@@ -39,8 +39,8 @@ const SIGNATURE_TOLERANCE_SEC = 300;
 const PRICE_ID = /^price_[A-Za-z0-9]+$/;
 
 function keyKind(value, mode) {
-  const secretOk = mode === 'test' ? /^sk_test_/.test(value) : /^sk_live_/.test(value);
-  const publishableOk = mode === 'test' ? /^pk_test_/.test(value) : /^pk_live_/.test(value);
+  const secretOk = mode === 'test' ? value.startsWith('sk_test_') : value.startsWith('sk_live_');
+  const publishableOk = mode === 'test' ? value.startsWith('pk_test_') : value.startsWith('pk_live_');
   return { secretOk, publishableOk };
 }
 
@@ -169,7 +169,7 @@ export async function createCheckoutSession({ env = process.env, origin, fetchIm
         ok: false,
         mode: inspected.mode,
         reason: 'stripe_checkout_rejected',
-        stripeType: payload.error && payload.error.type ? String(payload.error.type) : 'unknown',
+        stripeType: payload.error?.type ? String(payload.error.type) : 'unknown',
       },
     };
   }
@@ -205,12 +205,45 @@ function readBody(req) {
   });
 }
 
-function rateLimited(hits, ip, nowMs) {
-  const recent = (hits.get(ip) || []).filter((stamp) => nowMs - stamp < RATE_WINDOW_MS);
-  if (recent.length >= RATE_MAX) {
-    hits.set(ip, recent);
-    return true;
+function headerValue(req, name) {
+  const value = req.headers?.[name];
+  if (Array.isArray(value)) return value[0] || '';
+  return typeof value === 'string' ? value : '';
+}
+
+function looksLikeIp(value) {
+  if (typeof value !== 'string') return false;
+  const candidate = value.trim();
+  if (candidate.length < 3 || candidate.length > 64) return false;
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(candidate)) {
+    return candidate.split('.').every((octet) => Number(octet) <= 255);
   }
+  return candidate.includes(':') && /^[0-9a-fA-F:.]+$/.test(candidate);
+}
+
+// App Platform's edge sets do-connecting-ip to the visitor. The socket address
+// is the proxy, so keying the limit on it puts every visitor in one bucket.
+// X-Forwarded-For is the fallback for another proxy; only its first hop is
+// the client. A missing or malformed header falls back to the socket.
+export function clientAddress(req) {
+  const connecting = headerValue(req, 'do-connecting-ip').trim();
+  if (looksLikeIp(connecting)) return connecting;
+  const forwarded = headerValue(req, 'x-forwarded-for');
+  const firstHop = forwarded.split(',')[0].trim();
+  if (looksLikeIp(firstHop)) return firstHop;
+  const socketIp = req.socket?.remoteAddress || '';
+  if (looksLikeIp(socketIp)) return socketIp;
+  return 'unknown';
+}
+
+export function rateLimited(hits, ip, nowMs) {
+  for (const [key, stamps] of hits) {
+    const live = stamps.filter((stamp) => nowMs - stamp < RATE_WINDOW_MS);
+    if (live.length === 0) hits.delete(key);
+    else hits.set(key, live);
+  }
+  const recent = hits.get(ip) || [];
+  if (recent.length >= RATE_MAX) return true;
   recent.push(nowMs);
   hits.set(ip, recent);
   return false;
@@ -256,76 +289,76 @@ export async function resolveStatic(root, urlPath) {
   return null;
 }
 
-async function handle(req, res, ctx) {
-  const requestUrl = new URL(req.url || '/', 'http://127.0.0.1');
-  const pathname = requestUrl.pathname;
-  if ((req.method === 'GET' || req.method === 'HEAD') && (pathname === '/health' || pathname === '/health/')) {
-    if (req.method === 'HEAD') {
-      res.writeHead(200, {
-        'content-type': 'application/json; charset=utf-8',
-        'cache-control': 'no-store',
-      });
-      res.end();
-      return;
-    }
-    send(res, 200, { status: 'ok', service: ctx.service });
-    return;
-  }
-  if (req.method === 'GET' && pathname === '/api/stripe/config') {
-    const inspected = inspectStripeEnv(ctx.env);
-    send(res, 200, {
-      mode: inspected.mode,
-      checkoutReady: inspected.checkoutReady,
-      reason: inspected.reason,
-      publishableKey: inspected.publishableKey,
+function sendHealth(req, res, ctx) {
+  if (req.method === 'HEAD') {
+    res.writeHead(200, {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store',
     });
+    res.end();
     return;
   }
-  if (pathname === '/api/checkout' && req.method === 'POST') {
-    const ip = req.socket.remoteAddress || 'unknown';
-    if (rateLimited(ctx.hits, ip, ctx.now())) {
-      send(res, 429, { ok: false, reason: 'rate_limited' });
-      return;
-    }
-    let hostUrl = null;
-    try {
-      hostUrl = new URL(`http://${req.headers.host || '127.0.0.1'}`);
-    } catch {
-      hostUrl = null;
-    }
-    const result = await createCheckoutSession({
-      env: ctx.env,
-      origin: hostUrl ? publicOrigin(hostUrl, ctx.env) : null,
-      fetchImpl: ctx.fetchImpl,
-    });
-    send(res, result.status, result.body);
+  send(res, 200, { status: 'ok', service: ctx.service });
+}
+
+function sendStripeConfig(res, ctx) {
+  const inspected = inspectStripeEnv(ctx.env);
+  send(res, 200, {
+    mode: inspected.mode,
+    checkoutReady: inspected.checkoutReady,
+    reason: inspected.reason,
+    publishableKey: inspected.publishableKey,
+  });
+}
+
+function requestOrigin(req, ctx) {
+  try {
+    const hostUrl = new URL(`http://${req.headers.host || '127.0.0.1'}`);
+    return publicOrigin(hostUrl, ctx.env);
+  } catch {
+    return null;
+  }
+}
+
+async function postCheckout(req, res, ctx) {
+  if (rateLimited(ctx.hits, clientAddress(req), ctx.now())) {
+    send(res, 429, { ok: false, reason: 'rate_limited' });
     return;
   }
-  if (pathname === '/api/stripe/webhook' && req.method === 'POST') {
-    const secret = String(ctx.env.STRIPE_WEBHOOK_SECRET || '');
-    const raw = await readBody(req);
-    const verdict = verifyStripeSignature(raw, req.headers['stripe-signature'], secret);
-    if (!verdict.ok) {
-      const status = verdict.reason === 'missing_STRIPE_WEBHOOK_SECRET' ? 503 : 400;
-      send(res, status, { ok: false, reason: verdict.reason });
-      return;
-    }
-    let event;
-    try {
-      event = JSON.parse(raw.toString('utf8'));
-    } catch {
-      send(res, 400, { ok: false, reason: 'invalid_json' });
-      return;
-    }
-    // Log the event id and type only. The body can contain an email address.
-    console.log(JSON.stringify({
-      service: ctx.service,
-      stripeEvent: event && event.type ? event.type : 'unknown',
-      stripeEventId: event && event.id ? event.id : null,
-    }));
-    send(res, 200, { ok: true, received: true, type: event && event.type ? event.type : null });
+  const result = await createCheckoutSession({
+    env: ctx.env,
+    origin: requestOrigin(req, ctx),
+    fetchImpl: ctx.fetchImpl,
+  });
+  send(res, result.status, result.body);
+}
+
+async function postWebhook(req, res, ctx) {
+  const secret = String(ctx.env.STRIPE_WEBHOOK_SECRET || '');
+  const raw = await readBody(req);
+  const verdict = verifyStripeSignature(raw, req.headers['stripe-signature'], secret);
+  if (!verdict.ok) {
+    const status = verdict.reason === 'missing_STRIPE_WEBHOOK_SECRET' ? 503 : 400;
+    send(res, status, { ok: false, reason: verdict.reason });
     return;
   }
+  let event;
+  try {
+    event = JSON.parse(raw.toString('utf8'));
+  } catch {
+    send(res, 400, { ok: false, reason: 'invalid_json' });
+    return;
+  }
+  // Log the event id and type only. The body can contain an email address.
+  console.log(JSON.stringify({
+    service: ctx.service,
+    stripeEvent: event?.type || 'unknown',
+    stripeEventId: event?.id || null,
+  }));
+  send(res, 200, { ok: true, received: true, type: event?.type || null });
+}
+
+async function serveStatic(req, res, ctx, pathname) {
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     send(res, 405, { ok: false, reason: 'method_not_allowed' });
     return;
@@ -353,6 +386,28 @@ async function handle(req, res, ctx) {
   res.end(req.method === 'HEAD' ? undefined : data);
 }
 
+async function handle(req, res, ctx) {
+  const pathname = new URL(req.url || '/', 'http://127.0.0.1').pathname;
+  const health = pathname === '/health' || pathname === '/health/';
+  if ((req.method === 'GET' || req.method === 'HEAD') && health) {
+    sendHealth(req, res, ctx);
+    return;
+  }
+  if (req.method === 'GET' && pathname === '/api/stripe/config') {
+    sendStripeConfig(res, ctx);
+    return;
+  }
+  if (pathname === '/api/checkout' && req.method === 'POST') {
+    await postCheckout(req, res, ctx);
+    return;
+  }
+  if (pathname === '/api/stripe/webhook' && req.method === 'POST') {
+    await postWebhook(req, res, ctx);
+    return;
+  }
+  await serveStatic(req, res, ctx, pathname);
+}
+
 export function createApp(options = {}) {
   const ctx = {
     env: options.env || process.env,
@@ -366,11 +421,11 @@ export function createApp(options = {}) {
     try {
       await handle(req, res, ctx);
     } catch (error) {
-      const status = error && error.status ? error.status : 500;
+      const status = error?.status || 500;
       const reason = status === 413 ? 'body_too_large' : 'internal_error';
-      const text = String(error && error.stack ? error.stack : error)
-        .replace(/sk_(test|live)_[A-Za-z0-9_]+/g, 'sk_$1_[redacted]')
-        .replace(/whsec_[A-Za-z0-9_]+/g, 'whsec_[redacted]');
+      const text = String(error?.stack || error)
+        .replace(/sk_(test|live)_\w+/g, 'sk_$1_[redacted]')
+        .replace(/whsec_\w+/g, 'whsec_[redacted]');
       console.error(text);
       if (!res.headersSent) send(res, status, { ok: false, reason });
       else res.end();

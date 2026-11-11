@@ -183,3 +183,60 @@ test('checkout origin is limited to local, revvel.co, and ondigitalocean.app', a
     'https://ai-video-toolkit.revvel.co',
   );
 });
+
+test('dockerignore re-excludes node_modules, .next, and env files after the un-ignore', () => {
+  const ignore = fs.readFileSync(path.join(ROOT, '.dockerignore'), 'utf8');
+  const unignore = ignore.lastIndexOf('!products/ai-video-toolkit/**');
+  assert.ok(unignore > -1, 'ai-video-toolkit sources must be un-ignored');
+  for (const rule of ['**/node_modules', '**/.next', '**/.env', '**/.env.*']) {
+    assert.ok(ignore.lastIndexOf(rule) > unignore, `${rule} must win over the un-ignore`);
+  }
+  const dockerfile = fs.readFileSync(path.join(ROOT, 'products/ai-video-toolkit/Dockerfile'), 'utf8');
+  assert.match(dockerfile, /npm ci --ignore-scripts/);
+  const config = fs.readFileSync(path.join(ROOT, '.circleci/config.yml'), 'utf8');
+  assert.equal(config.includes('ai-video-toolkit-do-deploy'), false);
+  assert.equal(config.includes('do-app-update.sh'), false);
+  assert.match(config, /demo-kit-test:/);
+  assert.match(config, /affiliate-hub-build:/);
+  assert.match(config, /ai-video-toolkit-image:/);
+  assert.equal(fs.existsSync(path.join(ROOT, '.circleci/scripts/do-app-update.sh')), false);
+});
+
+test('checkout rate limit uses the visitor IP, not the shared proxy socket', async () => {
+  const { clientAddress, rateLimited, createApp } = await loadServer();
+  const both = {
+    headers: { 'do-connecting-ip': '203.0.113.8', 'x-forwarded-for': '198.51.100.4, 10.0.0.1' },
+    socket: { remoteAddress: '10.0.0.8' },
+  };
+  assert.equal(clientAddress(both), '203.0.113.8');
+  const forwarded = {
+    headers: { 'x-forwarded-for': '198.51.100.4, 10.0.0.1' },
+    socket: { remoteAddress: '10.0.0.8' },
+  };
+  assert.equal(clientAddress(forwarded), '198.51.100.4');
+  assert.equal(clientAddress({ headers: {}, socket: { remoteAddress: '127.0.0.1' } }), '127.0.0.1');
+  const hits = new Map();
+  hits.set('stale', [1]);
+  assert.equal(rateLimited(hits, '203.0.113.8', 1_000_000), false);
+  assert.equal(hits.has('stale'), false);
+  const server = createApp({ env: { STRIPE_MODE: 'test' }, staticRoot: path.join(__dirname, 'no-such-static') });
+  const port = await listen(server);
+  try {
+    let limited = 0;
+    for (let i = 0; i < 11; i += 1) {
+      const response = await fetch(`http://127.0.0.1:${port}/api/checkout`, {
+        method: 'POST',
+        headers: { 'do-connecting-ip': '203.0.113.9' },
+      });
+      if (response.status === 429) limited += 1;
+    }
+    assert.equal(limited, 1);
+    const other = await fetch(`http://127.0.0.1:${port}/api/checkout`, {
+      method: 'POST',
+      headers: { 'do-connecting-ip': '203.0.113.10' },
+    });
+    assert.equal(other.status, 503);
+  } finally {
+    server.close();
+  }
+});

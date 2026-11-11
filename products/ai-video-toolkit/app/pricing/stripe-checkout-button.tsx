@@ -62,7 +62,7 @@ export function StripeCheckoutButton() {
       >
         {pending ? 'Contacting Stripe…' : 'Continue to Stripe checkout'}
       </button>
-      {shown ? <p className="mt-3" role="status">{shown}</p> : null}
+      {shown ? <output className="mt-3">{shown}</output> : null}
       <p className="mt-3 text-sm">
         Test mode is the default. The amount Stripe charges is the amount on the configured Stripe Price, shown on the Stripe checkout page before you pay.
       </p>
