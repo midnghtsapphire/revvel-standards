@@ -70,12 +70,15 @@ query($owner:String!, $name:String!, $number:Int!) {
   repository(owner:$owner, name:$name) {
     pullRequest(number:$number) {
       reviewThreads(first:50) {
-        nodes { id isResolved comments(first:10) { nodes { databaseId path body author { login } } } }
+        pageInfo { hasNextPage endCursor }
+        nodes { id isResolved comments(first:10) { pageInfo { hasNextPage endCursor } nodes { databaseId path body author { login } } } }
       }
     }
   }
 }'
 ```
+
+`reviewThreads(first:50)` and `comments(first:10)` are the first page. If `pageInfo.hasNextPage` is true, repeat with the `endCursor`. Do not treat the first page as the whole thread. An unresolved thread on a later page is still open.
 
 Group what is unresolved. For each thread, say one of these:
 

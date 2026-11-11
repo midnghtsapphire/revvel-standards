@@ -49,12 +49,14 @@ You changed code or markdown and you are about to commit or push. The task is no
 
 ## This repository
 
-Root tests are `node --test`. CircleCI runs `npm test`, which is that suite plus the flake8 baseline gate.
+Root JavaScript tests are `node --test`. `npm test` runs that suite and `tests/social_post_formatter.test.sh`. It does not run flake8. Python you changed goes through `scripts/flake8-baseline-gate.js`. The workflow that calls it is `.github/workflows/python-flake8.yml`. CircleCI `lint-and-test` runs `npm test`.
 
 ```bash
 node --test tests/the-test-you-touched.test.js
-npx markdownlint-cli2 docs/skills/the-file.md
+npx markdownlint-cli2 docs/skills/the-file.md $(sed -e 's/[[:space:]]*$//' -e '/^#/d' -e '/^$/d' -e 's/^/#/' .markdownlintignore)
 ```
+
+The `sed` line turns `.markdownlintignore` into the `#glob` negations `.circleci/scripts/lint-changed-markdown.sh` uses. A bare `markdownlint-cli2` on a directory also lints archives that file excludes.
 
 Run `npm test` before you push when the change can affect the suite. Markdown lint uses `.markdownlint.yaml`. Lint the markdown files you changed. A repo-wide `npm run lint` also walks generated transcripts and any installed `node_modules`, and that flood is pre-existing. Do not treat it as a failure you introduced. Scope the command to your files.
 

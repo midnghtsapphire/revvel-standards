@@ -44,7 +44,7 @@ No secrets in output. Do not run `gh auth token`. Do not echo `GH_TOKEN` or `GIT
 
 ## When to use
 
-You are adding a behavior or fixing a bug. The test lands in the same commit as the code. This repo's runner is `node:test` (`npm test`). A product that already has Jest, Vitest, or Playwright keeps that runner. Do not add a second runner.
+You are adding a behavior or fixing a bug. The test lands in the same commit as the code. Root JavaScript tests use `node:test`. `npm test` also runs `tests/social_post_formatter.test.sh`. A product that already has Jest, Vitest, or Playwright keeps that runner. Do not add a second runner.
 
 ## Order
 

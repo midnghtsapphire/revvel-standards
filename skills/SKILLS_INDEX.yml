@@ -1468,7 +1468,7 @@ skills:
     triggers:
       - "triage this issue"
       - "label this issue"
-      - "priority"
+      - "issue priority"
       - "duplicate issue"
       - "needs-human"
       - "labels-allowlist"

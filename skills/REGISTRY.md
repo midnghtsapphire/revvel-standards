@@ -675,6 +675,8 @@ At the end of every session: 5. **`wrap-up`** — Ship, Remember, Review, Publis
 
 _This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: May 3, 2026. Added: ada-compliance-agent, usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent, bito-ai, prompt-routing, roo-cline skills._
 
+_2026-11-11 TriageChief: appended `github-read-write-admin` and the fourteen GitHub-relevant skills after this footer. The May 3 line stays as the earlier stamp._
+
 ---
 
 ### Agent Orchestration & Prompts (New Section)
@@ -747,7 +749,7 @@ _This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: Ma
 
 - **Path:** `docs/skills/gh-issue-triage/SKILL.md` (canonical). Loader: `skills/gh-issue-triage/SKILL.md`. Machine config: `skills/gh-issue-triage/gh-issue-triage.skill.yml`.
 - **Description:** Label and triage GitHub issues on the repository label allowlist. Adds labels, does not remove them, and signs every comment. License: MIT. Copyright (c) 2025 Joe Seymour.
-- **Trigger:** "triage this issue", "label this issue", "priority", "duplicate issue", "needs-human", "labels-allowlist"
+- **Trigger:** "triage this issue", "label this issue", "issue priority", "duplicate issue", "needs-human", "labels-allowlist"
 - **Status:** Active (2026-11-11, TriageChief)
 
 ### `resolve-conflicts`

@@ -81,9 +81,9 @@ gh search issues --repo "$FULL" --state open --limit 20 -- "KEYWORDS"
 ```
 
 1. Read the issue. Search for a duplicate before you add a type.
-2. Duplicate: add `duplicate`, comment with `signed_body` naming the original number, and close with `--reason "not planned"`. Do not delete the issue. Add any new fact as a comment on the original.
+2. Duplicate: add `duplicate`, comment with `signed_body` naming the original number, and run `gh issue close NUMBER --repo "$FULL" --reason "not planned"`. Do not delete the issue. Add any new fact as a comment on the original.
 3. The report is too thin to act on ("it does not work", no steps, no environment): add `needs-human` and comment with the exact fact you need. Leave `triage` in place.
-4. Otherwise add the type label, one `priority:pN` label, and `triage` if it is missing.
+4. Otherwise add the type label, one `priority:pN` label, and `triage` if it is missing. If the issue already has a different type label or a different `priority:pN` label, leave those labels in place and comment that a human has to pick one. Do not add a second type or a second priority.
 
 ```bash
 gh issue edit NUMBER --repo "$FULL" --add-label bug --add-label "priority:p1" --add-label triage
@@ -105,5 +105,5 @@ It does not close an issue as finished unless the task says the work is done. It
 ## Trigger keywords
 
 ```text
-triage this issue, label this issue, priority, duplicate issue, needs-human, labels-allowlist
+triage this issue, label this issue, issue priority, duplicate issue, needs-human, labels-allowlist
 ```

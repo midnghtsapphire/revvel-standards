@@ -21,7 +21,7 @@ Adapted from the MIT skill at <https://github.com/swarmclawai/andrej-karpathy-sk
 
 ## Where this file lives
 
-Canonical text: this file. `skills/karpathy-guidelines/SKILL.md` is a loader. `skills/karpathy-guidelines/karpathy-guidelines.skill.yml` is the vault machine config. Decision, 2026-11-11, recorded by TriageChief, same layout as `docs/skills/github-read-write-admin/SKILL.md`.
+Canonical text: this file. `skills/karpathy-guidelines/SKILL.md` is a loader. `skills/karpathy-guidelines/karpathy-guidelines.skill.yml` is the vault machine config. Audrey Evans asked for playbooks under `docs/skills/`. Recorded by TriageChief on 2026-11-11, owner approval pending, same layout as `docs/skills/github-read-write-admin/SKILL.md`.
 
 ## Revvel house rules
 

@@ -61,8 +61,10 @@ Confirm the fetch exited 0 before you trust `origin/...`. `origin/HEAD` is the d
 Run this only after the scope check says there is no upstream and no remote contains those SHAs.
 
 ```bash
-git rebase -i HEAD~5
+git rebase -i "$(git merge-base HEAD origin/daily/YYYY-MM-DD)"
 ```
+
+That range is the commits since the daily branch, and only after each of those SHAs has an empty `git branch -r --contains`. Do not use `@{upstream}` here. An upstream means the branch has been pushed, and this section has already stopped.
 
 `pick` keeps a commit. `reword` changes the message you have not pushed. `squash` and `fixup` fold an unpushed commit into the one before it. `drop` is a rewrite. On this repo, prefer `reword` or a new commit. If you `drop`, the commit must be one you created in this session and it must not be on a remote. If the rebase stops on a conflict, fix it under `docs/skills/resolve-conflicts/SKILL.md` or run `git rebase --abort` and leave the branch as it was.
 
@@ -73,8 +75,11 @@ Do not `git rebase` onto `main` or a daily branch after the feature branch has b
 Cherry-pick copies a commit as a new commit on the current branch. That is allowed. Do not cherry-pick onto `main`.
 
 ```bash
-git cherry-pick SHA
+git cherry-pick --no-commit SHA
+git commit -m "$(signed_body "fix: cherry-pick SHA")"
 ```
+
+`--no-commit` stops a fast-forward from publishing the original message. The new commit uses `signed_body`.
 
 ## Bisect
 
@@ -86,7 +91,7 @@ cd ../repo-bisect
 git bisect start
 git bisect bad
 git bisect good KNOWN_GOOD
-git bisect run npm test -- tests/the-failing.test.js
+git bisect run node --test tests/the-failing.test.js
 git bisect reset
 cd -
 git worktree remove ../repo-bisect

@@ -63,7 +63,7 @@ A second model may judge prose when the task asks for a rubric. The judge return
 {"overall_score": 0.0, "dimensions": {"accuracy": 0.0, "completeness": 0.0}}
 ```
 
-The default threshold is 0.8 unless the task names another number. Weights belong in the task. If the task did not give weights, treat the criteria as equal.
+The default threshold is 0.8 unless the task names another number. Mark the rubric `PASS` only when `overall_score` is greater than or equal to that threshold. If the task did not give weights, each dimension has equal weight and `overall_score` is their mean.
 
 For code, the evaluator is the test command, not another model. Write the test, run it, and fix from the failure text. Three runs, then stop and report the last failure.
 

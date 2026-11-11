@@ -95,7 +95,7 @@ Do not label a finding `#1`. GitHub turns `#1` into an issue link. Use a prefix 
 
 Confidence is `confirmed` or `likely`. Drop a `likely` finding you cannot tighten, and mention it as a limit. Do not delete code to erase a finding you changed your mind about.
 
-Run the smallest test that covers the change. If you cannot run it, the recommendation stays `COMMENT`.
+Run the smallest test that covers the change. If you cannot run it, do not `APPROVE`. A HIGH finding is still `REQUEST_CHANGES`. With no HIGH finding, the recommendation stays `COMMENT` and you name the test you did not run.
 
 ## Recommendation
 
@@ -105,7 +105,7 @@ Run the smallest test that covers the change. If you cannot run it, the recommen
 | REQUEST_CHANGES | A HIGH finding, or CircleCI `lint-and-test` failed on this head SHA. |
 | APPROVE | You are not the author, the task asked you to approve, the gates pass, and the test you ran passed. |
 
-Post the recommendation with `gh pr review` and `signed_body`. The report lists the head SHA, the CircleCI result, the guidelines you loaded, and the findings in severity order.
+For a pull request, post the recommendation with `gh pr review` and `signed_body`. For a local diff or a file with no pull request, return the signed recommendation in the task response. The report lists the head SHA, the CircleCI result, the guidelines you loaded, and the findings in severity order.
 
 Do not write a review markdown file into the repo unless the task asked for that file.
 

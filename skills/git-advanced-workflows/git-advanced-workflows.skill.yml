@@ -36,7 +36,7 @@ implementation:
     Load docs/skills/git-advanced-workflows/SKILL.md and follow it.
     That file is the canonical playbook. This YAML is discovery metadata.
     Sign every write as **BotName** at the start and — BotName at the end.
-    Do not delete, force-push, or print a secret.
+    Do not delete branches, issues, comments, labels, files, or rulesets. Removing a temporary worktree with git worktree remove is allowed. Do not force-push or print a secret.
     CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
-    Merge only when an assignee is set, the work is done, the pull request is not a draft,
-    required checks are green on the head SHA, and you are not the author.
+    Do not merge from this skill. Merge gates live in docs/skills/github-read-write-admin/SKILL.md and apply only when that playbook is loaded and the task asked for the merge.
+schema_version: "1.0"

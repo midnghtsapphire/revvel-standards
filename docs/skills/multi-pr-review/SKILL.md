@@ -57,9 +57,12 @@ FULL=midnghtsapphire/revvel-standards
 gh pr view NUMBER --repo "$FULL" --json number,title,body,headRefOid,isDraft,author,url
 gh pr diff NUMBER --repo "$FULL"
 gh api --paginate "repos/$FULL/pulls/NUMBER/comments" --jq '.[] | {path, line, user:.user.login, body}'
-HEAD_SHA=$(gh pr view NUMBER --repo "$FULL" --jq .headRefOid)
-gh pr checks NUMBER --repo "$FULL" --required --json name,bucket,state,link
+HEAD_SHA=$(gh pr view NUMBER --repo "$FULL" --json headRefOid --jq .headRefOid)
+gh api --paginate "repos/$FULL/commits/$HEAD_SHA/check-runs" --jq '.check_runs[] | {name,status,conclusion}'
+AFTER=$(gh pr view NUMBER --repo "$FULL" --json headRefOid --jq .headRefOid)
 ```
+
+If `AFTER` is not `HEAD_SHA`, the branch moved. Stop and report both SHAs. Do not treat checks from the new SHA as the verdict for the SHA you reviewed.
 
 `gh pr checks` talks to GitHub. CircleCI `lint-and-test` on that same `HEAD_SHA` is the check that counts. Pending is not green.
 
@@ -100,7 +103,7 @@ YES does not skip the merge gates. This skill does not merge.
 One summary comment, signed:
 
 ```bash
-gh pr comment NUMBER --repo "$FULL" --body "$(signed_body "Verdict: NOT SURE. Findings and the CircleCI result on HEAD_SHA.")"
+gh pr comment NUMBER --repo "$FULL" --body "$(signed_body "Verdict: NOT SURE. Findings and the CircleCI result on $HEAD_SHA.")"
 ```
 
 HIGH and MEDIUM findings go in one review with `event` set to `COMMENT`. Build the JSON outside the repo. Do not commit it. The review body is signed. Each comment body starts with the bot name.

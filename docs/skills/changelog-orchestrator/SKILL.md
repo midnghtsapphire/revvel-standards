@@ -55,20 +55,23 @@ The task asks for a changelog, release notes, or a weekly note of what merged. T
    ```bash
    FULL=midnghtsapphire/revvel-standards
    git fetch origin
-   git log --oneline origin/daily/YYYY-MM-DD..HEAD
-   gh pr list --repo "$FULL" --state merged --limit 30 --json number,title,mergedAt,url
+   BASE=daily/YYYY-MM-DD
+   git ls-remote --heads origin "$BASE" | grep -q . || BASE=$(git ls-remote --heads origin 'daily/*' | awk '{print $2}' | sed 's#refs/heads/##' | sort | tail -1)
+   git log --oneline "origin/$BASE..HEAD"
    ```
+
+   `git log` is the source of the bullets. A `gh pr list` is extra. Cite a pull request only when its commits are in that log. Do not treat a 30-item page as the whole range. If you list pull requests, pass `--paginate` and stop when the task's dates are covered.
 
 3. Group the new bullets as features, fixes, and docs, still in the existing bullet shape. Name a path. A bullet that only says "updates" is not done. Link a pull request with a markdown link when you have the URL.
 4. Quality check before you commit. Every new bullet has a date, a name, and a path. No token, no `.env` value, no raw `GH_TOKEN`. If `gh` was unavailable, say that the note is from `git log` only.
 5. Commit on a new branch from the daily branch and open the pull request. Do not merge it.
 
    ```bash
-   git switch -c cursor/changelog-YYYY-MM-DD origin/daily/YYYY-MM-DD
+   git switch -c cursor/changelog-YYYY-MM-DD "origin/$BASE"
    git add CHANGELOG.md
    git commit -m "$(signed_body "docs: append changelog for YYYY-MM-DD")"
    git push -u origin HEAD
-   gh pr create --repo "$FULL" --base daily/YYYY-MM-DD --head "$(git branch --show-current)" \
+   gh pr create --repo "$FULL" --base "$BASE" --head "$(git branch --show-current)" \
      --assignee LOGIN \
      --title "$(signed_line "docs: append changelog for YYYY-MM-DD")" \
      --body "$(signed_body "Appended changelog bullets from git log. Did not rewrite older entries.")"
