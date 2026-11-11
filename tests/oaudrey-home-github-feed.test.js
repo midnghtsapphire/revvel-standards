@@ -319,6 +319,45 @@ test('a 403 is permission unless the rate-limit signals are present', async () =
   assert.equal(denied.partial, false);
 });
 
+test('any 429 is rate-limited and waits for retry-after, reset, or 60 seconds', async () => {
+  const { githubFailureReason, backoffUntil, buildTeamReport } = await loadFeed();
+  const headers = (map) => ({ get: (name) => map[name.toLowerCase()] ?? null });
+  assert.equal(githubFailureReason(429, headers({ 'x-ratelimit-remaining': '4000' }), { message: 'slow down' }), 'rate_limited');
+  assert.equal(backoffUntil(headers({}), 1_000), 61_000);
+  assert.equal(backoffUntil(headers({ 'retry-after': '10' }), 1_000), 11_000);
+  assert.equal(backoffUntil(headers({ 'x-ratelimit-reset': '40' }), 1_000), 40_000);
+
+  let calls = 0;
+  const fetchImpl = async () => {
+    calls += 1;
+    return response({ message: 'too many requests' }, 429, '4000');
+  };
+  const cache = new Map();
+  const blocked = await buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl,
+    now: 1_000,
+    cache,
+  });
+  assert.equal(blocked.reason, 'rate_limited');
+  assert.equal(blocked.connected, false);
+  const during = calls;
+  await buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl,
+    now: 30_000,
+    cache,
+  });
+  assert.equal(calls, during);
+  await buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl,
+    now: 62_000,
+    cache,
+  });
+  assert.equal(calls, during + 1);
+});
+
 test('a partial board is not cached as a live connection, and one build is shared', async () => {
   const { buildTeamReport } = await loadFeed();
   let calls = 0;

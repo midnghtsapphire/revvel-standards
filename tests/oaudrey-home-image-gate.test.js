@@ -109,6 +109,27 @@ test('the sales deck is served as a PDF and the other static types stay mapped',
     const deck = await fetch(`http://127.0.0.1:${port}/goap-agent-sales-deck.pdf`);
     assert.equal(deck.status, 200);
     assert.equal(deck.headers.get('content-type'), 'application/pdf');
+    assert.equal(deck.headers.get('accept-ranges'), 'bytes');
+    const body = Buffer.from(await deck.arrayBuffer());
+    const partial = await fetch(`http://127.0.0.1:${port}/goap-agent-sales-deck.pdf`, {
+      headers: { Range: 'bytes=0-3' },
+    });
+    assert.equal(partial.status, 206);
+    assert.equal(partial.headers.get('content-range'), `bytes 0-3/${body.length}`);
+    assert.equal(partial.headers.get('accept-ranges'), 'bytes');
+    assert.equal(Buffer.from(await partial.arrayBuffer()).toString(), body.subarray(0, 4).toString());
+    const head = await fetch(`http://127.0.0.1:${port}/goap-agent-sales-deck.pdf`, {
+      method: 'HEAD',
+      headers: { Range: 'bytes=0-3' },
+    });
+    assert.equal(head.status, 206);
+    assert.equal(head.headers.get('content-range'), `bytes 0-3/${body.length}`);
+    assert.equal(Buffer.from(await head.arrayBuffer()).length, 0);
+    const bad = await fetch(`http://127.0.0.1:${port}/goap-agent-sales-deck.pdf`, {
+      headers: { Range: 'bytes=999-1000' },
+    });
+    assert.equal(bad.status, 416);
+    assert.equal(bad.headers.get('content-range'), `bytes */${body.length}`);
   } finally {
     server.close();
   }

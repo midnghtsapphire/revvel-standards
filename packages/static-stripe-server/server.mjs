@@ -283,6 +283,34 @@ export function contentTypeFor(file) {
   return MIME[path.extname(String(file)).toLowerCase()] || 'application/octet-stream';
 }
 
+// Safari asks for a byte range before it will play a local mp4. A 200 of the
+// whole file leaves the player on the poster. Added 2026-11-11 by MarketShipper.
+export function parseByteRange(header, size) {
+  if (header == null || header === '') return null;
+  const match = /^bytes=(\d*)-(\d*)$/i.exec(String(header).trim());
+  if (!match || size < 0) return 'invalid';
+  const rawStart = match[1];
+  const rawEnd = match[2];
+  if (rawStart === '' && rawEnd === '') return 'invalid';
+  if (size === 0) return 'invalid';
+  let start;
+  let end;
+  if (rawStart === '') {
+    const suffix = Number(rawEnd);
+    if (!Number.isFinite(suffix) || suffix <= 0) return 'invalid';
+    start = suffix >= size ? 0 : size - suffix;
+    end = size - 1;
+  } else {
+    start = Number(rawStart);
+    end = rawEnd === '' ? size - 1 : Number(rawEnd);
+    if (end >= size) end = size - 1;
+  }
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || start >= size || end < start) {
+    return 'invalid';
+  }
+  return { start, end };
+}
+
 export async function resolveStatic(root, urlPath) {
   let pathname;
   try {
@@ -398,10 +426,34 @@ async function serveStatic(req, res, ctx, pathname) {
   const data = await readFile(file);
   const type = contentTypeFor(file);
   const immutable = pathname.includes('/_next/static/');
-  res.writeHead(200, {
+  const headers = {
     'content-type': type,
-    'content-length': data.length,
+    'accept-ranges': 'bytes',
     'cache-control': immutable ? 'public, max-age=31536000, immutable' : 'no-cache',
+  };
+  const range = parseByteRange(req.headers.range, data.length);
+  if (range === 'invalid') {
+    res.writeHead(416, {
+      ...headers,
+      'content-range': `bytes */${data.length}`,
+      'content-length': 0,
+    });
+    res.end();
+    return;
+  }
+  if (range) {
+    const slice = data.subarray(range.start, range.end + 1);
+    res.writeHead(206, {
+      ...headers,
+      'content-range': `bytes ${range.start}-${range.end}/${data.length}`,
+      'content-length': slice.length,
+    });
+    res.end(req.method === 'HEAD' ? undefined : slice);
+    return;
+  }
+  res.writeHead(200, {
+    ...headers,
+    'content-length': data.length,
   });
   res.end(req.method === 'HEAD' ? undefined : data);
 }
@@ -483,6 +535,7 @@ export function bindProduct(service, moduleUrl, extras = {}) {
     rateLimited,
     resolveStatic,
     contentTypeFor,
+    parseByteRange,
     createCheckoutSession(args = {}) {
       return createCheckoutSession({ ...args, service });
     },

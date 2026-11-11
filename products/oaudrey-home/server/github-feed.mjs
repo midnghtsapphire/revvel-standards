@@ -304,19 +304,24 @@ function sendJson(res, status, body) {
   res.end(json);
 }
 
-function gateFor(cache) {
-  let gate = gates.get(cache);
-  if (!gate) {
-    gate = { remaining: null, resetAt: 0, inflight: new Map() };
-    gates.set(cache, gate);
+function freshGate() {
+  return { remaining: null, resetAt: 0, until: 0, inflight: new Map() };
+}
+
+function gateFor(cache, lane) {
+  let bag = gates.get(cache);
+  if (!bag) {
+    bag = { rest: freshGate(), graphql: freshGate() };
+    gates.set(cache, bag);
   }
-  return gate;
+  return bag[lane === 'graphql' ? 'graphql' : 'rest'];
 }
 
 export function githubFailureReason(status, headers, body) {
   const remaining = typeof headers?.get === 'function' ? headers.get('x-ratelimit-remaining') : null;
   const retry = typeof headers?.get === 'function' ? headers.get('retry-after') : null;
   const message = typeof body === 'string' ? body : String(body?.message || '');
+  if (status === 429) return 'rate_limited';
   if (remaining === '0') return 'rate_limited';
   if (retry) return 'rate_limited';
   if (/secondary rate limit/i.test(message)) return 'rate_limited';
@@ -324,16 +329,37 @@ export function githubFailureReason(status, headers, body) {
   return 'github_error';
 }
 
+function headerValue(headers, name) {
+  return typeof headers?.get === 'function' ? headers.get(name) : null;
+}
+
+export function backoffUntil(headers, now) {
+  const retry = headerValue(headers, 'retry-after');
+  const reset = headerValue(headers, 'x-ratelimit-reset');
+  if (retry != null && String(retry).trim() !== '') {
+    const text = String(retry).trim();
+    if (/^\d+$/.test(text)) return now + Number(text) * 1000;
+    const parsed = Date.parse(text);
+    if (!Number.isNaN(parsed)) return parsed;
+  }
+  if (reset != null && String(reset).trim() !== '' && Number.isFinite(Number(reset))) {
+    return Number(reset) * 1000;
+  }
+  return now + SHORT_TTL_MS;
+}
+
 function noteLimit(response, gate) {
   const headers = response?.headers;
-  if (typeof headers?.get !== 'function') return;
-  const remaining = headers.get('x-ratelimit-remaining');
-  const reset = headers.get('x-ratelimit-reset');
+  const remaining = headerValue(headers, 'x-ratelimit-remaining');
+  const reset = headerValue(headers, 'x-ratelimit-reset');
   if (remaining != null && remaining !== '') gate.remaining = Number(remaining);
   if (reset) gate.resetAt = Number(reset) * 1000;
+  if (response?.status === 429) gate.until = backoffUntil(headers, gate.now || Date.now());
 }
 
 function backedOff(gate, now) {
+  if (gate.until && now < gate.until) return true;
+  if (gate.until && now >= gate.until) gate.until = 0;
   if (gate.remaining !== 0) return false;
   if (!gate.resetAt || now < gate.resetAt) return true;
   gate.remaining = null;
@@ -341,6 +367,7 @@ function backedOff(gate, now) {
 }
 
 async function github(url, token, fetchImpl, gate, now) {
+  gate.now = now;
   if (backedOff(gate, now)) {
     const error = new Error('rate_limited');
     error.reason = 'rate_limited';
@@ -417,10 +444,10 @@ export function activityFor(checks) {
 export async function buildTeamReport({ env, fetchImpl, now, cache }) {
   const token = String(env?.GITHUB_READ_TOKEN || '');
   if (!token) return emptyTeam('missing_token');
-  const gate = gateFor(cache);
+  const gate = gateFor(cache, 'rest');
   const hit = cacheGet(cache, 'team', now);
   if (hit) return hit;
-  if (backedOff(gate, now)) return cachePut(cache, 'team', now, emptyTeam('rate_limited'), SHORT_TTL_MS);
+  if (backedOff(gate, now)) return emptyTeam('rate_limited');
   if (gate.inflight.has('team')) return gate.inflight.get('team');
   const job = loadTeam({ env, fetchImpl, now, cache, token, gate }).finally(() => {
     if (gate.inflight.get('team') === job) gate.inflight.delete('team');
@@ -687,7 +714,9 @@ async function loadTeam({ fetchImpl, now, cache, token, gate }) {
     };
     return cachePut(cache, 'team', now, report, partial ? SHORT_TTL_MS : TTL_MS);
   } catch (error) {
-    return cachePut(cache, 'team', now, emptyTeam(error.reason || 'github_error'), SHORT_TTL_MS);
+    const empty = emptyTeam(error.reason || 'github_error');
+    if (error.reason === 'rate_limited') return empty;
+    return cachePut(cache, 'team', now, empty, SHORT_TTL_MS);
   }
 }
 
@@ -722,6 +751,7 @@ function threadFromDiscussion(node, showBodies) {
 }
 
 async function githubGraphql(query, variables, token, fetchImpl, gate, now) {
+  gate.now = now;
   if (backedOff(gate, now)) {
     const error = new Error('rate_limited');
     error.reason = 'rate_limited';
@@ -757,10 +787,10 @@ async function githubGraphql(query, variables, token, fetchImpl, gate, now) {
 export async function buildHubReport({ env, fetchImpl, now, cache, sources }) {
   const token = String(env?.GITHUB_READ_TOKEN || '');
   if (!token) return emptyHub('missing_token');
-  const gate = gateFor(cache);
+  const gate = gateFor(cache, 'graphql');
   const hit = cacheGet(cache, 'hub', now);
   if (hit) return hit;
-  if (backedOff(gate, now)) return cachePut(cache, 'hub', now, emptyHub('rate_limited'), SHORT_TTL_MS);
+  if (backedOff(gate, now)) return emptyHub('rate_limited');
   if (gate.inflight.has('hub')) return gate.inflight.get('hub');
   const job = loadHub({ fetchImpl, now, cache, sources, token, gate }).finally(() => {
     if (gate.inflight.get('hub') === job) gate.inflight.delete('hub');

@@ -7,3 +7,4 @@
 - Hold fixes: issue events, check runs, and commit statuses are sorted as separate streams. A 403 is a permission error unless the rate-limit signals are present. A partial board is not cached as connected. One in-flight build and the rate-limit reset are shared. The sales deck is `application/pdf`. A saved GitAloha skin updates the maze title on load.
 - Added Audrey's square promo as a click-to-play hero card (`oaudrey-intro.mp4`), with a poster, English captions, and a VideoObject. It does not autoplay and it is not a looping background.
 - Added 2D sprites from the live team, `team-connections.json`, a GitHub MCP servers section, and the oAudrey logo in the header and favicon. The mascot lashes curl at the eyes. The mascot stays the castle character.
+- The static server answers byte ranges with 206, 416, and HEAD so Safari can play the intro. A GitHub 429 backs off until Retry-After, the reset time, or 60 seconds. REST and GraphQL keep separate rate-limit gates.
