@@ -1,0 +1,42 @@
+name: karpathy-guidelines
+title: "Karpathy guidelines"
+version: "1.0.0"
+description: "State assumptions, keep new code small, edit only the lines the task needs, and finish on a check you can run."
+
+metadata:
+  author: "TriageChief"
+  category: "Developer Workflow"
+  tags: ["github", "karpathy-guidelines"]
+  created_at: "2026-11-11"
+  updated_at: "2026-11-11"
+  license: "MIT"
+  copyright: "Copyright (c) 2026 forrestchang and SwarmClaw AI contributors"
+  source: "https://github.com/swarmclawai/andrej-karpathy-skills/tree/main/skills/karpathy-guidelines"
+
+triggers:
+  - "karpathy"
+  - "surgical edit"
+  - "simplicity"
+  - "success criteria"
+  - "do not rewrite"
+
+dependencies:
+  skills: ["github-read-write-admin"]
+  tools: []
+  pip_packages: []
+
+documentation:
+  skill_file: "docs/skills/karpathy-guidelines/SKILL.md"
+  loader: "skills/karpathy-guidelines/SKILL.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load docs/skills/karpathy-guidelines/SKILL.md and follow it.
+    That file is the canonical playbook. This YAML is discovery metadata.
+    Sign every write as **BotName** at the start and — BotName at the end.
+    Do not delete, force-push, or print a secret.
+    CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
+    Do not merge from this skill. Merge gates live in docs/skills/github-read-write-admin/SKILL.md and apply only when that playbook is loaded and the task asked for the merge.
+schema_version: "1.0"

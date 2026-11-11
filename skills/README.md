@@ -213,3 +213,24 @@ done
 ---
 
 *Maintained by Audrey Evans (MIDNGHTSAPPHIRE). See [`REGISTRY.md`](REGISTRY.md) for the full skill catalog.*
+
+## GitHub-relevant skills (2026-11-11)
+
+Canonical text is under `docs/skills/`. These rows were appended. Do not remove a row.
+
+| Skill | Description |
+| --- | --- |
+| [`gh-issue-triage`](../docs/skills/gh-issue-triage/SKILL.md) | Map an issue onto config/labels-allowlist.yml. Add labels. Do not remove labels. Loader: [`gh-issue-triage/`](gh-issue-triage/). License: MIT. |
+| [`resolve-conflicts`](../docs/skills/resolve-conflicts/SKILL.md) | Union-merge append-only files. Comment retired lines out. Do not drop a side. Loader: [`resolve-conflicts/`](resolve-conflicts/). License: Apache-2.0. |
+| [`git-advanced-workflows`](../docs/skills/git-advanced-workflows/SKILL.md) | Rebase, bisect, worktree, and reflog only for commits that are not on a remote. Loader: [`git-advanced-workflows/`](git-advanced-workflows/). License: MIT. |
+| [`changelog-orchestrator`](../docs/skills/changelog-orchestrator/SKILL.md) | Append bullets to CHANGELOG.md from git log. Do not rewrite older bullets. Loader: [`changelog-orchestrator/`](changelog-orchestrator/). License: MIT. |
+| [`pr-review-reply`](../docs/skills/pr-review-reply/SKILL.md) | Signed replies. Resolve a thread only after the reply. Do not delete the comment. Loader: [`pr-review-reply/`](pr-review-reply/). License: Apache-2.0. |
+| [`multi-pr-review`](../docs/skills/multi-pr-review/SKILL.md) | Correctness, code health, and UX passes. Signed summary. Verdict does not merge. Loader: [`multi-pr-review/`](multi-pr-review/). License: Apache-2.0. |
+| [`octocode-pr-review`](../docs/skills/octocode-pr-review/SKILL.md) | Scope, proof, and a signed recommendation. Falls back to git and gh when the Octocode CLI is absent. Loader: [`octocode-pr-review/`](octocode-pr-review/). License: MIT. |
+| [`pr-create-from-body`](../docs/skills/pr-create-from-body/SKILL.md) | Read a body file, sign it, push the branch, open the pull request. Do not unset the job token. Loader: [`pr-create-from-body/`](pr-create-from-body/). License: MIT. |
+| [`deployment-pipeline-design`](../docs/skills/deployment-pipeline-design/SKILL.md) | Build, test, staging, human gate, production, deep health check, forward rollback. CircleCI is the runner that starts. Loader: [`deployment-pipeline-design/`](deployment-pipeline-design/). License: MIT. |
+| [`sast-configuration`](../docs/skills/sast-configuration/SKILL.md) | Semgrep on the paths you changed. Suppression names the rule id on the adjacent line. Loader: [`sast-configuration/`](sast-configuration/). License: MIT. |
+| [`lint-and-validate`](../docs/skills/lint-and-validate/SKILL.md) | node --test, markdownlint on changed files, flake8 baseline for Python you touched. Loader: [`lint-and-validate/`](lint-and-validate/). License: MIT. |
+| [`tdd-workflow`](../docs/skills/tdd-workflow/SKILL.md) | Failing test, then the smallest code that passes, using node:test in this repo. Loader: [`tdd-workflow/`](tdd-workflow/). License: MIT. |
+| [`karpathy-guidelines`](../docs/skills/karpathy-guidelines/SKILL.md) | Assumptions in the file, small new code, surgical edits, a command that proves the change. Loader: [`karpathy-guidelines/`](karpathy-guidelines/). License: MIT. |
+| [`agentic-eval`](../docs/skills/agentic-eval/SKILL.md) | Three-pass loop. Model calls go through scripts/local_llm.py. Code is judged by the test command. Loader: [`agentic-eval/`](agentic-eval/). License: MIT. |

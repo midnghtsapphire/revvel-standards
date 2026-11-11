@@ -1,0 +1,40 @@
+name: pr-create-from-body
+title: "Create a pull request from a body file"
+version: "1.0.0"
+description: "Open a pull request whose body comes from a local Markdown file, signed, into the daily branch."
+
+metadata:
+  author: "TriageChief"
+  category: "Developer Workflow"
+  tags: ["github", "pr-create-from-body"]
+  created_at: "2026-11-11"
+  updated_at: "2026-11-11"
+  license: "MIT"
+  copyright: "Copyright (c) 2023 Bytedance, Inc. and its affiliates."
+  source: "https://github.com/VisActor/VChart/blob/3e5663868080d9d5b09ba13a27e06a8545ce69a5/.trae/skills/pr-create-from-body/SKILL.md"
+
+triggers:
+  - "create pull request from body file"
+  - "body-file"
+  - "open a pr from markdown"
+
+dependencies:
+  skills: ["github-read-write-admin"]
+  tools: ["git", "gh"]
+  pip_packages: []
+
+documentation:
+  skill_file: "docs/skills/pr-create-from-body/SKILL.md"
+  loader: "skills/pr-create-from-body/SKILL.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load docs/skills/pr-create-from-body/SKILL.md and follow it.
+    That file is the canonical playbook. This YAML is discovery metadata.
+    Sign every write as **BotName** at the start and — BotName at the end.
+    Do not delete, force-push, or print a secret.
+    CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
+    Do not merge from this skill. Merge gates live in docs/skills/github-read-write-admin/SKILL.md and apply only when that playbook is loaded and the task asked for the merge.
+schema_version: "1.0"

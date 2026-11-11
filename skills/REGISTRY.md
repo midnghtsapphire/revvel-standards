@@ -675,6 +675,8 @@ At the end of every session: 5. **`wrap-up`** — Ship, Remember, Review, Publis
 
 _This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: May 3, 2026. Added: ada-compliance-agent, usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent, bito-ai, prompt-routing, roo-cline skills._
 
+_2026-11-11 TriageChief: appended `github-read-write-admin` and the fourteen GitHub-relevant skills after this footer. The May 3 line stays as the earlier stamp._
+
 ---
 
 ### Agent Orchestration & Prompts (New Section)
@@ -741,4 +743,102 @@ _This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: Ma
 - **Path:** `docs/skills/github-read-write-admin/SKILL.md` (canonical). Loader: `skills/github-read-write-admin/SKILL.md`. Machine config: `skills/github-read-write-admin/github-read-write-admin.skill.yml`.
 - **Description:** In-repo GitHub read, write, and admin for cloud agents, Cursor IDE agents, and CI bots. Uses `git`, `gh`, and the REST/GraphQL APIs. Three tiers, identity signature, merge gates, never-delete, union merges for append-only files. Self-check: `docs/skills/github-read-write-admin/self-check.sh`.
 - **Trigger:** "github read", "github write", "github admin", "gh pr", "gh issue", "open a pull request", "merge a pull request", "ruleset", "branch protection", "actions secret", "webhook", "discussion 18238"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `gh-issue-triage`
+
+- **Path:** `docs/skills/gh-issue-triage/SKILL.md` (canonical). Loader: `skills/gh-issue-triage/SKILL.md`. Machine config: `skills/gh-issue-triage/gh-issue-triage.skill.yml`.
+- **Description:** Label and triage GitHub issues on the repository label allowlist. Adds labels, does not remove them, and signs every comment. License: MIT. Copyright (c) 2025 Joe Seymour.
+- **Trigger:** "triage this issue", "label this issue", "issue priority", "duplicate issue", "needs-human", "labels-allowlist"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `resolve-conflicts`
+
+- **Path:** `docs/skills/resolve-conflicts/SKILL.md` (canonical). Loader: `skills/resolve-conflicts/SKILL.md`. Machine config: `skills/resolve-conflicts/resolve-conflicts.skill.yml`.
+- **Description:** Resolve git merge conflicts by keeping both sides. Append-only files use a union merge. Retired lines are commented out. License: Apache-2.0. Copyright 2025 Tailcall.
+- **Trigger:** "merge conflict", "unmerged paths", "union merge", "conflict marker"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `git-advanced-workflows`
+
+- **Path:** `docs/skills/git-advanced-workflows/SKILL.md` (canonical). Loader: `skills/git-advanced-workflows/SKILL.md`. Machine config: `skills/git-advanced-workflows/git-advanced-workflows.skill.yml`.
+- **Description:** Rebase, bisect, worktree, and reflog for local commits that have not been pushed. License: MIT. Copyright (c) 2024 Seth Hobson.
+- **Trigger:** "rebase unpushed", "git bisect", "git worktree", "git reflog", "recover a local commit"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `changelog-orchestrator`
+
+- **Path:** `docs/skills/changelog-orchestrator/SKILL.md` (canonical). Loader: `skills/changelog-orchestrator/SKILL.md`. Machine config: `skills/changelog-orchestrator/changelog-orchestrator.skill.yml`.
+- **Description:** Append changelog bullets from git history and merged pull requests without rewriting older bullets. License: MIT. Copyright (c) 2025 Jeremy Longshore.
+- **Trigger:** "changelog", "release notes", "append CHANGELOG", "weekly notes"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `pr-review-reply`
+
+- **Path:** `docs/skills/pr-review-reply/SKILL.md` (canonical). Loader: `skills/pr-review-reply/SKILL.md`. Machine config: `skills/pr-review-reply/pr-review-reply.skill.yml`.
+- **Description:** Reply to pull request review comments and resolve a thread only after a signed reply. License: Apache-2.0. Copyright 2025 Stacklok, Inc..
+- **Trigger:** "reply to review", "resolve review thread", "review comment", "fixed in SHA"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `multi-pr-review`
+
+- **Path:** `docs/skills/multi-pr-review/SKILL.md` (canonical). Loader: `skills/multi-pr-review/SKILL.md`. Machine config: `skills/multi-pr-review/multi-pr-review.skill.yml`.
+- **Description:** Review one pull request in three passes and post a signed summary. The verdict does not merge. License: Apache-2.0. Copyright (c) Dyad contributors.
+- **Trigger:** "multi-pr review", "review this pull request", "correctness pass", "code health", "review verdict"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `octocode-pr-review`
+
+- **Path:** `docs/skills/octocode-pr-review/SKILL.md` (canonical). Loader: `skills/octocode-pr-review/SKILL.md`. Machine config: `skills/octocode-pr-review/octocode-pr-review.skill.yml`.
+- **Description:** Review a pull request or local diff with a stated scope and a proof line for every finding. License: MIT. Copyright (c) 2026 Guy Bary.
+- **Trigger:** "review the pull request", "safe to merge", "review my diff", "proof the finding"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `pr-create-from-body`
+
+- **Path:** `docs/skills/pr-create-from-body/SKILL.md` (canonical). Loader: `skills/pr-create-from-body/SKILL.md`. Machine config: `skills/pr-create-from-body/pr-create-from-body.skill.yml`.
+- **Description:** Open a pull request whose body comes from a local Markdown file, signed, into the daily branch. License: MIT. Copyright (c) 2023 Bytedance, Inc. and its affiliates..
+- **Trigger:** "create pull request from body file", "body-file", "open a pr from markdown"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `deployment-pipeline-design`
+
+- **Path:** `docs/skills/deployment-pipeline-design/SKILL.md` (canonical). Loader: `skills/deployment-pipeline-design/SKILL.md`. Machine config: `skills/deployment-pipeline-design/deployment-pipeline-design.skill.yml`.
+- **Description:** Design a multi-stage deploy path with a human gate, a deep health check, and a forward rollback. License: MIT. Copyright (c) 2024 Seth Hobson.
+- **Trigger:** "deployment pipeline", "canary", "rollback plan", "promotion gate", "health check"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `sast-configuration`
+
+- **Path:** `docs/skills/sast-configuration/SKILL.md` (canonical). Loader: `skills/sast-configuration/SKILL.md`. Machine config: `skills/sast-configuration/sast-configuration.skill.yml`.
+- **Description:** Run Semgrep on the paths you changed and suppress a finding only with the rule id on the adjacent line. License: MIT. Copyright (c) 2024 Seth Hobson.
+- **Trigger:** "semgrep", "sast", "static analysis", "security scan"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `lint-and-validate`
+
+- **Path:** `docs/skills/lint-and-validate/SKILL.md` (canonical). Loader: `skills/lint-and-validate/SKILL.md`. Machine config: `skills/lint-and-validate/lint-and-validate.skill.yml`.
+- **Description:** Run the linter and tests that cover the files you changed. Do not call the task done when they fail. License: MIT. Copyright (c) 2026 VUDOVN.
+- **Trigger:** "lint", "validate", "typecheck", "markdownlint", "npm test", "flake8 baseline"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `tdd-workflow`
+
+- **Path:** `docs/skills/tdd-workflow/SKILL.md` (canonical). Loader: `skills/tdd-workflow/SKILL.md`. Machine config: `skills/tdd-workflow/tdd-workflow.skill.yml`.
+- **Description:** Write a failing test, then the code that makes it pass, in the runner the repo already uses. License: MIT. Copyright (c) 2025 cfrs2005.
+- **Trigger:** "tdd", "test first", "failing test", "reproduce the bug", "node:test"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `karpathy-guidelines`
+
+- **Path:** `docs/skills/karpathy-guidelines/SKILL.md` (canonical). Loader: `skills/karpathy-guidelines/SKILL.md`. Machine config: `skills/karpathy-guidelines/karpathy-guidelines.skill.yml`.
+- **Description:** State assumptions, keep new code small, edit only the lines the task needs, and finish on a check you can run. License: MIT. Copyright (c) 2026 forrestchang and SwarmClaw AI contributors.
+- **Trigger:** "karpathy", "surgical edit", "simplicity", "success criteria", "do not rewrite"
+- **Status:** Active (2026-11-11, TriageChief)
+
+### `agentic-eval`
+
+- **Path:** `docs/skills/agentic-eval/SKILL.md` (canonical). Loader: `skills/agentic-eval/SKILL.md`. Machine config: `skills/agentic-eval/agentic-eval.skill.yml`.
+- **Description:** Evaluate an agent output against a named bar and revise the failing parts, at most three times. Model calls go through the local LLM gate. License: MIT. Copyright GitHub, Inc..
+- **Trigger:** "agentic eval", "rubric", "self-check loop", "evaluator", "refine until the test passes"
 - **Status:** Active (2026-11-11, TriageChief)

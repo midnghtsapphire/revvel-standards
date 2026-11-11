@@ -468,6 +468,20 @@ These skills are required for **every** session, without exception:
 | Multi-agent coordination | `skills/parallel-development/SKILL.md` |
 | Git worktrees / branches | `skills/using-git-worktrees/SKILL.md` |
 | GitHub read, write, or admin (issues, pull requests, checks, rulesets, secrets) | `docs/skills/github-read-write-admin/SKILL.md` |
+| Triage a GitHub issue (type, priority, duplicate) | `docs/skills/gh-issue-triage/SKILL.md` |
+| Resolve a git merge conflict | `docs/skills/resolve-conflicts/SKILL.md` |
+| Rebase, bisect, worktree, or reflog on unpushed local commits | `docs/skills/git-advanced-workflows/SKILL.md` |
+| Append changelog or release notes | `docs/skills/changelog-orchestrator/SKILL.md` |
+| Reply to a pull request review comment | `docs/skills/pr-review-reply/SKILL.md` |
+| Multi-pass review of one pull request | `docs/skills/multi-pr-review/SKILL.md` |
+| Review a pull request or local diff and cite the line | `docs/skills/octocode-pr-review/SKILL.md` |
+| Open a pull request from a local Markdown body | `docs/skills/pr-create-from-body/SKILL.md` |
+| Design a deployment pipeline or rollback | `docs/skills/deployment-pipeline-design/SKILL.md` |
+| Run or configure static security analysis | `docs/skills/sast-configuration/SKILL.md` |
+| Lint and test the files you changed | `docs/skills/lint-and-validate/SKILL.md` |
+| Write a failing test before the behavior | `docs/skills/tdd-workflow/SKILL.md` |
+| Keep a code change small and checked | `docs/skills/karpathy-guidelines/SKILL.md` |
+| Evaluate an agent output against a rubric or a test | `docs/skills/agentic-eval/SKILL.md` |
 | Architecture decisions | `skills/dare-log/SKILL.md` |
 | Generating docs | `skills/auto-documentation/SKILL.md` |
 | Concurrent branches | `skills/concurrent-development/SKILL.md` |

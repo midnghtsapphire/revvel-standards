@@ -1,0 +1,42 @@
+name: deployment-pipeline-design
+title: "Deployment pipeline design"
+version: "1.0.0"
+description: "Design a multi-stage deploy path with a human gate, a deep health check, and a forward rollback."
+
+metadata:
+  author: "TriageChief"
+  category: "Developer Workflow"
+  tags: ["github", "deployment-pipeline-design"]
+  created_at: "2026-11-11"
+  updated_at: "2026-11-11"
+  license: "MIT"
+  copyright: "Copyright (c) 2024 Seth Hobson"
+  source: "https://github.com/wshobson/agents/tree/main/plugins/cicd-automation/skills/deployment-pipeline-design"
+
+triggers:
+  - "deployment pipeline"
+  - "canary"
+  - "rollback plan"
+  - "promotion gate"
+  - "health check"
+
+dependencies:
+  skills: ["github-read-write-admin"]
+  tools: ["git"]
+  pip_packages: []
+
+documentation:
+  skill_file: "docs/skills/deployment-pipeline-design/SKILL.md"
+  loader: "skills/deployment-pipeline-design/SKILL.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load docs/skills/deployment-pipeline-design/SKILL.md and follow it.
+    That file is the canonical playbook. This YAML is discovery metadata.
+    Sign every write as **BotName** at the start and — BotName at the end.
+    Do not delete, force-push, or print a secret.
+    CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
+    Do not merge from this skill. Merge gates live in docs/skills/github-read-write-admin/SKILL.md and apply only when that playbook is loaded and the task asked for the merge.
+schema_version: "1.0"

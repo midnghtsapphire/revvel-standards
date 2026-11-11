@@ -279,17 +279,24 @@ Push the feature branch. Do not push to `main`. If the push is rejected, fetch a
 
 Append-only files (ledgers, receipts, `wr/memory/decisions.jsonl`, and anything the repo calls append-only) use a union merge so both sides' lines survive:
 
+<!-- 2026-11-11 TriageChief: retired. Git has no strategy named union, so `git merge -s union origin/the-other-branch` exits with "Could not find merge strategy 'union'". Use `git merge-file --union` below. `CHANGELOG.md`, `AUTHORS`, and `CONTRIBUTORS` already have `merge=union` in `.gitattributes`, so a normal `git merge` keeps both sides of those files. -->
+
+For a whole-branch merge, run a normal `git merge`. Do not run `git merge -s union`. `CHANGELOG.md`, `AUTHORS`, and `CONTRIBUTORS` already have `merge=union` in `.gitattributes`, so that merge keeps both sides of those files. Any other append-only file uses `git merge-file --union` below.
+
+For one file that is already in conflict, read the index stages into a temp directory. Stage 1 is the base, stage 2 is ours, stage 3 is theirs. Do not redirect `git merge-file` onto the conflicted path. The shell truncates the target of `>` before the command runs.
+
 ```bash
-git merge -s union origin/the-other-branch
+CONFLICTED=path/from/git-status
+STAGE=$(mktemp -d)
+git show ":2:$CONFLICTED" > "$STAGE/ours"
+git show ":1:$CONFLICTED" > "$STAGE/base"
+git show ":3:$CONFLICTED" > "$STAGE/theirs"
+git merge-file --union --stdout "$STAGE/ours" "$STAGE/base" "$STAGE/theirs" > "$STAGE/merged"
+cp "$STAGE/merged" "$CONFLICTED"
+git add "$CONFLICTED"
 ```
 
-For one file that is already in conflict:
-
-```bash
-git merge-file --union --stdout ours.jsonl base.jsonl theirs.jsonl > merged.jsonl
-```
-
-Read the file after a union merge. Union can reorder lines. Confirm both sides' new lines are present and that no conflict marker remains. Do not `git checkout --ours` or `--theirs` on a ledger. That drops a side.
+If `git merge-file` exits non-zero, do not copy and do not `git add`. Read the file after a union merge. Union can reorder lines. Confirm both sides' new lines are present and that no conflict marker remains. Do not `git checkout --ours` or `--theirs` on a ledger. That drops a side.
 
 ### Pull requests, comments, and reviews
 

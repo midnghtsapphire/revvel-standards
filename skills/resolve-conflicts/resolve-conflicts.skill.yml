@@ -1,0 +1,42 @@
+name: resolve-conflicts
+title: "Resolve merge conflicts"
+version: "1.0.0"
+description: "Resolve git merge conflicts by keeping both sides. Append-only files use a union merge. Retired lines are commented out."
+
+metadata:
+  author: "TriageChief"
+  category: "Developer Workflow"
+  tags: ["github", "resolve-conflicts"]
+  created_at: "2026-11-11"
+  updated_at: "2026-11-11"
+  license: "Apache-2.0"
+  copyright: "Copyright 2025 Tailcall"
+  source: "https://github.com/antinomyhq/forge/tree/main/.forge/skills/resolve-conflicts"
+
+triggers:
+  - "merge conflict"
+  - "unmerged paths"
+  - "union merge"
+  - "conflict marker"
+  - "both sides"
+
+dependencies:
+  skills: ["github-read-write-admin"]
+  tools: ["git"]
+  pip_packages: []
+
+documentation:
+  skill_file: "docs/skills/resolve-conflicts/SKILL.md"
+  loader: "skills/resolve-conflicts/SKILL.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load docs/skills/resolve-conflicts/SKILL.md and follow it.
+    That file is the canonical playbook. This YAML is discovery metadata.
+    Sign every write as **BotName** at the start and — BotName at the end.
+    Do not delete, force-push, or print a secret.
+    CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
+    Do not merge from this skill. Merge gates live in docs/skills/github-read-write-admin/SKILL.md and apply only when that playbook is loaded and the task asked for the merge.
+schema_version: "1.0"
