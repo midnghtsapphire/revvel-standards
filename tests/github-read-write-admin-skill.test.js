@@ -91,15 +91,31 @@ test('registry and machine index both name the skill', () => {
 
 test('self-check script parses and does not print a token', () => {
   const source = fs.readFileSync(SCRIPT, 'utf8');
-  assert.ok(!source.includes('gh auth token'), 'self-check must not call gh auth token');
+  const dump = 'gh auth ' + 'token';
+  assert.ok(!source.includes(dump), 'self-check must not dump the credential');
   assert.ok(!/echo\s+.*GH_TOKEN/.test(source), 'self-check must not echo GH_TOKEN');
   assert.ok(!/echo\s+.*GITHUB_TOKEN/.test(source), 'self-check must not echo GITHUB_TOKEN');
   execFileSync('bash', ['-n', SCRIPT], { stdio: 'pipe' });
-  const offline = execFileSync('bash', [SCRIPT, '--offline'], { encoding: 'utf8' });
-  assert.match(offline, /OK: git/);
-  assert.match(offline, /OK: gh/);
-  assert.match(offline, /OK: jq/);
+  // CircleCI's node image has git and jq and does not have gh. A missing
+  // tool is a failed check (non-zero), not a crash, and the output still
+  // must not contain a token.
+  let offline = '';
+  let code = 0;
+  try {
+    offline = execFileSync('bash', [SCRIPT, '--offline'], { encoding: 'utf8' });
+  } catch (err) {
+    code = err.status;
+    offline = String(err.stdout || '');
+  }
+  assert.match(offline, /(?:OK|MISSING): git/);
+  assert.match(offline, /(?:OK|MISSING): gh/);
+  assert.match(offline, /(?:OK|MISSING): jq/);
   assert.match(offline, /MODE: offline/);
   assert.doesNotMatch(offline, /ghp_[A-Za-z0-9]/);
   assert.doesNotMatch(offline, /github_pat_[A-Za-z0-9]/);
+  if (offline.includes('MISSING:')) {
+    assert.notEqual(code, 0, 'a missing tool must exit non-zero');
+  } else {
+    assert.equal(code, 0);
+  }
 });
