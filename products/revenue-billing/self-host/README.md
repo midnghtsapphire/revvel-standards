@@ -28,6 +28,11 @@ reading the release notes first, and re-running the checks below.
   Put a TLS reverse proxy that you control in front.
 - The optional per-queue workers, S3/GCS, Google SSO and AI settings are left
   out. Add them from the official file if you need them.
+- `LAGO_DISABLE_SEGMENT` defaults to `true`. A live install of Lago v1.57.0
+  needed this so the API does not try to export product analytics to Segment.
+- If you use DigitalOcean's Docker 1-Click image, it leaves `ufw` rules open
+  for ports 2375 and 2376 (the Docker API). Remove those rules, then allow
+  only port 22, before the machine is reachable on the public internet.
 
 ## Run it locally (free)
 
