@@ -10,7 +10,8 @@
 # evidence the app exists.
 #
 # source_dir is / because dockerfile_path is relative to the repo root and
-# the Dockerfile copies products/screen-recorder-finder/. DigitalOcean uses source_dir as
+# the Dockerfile copies products/screen-recorder-finder/ and
+# packages/static-stripe-server/. DigitalOcean uses source_dir as
 # the Docker build context.
 # The retired spec in deploy/app.yaml stays commented.
 

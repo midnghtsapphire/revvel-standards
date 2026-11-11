@@ -22,3 +22,12 @@ Play-by-play record per standards/LEDGER_STANDARD.md. Append-only.
 - **Commits / PRs:** this commit on `cursor/screen-recorder-finder-do-deploy-19c4`
 - **Open / handoff:** Audrey must set the CircleCI token and the Stripe secrets, connect GitHub to DigitalOcean, and point DNS. Next owner: Audrey Evans, then 1-Git-Triage-Chief merges. MarketShipper does not merge.
 - **Credit note:** MarketShipper wrote the repo-side deploy path. No production app was created from this sandbox.
+
+## 2026-11-11 15:30 UTC — MarketShipper (Cursor Grok 4.7) — bind the shared Stripe server
+
+- **Actor:** MarketShipper (Cursor cloud agent, Grok 4.7)
+- **Requested by:** merge of #18368, then restack #18369 onto main `3d6ae9a8`
+- **Role:** executed
+- **Files:** `products/screen-recorder-finder/server/static-stripe-server.mjs`, `products/screen-recorder-finder/app/pricing/stripe-checkout-button.tsx`, `products/screen-recorder-finder/Dockerfile`, `tests/screen-recorder-finder-image-gate.test.js`
+- **What was done:** Screen Recorder Finder calls `bindProduct('screen-recorder-finder')`. The checkout button re-exports the shared JSX component. Tests call `registerStaticStripeProduct` with `legacyPeerDeps: false`. The image copies `packages/static-stripe-server` to `/packages`. Previous copies stay as line comments. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
+- **Open / handoff:** Live URL, DNS, and a real charge are still Audrey's. Do not close #18332 from this PR.

@@ -1,3 +1,7 @@
+## 2026-11-11 (5) — MarketShipper — screen-recorder-finder binds the shared Stripe server
+
+- Restacked onto main `3d6ae9a8`. CircleCI keeps every job from main and adds `screen-recorder-finder-image`. The product calls `bindProduct('screen-recorder-finder')` in `packages/static-stripe-server`. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
+
 ## 2026-11-11 (3) — MarketShipper — screen-recorder-finder image gate does not write to App Platform
 
 - Restacked onto main `7aceb6284` (#18364 and #18365 kept). CircleCI keeps `demo-kit-test`, `affiliate-hub-build`, and `screen-recorder-finder-image`. The DigitalOcean create/update job is not on this branch. `npm ci` in the image uses `--ignore-scripts`. Checkout rate limit keys on `do-connecting-ip`, then the first `X-Forwarded-For` hop.
