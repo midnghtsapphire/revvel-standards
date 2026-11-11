@@ -8,6 +8,13 @@
 - Added `tests/pot-research.test.js`, `docs/research/pot-research-engine.md` (GPU budget marked as an estimate), `scripts/pot-research/LEDGER.md`, and `scripts/pot-research/benchmark.js`. The harness reports the +20-30% criterion as not measured. No quality delta is invented.
 - CircleCI already runs `tests/**/*.test.js`. No new job and no GitHub-hosted workflow.
 
+## 2026-11-11 — halo-demo-stream: AG-UI streaming + session-resume demo kit, wired to affiliate-hub (QuickWinBuilder, WR #18342)
+
+- Added `products/halo-demo-stream/`: zero-dependency Node kit. `POST /agui` streams AG-UI standard events over SSE (RUN_STARTED, STATE_SNAPSHOT, TEXT_MESSAGE_START/CONTENT/END, STATE_DELTA as JSON Patch, RUN_FINISHED, RUN_ERROR). File-backed sessions resume by session id on any new client, including after a server restart. Plain HTML demo page, every text colour pair at least 7:1. 15 tests.
+- Moved the affiliate-hub program catalogue and filter/sort logic out of `products/affiliate-hub/app/page.tsx` into `app/lib/programs.mjs` (+ `.d.mts`), so the page and the demo kit run the same code. `next build` passes. No behaviour change.
+- CircleCI: new `demo-kit-test` job (kit tests) and `affiliate-hub-build` job (`npm ci` + `next build`), in both workflows. No GitHub Actions.
+- Not done: ai-video-toolkit and screen-recorder-finder adapters, any deploy, cross-device test on live URLs (blocked on #18330 to #18332).
+
 ## 2026-11-10 (3) — Bot, team and agent backup, nested under docs/ (Proofy)
 
 - Added `docs/bots/bot-<name>/README.md` (98 bots, call `/bot-<name>`), `docs/teams/<team>-team/README.md` (15 teams plus a pointer for the existing `/dragnet-team`), and `docs/agents/<name>/README.md` (pointers for 9 existing OpenRouter personas such as `/coder`, no prefix). Added `docs/CALL-NAMES.md`, `docs/README.md`, `docs/BOT-COMMON-RULES.md`, `docs/BOT-ROSTER.json`.
