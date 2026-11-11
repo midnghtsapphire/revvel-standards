@@ -1,6 +1,19 @@
 ## 2026-11-10 (3) — restore deleted workflows as commented-out files
 
 - **Git-Master:** Restored `.github/workflows/agent-approval-check.yml` (deleted in `ed0f322`, 2026-11-10 8:08 AM MST) and `.github/workflows/probe-selfhosted.yml` (deleted in `4e6a47f`, 2026-11-09 12:48 PM MST) with every original line commented out, per Audrey's direction 2026-11-10: "yes they need to go back in commented out." House rule: comment out, never delete. No other workflow files were deleted on main in this window. These files are inert (fully commented out) and do not run as GitHub Actions.
+## 2026-11-10 (5) — docs/datdas: DatDas holdings, probe, schema, and LLM-chat folder
+
+- LinearA-Untried — Added `docs/datdas/`: what DatDas is (Marco Merlini's Databank of the Danube script), a holdings table (paths only; no PDFs copied), the proposed unpopulated `schema/datdas.sql`, the 2026-11-10 Wayback/Arquivo probe (small text), and `llm-chats/` for dated sessions. Status: unverified, not run. AI answers are leads, not sources. The databank records are not held. The 227 KB five-LLM attachment was not on the box at commit time; `llm-chats/INDEX.md` leaves room for that file and later sessions.
+- `Library/README.md` and `docs/deep-sweep/README.md`: append-only pointers.
+
+## 2026-11-10 (4) — docs/deep-sweep: recovered t9u schema and probe script
+
+- LinearA-Untried — Replaced the gap-note bodies of `docs/deep-sweep/schema/schema.sql` and `schema/datdas.sql` with the verbatim t9u paste, keeping the unverified/not-run headers. Added `code/ingest/probe_datdas_domains.py`. Updated README and VERIFICATION gap notes. Not run.
+
+## 2026-11-10 (3) — docs/deep-sweep: archived unverified method pack
+
+- LinearA-Untried — `docs/deep-sweep/`: owner-requested archive of 2026-11-10 AI-chat outputs (Gemma, Venice, DeepSeek) on a deep-sweep/index method, split into method notes, code, schemas, prompts, raw sources, and `VERIFICATION.md`. Status: unverified, not run. AI answers are leads, not sources.
+- `Library/README.md`: appended pointer to the pack.
 
 ## 2026-11-10 (2) — scripts-as-CI wave 2: PR Lifecycle + PR Check Status + shared client
 

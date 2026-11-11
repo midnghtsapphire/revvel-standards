@@ -1,0 +1,15 @@
+# Status: unverified AI-chat output, collected 2026-11-10. Not run. AI answers are leads, not sources.
+# Not run: this list has not been installed or tested. Use the OPENROUTER_API_KEY
+# environment variable only; do not put keys in a file in this tree.
+#
+cdx_toolkit
+requests
+beautifulsoup4
+wayback
+tqdm
+sqlite-utils
+matplotlib
+seaborn
+pandas
+openai  # for OpenRouter (OpenAI-compatible)
+python-dotenv
