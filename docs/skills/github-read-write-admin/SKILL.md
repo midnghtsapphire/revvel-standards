@@ -279,9 +279,7 @@ Push the feature branch. Do not push to `main`. If the push is rejected, fetch a
 
 Append-only files (ledgers, receipts, `wr/memory/decisions.jsonl`, and anything the repo calls append-only) use a union merge so both sides' lines survive:
 
-```bash
-git merge -s union origin/the-other-branch
-```
+<!-- 2026-11-11 TriageChief: retired. Git has no strategy named union, so `git merge -s union origin/the-other-branch` exits with "Could not find merge strategy 'union'". Use `git merge-file --union` below. `CHANGELOG.md`, `AUTHORS`, and `CONTRIBUTORS` already have `merge=union` in `.gitattributes`, so a normal `git merge` keeps both sides of those files. -->
 
 For one file that is already in conflict:
 

@@ -52,8 +52,8 @@ test('each skill has a canonical playbook, a loader, and a machine config', () =
     assert.ok(text.includes('gh auth token'), `${name} missing token prohibition`);
     assert.ok(!text.includes('dangerously-skip-permissions'), `${name} contains a skip-permissions flag`);
     for (const line of text.split('\n')) {
-      if (line.includes('--force-with-lease') || line.includes('--delete-branch')) {
-        assert.ok(line.includes('Do not'), `${name} mentions a forbidden flag outside a prohibition: ${line}`);
+      if (line.includes('--force-with-lease') || line.includes('--delete-branch') || line.includes('git merge -s union')) {
+        assert.ok(line.includes('Do not'), `${name} mentions a forbidden command outside a prohibition: ${line}`);
       }
     }
     const loaderText = read(loader);
@@ -108,11 +108,15 @@ test('vault registry, machine index, skills README, and docs/AGENTS.md name ever
 
 test('changelog and the decision ledger mention the batch', () => {
   const changelog = read('CHANGELOG.md');
-  const ledger = read('wr/memory/decisions.jsonl').trim().split('\n').pop();
+  const entries = read('wr/memory/decisions.jsonl')
+    .trim()
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => JSON.parse(line));
   assert.ok(changelog.includes('gh-issue-triage'));
   assert.ok(changelog.includes('agentic-eval'));
-  const entry = JSON.parse(ledger);
-  assert.equal(entry.topic, 'github-agent-skills-docs');
+  const entry = entries.find((item) => item.topic === 'github-agent-skills-docs');
+  assert.ok(entry, 'ledger missing github-agent-skills-docs');
   assert.ok(entry.decision.includes('CircleCI'));
   assert.ok(entry.decision.includes('TriageChief'));
 });
