@@ -243,6 +243,10 @@ test('drain preserves retry backoff while completing other due batches', async (
   let calls = 0;
   let clock = Date.now();
   const healthy = provider();
+  // REVVEL-DISABLED | AGENT: codex | MODEL: GPT-6 | WR: #18355 | DATE: 2026-11-11 | STATUS: REPLACED
+  // REASON: The real clock allowed the one-second retry to become due during slow scheduled runs.
+  // const app = await fixture({ lago: { ...healthy, invoice: async id => { calls++; if (calls === 1) throw new Error('offline transient'); return healthy.invoice(id); } } });
+  // REVVEL-DISABLED-END
   const app = await fixture({ now: () => clock, lago: { ...healthy, invoice: async id => { calls++; if (calls === 1) throw new Error('offline transient'); return healthy.invoice(id); } } });
   try {
     for (let i = 0; i < 26; i++) assert.equal((await send(app, notification({ offline_delivery: i }), `retry-${i}`)).status, 202);

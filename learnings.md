@@ -1186,3 +1186,14 @@ archive heading between two active copies must not hide them. The final rule
 excludes only actual comment bodies, gives no comment/header a segment barrier,
 and retains active code after closing block-comment delimiters. Earlier header
 rules and assertions remain commented as evidence of the mistaken assumption.
+
+## TM-0011 — Scheduled checks must preserve process status and control test time
+
+2026-11-10, Codex, REVVEL PR #18355 and GIT-FLEET PR #3.
+
+The Windows scheduler recorded zero while the owned receipt recorded a failure.
+The headless console launcher did not propagate the child process exit code.
+The billing test also used wall time to assert a one-second retry stayed pending
+while other batches ran. A slow run let that retry become due. The launcher now
+propagates the exit code, and the test controls inbox time and verifies both
+sides of the retry boundary. Retain failed receipts as evidence.
