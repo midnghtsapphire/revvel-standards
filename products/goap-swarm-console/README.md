@@ -132,3 +132,12 @@ Local verification on 2026-11-10: 13 Node tests passed, TypeScript passed, and
 the Next.js production build generated both sales routes. This establishes local
 readiness only. Domain deployment, Calendly setup, customer outreach, closed
 customers, and Stripe MRR remain acceptance work under #18334.
+
+2026-11-11 MarketShipper addition for the same work request: `sales/deck.md` is
+the 13-slide source (value proposition, the $2,000 to $5,000 band, the ROI
+illustration, and a proof-pending case study). `python3 scripts/build_sales_deck.py`
+writes `public/goap-agent-sales-deck.pdf`. `node scripts/build-agent-fte-landing.mjs`
+writes `landing-dist/` for `agent-as-fte.revvel.co`. Set `CALENDLY_URL` to an
+`https://calendly.com/...` path before that build to turn the embed on. The
+DigitalOcean spec is `deploy/app.yaml`. CircleCI job `agent-as-fte` builds the
+PDF and the page and requires HTTP 200 on loopback. No prospect was contacted.

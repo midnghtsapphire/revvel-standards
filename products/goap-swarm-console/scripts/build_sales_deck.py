@@ -1,10 +1,17 @@
-"""Build the 12-slide PDF from the same copy used by the sales deck route.
+"""Build the sales PDF from sales/slides.json.
 
 Requires reportlab. Run from any directory; optionally pass an output PDF path.
 The default is public/goap-agent-sales-deck.pdf, so Next serves the deliverable.
+
+2026-11-11 MarketShipper, WR #18334: the slide list is sales/deck.md, written
+to sales/slides.json for the Next page. This script draws that JSON. The deck
+must stay between 10 and 15 slides. The previous scraper, which read ["..."]
+lines from the TSX page and required exactly 12, is commented in load_slides().
+Restoring it makes the PDF drift from deck.md as soon as the TSX array moves.
 """
 import json
 from pathlib import Path
+import re
 import sys
 from xml.sax.saxutils import escape
 
@@ -14,8 +21,31 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus import Paragraph
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "app/agent-as-fte/deck/page.tsx"
+# SOURCE = ROOT / "app/agent-as-fte/deck/page.tsx"  # retired 2026-11-11; see load_slides
 OUTPUT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "public/goap-agent-sales-deck.pdf"
+
+
+def load_slides():
+    # 2026-11-10 Codex extractor, retired in place (do not run it):
+    # slides = [json.loads(line.strip().rstrip(",")) for line in SOURCE.read_text(encoding="utf-8").splitlines()
+    #           if line.strip().startswith('["')]
+    # if len(slides) != 12 or any(len(slide) != 3 for slide in slides):
+    #     raise ValueError("Expected exactly twelve complete title/subtitle/body slides")
+    payload = json.loads((ROOT / "sales/slides.json").read_text(encoding="utf-8"))
+    if not isinstance(payload, list) or not 10 <= len(payload) <= 15:
+        raise ValueError("sales/slides.json must contain 10 to 15 slides")
+    slides = []
+    for item in payload:
+        if (not isinstance(item, list) or len(item) != 3
+                or not all(isinstance(part, str) and part.strip() for part in item)):
+            raise ValueError("each slide must be three non-empty strings")
+        slides.append(item)
+    return slides
+
+
+def pdf_page_count(data):
+    # Count page objects. The parent node is /Type /Pages and must not count.
+    return len(re.findall(br"/Type\s*/Page(?!s)", data))
 
 
 def normalized(text):
@@ -24,10 +54,7 @@ def normalized(text):
 
 
 def build():
-    slides = [json.loads(line.strip().rstrip(",")) for line in SOURCE.read_text(encoding="utf-8").splitlines()
-              if line.strip().startswith('["')]
-    if len(slides) != 12 or any(len(slide) != 3 for slide in slides):
-        raise ValueError("Expected exactly twelve complete title/subtitle/body slides")
+    slides = load_slides()
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     canvas = Canvas(str(OUTPUT), pagesize=(960, 540), pageCompression=1)
     canvas.setTitle("REVVEL GOAP Agent Operations - Sales Deck")
@@ -58,10 +85,13 @@ def build():
         canvas.setFillColor(colors.HexColor("#94A3B8"))
         canvas.setFont("Helvetica", 10)
         canvas.drawString(76, 40, "Pilot proposal  /  Assumptions require validation  /  November 2026")
-        canvas.drawRightString(876, 40, f"{number:02d} / 12")
+        canvas.drawRightString(876, 40, f"{number:02d} / {len(slides):02d}")
         canvas.showPage()
     canvas.save()
-    print(OUTPUT)
+    count = pdf_page_count(OUTPUT.read_bytes())
+    if count != len(slides):
+        raise ValueError(f"PDF has {count} pages for {len(slides)} slides")
+    print(f"{OUTPUT} pages={count}")
 
 
 if __name__ == "__main__":
