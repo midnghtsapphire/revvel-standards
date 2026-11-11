@@ -305,7 +305,7 @@ function sendJson(res, status, body) {
 }
 
 function freshGate() {
-  return { remaining: null, resetAt: 0, until: 0, inflight: new Map() };
+  return { remaining: null, resetAt: 0, until: 0, strikes: 0, inflight: new Map() };
 }
 
 function gateFor(cache, lane) {
@@ -333,19 +333,23 @@ function headerValue(headers, name) {
   return typeof headers?.get === 'function' ? headers.get(name) : null;
 }
 
-export function backoffUntil(headers, now) {
+const BACKOFF_BASE_MS = 1000;
+const BACKOFF_CAP_MS = 60_000;
+
+export function backoffUntil(headers, now, attempt = 1) {
   const retry = headerValue(headers, 'retry-after');
-  const reset = headerValue(headers, 'x-ratelimit-reset');
   if (retry != null && String(retry).trim() !== '') {
     const text = String(retry).trim();
     if (/^\d+$/.test(text)) return now + Number(text) * 1000;
     const parsed = Date.parse(text);
     if (!Number.isNaN(parsed)) return parsed;
   }
-  if (reset != null && String(reset).trim() !== '' && Number.isFinite(Number(reset))) {
-    return Number(reset) * 1000;
-  }
-  return now + SHORT_TTL_MS;
+  // A missing Retry-After used to wait on x-ratelimit-reset, or a flat 60s.
+  // if (reset) return Number(reset) * 1000;
+  // return now + SHORT_TTL_MS;
+  const step = Math.min(16, Math.max(0, Number(attempt) - 1));
+  const delay = Math.min(BACKOFF_CAP_MS, BACKOFF_BASE_MS * (2 ** step));
+  return now + delay;
 }
 
 function noteLimit(response, gate) {
@@ -354,7 +358,10 @@ function noteLimit(response, gate) {
   const reset = headerValue(headers, 'x-ratelimit-reset');
   if (remaining != null && remaining !== '') gate.remaining = Number(remaining);
   if (reset) gate.resetAt = Number(reset) * 1000;
-  if (response?.status === 429) gate.until = backoffUntil(headers, gate.now || Date.now());
+  if (response?.status === 429) {
+    gate.strikes = (gate.strikes || 0) + 1;
+    gate.until = backoffUntil(headers, gate.now || Date.now(), gate.strikes);
+  }
 }
 
 function backedOff(gate, now) {
@@ -396,6 +403,7 @@ async function github(url, token, fetchImpl, gate, now) {
     error.status = response.status;
     throw error;
   }
+  gate.strikes = 0;
   return response.json();
 }
 
@@ -780,6 +788,7 @@ async function githubGraphql(query, variables, token, fetchImpl, gate, now) {
     error.reason = 'github_error';
     throw error;
   }
+  gate.strikes = 0;
   const payload = await response.json();
   return payload.data || null;
 }
