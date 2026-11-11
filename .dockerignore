@@ -21,3 +21,13 @@ products/ghcr-console/tests
 # The ** rule above would hide it, and Docker then fails COPY.
 !products/screen-recorder-finder/
 !products/screen-recorder-finder/**
+
+# Last match wins. The un-ignore above would otherwise send a dev checkout's
+# node_modules, .next, and .env* into the build context and overwrite the
+# Linux tree produced by npm ci. These excludes must stay below the un-ignore.
+**/node_modules
+**/.next
+**/.env
+**/.env.*
+**/.git
+**/npm-debug.log*

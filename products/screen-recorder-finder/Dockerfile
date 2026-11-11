@@ -33,7 +33,9 @@ FROM node:22-alpine AS build
 WORKDIR /repo
 COPY products/screen-recorder-finder/package.json products/screen-recorder-finder/package-lock.json ./products/screen-recorder-finder/
 WORKDIR /repo/products/screen-recorder-finder
-RUN npm ci
+# --ignore-scripts: this static export does not need dependency lifecycle
+# scripts, and running them would execute code from the lockfile.
+RUN npm ci --ignore-scripts
 COPY products/screen-recorder-finder/ ./
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build

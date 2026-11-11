@@ -2,6 +2,14 @@
 
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only.
 
+## 2026-11-11 14:40 UTC — MarketShipper (Cursor Grok 4.7) — restack, no App Platform write from this branch
+
+- **Actor:** MarketShipper (Cursor cloud agent, Grok 4.7)
+- **Requested by:** 1-Git-Triage-Chief hold, then the merge-gate update
+- **Role:** executed
+- **What was done:** Merged origin/main `7aceb6284` (#18364 and #18365) with a normal merge. Kept `demo-kit-test` and `affiliate-hub-build` plus the `screen-recorder-finder` image gate. Removed the DigitalOcean create/update job and `do-app-update.sh` from this branch. `npm ci --ignore-scripts`. Checkout rate limit uses `do-connecting-ip`, then the first `X-Forwarded-For` hop, then the socket. dockerignore re-excludes `node_modules`, `.next`, and `.env*` after the un-ignore.
+- **Open / handoff:** Those deploy jobs live on the draft App Platform PR. Audrey must approve that draft and set `DIGITALOCEAN_ACCESS_TOKEN`. This branch will need a final restack if #18366 merges first and moves main.
+
 ## 2026-11-11 14:45 UTC — MarketShipper (Cursor Grok 4.7) — container, Stripe test checkout, CircleCI health gate
 
 - **Actor:** MarketShipper (Cursor cloud agent, Grok 4.7)
