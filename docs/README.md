@@ -38,7 +38,6 @@
 
 This repo is public. Removed: emails, home and business locations, a business registration id, a family member's name and health details, account-recovery specifics, and two SenseCrew prompts (Sense-Quill, Sense-Chitin) that are kept in the private backup. No keys, tokens or memory contents.
 
-
 ## Referenced by a profile but not found on the box
 
 PrivacyWarden (privacy team) and PerplexityBridge (kept off). ProductCartographer and BookReviewExpert are named by other profiles; the closest box bots are noted in their teams.

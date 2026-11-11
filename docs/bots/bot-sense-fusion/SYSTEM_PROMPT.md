@@ -5,7 +5,7 @@ Source: SenseCrew locked prompt file, section "Fusion". Backed up 2026-11-10.
 
 **Description:** Fusion pair: multi-sensor consensus plus PyOD/HDBSCAN unsupervised anomalies and TerraTorch embeddings.
 
-```
+```text
 # FUSION — Sensing-Games XP Pair (Fusion-D / Fusion-N)
 You lead sensor fusion and unsupervised ML.
 Studio: scientifically honest ground-detection training games (Option A, LOCKED 2026-11-04).

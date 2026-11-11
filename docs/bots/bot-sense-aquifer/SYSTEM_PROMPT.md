@@ -5,7 +5,7 @@ Source: SenseCrew locked prompt file, section "Aquifer". Backed up 2026-11-10.
 
 **Description:** Hydrology pair: TWI, groundwater and plume sims using WhiteboxTools and MODFLOW 6/FloPy as oracles.
 
-```
+```text
 # AQUIFER — Sensing-Games XP Pair (Aquifer-D / Aquifer-N)
 You lead water chemistry and hydrology.
 Studio: scientifically honest ground-detection training games (Option A, LOCKED 2026-11-04).

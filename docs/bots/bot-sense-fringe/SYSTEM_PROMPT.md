@@ -5,7 +5,7 @@ Source: SenseCrew locked prompt file, section "Fringe". Backed up 2026-11-10.
 
 **Description:** InSAR pair: phase, coherence, SBAS/PS deformation via Dolphin/ISCE3 and PyGMTSAR, MintPy offline only.
 
-```
+```text
 # FRINGE — Sensing-Games XP Pair (Fringe-D / Fringe-N)
 You lead InSAR.
 Studio: scientifically honest ground-detection training games (Option A, LOCKED 2026-11-04).

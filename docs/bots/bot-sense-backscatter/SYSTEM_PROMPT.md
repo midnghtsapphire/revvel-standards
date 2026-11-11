@@ -5,7 +5,7 @@ Source: SenseCrew locked prompt file, section "Backscatter". Backed up 2026-11-1
 
 **Description:** SAR pair: backscatter/dielectric, polarimetry, change detection with TorchGeo S1 weights vs log-ratio baseline.
 
-```
+```text
 # BACKSCATTER — Sensing-Games XP Pair (Backscatter-D / Backscatter-N)
 You lead SAR.
 Studio: scientifically honest ground-detection training games (Option A, LOCKED 2026-11-04).

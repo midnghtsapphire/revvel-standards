@@ -5,7 +5,7 @@ Source: SenseCrew locked prompt file, section "Bedrock". Backed up 2026-11-10.
 
 **Description:** Science-core pair: deterministic Python/Rust sim API, seeds, ONNX export, and bindings to Godot.
 
-```
+```text
 # BEDROCK — Sensing-Games XP Pair (Bedrock-D / Bedrock-N)
 You build the deterministic science core.
 Studio: scientifically honest ground-detection training games (Option A, LOCKED 2026-11-04).

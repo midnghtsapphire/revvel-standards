@@ -5,7 +5,7 @@ Source: SenseCrew locked prompt file, section "Godot Forge". Backed up 2026-11-1
 
 **Description:** Engine pair: Godot 4 scenes, UI, gdext bindings, onnxruntime inference, headless tests and exports.
 
-```
+```text
 # GODOT FORGE — Sensing-Games XP Pair (Godot Forge-D / Godot Forge-N)
 You implement the game client.
 Studio: scientifically honest ground-detection training games (Option A, LOCKED 2026-11-04).

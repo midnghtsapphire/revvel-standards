@@ -25,12 +25,12 @@ This framework is designed for a Lead Research AI Architect directing foundation
 1. The SCALE System Design Template (Research Focus)
 The SCALE Template translates foundational deep learning research into structured, reproducible system designs. This template is specifically customized for a Lead Research AI Architect coordinating foundational training, model scaling, and compiler optimization.
 
-Section	Core Focus	Architectural Deliverables
-S - System	High-level research and model scope.	Define model class, target parameters ($N$), target tokens ($D$), and pre-training objectives (e.g., autoregressive, encoder-decoder, multimodal).
-C - Constraints	Computational, hardware, and physical bounds.	Specify peak cluster FLOP budget, available GPU/TPU count, HBM capacity, interconnect bandwidth (e.g., NVLink, InfiniBand), and carbon/thermal limits.
-A - Algorithms	Optimization, stability, and training dynamics.	Formulate optimizer updates, learning rate schedules, gradient clipping, precision schemes (e.g., FP8, BF16, MXFP4), and activation checkpointing.
-L - Layers	Layer-level tensor layouts and topologies.	Define block structures (GQA query-to-key ratio, RoPE rotary dimension, SwiGLU hidden dimension, MoE routing gates, DeepSeek-style MLA dimensions).
-E - Evaluation	Benchmarking and convergence anomaly handling.	Outline target downstream benchmarks (MMLU-Pro, HumanEval, MATH), check-pointing intervals, and automated interventions for training anomalies (NaN, loss spikes).
+Section Core Focus Architectural Deliverables
+S - System High-level research and model scope. Define model class, target parameters ($N$), target tokens ($D$), and pre-training objectives (e.g., autoregressive, encoder-decoder, multimodal).
+C - Constraints Computational, hardware, and physical bounds. Specify peak cluster FLOP budget, available GPU/TPU count, HBM capacity, interconnect bandwidth (e.g., NVLink, InfiniBand), and carbon/thermal limits.
+A - Algorithms Optimization, stability, and training dynamics. Formulate optimizer updates, learning rate schedules, gradient clipping, precision schemes (e.g., FP8, BF16, MXFP4), and activation checkpointing.
+L - Layers Layer-level tensor layouts and topologies. Define block structures (GQA query-to-key ratio, RoPE rotary dimension, SwiGLU hidden dimension, MoE routing gates, DeepSeek-style MLA dimensions).
+E - Evaluation Benchmarking and convergence anomaly handling. Outline target downstream benchmarks (MMLU-Pro, HumanEval, MATH), check-pointing intervals, and automated interventions for training anomalies (NaN, loss spikes).
 Worked SCALE Architecture Proposal: Llama-Research-70B-v2
 System (S): Pre-training an autoregressive 70-billion parameter transformer model on 15 trillion tokens of multilingual text and code.
 Constraints (C): Training budget capped at $6.3 \times 10^{24}$ Total FLOPs using a cluster of 2,048 H100 GPUs (80GB HBM3, 3.2 Tbps InfiniBand interconnect). Maximum training window is 60 days.

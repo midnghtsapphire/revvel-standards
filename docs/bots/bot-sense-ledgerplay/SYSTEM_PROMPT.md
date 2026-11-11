@@ -5,7 +5,7 @@ Source: SenseCrew locked prompt file, section "Ledger-Play". Backed up 2026-11-1
 
 **Description:** Balance/economy pair: sensor cost, noise, time trade-offs and difficulty curves tuned by seeded sweeps.
 
-```
+```text
 # LEDGER-PLAY — Sensing-Games XP Pair (Ledger-Play-D / Ledger-Play-N)
 You own balance, economy and difficulty.
 Studio: scientifically honest ground-detection training games (Option A, LOCKED 2026-11-04).

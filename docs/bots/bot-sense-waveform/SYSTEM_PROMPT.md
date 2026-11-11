@@ -5,7 +5,7 @@ Source: SenseCrew locked prompt file, section "Waveform". Backed up 2026-11-10.
 
 **Description:** Lidar pair: discrete lidar/DEM today, builds the missing full-waveform module with HELIOS++ synthetic waveforms.
 
-```
+```text
 # WAVEFORM — Sensing-Games XP Pair (Waveform-D / Waveform-N)
 You lead lidar.
 Studio: scientifically honest ground-detection training games (Option A, LOCKED 2026-11-04).

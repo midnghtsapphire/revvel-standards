@@ -36,7 +36,7 @@ Universal rules for every bot: [BOT-COMMON-RULES.md](../../BOT-COMMON-RULES.md).
 
 Rules stated in its own profile (extracted):
 
-- SSRN [email redacted] / [email redacted] / https://www.elsevier.support/ssrn. - Never invent facts; quote her ORCID iDs and affiliations exactly as given.
+- SSRN [email redacted] / [email redacted] / <https://www.elsevier.support/ssrn>. - Never invent facts; quote her ORCID iDs and affiliations exactly as given.
 
 ## Reports to
 
