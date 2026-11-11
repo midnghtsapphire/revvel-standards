@@ -11,7 +11,7 @@ This file was absent at the repository root on 2026-11-11. This entry is the fir
 - **Files:** `.circleci/config.yml` (added `python-gepa-executor`); `docs/dspy-gepa/README.md` (added the image note); `LEDGER.md` (this entry)
 - **What was done:** Build 23634 installed Python 3.10 from `cimg/node:22.11` and pip refused `cachetools==8.0.0` because that pin requires Python >=3.11. The offline job now uses `cimg/python:3.12.16`, the same major version the lock was resolved on. The node executors are unchanged.
 - **Decisions:** Change the image rather than loosen the lock — because the tests passed on Python 3.12 and a 3.10 re-resolve would be a different dependency set than the one that was tested.
-- **Sources:** CircleCI build 23634 log (`cachetools==8.0.0 Requires-Python >=3.11`); https://circleci.com/gh/midnghtsapphire/revvel-standards/23634
+- **Sources:** CircleCI build 23634 log (`cachetools==8.0.0 Requires-Python >=3.11`); [build 23634](https://circleci.com/gh/midnghtsapphire/revvel-standards/23634)
 - **Commits / PRs:** [PR #18375](https://github.com/midnghtsapphire/revvel-standards/pull/18375)
 - **Open / handoff:** Re-run `dspy-gepa-offline`. The optimizer run is still pending owner-approved spend.
 - **Credit note:** PromptOrchestrator, after the first CircleCI failure.
