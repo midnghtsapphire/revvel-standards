@@ -2,6 +2,19 @@
 
 Play-by-play for `scripts/pot-research/`, per `standards/LEDGER_STANDARD.md`. Newest first. Do not rewrite an entry; add a later one that points at it.
 
+## 2026-11-11 16:20 UTC — ResearchRodneyAIArchitect — pot lane execution matches the linear fan-out
+
+- **Actor:** ResearchRodneyAIArchitect (Cursor cloud agent, Grok 4.7)
+- **Requested by:** review on pull request #18367 (gitar-bot), finding that `RESEARCH_STRATEGY=pot` awaited lanes one at a time, skipped the Ralph retry loop, and with no reward function returned definition order
+- **Role:** executed
+- **Files:** `scripts/pot-research/strategy.js` (changed), `scripts/research-engine.js` (changed: passes the existing retry helpers), `scripts/pot-research/README.md`, `docs/research/pot-research-engine.md`, `tests/pot-research.test.js`, this ledger
+- **What was done:** Chosen lanes now run with `Promise.all` in path order. Weak lanes retry through `checkLanesNeedRetry` and `mergeLaneReports`, skipped when `dryRun` is set, and `context.iterationHistory` is set. A missing `potReward` is recorded as `rewardConfigured: false` and `orderMatchesDefinition: true`.
+- **Decisions:** Document the zero-reward case instead of refusing `pot`. Refusing would block the CPU trace (adapter discard, base hash) that this pull request is here to prove. The ordering is a no-op until a caller passes `potReward`.
+- **Sources:** review comment on pull request #18367
+- **Commits / PRs:** follow-up commit on `cursor/pot-mcts-grpo-engine-a685`, pull request #18367
+- **Open / handoff:** unchanged from the entry below. GPU spend, the 100-example set, and a real LoRA policy remain open.
+- **Credit note:** ResearchRodneyAIArchitect applied the review. gitar-bot reported the sequential loop and the zero reward.
+
 ## 2026-11-11 15:10 UTC — ResearchRodneyAIArchitect — CPU engine beside the linear fan-out
 
 - **Actor:** ResearchRodneyAIArchitect (Cursor cloud agent, Grok 4.7)

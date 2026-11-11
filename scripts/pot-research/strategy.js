@@ -174,13 +174,26 @@ function buildLaneProblem(lanes, rewardOf) {
 }
 
 /**
- * PoT over the orchestrator's lanes. The search itself is CPU-only. After
- * a path is chosen, each lane is executed with the caller's `runLane`, which
- * is the same function the linear fan-out uses. Order is the only change.
+ * PoT over the orchestrator's lanes. The search itself is CPU-only.
+ *
+ * Without `context.potReward` every terminal scores 0. GRPO then sees a
+ * zero-width group and writes a zero update, and the earliest rollout wins.
+ * That rollout is definition order. The trace still records the adapter
+ * discard and the base hash, and `potTrace.rewardConfigured` is false so an
+ * operator can see the ordering was a no-op. A caller that passes
+ * `potReward` gets the path MCTS prefers.
+ *
+ * After the order is chosen, lane execution matches the linear fan-out:
+ * `Promise.all` in that order (the result array stays in path order), then
+ * the same dry-run-skipped retry and merge as `runRalphLoop`.
+ * `context.iterationHistory` is set the same way so synthesis can see the
+ * passes. What to check if a pot run looks identical to linear: `potReward`
+ * was not passed, so `rewardConfigured` is false.
  */
 async function runPotOverLanes(context, caller, deps) {
   const lanes = deps.lanes;
-  const rewardOf = typeof context.potReward === "function" ? context.potReward : () => 0;
+  const rewardConfigured = typeof context.potReward === "function";
+  const rewardOf = rewardConfigured ? context.potReward : () => 0;
   const problem = buildLaneProblem(lanes, rewardOf);
   const seed = context.seed == null ? seedFromText(context.query || "") : context.seed;
   const pot = runPot(problem, {
@@ -190,19 +203,40 @@ async function runPotOverLanes(context, caller, deps) {
     selection: context.potSelection,
   });
   const laneById = new Map(lanes.map((lane) => [lane.id, lane]));
-  const laneReports = [];
-  for (const id of pot.best.path) {
+  const ordered = pot.best.path.map((id) => {
     const lane = laneById.get(id);
     if (!lane) throw new Error(`PoT selected unknown lane "${id}".`);
-    laneReports.push(await deps.runLane(lane, context, caller));
+    return lane;
+  });
+  // Promise.all keeps `ordered`'s sequence in the results. Awaiting each
+  // lane in a for-loop would stretch the same work out by the lane count
+  // and would drop the overlap the linear fan-out already has.
+  let laneReports = await Promise.all(ordered.map((lane) => deps.runLane(lane, context, caller)));
+  const iterationHistory = [laneReports];
+  const maxIterations = deps.maxIterations == null ? 1 : deps.maxIterations;
+  if (!context.dryRun && deps.checkLanesNeedRetry && deps.mergeLaneReports) {
+    for (let iter = 1; iter < maxIterations; iter += 1) {
+      const retryLanes = deps.checkLanesNeedRetry(laneReports);
+      if (retryLanes.length === 0) break;
+      const freshReports = await Promise.all(
+        retryLanes.map((lane) => deps.runLane(lane, context, caller)),
+      );
+      laneReports = deps.mergeLaneReports(laneReports, freshReports);
+      iterationHistory.push(freshReports);
+    }
   }
+  context.iterationHistory = iterationHistory;
+  const definitionIds = lanes.map((lane) => lane.id);
+  const chosenLaneIds = pot.best.path.slice();
   return {
     strategy: POT,
     laneReports,
     potTrace: {
       ...pot.potTrace,
-      chosenLaneIds: pot.best.path.slice(),
+      chosenLaneIds,
       seed,
+      rewardConfigured,
+      orderMatchesDefinition: chosenLaneIds.every((id, index) => id === definitionIds[index]),
     },
   };
 }

@@ -13,6 +13,7 @@ const { applyGroupUpdate, groupRelativeAdvantages } = require("../scripts/pot-re
 const { puctScore, uctScore } = require("../scripts/pot-research/mcts");
 const { StubPolicy, TransientAdapter } = require("../scripts/pot-research/policy");
 const { inspectEvaluationSet, main: runBenchmark } = require("../scripts/pot-research/benchmark");
+const { runPotOverLanes } = require("../scripts/pot-research/strategy");
 
 const TOY_OPTIONS = { iterations: 8, seed: 18341, learningRate: 0.1 };
 
@@ -160,6 +161,8 @@ describe("pot-research", () => {
       caller,
     );
     assert.strictEqual(potRun.strategy, "pot");
+    assert.strictEqual(potRun.potTrace.rewardConfigured, true);
+    assert.strictEqual(potRun.context.iterationHistory.length, 1);
     assert.strictEqual(potRun.potTrace.adapterDiscarded, true);
     assert.strictEqual(potRun.potTrace.baseHashBefore, potRun.potTrace.baseHashAfter);
     assert.ok(Math.abs(potRun.potTrace.advantageSum) < 1e-8);
@@ -205,6 +208,91 @@ describe("pot-research", () => {
     assert.strictEqual(blocked.potTrace, null);
 
     fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  test("pot without a reward keeps definition order, overlaps lane calls, and retries weak lanes", async () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "pot-noreward-"));
+    const lanes = engine.LANE_DEFINITIONS;
+    const plain = await engine.runResearchEngine(
+      {
+        apiKey: "test-key",
+        githubToken: "",
+        repository: "midnghtsapphire/revvel-standards",
+        issueNumber: "",
+        prNumber: "",
+        query: "No reward configured",
+        issueTitle: "",
+        issueBody: "",
+        outputFile: path.join(tmpDir, "plain.md"),
+        depth: "standard",
+        extraContext: "",
+        dryRun: true,
+        strategy: "pot",
+      },
+      async ({ model }) => `Mocked ${model} output with source https://example.com/plain`,
+    );
+    assert.strictEqual(plain.potTrace.rewardConfigured, false);
+    assert.strictEqual(plain.potTrace.orderMatchesDefinition, true);
+    assert.deepStrictEqual(plain.potTrace.chosenLaneIds, lanes.map((lane) => lane.id));
+    assert.strictEqual(plain.context.iterationHistory.length, 1);
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+
+    let started = 0;
+    let release;
+    const gate = new Promise((resolve) => {
+      release = resolve;
+    });
+    const parallelContext = { query: "parallel", dryRun: true, depth: "standard" };
+    const parallel = runPotOverLanes(
+      parallelContext,
+      async () => {
+        started += 1;
+        if (started === lanes.length) release();
+        await gate;
+        return "Mocked parallel output with source https://example.com/parallel";
+      },
+      {
+        lanes,
+        runLane: engine.runLane,
+        maxIterations: engine.RALPH_LOOP_MAX_ITERATIONS,
+        checkLanesNeedRetry: engine.checkLanesNeedRetry,
+        mergeLaneReports: engine.mergeLaneReports,
+      },
+    );
+    const overlapped = await Promise.race([
+      parallel,
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("lane calls did not overlap")), 500);
+      }),
+    ]);
+    assert.strictEqual(overlapped.laneReports.length, lanes.length);
+    assert.strictEqual(parallelContext.iterationHistory.length, 1);
+
+    const retryContext = { query: "retry", dryRun: false, depth: "standard" };
+    let calls = 0;
+    const retried = await runPotOverLanes(
+      retryContext,
+      async () => {
+        calls += 1;
+        return "Mocked retry output with source https://example.com/retry";
+      },
+      {
+        lanes,
+        runLane: engine.runLane,
+        maxIterations: engine.RALPH_LOOP_MAX_ITERATIONS,
+        checkLanesNeedRetry: engine.checkLanesNeedRetry,
+        mergeLaneReports: engine.mergeLaneReports,
+      },
+    );
+    // First pass is one call per lane. Confidence is absent, so only
+    // repo-web-search is retried, once per remaining Ralph iteration.
+    assert.strictEqual(calls, lanes.length + (engine.RALPH_LOOP_MAX_ITERATIONS - 1));
+    assert.strictEqual(retried.laneReports.length, lanes.length);
+    assert.strictEqual(retryContext.iterationHistory.length, engine.RALPH_LOOP_MAX_ITERATIONS);
+    assert.deepStrictEqual(
+      retried.laneReports.map((report) => report.id),
+      lanes.map((lane) => lane.id),
+    );
   });
 
   test("the benchmark harness does not invent a quality delta", () => {

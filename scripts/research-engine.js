@@ -1014,6 +1014,12 @@ async function runResearchEngine(options, caller = callOpenRouter) {
       runLinear: runRalphLoop,
       runLane,
       lanes: LANE_DEFINITIONS,
+      // Same retry helpers the linear fan-out uses. PoT picks an order, then
+      // these functions still retry weak lanes and merge by lane id so the
+      // chosen order is kept. dryRun skips the loop inside runPotOverLanes.
+      checkLanesNeedRetry,
+      mergeLaneReports,
+      maxIterations: RALPH_LOOP_MAX_ITERATIONS,
     });
     laneReports = dispatched.laneReports;
     potTrace = dispatched.potTrace;

@@ -1,3 +1,7 @@
+## 2026-11-11 (2) — ResearchRodneyAIArchitect — pot lane execution matches the linear fan-out
+
+- `RESEARCH_STRATEGY=pot` runs the chosen lanes with `Promise.all` and reuses the Ralph retry/merge helpers. Without `potReward` the order matches definition order and the trace says so (`rewardConfigured: false`).
+
 ## 2026-11-11 — ResearchRodneyAIArchitect — Policy-of-Thoughts CPU engine (WR #18341)
 
 - Added `scripts/pot-research/`: UCT Monte Carlo tree search, a GRPO step on a transient adapter, a frozen base-weight vector, and a deterministic stub policy. The linear lane fan-out in `scripts/research-engine.js` stays the default; `RESEARCH_STRATEGY=pot` opts in.
