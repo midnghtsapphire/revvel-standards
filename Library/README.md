@@ -14,6 +14,9 @@ Original archival material elsewhere in the repository remains intact.
   a passed 63-test GIT-FLEET/HULL/prosecutor invocation, output hashes and the
   identities of retained earlier failures. Later review corrections are
   validated in the final source-head check described in the continuation report.
+- [Policy-of-Thoughts sources, 2026-11-11](pot-research-sources-2026-11-11.md):
+  arXiv:2601.20379, the Qwen3-8B config, the Meta Llama 4 blog, and the
+  Spheron and Vast.ai rate pages used for the GPU budget estimate.
 - [AG-UI demo kit evidence](halo-demo-stream/README.md):
   what was tested for the streaming and session-resume demo kit (WR #18342),
   and what is not verified.
