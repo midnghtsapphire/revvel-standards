@@ -221,16 +221,19 @@ function looksLikeIp(value) {
   return candidate.includes(':') && /^[0-9a-fA-F:.]+$/.test(candidate);
 }
 
-// App Platform's edge sets do-connecting-ip to the visitor. The socket address
-// is the proxy, so keying the limit on it puts every visitor in one bucket.
-// X-Forwarded-For is the fallback for another proxy; only its first hop is
-// the client. A missing or malformed header falls back to the socket.
-export function clientAddress(req) {
+// App Platform's edge sets do-connecting-ip. That header wins when it is an IP,
+// and X-Forwarded-For is ignored in that case.
+// X-Forwarded-For is client-controlled. Trust its first hop only when
+// TRUST_PROXY=1, for a proxy that is not App Platform. Otherwise a direct
+// client (docker compose publishes the port) could pick a new bucket per request.
+// With neither header, the socket address is the fallback.
+export function clientAddress(req, env = process.env) {
   const connecting = headerValue(req, 'do-connecting-ip').trim();
   if (looksLikeIp(connecting)) return connecting;
-  const forwarded = headerValue(req, 'x-forwarded-for');
-  const firstHop = forwarded.split(',')[0].trim();
-  if (looksLikeIp(firstHop)) return firstHop;
+  if (String(env.TRUST_PROXY || '') === '1') {
+    const firstHop = headerValue(req, 'x-forwarded-for').split(',')[0].trim();
+    if (looksLikeIp(firstHop)) return firstHop;
+  }
   const socketIp = req.socket?.remoteAddress || '';
   if (looksLikeIp(socketIp)) return socketIp;
   return 'unknown';
@@ -321,7 +324,7 @@ function requestOrigin(req, ctx) {
 }
 
 async function postCheckout(req, res, ctx) {
-  if (rateLimited(ctx.hits, clientAddress(req), ctx.now())) {
+  if (rateLimited(ctx.hits, clientAddress(req, ctx.env), ctx.now())) {
     send(res, 429, { ok: false, reason: 'rate_limited' });
     return;
   }
