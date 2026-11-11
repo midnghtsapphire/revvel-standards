@@ -1,3 +1,7 @@
+## 2026-11-11 (3) — MarketShipper — draft App Platform deploy jobs
+
+- `do-app-update.sh` and the three `*-do-deploy` CircleCI jobs live only on this draft. They are not in the product image-gate PRs. A merge can create or update DigitalOcean apps after Audrey sets `DIGITALOCEAN_ACCESS_TOKEN`. This draft is not approved.
+
 ## 2026-11-11 (2) — Rules-Steward — evidence checker follows readiness links
 
 - 2026-11-11 — Rules-Steward (Cursor, Grok 4.7) — `scripts/compliance-evidence.js`: relative markdown links in the compliance docs are checked for file presence, beside the existing backtick-path scan. Bugbot on PR #18365. `tests/compliance-evidence.test.js` covers a relative link, a skipped web link, and a missing file.
