@@ -22,3 +22,12 @@ Play-by-play record per standards/LEDGER_STANDARD.md. Append-only.
 - **Commits / PRs:** this commit on `cursor/ai-video-toolkit-do-deploy-19c4`
 - **Open / handoff:** Audrey must set the CircleCI token and the Stripe secrets, connect GitHub to DigitalOcean, and point DNS. Next owner: Audrey Evans, then 1-Git-Triage-Chief merges. MarketShipper does not merge.
 - **Credit note:** MarketShipper wrote the repo-side deploy path. No production app was created from this sandbox.
+
+## 2026-11-11 15:10 UTC — MarketShipper (Cursor Grok 4.7) — shared static Stripe server
+
+- **Actor:** MarketShipper (Cursor cloud agent, Grok 4.7)
+- **Requested by:** merge gate, SonarCloud new_duplicated_lines_density on #18368
+- **Role:** executed
+- **Files:** `packages/static-stripe-server/server.mjs`, `packages/static-stripe-server/stripe-checkout-button.tsx`, `tests/static-stripe-product-gate.js`, product server and button wrappers, both Dockerfiles, `.dockerignore`, `.circleci/scripts/product-diff.sh`
+- **What was done:** Moved the runtime server, checkout button, and image-gate cases into one package. ai-video-toolkit and affiliate-hub call `bindProduct` with their service name. The previous copies stay in the product files as line comments. `deploy_on_push` stays false. No DigitalOcean deploy job was added. TRUST_PROXY is unchanged.
+- **Open / handoff:** screen-recorder-finder on #18369 can bind the same module after this merges. Live URL, DNS, and a real charge are still Audrey's.

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Print "run" or "skip" for a product image/deploy job.
 # Skip only when git can prove this revision does not touch the product.
+# packages/static-stripe-server is shared by the product images, so a change
+# there is an image input too. Added 2026-11-11 by MarketShipper.
 # If the merge base cannot be found, print "run" so a shallow checkout
 # cannot hide a broken image. Added 2026-11-11 by MarketShipper.
 set -euo pipefail
@@ -38,7 +40,7 @@ else
   exit 0
 fi
 
-if printf '%s\n' "$changed" | grep -Eq "^(products/${PRODUCT}/|\\.circleci/|\\.dockerignore$|tests/${PRODUCT}-image-gate\\.test\\.js$|tests/select-do-app\\.test\\.js$)"; then
+if printf '%s\n' "$changed" | grep -Eq "^(products/${PRODUCT}/|\\.circleci/|\\.dockerignore$|tests/${PRODUCT}-image-gate\\.test\\.js$|tests/static-stripe-product-gate\\.js$|tests/select-do-app\\.test\\.js$|packages/static-stripe-server/)"; then
   printf 'run\n'
 else
   printf 'skip\n'

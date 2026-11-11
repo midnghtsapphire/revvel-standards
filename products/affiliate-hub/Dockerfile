@@ -49,6 +49,8 @@ ENV STRIPE_MODE=test
 ENV STATIC_ROOT=/app/out
 COPY --from=build --chown=node:node /repo/products/affiliate-hub/out ./out
 COPY --from=build --chown=node:node /repo/products/affiliate-hub/server ./server
+# Same /packages path as ai-video-toolkit. /app/server/../../../packages is /packages.
+COPY --from=build --chown=node:node /repo/packages/static-stripe-server /packages/static-stripe-server
 USER node
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 CMD wget -q -O /dev/null http://127.0.0.1:8080/health || exit 1

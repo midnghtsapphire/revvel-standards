@@ -24,3 +24,12 @@ Play-by-play record per standards/LEDGER_STANDARD.md. Append-only.
 - **Commits / PRs:** this commit on `cursor/affiliate-hub-do-deploy-19c4`
 - **Open / handoff:** Audrey must set the CircleCI token and the Stripe secrets, connect GitHub to DigitalOcean, and point DNS. Next owner: Audrey Evans, then 1-Git-Triage-Chief merges. MarketShipper does not merge.
 - **Credit note:** MarketShipper wrote the repo-side deploy path. No production app was created from this sandbox.
+
+## 2026-11-11 15:10 UTC — MarketShipper (Cursor Grok 4.7) — shared static Stripe server
+
+- **Actor:** MarketShipper (Cursor cloud agent, Grok 4.7)
+- **Requested by:** merge gate, SonarCloud new_duplicated_lines_density on #18368
+- **Role:** executed
+- **Files:** `packages/static-stripe-server/`, `products/affiliate-hub/server/static-stripe-server.mjs`, `products/affiliate-hub/app/pricing/stripe-checkout-button.tsx`, `products/affiliate-hub/Dockerfile`
+- **What was done:** Affiliate Hub now starts `packages/static-stripe-server` with service name `affiliate-hub`. The previous server and button stay in those files as line comments. `deploy_on_push` stays false.
+- **Open / handoff:** This edit is on the ai-video-toolkit branch so the two copies stop duplicating. #18330's live URL is still not done.
