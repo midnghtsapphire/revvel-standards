@@ -324,7 +324,7 @@ export function githubFailureReason(status, headers, body) {
   if (status === 429) return 'rate_limited';
   if (remaining === '0') return 'rate_limited';
   if (retry) return 'rate_limited';
-  if (/secondary rate limit/i.test(message)) return 'rate_limited';
+  if (/secondary rate limit|abuse detection/i.test(message)) return 'rate_limited';
   if (status === 403 || status === 401) return 'permission';
   return 'github_error';
 }
@@ -333,8 +333,8 @@ function headerValue(headers, name) {
   return typeof headers?.get === 'function' ? headers.get(name) : null;
 }
 
-const BACKOFF_BASE_MS = 1000;
-const BACKOFF_CAP_MS = 60_000;
+const BACKOFF_BASE_MS = 60_000;
+const BACKOFF_CAP_MS = 15 * 60 * 1000;
 
 export function backoffUntil(headers, now, attempt = 1) {
   const retry = headerValue(headers, 'retry-after');
@@ -358,10 +358,12 @@ function noteLimit(response, gate) {
   const reset = headerValue(headers, 'x-ratelimit-reset');
   if (remaining != null && remaining !== '') gate.remaining = Number(remaining);
   if (reset) gate.resetAt = Number(reset) * 1000;
-  if (response?.status === 429) {
-    gate.strikes = (gate.strikes || 0) + 1;
-    gate.until = backoffUntil(headers, gate.now || Date.now(), gate.strikes);
-  }
+}
+
+function armBackoff(response, gate, now, reason) {
+  if (reason !== 'rate_limited') return;
+  gate.strikes = (gate.strikes || 0) + 1;
+  gate.until = backoffUntil(response?.headers, now, gate.strikes);
 }
 
 function backedOff(gate, now) {
@@ -393,6 +395,7 @@ async function github(url, token, fetchImpl, gate, now) {
     let body = {};
     try { body = await response.json(); } catch { body = {}; }
     const reason = githubFailureReason(response.status, response.headers, body);
+    armBackoff(response, gate, now, reason);
     const error = new Error(reason);
     error.reason = reason;
     throw error;
@@ -632,11 +635,46 @@ async function loadTeam({ fetchImpl, now, cache, token, gate }) {
         }
         teamMap.set(check.id, current);
       }
+      for (const review of reviews) {
+        const id = serviceIdFromLogin(review.login);
+        if (!id) continue;
+        const sentence = reviewSentence(review.body) || null;
+        const existing = teamMap.get(id);
+        if (existing) {
+          if (!existing.speech && sentence) {
+            existing.speech = sentence;
+            existing.quoteSource = 'review';
+          }
+          continue;
+        }
+        const entry = catalogEntry(id);
+        teamMap.set(id, {
+          id: entry.id,
+          name: entry.name,
+          logo: entry.logo,
+          passing: 0,
+          failing: 0,
+          pending: 0,
+          activity: 'idle',
+          speech: sentence,
+          quoteSource: sentence ? 'review' : null,
+          handoffTo: null,
+          handoffStation: null,
+          prNumber: pr.number,
+          station: 'reviewHut',
+          via: 'check_run',
+          checkName: null,
+          checkStatus: review.state || 'none',
+          checkAt: review.at || null,
+        });
+      }
       for (const name of peopleFromPr({ login, title: pr.title, events: issueEvents, reviews })) {
         const mapped = serviceIdFromLogin(name);
         const id = mapped || name;
         if (teamMap.has(id)) continue;
         const entry = catalogEntry(mapped || id);
+        const ownReview = (reviews || []).find((review) => review.login === name);
+        const sentence = ownReview ? reviewSentence(ownReview.body) : null;
         teamMap.set(id, {
           id: entry.id,
           name: mapped ? entry.name : name,
@@ -645,38 +683,17 @@ async function loadTeam({ fetchImpl, now, cache, token, gate }) {
           failing: 0,
           pending: 0,
           activity: 'idle',
-          speech: null,
-          quoteSource: null,
+          speech: sentence,
+          quoteSource: sentence ? 'review' : null,
           handoffTo: null,
           handoffStation: null,
           prNumber: pr.number,
-          station: 'reviewHut',
+          station: ownReview ? 'reviewHut' : 'prGate',
           via: 'author',
           checkName: null,
-          checkStatus: 'none',
-          checkAt: pr.updated_at || null,
+          checkStatus: ownReview?.state || 'none',
+          checkAt: ownReview?.at || pr.updated_at || null,
         });
-      }
-      for (const review of reviews) {
-        const id = serviceIdFromLogin(review.login);
-        if (!id) continue;
-        const entry = catalogEntry(id);
-        if (!teamMap.has(id)) {
-          teamMap.set(id, {
-            id: entry.id,
-            name: entry.name,
-            logo: entry.logo,
-            passing: 0,
-            failing: 0,
-            pending: 0,
-            activity: 'idle',
-            speech: reviewSentence(review.body) || null,
-            quoteSource: review.body ? 'review' : null,
-            handoffTo: null,
-            prNumber: pr.number,
-            station: 'reviewHut',
-          });
-        }
       }
     }
     let release = { lit: false, name: null, at: null };
@@ -779,6 +796,7 @@ async function githubGraphql(query, variables, token, fetchImpl, gate, now) {
     let body = {};
     try { body = await response.json(); } catch { body = {}; }
     const reason = githubFailureReason(response.status, response.headers, body);
+    armBackoff(response, gate, now, reason);
     const error = new Error(reason);
     error.reason = reason;
     throw error;

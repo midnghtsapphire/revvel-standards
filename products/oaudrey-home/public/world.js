@@ -615,7 +615,7 @@
     title.textContent = bot.name || bot.id;
     article.appendChild(title);
     var badge = document.createElement('p');
-    var label = bot.activity === 'failed' ? 'Failing' : bot.activity === 'working' ? 'Pending' : bot.activity === 'handoff' ? 'Handoff' : 'Idle';
+    var label = bot.activity === 'failed' ? 'Failing' : bot.activity === 'working' ? 'Pending' : bot.activity === 'handoff' ? 'Handoff' : bot.activity === 'billing' ? 'skipped (billing)' : 'Idle';
     badge.textContent = label;
     badge.className = 'badge badge-' + (bot.activity || 'idle');
     article.appendChild(badge);

@@ -325,11 +325,10 @@ test('any 429 is rate-limited and backs off with retry-after or exponential dela
   assert.equal(githubFailureReason(429, headers({ 'x-ratelimit-remaining': '4000' }), {}), 'rate_limited');
   assert.equal(githubFailureReason(429, headers({}), { message: 'unrelated' }), 'rate_limited');
   assert.equal(backoffUntil(headers({ 'retry-after': '10' }), 1_000, 4), 11_000);
-  assert.equal(backoffUntil(headers({}), 1_000, 1), 2_000);
-  assert.equal(backoffUntil(headers({}), 1_000, 2), 3_000);
-  assert.equal(backoffUntil(headers({}), 1_000, 3), 5_000);
-  assert.equal(backoffUntil(headers({ 'x-ratelimit-reset': '5' }), 1_000, 4), 9_000);
-  assert.equal(backoffUntil(headers({}), 0, 20), 60_000);
+  assert.equal(backoffUntil(headers({}), 1_000, 1), 61_000);
+  assert.equal(backoffUntil(headers({}), 1_000, 2), 121_000);
+  assert.equal(backoffUntil(headers({ 'x-ratelimit-reset': '5' }), 1_000, 3), 241_000);
+  assert.equal(backoffUntil(headers({}), 0, 20), 15 * 60 * 1000);
 
   let calls = 0;
   const fetchImpl = async () => {
@@ -348,31 +347,100 @@ test('any 429 is rate-limited and backs off with retry-after or exponential dela
   await buildTeamReport({
     env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
     fetchImpl,
-    now: 1_500,
+    now: 30_000,
     cache,
   });
   assert.equal(calls, 1);
   await buildTeamReport({
     env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
     fetchImpl,
-    now: 2_500,
+    now: 62_000,
     cache,
   });
   assert.equal(calls, 2);
   await buildTeamReport({
     env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
     fetchImpl,
-    now: 4_000,
+    now: 100_000,
     cache,
   });
   assert.equal(calls, 2);
+});
+
+test('a rate-limited 403 waits before the next team call', async () => {
+  const { buildTeamReport, githubFailureReason } = await loadFeed();
+  const headers = (map) => ({ get: (name) => map[name.toLowerCase()] ?? null });
+  assert.equal(githubFailureReason(403, headers({ 'x-ratelimit-remaining': '20', 'retry-after': '15' }), { message: 'slow down' }), 'rate_limited');
+  assert.equal(githubFailureReason(403, headers({ 'x-ratelimit-remaining': '20' }), { message: 'You have triggered an abuse detection mechanism.' }), 'rate_limited');
+  let calls = 0;
+  const fetchImpl = async () => {
+    calls += 1;
+    return response({ message: 'You have exceeded a secondary rate limit.' }, 403, '4000');
+  };
+  const cache = new Map();
+  const blocked = await buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl,
+    now: 10_000,
+    cache,
+  });
+  assert.equal(blocked.reason, 'rate_limited');
   await buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl,
+    now: 20_000,
+    cache,
+  });
+  assert.equal(calls, 1);
+  await buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl,
+    now: 71_000,
+    cache,
+  });
+  assert.equal(calls, 2);
+});
+
+test('a review-only login keeps the review sentence on its sprite', async () => {
+  const { buildTeamReport } = await loadFeed();
+  const fetchImpl = async (url) => {
+    if (url.includes('state=open')) {
+      return response([{
+        number: 9,
+        title: 'feat: example',
+        html_url: 'https://github.com/midnghtsapphire/revvel-standards/pull/9',
+        updated_at: '2026-11-11T04:00:00Z',
+        merged_at: null,
+        user: { login: 'midnghtsapphire' },
+        head: { sha: 'abc' },
+      }]);
+    }
+    if (url.includes('state=closed')) return response([]);
+    if (url.includes('/check-runs')) return response({ check_runs: [] });
+    if (url.endsWith('/status')) return response({ statuses: [] });
+    if (url.includes('/reviews')) {
+      return response([
+        { user: { login: 'cursor[bot]' }, state: 'COMMENTED', submitted_at: '2026-11-11T05:00:00Z', body: 'Ship the gate. Next line.' },
+        { user: { login: 'octocat' }, state: 'COMMENTED', submitted_at: '2026-11-11T05:01:00Z', body: 'Looks good to me.' },
+      ]);
+    }
+    if (url.includes('/timeline')) return response([]);
+    if (url.includes('/releases')) return response([]);
+    if (url.includes('/tags')) return response([]);
+    return response({}, 404);
+  };
+  const report = await buildTeamReport({
     env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
     fetchImpl,
     now: 5_000,
-    cache,
+    cache: new Map(),
   });
-  assert.equal(calls, 3);
+  const cursor = report.team.find((member) => member.id === 'cursor');
+  assert.equal(cursor.speech, 'Ship the gate.');
+  assert.equal(cursor.quoteSource, 'review');
+  const person = report.team.find((member) => member.id === 'octocat');
+  assert.equal(person.speech, 'Looks good to me.');
+  assert.equal(person.via, 'author');
 });
 
 test('a partial board is not cached as a live connection, and one build is shared', async () => {
@@ -492,6 +560,7 @@ test('front page scene stays original, quoted, and under the size budget', () =>
   assert.match(html, /"@type": "ItemList"/);
   assert.match(world, /roundRect\(ctx, -32, -10, 64, 44, 14\)/);
   assert.match(world, /How it connects/);
+  assert.match(world, /activity === 'billing' \? 'skipped \(billing\)'/);
   const connections = JSON.parse(fs.readFileSync(path.join(ROOT, 'products/oaudrey-home/public/team-connections.json'), 'utf8'));
   assert.equal(connections.githubMcp.name, 'GitHub MCP server');
   assert.match(connections.githubMcp.docs, /^https:\/\//);
