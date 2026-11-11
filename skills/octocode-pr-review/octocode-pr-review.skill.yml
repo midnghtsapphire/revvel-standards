@@ -11,7 +11,7 @@ metadata:
   updated_at: "2026-11-11"
   license: "MIT"
   copyright: "Copyright (c) 2026 Guy Bary"
-  source: "https://github.com/bgauryy/octocode-mcp/tree/main/packages/octocode-cli/skills/octocode-pr-review"
+  source: "https://github.com/bgauryy/octocode-mcp/blob/c265e3f9413161c900cbf4aa70d451b8e6b3920a/skills/octocode-research/references/workflow-pr-review.md"
 
 triggers:
   - "review the pull request"

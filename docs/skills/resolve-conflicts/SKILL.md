@@ -71,15 +71,16 @@ Append-only file. `CONFLICTED` is the unmerged path from `git status`. Read the 
 ```bash
 CONFLICTED=path/from/git-status
 STAGE=$(mktemp -d)
-git show ":2:$CONFLICTED" > "$STAGE/ours"
-git show ":1:$CONFLICTED" > "$STAGE/base"
-git show ":3:$CONFLICTED" > "$STAGE/theirs"
-git merge-file --union --stdout "$STAGE/ours" "$STAGE/base" "$STAGE/theirs" > "$STAGE/merged"
-cp "$STAGE/merged" "$CONFLICTED"
+git show ":2:$CONFLICTED" > "$STAGE/ours" &&
+git show ":1:$CONFLICTED" > "$STAGE/base" &&
+git show ":3:$CONFLICTED" > "$STAGE/theirs" &&
+git merge-file --union --stdout "$STAGE/ours" "$STAGE/base" "$STAGE/theirs" > "$STAGE/merged" &&
+test -s "$STAGE/merged" &&
+cp "$STAGE/merged" "$CONFLICTED" &&
 git add "$CONFLICTED"
 ```
 
-If `git merge-file` exits non-zero, do not `cp` and do not `git add`. Search `"$CONFLICTED"` for conflict markers before you commit. Union can reorder lines. Confirm both new blocks are present.
+`&&` stops the copy when `git show` or `git merge-file` fails. `test -s` refuses an empty result, which is what three empty stage files produce. Search `"$CONFLICTED"` for conflict markers before you commit. Union can reorder lines. Confirm both new blocks are present.
 
 A whole-branch merge does not take `-s union`. Git reports `Could not find merge strategy 'union'`. Merge the branch with the default strategy. For a ledger that is not already `merge=union` in `.gitattributes`, resolve that file with `git merge-file --union` as above. `CHANGELOG.md` already has the attribute, so the default merge keeps both sides of that file.
 
@@ -97,8 +98,18 @@ Run the test that covers the files you touched. Then:
 
 ```bash
 git add "$CONFLICTED"
-git commit -m "$(signed_body "fix: resolve merge conflict in path")"
+if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then
+  git rebase --continue
+elif [ -f .git/CHERRY_PICK_HEAD ]; then
+  git cherry-pick --continue
+elif [ -f .git/REVERT_HEAD ]; then
+  git revert --continue
+else
+  git commit -m "$(signed_body "fix: resolve merge conflict in path")"
+fi
 ```
+
+`git commit` during a rebase, cherry-pick, or revert does not finish that operation. Use the matching `--continue` when that state directory or file is present.
 
 If the branch is already on the remote, the resolution is a new merge commit. Do not rebase that branch to hide the merge.
 

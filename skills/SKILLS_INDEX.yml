@@ -1502,7 +1502,7 @@ skills:
     triggers:
       - "rebase unpushed"
       - "git bisect"
-      - "git worktree"
+      - "unpushed worktree"
       - "git reflog"
       - "recover a local commit"
 
@@ -1650,7 +1650,7 @@ skills:
     triggers:
       - "tdd"
       - "test first"
-      - "failing test"
+      - "test-first failing test"
       - "reproduce the bug"
       - "node:test"
 

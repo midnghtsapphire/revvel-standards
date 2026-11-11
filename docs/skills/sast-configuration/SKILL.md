@@ -53,10 +53,10 @@ Semgrep is the scanner to run first. `--error` exits non-zero when a finding rem
 
 ```bash
 OUT=$(mktemp)
-semgrep --config=auto --error --metrics=off --quiet --sarif --sarif-output="$OUT" path/you/changed
+semgrep --config=auto --error --metrics=off --quiet --sarif-output="$OUT" path/you/changed >/dev/null
 ```
 
-`--metrics=off` keeps the run from uploading a snippet. `--quiet` and `--sarif-output` keep the matched source line out of the terminal. Report each finding's rule id, path, and line from `"$OUT"`. Do not print the SARIF match text. If `semgrep` is not on `PATH`, say so and stop. Do not start a SonarQube container unless the task asked for a local server. CodeQL is the alternative when the task names CodeQL. Do not install a second scanner beside the one the task named.
+`--sarif` alone prints the SARIF document, including `region.snippet.text`, on stdout. Do not pass `--sarif` together with `--sarif-output`. Redirect stdout to `/dev/null`. Report each finding's rule id, path, and line from `"$OUT"`. Do not print the snippet field. `--metrics=off` keeps the run from uploading a snippet. If `semgrep` is not on `PATH`, say so and stop. Do not start a SonarQube container unless the task asked for a local server. CodeQL is the alternative when the task names CodeQL. Do not install a second scanner beside the one the task named.
 
 A policy pack is a config flag, not a certification. `semgrep --config p/pci-dss --metrics=off` is a PCI-oriented rule pack. The exit code is the result. It is not a PCI-DSS attestation. SOC2 is the same: name the pack and the exit code.
 

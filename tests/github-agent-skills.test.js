@@ -48,8 +48,12 @@ test('each skill has a canonical playbook, a loader, and a machine config', () =
     assert.ok(text.includes('Revvel house rules'), `${name} missing house rules`);
     assert.ok(text.includes('— BotName'), `${name} missing signature`);
     assert.ok(text.includes('CircleCI'), `${name} missing CircleCI`);
-    assert.ok(text.includes('git push --force'), `${name} missing force-push prohibition`);
-    assert.ok(text.includes('gh auth token'), `${name} missing token prohibition`);
+    const forcePushLines = text.split('\n').filter((line) => /git push --force(?:[`\s]|$)/.test(line));
+    assert.ok(forcePushLines.length > 0, `${name} missing force-push prohibition`);
+    assert.ok(forcePushLines.every((line) => line.includes('Do not run')), `${name} contains an unsafe force-push instruction`);
+    const tokenLines = text.split('\n').filter((line) => line.includes('gh auth token'));
+    assert.ok(tokenLines.length > 0, `${name} missing token prohibition`);
+    assert.ok(tokenLines.every((line) => line.includes('Do not run')), `${name} contains an unsafe token instruction`);
     assert.ok(!text.includes('dangerously-skip-permissions'), `${name} contains a skip-permissions flag`);
     for (const line of text.split('\n')) {
       if (line.includes('--force-with-lease') || line.includes('--delete-branch') || line.includes('git merge -s union')) {
@@ -99,8 +103,9 @@ test('vault registry, machine index, skills README, and docs/AGENTS.md name ever
   for (const [name] of SKILLS) {
     const canon = `docs/skills/${name}/SKILL.md`;
     assert.ok(registry.includes(canon), `REGISTRY.md missing ${name}`);
-    assert.ok(machine.includes(`name: ${name}`), `SKILLS_INDEX.yml missing ${name}`);
-    assert.ok(machine.includes(canon), `SKILLS_INDEX.yml path missing ${name}`);
+    const entry = yaml.parse(machine).skills.find((item) => item.name === name);
+    assert.ok(entry, `SKILLS_INDEX.yml missing ${name}`);
+    assert.equal(entry.skill_file, canon, `SKILLS_INDEX.yml path mismatch for ${name}`);
     assert.ok(skillsReadme.includes(canon), `skills/README.md missing ${name}`);
     assert.ok(agents.includes(canon), `docs/AGENTS.md missing ${name}`);
   }

@@ -288,15 +288,16 @@ For one file that is already in conflict, read the index stages into a temp dire
 ```bash
 CONFLICTED=path/from/git-status
 STAGE=$(mktemp -d)
-git show ":2:$CONFLICTED" > "$STAGE/ours"
-git show ":1:$CONFLICTED" > "$STAGE/base"
-git show ":3:$CONFLICTED" > "$STAGE/theirs"
-git merge-file --union --stdout "$STAGE/ours" "$STAGE/base" "$STAGE/theirs" > "$STAGE/merged"
-cp "$STAGE/merged" "$CONFLICTED"
+git show ":2:$CONFLICTED" > "$STAGE/ours" &&
+git show ":1:$CONFLICTED" > "$STAGE/base" &&
+git show ":3:$CONFLICTED" > "$STAGE/theirs" &&
+git merge-file --union --stdout "$STAGE/ours" "$STAGE/base" "$STAGE/theirs" > "$STAGE/merged" &&
+test -s "$STAGE/merged" &&
+cp "$STAGE/merged" "$CONFLICTED" &&
 git add "$CONFLICTED"
 ```
 
-If `git merge-file` exits non-zero, do not copy and do not `git add`. Read the file after a union merge. Union can reorder lines. Confirm both sides' new lines are present and that no conflict marker remains. Do not `git checkout --ours` or `--theirs` on a ledger. That drops a side.
+`&&` stops the copy when a stage read or `git merge-file` fails. `test -s` refuses an empty result. Read the file after a union merge. Union can reorder lines. Confirm both sides' new lines are present and that no conflict marker remains. Do not `git checkout --ours` or `--theirs` on a ledger. That drops a side.
 
 ### Pull requests, comments, and reviews
 

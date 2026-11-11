@@ -22,7 +22,7 @@ triggers:
 
 dependencies:
   skills: ["github-read-write-admin"]
-  tools: ["git"]
+  tools: ["git", "gh"]
   pip_packages: []
 
 documentation:

@@ -58,7 +58,7 @@ npx markdownlint-cli2 docs/skills/the-file.md $(sed -e 's/[[:space:]]*$//' -e '/
 
 The `sed` line turns `.markdownlintignore` into the `#glob` negations `.circleci/scripts/lint-changed-markdown.sh` uses. A bare `markdownlint-cli2` on a directory also lints archives that file excludes.
 
-Run `npm test` before you push when the change can affect the suite. Markdown lint uses `.markdownlint.yaml`. Lint the markdown files you changed. A repo-wide `npm run lint` also walks generated transcripts and any installed `node_modules`, and that flood is pre-existing. Do not treat it as a failure you introduced. Scope the command to your files.
+Run `npm test` before you push when the change can affect the suite. Markdown lint uses `.markdownlint.yaml`. `npm run lint` runs `scripts/markdownlint-repo.mjs`, which applies `.markdownlintignore`. Lint the files you edited when you want a focused result. A failure in those files is yours to fix.
 
 Python you changed goes through `scripts/flake8-baseline-gate.js`. Do not reformat a Python file you did not edit.
 
