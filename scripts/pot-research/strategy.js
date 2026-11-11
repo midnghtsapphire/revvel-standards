@@ -101,6 +101,9 @@ function runPot(problem, options = {}) {
       exploration: options.exploration,
       selection: options.selection,
       seed: options.seed,
+      // A later LoRA policy passes priors here. Dropping this field makes
+      // every PUCT prior look uniform, so the first expansion is a coin flip.
+      priorFor: options.priorFor,
     });
     const samples = found.trajectories.map((trajectory) => ({
       id: candidateId(trajectory.path),
@@ -202,6 +205,7 @@ async function runPotOverLanes(context, caller, deps) {
     seed,
     learningRate: context.potLearningRate,
     selection: context.potSelection,
+    priorFor: context.potPriorFor,
   });
   const laneById = new Map(lanes.map((lane) => [lane.id, lane]));
   const ordered = pot.best.path.map((id) => {

@@ -2,6 +2,19 @@
 
 Play-by-play for `scripts/pot-research/`, per `standards/LEDGER_STANDARD.md`. Newest first. Do not rewrite an entry; add a later one that points at it.
 
+## 2026-11-11 16:55 UTC — ResearchRodneyAIArchitect — priors pass through runPot
+
+- **Actor:** ResearchRodneyAIArchitect (Cursor cloud agent, Grok 4.7)
+- **Requested by:** gitar-bot review on pull request #18367
+- **Role:** executed
+- **Files:** `scripts/pot-research/strategy.js`, `tests/pot-research.test.js`, `CHANGELOG.md`, this ledger
+- **What was done:** `runPot` forwards `options.priorFor` into `search`. `runPotOverLanes` reads `context.potPriorFor`. The PUCT test now also calls `runStrategy` and `runPotOverLanes`, so a prior that only works on the raw search function fails the test.
+- **Decisions:** Keep the field names `priorFor` on the strategy options and `potPriorFor` on the orchestrator context. The search option stays `priorFor`.
+- **Sources:** review comment on pull request #18367
+- **Commits / PRs:** follow-up on `cursor/pot-mcts-grpo-engine-a685`, pull request #18367
+- **Open / handoff:** unchanged. GPU spend, the 100-example set, and a real LoRA policy remain open.
+- **Credit note:** ResearchRodneyAIArchitect applied the review. gitar-bot reported the dropped prior.
+
 ## 2026-11-11 16:50 UTC — ResearchRodneyAIArchitect — seed and priors actually drive MCTS
 
 - **Actor:** ResearchRodneyAIArchitect (Cursor cloud agent, Grok 4.7)

@@ -79,7 +79,7 @@ describe("pot-research", () => {
     assert.strictEqual(samePaths, false);
   });
 
-  test("PUCT expansion follows the prior instead of legal order", () => {
+  test("PUCT expansion follows the prior instead of legal order", async () => {
     const { search } = require("../scripts/pot-research/mcts");
     const problem = {
       root: "S",
@@ -104,6 +104,33 @@ describe("pot-research", () => {
       priorFor,
     });
     assert.deepStrictEqual(run.best.path, ["high"]);
+
+    const throughStrategy = pot.runStrategy("pot", problem, {
+      iterations: 1,
+      seed: 1,
+      selection: "puct",
+      priorFor,
+    });
+    assert.deepStrictEqual(throughStrategy.best.path, ["high"]);
+
+    const laneRun = await runPotOverLanes(
+      {
+        query: "prior",
+        dryRun: true,
+        depth: "standard",
+        potIterations: 1,
+        potSelection: "puct",
+        seed: 1,
+        potPriorFor: (_state, action) => (action === "high" ? 0.9 : 0.05),
+      },
+      async () => "Mocked prior output with source https://example.com/prior",
+      {
+        lanes: [{ id: "low" }, { id: "high" }],
+        runLane: engine.runLane,
+        maxIterations: 1,
+      },
+    );
+    assert.strictEqual(laneRun.potTrace.chosenLaneIds[0], "high");
   });
 
   test("UCT prefers an unvisited child and PUCT increases with the prior", () => {

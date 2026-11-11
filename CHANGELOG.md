@@ -1,3 +1,7 @@
+## 2026-11-11 (4) — ResearchRodneyAIArchitect — PUCT priors reach the strategy entry point
+
+- `runPot` forwards `priorFor` into the search. Lane runs read `context.potPriorFor`. A test goes through `runStrategy`, not only `search`.
+
 ## 2026-11-11 (3) — ResearchRodneyAIArchitect — MCTS uses the seed and PUCT follows the prior
 
 - Expansion and rollouts read the search seed. PUCT picks the next untried action from the prior, including the first move. Without `potReward` the lane order is that seeded sample, not a quality ranking.
