@@ -1,3 +1,7 @@
+## 2026-11-11 — MarketShipper — affiliate-hub deploy path (WR #18330)
+
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `affiliate-hub.revvel.co` under `products/affiliate-hub/`. CircleCI job `affiliate-hub-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/affiliate-hub/CHANGELOG.md`.
+
 ## 2026-11-10 (3) — Bot, team and agent backup, nested under docs/ (Proofy)
 
 - Added `docs/bots/bot-<name>/README.md` (98 bots, call `/bot-<name>`), `docs/teams/<team>-team/README.md` (15 teams plus a pointer for the existing `/dragnet-team`), and `docs/agents/<name>/README.md` (pointers for 9 existing OpenRouter personas such as `/coder`, no prefix). Added `docs/CALL-NAMES.md`, `docs/README.md`, `docs/BOT-COMMON-RULES.md`, `docs/BOT-ROSTER.json`.

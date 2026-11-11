@@ -17,3 +17,11 @@ products/ghcr-console/tests
 **/.env
 **/.env.*
 **/npm-debug.log*
+# 2026-11-11 MarketShipper WR #18330: the affiliate-hub image copies this
+# product and the file: packages it installs. The ** rule above would hide
+# them, and Docker then fails COPY. ghcr-console stays the only other product
+# in the context.
+!products/affiliate-hub/
+!products/affiliate-hub/**
+!packages/
+!packages/**
