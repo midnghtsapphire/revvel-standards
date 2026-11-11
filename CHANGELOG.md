@@ -1,3 +1,11 @@
+## 2026-11-11 — MarketShipper (Grok 4.7, Cursor Cloud) — GOAP agent-as-FTE sales deck and landing
+
+- `products/goap-swarm-console/sales/deck.md`: 13-slide source for work request #18334. Includes the value proposition, the $2,000 to $5,000 per agent per month band, an ROI illustration, and a proof-pending case study. No customer, quote, or result was invented. A same-day URL check found no deployed product to cite (issue #18330 is still open).
+- `products/goap-swarm-console/public/goap-agent-sales-deck.pdf`: rebuilt from that source by `scripts/build_sales_deck.py`.
+- `products/goap-swarm-console/landing/` and `deploy/app.yaml`: static landing page for agent-as-fte.revvel.co. The Calendly embed reads `CALENDLY_URL` and stays off when that value is empty or not an https link on calendly.com with a scheduling path.
+- `.circleci/config.yml`: job `agent-as-fte` builds the PDF and the landing page and requires HTTP 200 on loopback.
+- Prospect contact, closed customers, and Stripe MRR were not done. Ledger: `products/goap-swarm-console/LEDGER.md`.
+
 ## 2026-11-10 (3) — Bot, team and agent backup, nested under docs/ (Proofy)
 
 - Added `docs/bots/bot-<name>/README.md` (98 bots, call `/bot-<name>`), `docs/teams/<team>-team/README.md` (15 teams plus a pointer for the existing `/dragnet-team`), and `docs/agents/<name>/README.md` (pointers for 9 existing OpenRouter personas such as `/coder`, no prefix). Added `docs/CALL-NAMES.md`, `docs/README.md`, `docs/BOT-COMMON-RULES.md`, `docs/BOT-ROSTER.json`.

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GOAP agent as an FTE — REVVEL</title>
+  <meta name="description" content="A scoped GOAP agent engagement at $2,000 to $5,000 per agent per month. The case study is proof pending until a product is live.">
+  <!-- Build replaces this token from CALENDLY_URL. Empty means no embed. Do not commit a calendly.com path. -->
+  <meta name="revvel-calendly-url" content="__REVVEL_CALENDLY_URL__">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="wrap">
+    <nav class="nav">
+      <a href="#pricing">Pricing</a>
+      <a href="deck.html">Sales deck</a>
+      <a href="goap-agent-sales-deck.pdf">Download PDF</a>
+    </nav>
+    <p class="kicker">REVVEL · agent operations</p>
+    <h1>A GOAP agent, priced like headcount.</h1>
+    <p class="lead">Plan the work, assign it, and keep the recovery note. The offer is $2,000 to $5,000 per agent per month. The console that exists today does the planning and the assignment in a symbolic world and exports the report.</p>
+    <div class="actions">
+      <a class="button" href="#book">Request a pilot</a>
+      <a class="button secondary" href="deck.html">Read the deck</a>
+    </div>
+
+    <section>
+      <div class="grid">
+        <article class="card"><h2>Plan</h2><p>A goal, a world state, preconditions, and a finish line a person can check.</p></article>
+        <article class="card"><h2>Assign</h2><p>Actions go to a matching role with capacity left. Export the split as CSV.</p></article>
+        <article class="card"><h2>Review</h2><p>Anomalies, escalation, and the exported run stay visible. A person accepts the output.</p></article>
+      </div>
+    </section>
+
+    <section id="pricing" class="panel">
+      <h2>$2,000 to $5,000 per agent / month</h2>
+      <p>Volume, integrations, support, and review time pick the point inside the band. Cloud compute and third-party model calls are listed in the proposal. The work-request line is "Ships code 24/7, no benefits, outcome-guaranteed." Round-the-clock production coding and a guaranteed customer outcome are not demonstrated by the console.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="roi-heading">
+      <h2 id="roi-heading">Estimate recovered capacity</h2>
+      <p>Change every assumption. These figures are an illustration. Recovered time has cash value only if the team can use it.</p>
+      <div class="grid">
+        <label>Repeatable task hours per week<input id="hours" type="number" min="0" max="1000" value="30"></label>
+        <label>Loaded cost per hour ($)<input id="cost" type="number" min="0" max="10000" value="60"></label>
+        <label>Estimated automation (%)<input id="automation" type="number" min="0" max="100" value="50"></label>
+        <label>Agent price per month ($)<input id="price" type="number" min="0" max="100000" value="2000"></label>
+      </div>
+      <div class="results" aria-live="polite">
+        <div><p>Monthly hours recovered</p><strong id="hours-out">65.0</strong></div>
+        <div><p>Monthly net capacity value</p><strong id="net-out">$1,900</strong></div>
+        <div><p>Annual net capacity value</p><strong id="annual-out">$22,800</strong></div>
+      </div>
+      <p id="roi-error" class="note"></p>
+      <p class="note">Formula: hours/week × 52 ÷ 12 × automation fraction × hourly cost − monthly price. Review time belongs inside the automation assumption.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Proof pending</h2>
+      <p>Checked 2026-11-11. No product in this repository was at a live public URL that can be cited as a deployment. GitHub Pages for the repo returned 404, the product hostnames in the deploy notes did not resolve, the Vercel host returned 402, and oaudrey.com served a parking page. No customer name, quote, or result is shown. A case study waits on at least one live product (issue 18330).</p>
+    </section>
+
+    <section id="book" class="panel">
+      <h2>Request a pilot</h2>
+      <div id="calendly-embed"></div>
+      <p id="calendly-unset">CALENDLY_URL is not set. The calendar embed appears when that build value is an https link on calendly.com with a scheduling path. Nothing is invented in its place.</p>
+      <p><a href="https://github.com/midnghtsapphire/revvel-standards/discussions/18238">Use the owner GitHub discussion</a> and keep private business details out of the public thread.</p>
+    </section>
+  </main>
+  <script src="roi.js"></script>
+  <script src="calendly.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
