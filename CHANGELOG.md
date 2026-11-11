@@ -15,6 +15,13 @@
 - Added `scripts/pot-research/`: UCT Monte Carlo tree search, a GRPO step on a transient adapter, a frozen base-weight vector, and a deterministic stub policy. The linear lane fan-out in `scripts/research-engine.js` stays the default; `RESEARCH_STRATEGY=pot` opts in.
 - Added `tests/pot-research.test.js`, `docs/research/pot-research-engine.md` (GPU budget marked as an estimate), `scripts/pot-research/LEDGER.md`, and `scripts/pot-research/benchmark.js`. The harness reports the +20-30% criterion as not measured. No quality delta is invented.
 - CircleCI already runs `tests/**/*.test.js`. No new job and no GitHub-hosted workflow.
+## 2026-11-11 (3) — MarketShipper — affiliate-hub image gate does not write to App Platform
+
+- Restacked onto main `7aceb6284` (#18364 and #18365 kept). CircleCI keeps `demo-kit-test`, `affiliate-hub-build`, and `affiliate-hub-image`. The DigitalOcean create/update job is not on this branch. `npm ci` in the image uses `--ignore-scripts`. Checkout rate limit keys on `do-connecting-ip`, then the first `X-Forwarded-For` hop.
+
+## 2026-11-11 — MarketShipper — affiliate-hub deploy path (WR #18330)
+
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `affiliate-hub.revvel.co` under `products/affiliate-hub/`. CircleCI job `affiliate-hub-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/affiliate-hub/CHANGELOG.md`.
 
 ## 2026-11-11 — MarketShipper (Grok 4.7, Cursor Cloud) — GOAP agent-as-FTE sales deck and landing
 
