@@ -110,15 +110,15 @@ if [ -d "$(git rev-parse --git-path rebase-merge)" ] || [ -d "$(git rev-parse --
 elif [ -f "$(git rev-parse --git-path CHERRY_PICK_HEAD)" ]; then
   git cherry-pick --continue --no-edit
 elif [ -f "$(git rev-parse --git-path MERGE_HEAD)" ]; then
-  GIT_EDITOR=true git merge --continue
+  git commit --no-edit -m "$(signed_body "fix: resolve merge conflict in path")"
 elif [ -f "$(git rev-parse --git-path REVERT_HEAD)" ]; then
-  GIT_EDITOR=true git revert --continue
+  GIT_EDITOR=true git revert --continue --no-edit
 else
-  git commit -m "$(signed_body "fix: resolve merge conflict in path")"
+  git commit --no-edit -m "$(signed_body "fix: resolve merge conflict in path")"
 fi
 ```
 
-`git rev-parse --git-path` finds rebase and cherry-pick state in a worktree or a subdirectory. A hard-coded `.git/` path does not. `GIT_EDITOR=true` and `--no-edit` keep `--continue` from opening an editor. `git commit` during a rebase, cherry-pick, merge, or revert does not finish that operation.
+`git rev-parse --git-path` finds rebase and cherry-pick state in a worktree or a subdirectory. A hard-coded `.git/` path does not. `git commit --no-edit -m` finishes a merge once the conflicts are staged, and `signed_body` puts the bot name on that commit. `GIT_EDITOR=true git merge --continue` would keep Git's default message and skip the signature. `git commit` during a rebase, cherry-pick, or revert does not finish that operation. Each of those `--continue` commands sets `GIT_EDITOR=true` or `--no-edit`, so a shell with no editor still finishes.
 
 If the branch is already on the remote, the resolution is a new merge commit. Do not rebase that branch to hide the merge.
 
