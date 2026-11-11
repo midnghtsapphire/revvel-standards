@@ -241,8 +241,13 @@ test('bounded drain completes healthy multi-batch HTTP backlog and distinguishes
 
 test('drain preserves retry backoff while completing other due batches', async () => {
   let calls = 0;
+  let clock = Date.now();
   const healthy = provider();
-  const app = await fixture({ lago: { ...healthy, invoice: async id => { calls++; if (calls === 1) throw new Error('offline transient'); return healthy.invoice(id); } } });
+  // REVVEL-DISABLED | AGENT: codex | MODEL: GPT-6 | WR: #18355 | DATE: 2026-11-11 | STATUS: REPLACED
+  // REASON: The real clock allowed the one-second retry to become due during slow scheduled runs.
+  // const app = await fixture({ lago: { ...healthy, invoice: async id => { calls++; if (calls === 1) throw new Error('offline transient'); return healthy.invoice(id); } } });
+  // REVVEL-DISABLED-END
+  const app = await fixture({ now: () => clock, lago: { ...healthy, invoice: async id => { calls++; if (calls === 1) throw new Error('offline transient'); return healthy.invoice(id); } } });
   try {
     for (let i = 0; i < 26; i++) assert.equal((await send(app, notification({ offline_delivery: i }), `retry-${i}`)).status, 202);
     assert.deepEqual(await drainPending(app, app.inbox), {
@@ -254,5 +259,10 @@ test('drain preserves retry backoff while completing other due batches', async (
     });
     assert.equal(calls, 26, 'backoff is never bypassed by drain');
     assert.equal(app.inbox.db.prepare("SELECT COUNT(*) AS n FROM inbox WHERE status='pending' AND attempts=1").get().n, 1);
+    clock += 1000;
+    assert.deepEqual(await drainPending(app, app.inbox), {
+      processed: 1, failed: 0, pending: 0, batches: 1, status: 'complete', exitCode: 0, publicCheckout: false,
+    });
+    assert.equal(calls, 27);
   } finally { await app.close(); }
 });
