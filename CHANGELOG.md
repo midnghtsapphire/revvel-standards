@@ -1,9 +1,3 @@
-## 2026-11-10 (3) — Bot, team and agent backup, nested under docs/ (Proofy)
-
-- Added `docs/bots/bot-<name>/README.md` (98 bots, call `/bot-<name>`), `docs/teams/<team>-team/README.md` (15 teams plus a pointer for the existing `/dragnet-team`), and `docs/agents/<name>/README.md` (pointers for 9 existing OpenRouter personas such as `/coder`, no prefix). Added `docs/CALL-NAMES.md`, `docs/README.md`, `docs/BOT-COMMON-RULES.md`, `docs/BOT-ROSTER.json`.
-- Additions only; no existing file edited except an appended pointer in `docs/agents/README.md`. Existing persona/fleet definitions are linked, not copied.
-- Private details redacted (public repo): emails, locations, a registry id, a family member's name, account-recovery specifics. Two Sense system prompts are kept in the private backup. No secrets or memory contents.
-
 ## 2026-11-10 (2) — scripts-as-CI wave 2: PR Lifecycle + PR Check Status + shared client
 
 - `scripts/ci/lib/mini-github.js` — shared zero-dep client; listForRef/listComments now paginate fully (MEASURED: 235 check runs on main).
