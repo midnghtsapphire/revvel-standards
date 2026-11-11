@@ -14,3 +14,5 @@ Original archival material elsewhere in the repository remains intact.
   a passed 63-test GIT-FLEET/HULL/prosecutor invocation, output hashes and the
   identities of retained earlier failures. Later review corrections are
   validated in the final source-head check described in the continuation report.
+
+- [Deep Sweep method pack (unverified AI-chat output, 2026-11-10)](../docs/deep-sweep/README.md): archived Gemma / Venice / DeepSeek materials under `docs/deep-sweep/`. Leads only; see `VERIFICATION.md`.

@@ -1,3 +1,8 @@
+## 2026-11-10 (3) — docs/deep-sweep: archived unverified method pack
+
+- LinearA-Untried — `docs/deep-sweep/`: owner-requested archive of 2026-11-10 AI-chat outputs (Gemma, Venice, DeepSeek) on a deep-sweep/index method, split into method notes, code, schemas, prompts, raw sources, and `VERIFICATION.md`. Status: unverified, not run. AI answers are leads, not sources.
+- `Library/README.md`: appended pointer to the pack.
+
 ## 2026-11-10 (2) — scripts-as-CI wave 2: PR Lifecycle + PR Check Status + shared client
 
 - `scripts/ci/lib/mini-github.js` — shared zero-dep client; listForRef/listComments now paginate fully (MEASURED: 235 check runs on main).

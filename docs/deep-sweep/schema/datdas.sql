@@ -1,0 +1,23 @@
+-- Status: unverified AI-chat output, collected 2026-11-10. Not run. AI answers are leads, not sources.
+-- Not run: this schema has not been executed or tested. Do not run analysis
+-- against Linear A corpus data without a preregistered hypothesis via
+-- CorpusBot / Fleet-Orchestrator. Sign runs between dividers are "sequences",
+-- not "words".
+--
+
+-- datdas.sql was named in the 2026-11-10 chat paste (message t9u).
+-- The CREATE TABLE body sat in a ~30,883-character stretch of t9u that
+-- was omitted from the executor handoff and was not recovered from a
+-- local transcript. This file is not a reconstructed database.
+--
+-- DatDas itself is Marco Merlini's databank of Danube / Vinča signs.
+-- An open copy of Merlini, Chapter 6, is already held in
+-- midnghtsapphire/tartaria-tablets under sources/. There is no public
+-- downloadable DatDas dump in this pack.
+--
+-- Column names attested only as references inside the analysis snippets:
+--   datdas_signs(inscription_id, sign, seq)
+--   datdas_inscriptions(inscription_id, object_id, sign_count)
+--   datdas_objects(object_id, object_type)
+--
+-- Do not invent or run DDL from this list.

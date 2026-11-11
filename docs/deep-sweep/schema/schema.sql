@@ -1,0 +1,20 @@
+-- Status: unverified AI-chat output, collected 2026-11-10. Not run. AI answers are leads, not sources.
+-- Not run: this schema has not been executed or tested. Do not run analysis
+-- against Linear A corpus data without a preregistered hypothesis via
+-- CorpusBot / Fleet-Orchestrator. Sign runs between dividers are "sequences",
+-- not "words".
+--
+
+-- schema.sql was named in the 2026-11-10 chat paste (message t9u).
+-- The CREATE TABLE body sat in a ~30,883-character stretch of t9u that
+-- was omitted from the executor handoff and was not recovered from a
+-- local transcript. This file is not a reconstructed schema.
+--
+-- The recovered DeepSeek index schema is in index_schema.sql.
+-- Analysis snippets in code/analysis/ also name these tables and columns
+-- (attested in the paste, not executed):
+--   datdas_signs(inscription_id, sign, seq)
+--   datdas_inscriptions(inscription_id, object_id, sign_count)
+--   datdas_objects(object_id, object_type)
+--
+-- Do not treat the list above as a complete or authoritative DDL.
