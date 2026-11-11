@@ -63,12 +63,15 @@ No secrets in output. Do not run `gh auth token`. Do not echo `GH_TOKEN` or `GIT
    ```bash
    FULL=midnghtsapphire/revvel-standards
    BODY_FILE=./.trae/output/pr.body.local.md
+   test -s "$BODY_FILE" || exit 1
    SIGNED_FILE=$(mktemp)
+   trap 'rm -f "$SIGNED_FILE"' EXIT
    {
      printf '**%s**\n\n' "$BOT"
-     cat "$BODY_FILE"
+     cat "$BODY_FILE" || exit 1
      printf '\n— %s\n' "$BOT"
    } > "$SIGNED_FILE"
+   test -s "$SIGNED_FILE" || exit 1
    git push -u origin HEAD
    gh pr create --repo "$FULL" --base daily/YYYY-MM-DD --head "$(git branch --show-current)" \
      --assignee LOGIN \

@@ -288,15 +288,23 @@ For one file that is already in conflict, read the index stages into a temp dire
 ```bash
 CONFLICTED=path/from/git-status
 STAGE=$(mktemp -d)
-git show ":2:$CONFLICTED" > "$STAGE/ours"
-git show ":1:$CONFLICTED" > "$STAGE/base"
-git show ":3:$CONFLICTED" > "$STAGE/theirs"
-git merge-file --union --stdout "$STAGE/ours" "$STAGE/base" "$STAGE/theirs" > "$STAGE/merged"
+git show ":2:$CONFLICTED" > "$STAGE/ours" &&
+git show ":1:$CONFLICTED" > "$STAGE/base" &&
+git show ":3:$CONFLICTED" > "$STAGE/theirs" || {
+  echo "Could not read index stages for $CONFLICTED. Do not stage it."
+  exit 1
+}
+rc=0
+git merge-file --union --stdout "$STAGE/ours" "$STAGE/base" "$STAGE/theirs" > "$STAGE/merged" || rc=$?
+if [ ! -s "$STAGE/merged" ] || grep -q '^<<<<<<<' "$STAGE/merged" || grep -q '^>>>>>>>' "$STAGE/merged"; then
+  echo "Union merge of $CONFLICTED left conflict markers or an empty file (merge-file exit $rc). Do not stage it."
+  exit 1
+fi
 cp "$STAGE/merged" "$CONFLICTED"
 git add "$CONFLICTED"
 ```
 
-If `git merge-file` exits non-zero, do not copy and do not `git add`. Read the file after a union merge. Union can reorder lines. Confirm both sides' new lines are present and that no conflict marker remains. Do not `git checkout --ours` or `--theirs` on a ledger. That drops a side.
+`git merge-file --union` exits with the conflict count when hunks overlap, even if the output is usable. `|| rc=$?` keeps that count and does not skip the marker check. Copy and `git add` run only when the result is non-empty and has no conflict markers. Otherwise stop. Never stage an unresolved file. Union can reorder lines. Confirm both sides' new lines are present. Do not `git checkout --ours` or `--theirs` on a ledger. That drops a side.
 
 ### Pull requests, comments, and reviews
 

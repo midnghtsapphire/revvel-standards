@@ -48,8 +48,12 @@ test('each skill has a canonical playbook, a loader, and a machine config', () =
     assert.ok(text.includes('Revvel house rules'), `${name} missing house rules`);
     assert.ok(text.includes('— BotName'), `${name} missing signature`);
     assert.ok(text.includes('CircleCI'), `${name} missing CircleCI`);
-    assert.ok(text.includes('git push --force'), `${name} missing force-push prohibition`);
-    assert.ok(text.includes('gh auth token'), `${name} missing token prohibition`);
+    const forcePushLines = text.split('\n').filter((line) => /git push --force(?:[`\s]|$)/.test(line));
+    assert.ok(forcePushLines.length > 0, `${name} missing force-push prohibition`);
+    assert.ok(forcePushLines.every((line) => line.includes('Do not run')), `${name} contains an unsafe force-push instruction`);
+    const tokenLines = text.split('\n').filter((line) => line.includes('gh auth token'));
+    assert.ok(tokenLines.length > 0, `${name} missing token prohibition`);
+    assert.ok(tokenLines.every((line) => line.includes('Do not run')), `${name} contains an unsafe token instruction`);
     assert.ok(!text.includes('dangerously-skip-permissions'), `${name} contains a skip-permissions flag`);
     for (const line of text.split('\n')) {
       if (line.includes('--force-with-lease') || line.includes('--delete-branch') || line.includes('git merge -s union')) {
@@ -66,6 +70,27 @@ test('each skill has a canonical playbook, a loader, and a machine config', () =
     assert.ok(Array.isArray(doc.triggers) && doc.triggers.length > 0);
     assert.equal(doc.documentation.skill_file, canon);
   }
+});
+
+test('union merge captures a non-zero exit and does not stage conflict markers', () => {
+  for (const rel of [
+    'docs/skills/resolve-conflicts/SKILL.md',
+    'docs/skills/github-read-write-admin/SKILL.md',
+  ]) {
+    const text = read(rel);
+    assert.ok(text.includes('|| rc=$?'), `${rel} must capture the merge-file exit code`);
+    assert.ok(!text.includes('> "$STAGE/merged" &&'), `${rel} must not skip the marker check when merge-file exits non-zero`);
+    assert.ok(text.includes('Do not stage it.'), `${rel} must stop instead of staging an unresolved file`);
+  }
+  const conflicts = read('docs/skills/resolve-conflicts/SKILL.md');
+  assert.ok(conflicts.includes('git rev-parse --git-path rebase-merge'));
+  assert.ok(conflicts.includes('git rev-parse --git-path rebase-apply'));
+  assert.ok(conflicts.includes('git rev-parse --git-path CHERRY_PICK_HEAD'));
+  assert.ok(conflicts.includes('GIT_EDITOR=true git rebase --continue'));
+  assert.ok(conflicts.includes('git cherry-pick --continue --no-edit'));
+  assert.ok(conflicts.includes('GIT_EDITOR=true git merge --continue'));
+  assert.ok(!conflicts.includes('.git/rebase-merge'));
+  assert.ok(!conflicts.includes('.git/CHERRY_PICK_HEAD'));
 });
 
 test('git-advanced-workflows keeps rebase, bisect, worktree, and reflog for unpushed work', () => {
@@ -99,8 +124,9 @@ test('vault registry, machine index, skills README, and docs/AGENTS.md name ever
   for (const [name] of SKILLS) {
     const canon = `docs/skills/${name}/SKILL.md`;
     assert.ok(registry.includes(canon), `REGISTRY.md missing ${name}`);
-    assert.ok(machine.includes(`name: ${name}`), `SKILLS_INDEX.yml missing ${name}`);
-    assert.ok(machine.includes(canon), `SKILLS_INDEX.yml path missing ${name}`);
+    const entry = yaml.parse(machine).skills.find((item) => item.name === name);
+    assert.ok(entry, `SKILLS_INDEX.yml missing ${name}`);
+    assert.equal(entry.skill_file, canon, `SKILLS_INDEX.yml path mismatch for ${name}`);
     assert.ok(skillsReadme.includes(canon), `skills/README.md missing ${name}`);
     assert.ok(agents.includes(canon), `docs/AGENTS.md missing ${name}`);
   }

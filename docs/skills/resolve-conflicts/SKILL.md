@@ -71,15 +71,23 @@ Append-only file. `CONFLICTED` is the unmerged path from `git status`. Read the 
 ```bash
 CONFLICTED=path/from/git-status
 STAGE=$(mktemp -d)
-git show ":2:$CONFLICTED" > "$STAGE/ours"
-git show ":1:$CONFLICTED" > "$STAGE/base"
-git show ":3:$CONFLICTED" > "$STAGE/theirs"
-git merge-file --union --stdout "$STAGE/ours" "$STAGE/base" "$STAGE/theirs" > "$STAGE/merged"
+git show ":2:$CONFLICTED" > "$STAGE/ours" &&
+git show ":1:$CONFLICTED" > "$STAGE/base" &&
+git show ":3:$CONFLICTED" > "$STAGE/theirs" || {
+  echo "Could not read index stages for $CONFLICTED. Do not stage it."
+  exit 1
+}
+rc=0
+git merge-file --union --stdout "$STAGE/ours" "$STAGE/base" "$STAGE/theirs" > "$STAGE/merged" || rc=$?
+if [ ! -s "$STAGE/merged" ] || grep -q '^<<<<<<<' "$STAGE/merged" || grep -q '^>>>>>>>' "$STAGE/merged"; then
+  echo "Union merge of $CONFLICTED left conflict markers or an empty file (merge-file exit $rc). Do not stage it."
+  exit 1
+fi
 cp "$STAGE/merged" "$CONFLICTED"
 git add "$CONFLICTED"
 ```
 
-If `git merge-file` exits non-zero, do not `cp` and do not `git add`. Search `"$CONFLICTED"` for conflict markers before you commit. Union can reorder lines. Confirm both new blocks are present.
+`git merge-file --union` exits with the conflict count when hunks overlap, even if the output is usable. `|| rc=$?` keeps that count and does not skip the marker check. Copy and `git add` run only when the result is non-empty and has no conflict markers. Otherwise stop. Never stage an unresolved file. Union can reorder lines. Confirm both new blocks are present.
 
 A whole-branch merge does not take `-s union`. Git reports `Could not find merge strategy 'union'`. Merge the branch with the default strategy. For a ledger that is not already `merge=union` in `.gitattributes`, resolve that file with `git merge-file --union` as above. `CHANGELOG.md` already has the attribute, so the default merge keeps both sides of that file.
 
@@ -97,8 +105,20 @@ Run the test that covers the files you touched. Then:
 
 ```bash
 git add "$CONFLICTED"
-git commit -m "$(signed_body "fix: resolve merge conflict in path")"
+if [ -d "$(git rev-parse --git-path rebase-merge)" ] || [ -d "$(git rev-parse --git-path rebase-apply)" ]; then
+  GIT_EDITOR=true git rebase --continue
+elif [ -f "$(git rev-parse --git-path CHERRY_PICK_HEAD)" ]; then
+  git cherry-pick --continue --no-edit
+elif [ -f "$(git rev-parse --git-path MERGE_HEAD)" ]; then
+  GIT_EDITOR=true git merge --continue
+elif [ -f "$(git rev-parse --git-path REVERT_HEAD)" ]; then
+  GIT_EDITOR=true git revert --continue
+else
+  git commit -m "$(signed_body "fix: resolve merge conflict in path")"
+fi
 ```
+
+`git rev-parse --git-path` finds rebase and cherry-pick state in a worktree or a subdirectory. A hard-coded `.git/` path does not. `GIT_EDITOR=true` and `--no-edit` keep `--continue` from opening an editor. `git commit` during a rebase, cherry-pick, merge, or revert does not finish that operation.
 
 If the branch is already on the remote, the resolution is a new merge commit. Do not rebase that branch to hide the merge.
 

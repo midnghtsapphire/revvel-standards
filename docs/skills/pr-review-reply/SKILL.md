@@ -65,20 +65,20 @@ Thread ids and resolved state come from GraphQL. Keep the query fixed and pass n
 FULL=midnghtsapphire/revvel-standards
 OWNER=${FULL%%/*}
 REPO=${FULL#*/}
-gh api graphql -f owner="$OWNER" -f name="$REPO" -F number=NUMBER -f query='
-query($owner:String!, $name:String!, $number:Int!) {
+gh api graphql --paginate -f owner="$OWNER" -f name="$REPO" -F number=NUMBER -f query='
+query($owner:String!, $name:String!, $number:Int!, $endCursor:String) {
   repository(owner:$owner, name:$name) {
     pullRequest(number:$number) {
-      reviewThreads(first:50) {
+      reviewThreads(first:50, after:$endCursor) {
         pageInfo { hasNextPage endCursor }
-        nodes { id isResolved comments(first:10) { pageInfo { hasNextPage endCursor } nodes { databaseId path body author { login } } } }
+        nodes { id isResolved comments(first:100) { pageInfo { hasNextPage endCursor } nodes { databaseId path body author { login } } } }
       }
     }
   }
 }'
 ```
 
-`reviewThreads(first:50)` and `comments(first:10)` are the first page. If `pageInfo.hasNextPage` is true, repeat with the `endCursor`. Do not treat the first page as the whole thread. An unresolved thread on a later page is still open.
+`gh api graphql --paginate` follows `pageInfo.endCursor` only when the query has `after:`. If a thread's own `comments.pageInfo.hasNextPage` is true, query that thread again with its comment cursor before you draft a reply. Do not treat the first page as the whole pull request.
 
 Group what is unresolved. For each thread, say one of these:
 
