@@ -177,11 +177,12 @@ function buildLaneProblem(lanes, rewardOf) {
  * PoT over the orchestrator's lanes. The search itself is CPU-only.
  *
  * Without `context.potReward` every terminal scores 0. GRPO then sees a
- * zero-width group and writes a zero update, and the earliest rollout wins.
- * That rollout is definition order. The trace still records the adapter
- * discard and the base hash, and `potTrace.rewardConfigured` is false so an
- * operator can see the ordering was a no-op. A caller that passes
- * `potReward` gets the path MCTS prefers.
+ * zero-width group and writes a zero update, and the earliest seeded sample
+ * wins. That sample is stable for the query seed. It is not the historical
+ * lane order, and it is not a quality ranking. `potTrace.rewardConfigured`
+ * is false. `orderMatchesDefinition` reports whether that sample happened
+ * to match definition order. A caller that passes `potReward` gets the path
+ * MCTS prefers.
  *
  * After the order is chosen, lane execution matches the linear fan-out:
  * `Promise.all` in that order (the result array stays in path order), then

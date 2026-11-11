@@ -15,7 +15,7 @@ const { StubPolicy, TransientAdapter } = require("../scripts/pot-research/policy
 const { inspectEvaluationSet, main: runBenchmark } = require("../scripts/pot-research/benchmark");
 const { runPotOverLanes } = require("../scripts/pot-research/strategy");
 
-const TOY_OPTIONS = { iterations: 8, seed: 18341, learningRate: 0.1 };
+const TOY_OPTIONS = { iterations: 40, seed: 18341, learningRate: 0.1 };
 
 describe("pot-research", () => {
   test("MCTS finds the toy optimum and the linear walk keeps the trap", () => {
@@ -42,6 +42,68 @@ describe("pot-research", () => {
     const searched = pot.runStrategy("pot", problem, { ...TOY_OPTIONS, selection: "puct" });
     assert.deepStrictEqual(searched.best.path, problem.optimum.path);
     assert.strictEqual(searched.potTrace.selection, "puct");
+  });
+
+  test("a seeded rollout can reach a suffix the first legal action never takes", () => {
+    const { search } = require("../scripts/pot-research/mcts");
+    const problem = {
+      root: "S",
+      legalActions(state) {
+        if (state === "S") return ["0", "1"];
+        if (state === "0" || state === "1") return ["0", "1"];
+        if (state === "00" || state === "01" || state === "10" || state === "11") return ["0", "1"];
+        return [];
+      },
+      next(state, action) {
+        return state === "S" ? action : `${state}${action}`;
+      },
+      isTerminal(state) {
+        return state.length === 3;
+      },
+      reward(state) {
+        return state === "111" ? 5 : 0;
+      },
+    };
+    let foundSeed = null;
+    for (let seed = 1; seed <= 200 && foundSeed == null; seed += 1) {
+      const run = search(problem, { iterations: 24, seed, selection: "uct" });
+      if (run.best.reward === 5) foundSeed = seed;
+    }
+    assert.ok(foundSeed, "a seeded sample should reach path 111 within 200 seeds");
+    const first = search(problem, { iterations: 24, seed: foundSeed, selection: "uct" });
+    const second = search(problem, { iterations: 24, seed: foundSeed, selection: "uct" });
+    assert.strictEqual(first.best.reward, 5);
+    assert.deepStrictEqual(second.trajectories.map((item) => item.path.join("")), first.trajectories.map((item) => item.path.join("")));
+    const other = search(problem, { iterations: 24, seed: foundSeed + 997, selection: "uct" });
+    const samePaths = other.trajectories.every((item, index) => item.path.join("") === first.trajectories[index].path.join(""));
+    assert.strictEqual(samePaths, false);
+  });
+
+  test("PUCT expansion follows the prior instead of legal order", () => {
+    const { search } = require("../scripts/pot-research/mcts");
+    const problem = {
+      root: "S",
+      legalActions() {
+        return ["low", "mid", "high"];
+      },
+      next(_state, action) {
+        return action;
+      },
+      isTerminal(state) {
+        return state !== "S";
+      },
+      reward() {
+        return 1;
+      },
+    };
+    const priorFor = (_state, action) => ({ low: 0.05, mid: 0.1, high: 0.85 })[action];
+    const run = search(problem, {
+      iterations: 1,
+      seed: 1,
+      selection: "puct",
+      priorFor,
+    });
+    assert.deepStrictEqual(run.best.path, ["high"]);
   });
 
   test("UCT prefers an unvisited child and PUCT increases with the prior", () => {
@@ -210,7 +272,7 @@ describe("pot-research", () => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
-  test("pot without a reward keeps definition order, overlaps lane calls, and retries weak lanes", async () => {
+  test("pot without a reward is a stable seeded sample, overlaps lane calls, and retries weak lanes", async () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "pot-noreward-"));
     const lanes = engine.LANE_DEFINITIONS;
     const plain = await engine.runResearchEngine(
@@ -232,8 +294,27 @@ describe("pot-research", () => {
       async ({ model }) => `Mocked ${model} output with source https://example.com/plain`,
     );
     assert.strictEqual(plain.potTrace.rewardConfigured, false);
-    assert.strictEqual(plain.potTrace.orderMatchesDefinition, true);
-    assert.deepStrictEqual(plain.potTrace.chosenLaneIds, lanes.map((lane) => lane.id));
+    assert.strictEqual(plain.potTrace.chosenLaneIds.length, lanes.length);
+    assert.strictEqual(new Set(plain.potTrace.chosenLaneIds).size, lanes.length);
+    const plainAgain = await engine.runResearchEngine(
+      {
+        apiKey: "test-key",
+        githubToken: "",
+        repository: "midnghtsapphire/revvel-standards",
+        issueNumber: "",
+        prNumber: "",
+        query: "No reward configured",
+        issueTitle: "",
+        issueBody: "",
+        outputFile: path.join(tmpDir, "plain-again.md"),
+        depth: "standard",
+        extraContext: "",
+        dryRun: true,
+        strategy: "pot",
+      },
+      async ({ model }) => `Mocked ${model} output with source https://example.com/plain`,
+    );
+    assert.deepStrictEqual(plainAgain.potTrace.chosenLaneIds, plain.potTrace.chosenLaneIds);
     assert.strictEqual(plain.context.iterationHistory.length, 1);
     fs.rmSync(tmpDir, { recursive: true, force: true });
 
@@ -291,7 +372,7 @@ describe("pot-research", () => {
     assert.strictEqual(retryContext.iterationHistory.length, engine.RALPH_LOOP_MAX_ITERATIONS);
     assert.deepStrictEqual(
       retried.laneReports.map((report) => report.id),
-      lanes.map((lane) => lane.id),
+      retried.potTrace.chosenLaneIds,
     );
   });
 

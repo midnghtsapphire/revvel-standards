@@ -1,3 +1,7 @@
+## 2026-11-11 (3) — ResearchRodneyAIArchitect — MCTS uses the seed and PUCT follows the prior
+
+- Expansion and rollouts read the search seed. PUCT picks the next untried action from the prior, including the first move. Without `potReward` the lane order is that seeded sample, not a quality ranking.
+
 ## 2026-11-11 (2) — ResearchRodneyAIArchitect — pot lane execution matches the linear fan-out
 
 - `RESEARCH_STRATEGY=pot` runs the chosen lanes with `Promise.all` and reuses the Ralph retry/merge helpers. Without `potReward` the order matches definition order and the trace says so (`rewardConfigured: false`).

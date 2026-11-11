@@ -2,6 +2,19 @@
 
 Play-by-play for `scripts/pot-research/`, per `standards/LEDGER_STANDARD.md`. Newest first. Do not rewrite an entry; add a later one that points at it.
 
+## 2026-11-11 16:50 UTC — ResearchRodneyAIArchitect — seed and priors actually drive MCTS
+
+- **Actor:** ResearchRodneyAIArchitect (Cursor cloud agent, Grok 4.7)
+- **Requested by:** Cursor Bugbot on pull request #18367, two findings on commit a219bc161
+- **Role:** executed
+- **Files:** `scripts/pot-research/mcts.js`, `scripts/pot-research/strategy.js`, `tests/pot-research.test.js`, `docs/research/pot-research-engine.md`, `scripts/pot-research/README.md`, `CHANGELOG.md`, this ledger
+- **What was done:** Rollouts and UCT expansion draw from a mulberry32 stream keyed by the seed. The same seed replays the same trajectories. PUCT expansion scores untried actions with the prior. When the parent visit count is 0 the formula ties, so the prior itself breaks the tie and the first expansion can follow the policy. Docs no longer say a missing reward returns definition order.
+- **Decisions:** Keep UCT's unvisited-child score at infinity. That rule is for children already in the tree. The seed bug was the rollout and the expansion index, not that infinity.
+- **Sources:** review comments on pull request #18367
+- **Commits / PRs:** follow-up on `cursor/pot-mcts-grpo-engine-a685`, pull request #18367
+- **Open / handoff:** unchanged. GPU spend, the 100-example set, and a real LoRA policy remain open.
+- **Credit note:** ResearchRodneyAIArchitect applied the review. Cursor Bugbot reported the unused seed and the unused prior.
+
 ## 2026-11-11 16:20 UTC — ResearchRodneyAIArchitect — pot lane execution matches the linear fan-out
 
 - **Actor:** ResearchRodneyAIArchitect (Cursor cloud agent, Grok 4.7)

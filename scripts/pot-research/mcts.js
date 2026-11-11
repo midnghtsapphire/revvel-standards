@@ -18,6 +18,28 @@
 const DEFAULT_EXPLORATION = Math.SQRT2;
 const MAX_STEPS = 64;
 
+/**
+ * Mulberry32. The same seed must replay the same expansion and rollout
+ * choices. `search` used to accept a seed and then ignore it, so every
+ * rollout took `legal[0]` and a caller could not tell a seeded run from a
+ * greedy one.
+ */
+function mulberry32(seed) {
+  let state = (seed == null ? 1 : seed) >>> 0;
+  if (state === 0) state = 1;
+  return function next() {
+    state |= 0;
+    state = (state + 0x6D2B79F5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function pickIndex(rng, length) {
+  return Math.floor(rng() * length);
+}
+
 function uctScore(child, exploration) {
   if (child.visits === 0) return Number.POSITIVE_INFINITY;
   const parentVisits = child.parent ? child.parent.visits : child.visits;
@@ -33,12 +55,28 @@ function uctScore(child, exploration) {
  * still explores.
  */
 function puctScore(child, exploration) {
-  if (child.visits === 0) return Number.POSITIVE_INFINITY;
   const parentVisits = child.parent ? child.parent.visits : 0;
   const prior = child.prior == null ? 1 : child.prior;
-  const exploit = child.valueSum / child.visits;
-  const explore = exploration * prior * Math.sqrt(parentVisits) / (1 + child.visits);
+  const visits = child.visits;
+  // n = 0 is defined: Q is 0 and the prior still scales the explore term.
+  // Returning Infinity here made every unvisited child look the same, so a
+  // prior could not decide the next expansion.
+  const exploit = visits === 0 ? 0 : child.valueSum / visits;
+  const explore = exploration * prior * Math.sqrt(parentVisits) / (1 + visits);
   return exploit + explore;
+}
+
+/**
+ * Score an action that is not in the tree yet. When the parent has never
+ * been visited, sqrt(N) is 0 and every untried action ties. The prior is
+ * the tie-break in that case, which is the only way the first expansion
+ * can follow the policy. Later expansions use the formula directly.
+ */
+function puctUntriedScore(prior, parentVisits, exploration) {
+  const p = prior == null ? 1 : prior;
+  const fromFormula = exploration * p * Math.sqrt(parentVisits);
+  if (parentVisits > 0) return fromFormula;
+  return p;
 }
 
 function scoreChild(child, exploration, selection) {
@@ -80,12 +118,41 @@ function select(node, problem, exploration, selection) {
   return cursor;
 }
 
-function expand(node, problem, priorFor) {
+function chooseUntried(node, untried, priorFor, rng, selection, exploration) {
+  if (selection !== "puct") return untried[pickIndex(rng, untried.length)];
+  const parentVisits = node.visits;
+  let bestAction = untried[0];
+  let bestScore = puctUntriedScore(
+    priorFor ? priorFor(node.state, bestAction) : null,
+    parentVisits,
+    exploration,
+  );
+  const tied = [bestAction];
+  for (let i = 1; i < untried.length; i += 1) {
+    const action = untried[i];
+    const score = puctUntriedScore(
+      priorFor ? priorFor(node.state, action) : null,
+      parentVisits,
+      exploration,
+    );
+    if (score > bestScore + 1e-12) {
+      bestAction = action;
+      bestScore = score;
+      tied.length = 0;
+      tied.push(action);
+    } else if (Math.abs(score - bestScore) <= 1e-12) {
+      tied.push(action);
+    }
+  }
+  return tied[pickIndex(rng, tied.length)];
+}
+
+function expand(node, problem, priorFor, rng, selection, exploration) {
   if (problem.isTerminal(node.state)) return node;
   const tried = new Set(node.children.map((child) => child.action));
   const untried = problem.legalActions(node.state).filter((action) => !tried.has(action));
   if (untried.length === 0) return node;
-  const action = untried[0];
+  const action = chooseUntried(node, untried, priorFor, rng, selection, exploration);
   const child = {
     state: problem.next(node.state, action),
     parent: node,
@@ -109,7 +176,7 @@ function actionsToNode(node) {
   return actions.reverse();
 }
 
-function rollout(node, problem) {
+function rollout(node, problem, rng) {
   const path = actionsToNode(node);
   let state = node.state;
   let guard = 0;
@@ -118,7 +185,7 @@ function rollout(node, problem) {
     if (legal.length === 0) {
       throw new Error("MCTS rollout has no legal action and the state is not terminal.");
     }
-    const action = legal[0];
+    const action = legal[pickIndex(rng, legal.length)];
     path.push(action);
     state = problem.next(state, action);
     guard += 1;
@@ -162,12 +229,14 @@ function search(problem, options = {}) {
     visits: 0,
     valueSum: 0,
   };
+  const seed = options.seed == null ? 1 : options.seed;
+  const rng = mulberry32(seed);
   const trajectories = [];
   let best = null;
   for (let i = 0; i < iterations; i += 1) {
     const selected = select(root, problem, exploration, selection);
-    const expanded = expand(selected, problem, options.priorFor);
-    const rolled = rollout(expanded, problem);
+    const expanded = expand(selected, problem, options.priorFor, rng, selection, exploration);
+    const rolled = rollout(expanded, problem, rng);
     backprop(expanded, rolled.reward);
     const trajectory = { path: rolled.path, reward: rolled.reward, state: rolled.state };
     trajectories.push(trajectory);
@@ -180,6 +249,7 @@ function search(problem, options = {}) {
     iterations,
     selection,
     exploration,
+    seed,
     rootVisits: root.visits,
   };
 }
@@ -187,7 +257,9 @@ function search(problem, options = {}) {
 module.exports = {
   DEFAULT_EXPLORATION,
   backprop,
+  mulberry32,
   puctScore,
+  puctUntriedScore,
   search,
   uctScore,
 };
