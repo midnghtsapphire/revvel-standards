@@ -157,3 +157,11 @@ Other launcher fleets in `.github/fleets.yml` (not documented here): biome, secu
 | `/bot-cartographer` | Box profile is named "Git-Keeping-It-100" but holds the Cartographer prompt. |
 
 Retired: the unprefixed bot names from the first draft of this backup (for example `/proofy`) were replaced by their `bot-` names.
+
+## Added 2026-11-11 (BALLS)
+
+The 2026-11-10 generated table is unchanged. This row is additive.
+
+| Call | Other call names | Bot | Team | Role |
+|---|---|---|---|---|
+| [`/bot-balls`](bots/bot-balls/README.md) | Lil Aud-Bod; BALLS; formerly lilAudrey | Lil Aud-Bod aka BALLS | — (pending Audrey) | Brand development (🎨 Designer) |

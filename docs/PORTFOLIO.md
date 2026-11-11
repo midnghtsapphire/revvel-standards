@@ -475,6 +475,7 @@ Every Revvel project derives its visual identity from the **Revvel Emblem Standa
 - **Brand Identity Template:** [`templates/brand/BRAND_IDENTITY_TEMPLATE.md`](../templates/brand/BRAND_IDENTITY_TEMPLATE.md)
 - **Icon Size Reference:** [`templates/brand/ICON_SIZE_SPEC.md`](../templates/brand/ICON_SIZE_SPEC.md)
 - **How to use brand templates:** [`templates/brand/README.md`](../templates/brand/README.md)
+- **Fleet mascot family (Auky and Lil Aud-Bod aka BALLS, added 2026-11-11):** [`docs/brand/mascots/MASCOTS.md`](brand/mascots/MASCOTS.md). Mascots sit alongside the Revvel Emblem; they are not a substitute for it.
 
 ---
 

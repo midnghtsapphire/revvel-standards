@@ -1,3 +1,8 @@
+## 2026-11-11 — BALLS — official fleet mascot family (Auky and Lil Aud-Bod)
+
+- Added `docs/brand/mascots/MASCOTS.md` documenting Auky and Lil Aud-Bod aka BALLS as the fleet mascot duo, plus Auky artwork from WebForge and the BALLS pixel avatar.
+- Added `docs/bots/bot-balls/README.md` (brand-development bot profile). Index pointers appended in `docs/CALL-NAMES.md`, `docs/README.md`, `docs/BOT-ROSTER.json`, `docs/BRAND_ARCHITECTURE.md`, `docs/PORTFOLIO.md`, and `templates/brand/README.md`. Nothing posts without Audrey's explicit yes.
+
 ## 2026-11-11 (5) — MarketShipper — screen-recorder-finder binds the shared Stripe server
 
 - Restacked onto main `3d6ae9a8`. CircleCI keeps every job from main and adds `screen-recorder-finder-image`. The product calls `bindProduct('screen-recorder-finder')` in `packages/static-stripe-server`. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
