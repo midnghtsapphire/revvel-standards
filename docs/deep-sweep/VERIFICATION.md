@@ -24,6 +24,10 @@ Checked 2026-11-10 (America/Denver). Brief citations only. AI answers are not tr
 | prehistory.it Winn / Haarmann inventories | **Unverified** in this pass | URLs appear in the pastes (`https://www.prehistory.it/ftp/inventory/index.htm` and related pages). Pages were not fetched for this pack. |
 | "Merlini 2025" cross-comparison paper on Academia.edu | **Unverified** | Named in the DeepSeek 0423 paste only. |
 
+## Recovered t9u bodies
+
+The first commit on this pack recorded `schema.sql` and `datdas.sql` as gap notes, because that stretch of t9u was omitted in the handoff. Those bodies, and `probe_datdas_domains.py`, were later recovered verbatim from Audrey's paste and now live in `schema/` and `code/ingest/`. They remain unverified AI-chat output and have not been run. The probe script names candidate domains (`datdas.com`, `datdas.eu`, `datdas.it`, `merlini.it`, `datdas.org`); it has not been executed here.
+
 ## What this pack is not
 
 - Not a runnable pipeline and not a new Linear A or DatDas corpus.

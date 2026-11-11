@@ -20,7 +20,7 @@ Audrey pasted outputs attributed to:
 | Venice Uncensored | [`sources/venice-uncensored.md`](sources/venice-uncensored.md) |
 | DeepSeek V4 Pro 0813 and DeepSeek V4 Pro 0423 | [`sources/deepseek-v4-pro.md`](sources/deepseek-v4-pro.md) |
 
-The Gemma source file is incomplete: about 30,883 characters from message t9u were omitted in the executor handoff and were not recovered. Named files `schema.sql` and `datdas.sql` are recorded as gaps, not invented DDL. See [`schema/`](schema/) and [`VERIFICATION.md`](VERIFICATION.md).
+The Gemma source file is still incomplete as a raw transcript: about 30,883 characters from message t9u were omitted in the first handoff. The bodies of `schema.sql`, `datdas.sql`, and `probe_datdas_domains.py` were later recovered verbatim from Audrey's paste and are now in [`schema/`](schema/) and [`code/ingest/probe_datdas_domains.py`](code/ingest/probe_datdas_domains.py), with unverified/not-run headers. See [`VERIFICATION.md`](VERIFICATION.md).
 
 A dummy OpenRouter key prefix that appeared in a "quick start" line was redacted from the raw sources. Use the environment variable only.
 
@@ -32,17 +32,17 @@ docs/deep-sweep/
 ├── VERIFICATION.md           # claims: verified, false, or unverified
 ├── method/                   # index table, archive layers, daily loop
 ├── code/
-│   ├── ingest/               # wayback_cdx.py, commoncrawl_cdx.py, memento.py
+│   ├── ingest/               # wayback_cdx.py, commoncrawl_cdx.py, memento.py, probe_datdas_domains.py
 │   ├── analysis/             # ngrams.py (one copy), context_stats.py
 │   ├── llm/                  # ask.py
 │   ├── src/                  # sweep, scraper, OpenRouter client, analyzer
 │   └── requirements.txt
-├── schema/                   # index_schema.sql; schema.sql and datdas.sql are gap notes
+├── schema/                   # index_schema.sql, schema.sql, datdas.sql (t9u bodies recovered)
 ├── prompts/                  # one file per prompt
 └── sources/                  # raw chat transcripts
 ```
 
-`ngrams.py` appeared several times in the paste; only one copy is kept under `code/analysis/`. `index_table.py` was named in a repo sketch but no source body was in the recovered paste, so it is not invented here.
+`ngrams.py` appeared several times in the paste; only one copy is kept under `code/analysis/`. `index_table.py` was named in a repo sketch but no source body was in the recovered paste, so it is not invented here. `schema.sql`, `datdas.sql`, and `probe_datdas_domains.py` are the recovered t9u bodies, not invented DDL or scripts.
 
 ## Workflow (from the DeepSeek 0423 paste)
 

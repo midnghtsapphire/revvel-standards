@@ -5,16 +5,21 @@
 -- not "words".
 --
 
--- schema.sql was named in the 2026-11-10 chat paste (message t9u).
--- The CREATE TABLE body sat in a ~30,883-character stretch of t9u that
--- was omitted from the executor handoff and was not recovered from a
--- local transcript. This file is not a reconstructed schema.
---
--- The recovered DeepSeek index schema is in index_schema.sql.
--- Analysis snippets in code/analysis/ also name these tables and columns
--- (attested in the paste, not executed):
---   datdas_signs(inscription_id, sign, seq)
---   datdas_inscriptions(inscription_id, object_id, sign_count)
---   datdas_objects(object_id, object_type)
---
--- Do not treat the list above as a complete or authoritative DDL.
+-- schema.sql
+CREATE TABLE IF NOT EXISTS resources (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  url           TEXT NOT NULL,
+  title         TEXT,
+  source_link   TEXT,
+  date_accessed TEXT NOT NULL DEFAULT (datetime('now')),
+  description   TEXT,
+  notes         TEXT,
+  status        TEXT NOT NULL DEFAULT 'found'
+                CHECK (status IN ('found','duplicate','broken','copyrighted','acquired','analyzed','archived')),
+  script        TEXT,                    -- linear_a | cretan_hieroglyph | danube | other
+  tags          TEXT,                    -- JSON array
+  content_hash  TEXT,
+  UNIQUE (url, content_hash)
+);
+CREATE INDEX idx_res_script ON resources(script);
+CREATE INDEX idx_res_status ON resources(status);
