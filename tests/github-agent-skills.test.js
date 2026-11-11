@@ -88,7 +88,13 @@ test('union merge captures a non-zero exit and does not stage conflict markers',
   assert.ok(conflicts.includes('git rev-parse --git-path CHERRY_PICK_HEAD'));
   assert.ok(conflicts.includes('GIT_EDITOR=true git rebase --continue'));
   assert.ok(conflicts.includes('git cherry-pick --continue --no-edit'));
-  assert.ok(conflicts.includes('GIT_EDITOR=true git merge --continue'));
+  assert.ok(conflicts.includes('git commit --no-edit -m "$(signed_body "fix: resolve merge conflict in path")"'));
+  assert.ok(conflicts.includes('GIT_EDITOR=true git revert --continue --no-edit'));
+  for (const line of conflicts.split('\n')) {
+    if (line.includes('git merge --continue')) {
+      assert.ok(line.includes('would keep'), `unsigned merge continue is still a command: ${line}`);
+    }
+  }
   assert.ok(!conflicts.includes('.git/rebase-merge'));
   assert.ok(!conflicts.includes('.git/CHERRY_PICK_HEAD'));
 });

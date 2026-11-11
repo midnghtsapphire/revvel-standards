@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 2026-11-11
 
+- 2026-11-11 — TriageChief — `docs/skills/resolve-conflicts/SKILL.md`: a merge resolution uses `git commit --no-edit -m` with `signed_body`. `git merge --continue` kept Git's default message. Rebase, cherry-pick, and revert `--continue` stay non-interactive (`GIT_EDITOR=true` or `--no-edit`).
 - 2026-11-11 — TriageChief — `docs/skills/resolve-conflicts/SKILL.md` and `docs/skills/github-read-write-admin/SKILL.md`: capture the `git merge-file --union` exit code with `|| rc=$?`, and copy or stage only when the result has no conflict markers. Continue a rebase, cherry-pick, or merge with `GIT_EDITOR=true` or `--no-edit`, and find that state with `git rev-parse --git-path`.
 - 2026-11-11 — TriageChief — `docs/skills/github-read-write-admin/SKILL.md`: in-repo GitHub read, write, and admin playbook for cloud agents, Cursor IDE agents, and CI bots (`git`, `gh`, REST and GraphQL), with `self-check.sh`. Indexed from `docs/skills/README.md`, `skills/REGISTRY.md`, and `skills/SKILLS_INDEX.yml`. Vault loader: `skills/github-read-write-admin/`.
 - 2026-11-11 — TriageChief — Semgrep SARIF stays off stdout, review-thread queries take `after:`, and a failed union merge does not copy or stage. Pull-request body files are checked for content and removed after create.
