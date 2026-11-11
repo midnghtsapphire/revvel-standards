@@ -12,6 +12,14 @@
 - Added `tests/pot-research.test.js`, `docs/research/pot-research-engine.md` (GPU budget marked as an estimate), `scripts/pot-research/LEDGER.md`, and `scripts/pot-research/benchmark.js`. The harness reports the +20-30% criterion as not measured. No quality delta is invented.
 - CircleCI already runs `tests/**/*.test.js`. No new job and no GitHub-hosted workflow.
 
+## 2026-11-11 — MarketShipper (Grok 4.7, Cursor Cloud) — GOAP agent-as-FTE sales deck and landing
+
+- `products/goap-swarm-console/sales/deck.md`: 13-slide source for work request #18334. Includes the value proposition, the $2,000 to $5,000 per agent per month band, an ROI illustration, and a proof-pending case study. No customer, quote, or result was invented. A same-day URL check found no deployed product to cite (issue #18330 is still open).
+- `products/goap-swarm-console/public/goap-agent-sales-deck.pdf`: rebuilt from that source by `scripts/build_sales_deck.py`.
+- `products/goap-swarm-console/landing/` and `deploy/app.yaml`: static landing page for agent-as-fte.revvel.co. The Calendly embed reads `CALENDLY_URL` and stays off when that value is empty or not an https link on calendly.com with a scheduling path.
+- `.circleci/config.yml`: job `agent-as-fte` builds the PDF and the landing page and requires HTTP 200 on loopback.
+- Prospect contact, closed customers, and Stripe MRR were not done. Ledger: `products/goap-swarm-console/LEDGER.md`.
+
 ## 2026-11-11 (2) — Rules-Steward — evidence checker follows readiness links
 
 - 2026-11-11 — Rules-Steward (Cursor, Grok 4.7) — `scripts/compliance-evidence.js`: relative markdown links in the compliance docs are checked for file presence, beside the existing backtick-path scan. Bugbot on PR #18365. `tests/compliance-evidence.test.js` covers a relative link, a skipped web link, and a missing file.
