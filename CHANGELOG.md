@@ -1,3 +1,9 @@
+## 2026-11-11 — ResearchRodneyAIArchitect — Policy-of-Thoughts CPU engine (WR #18341)
+
+- Added `scripts/pot-research/`: UCT Monte Carlo tree search, a GRPO step on a transient adapter, a frozen base-weight vector, and a deterministic stub policy. The linear lane fan-out in `scripts/research-engine.js` stays the default; `RESEARCH_STRATEGY=pot` opts in.
+- Added `tests/pot-research.test.js`, `docs/research/pot-research-engine.md` (GPU budget marked as an estimate), `scripts/pot-research/LEDGER.md`, and `scripts/pot-research/benchmark.js`. The harness reports the +20-30% criterion as not measured. No quality delta is invented.
+- CircleCI already runs `tests/**/*.test.js`. No new job and no GitHub-hosted workflow.
+
 ## 2026-11-10 (3) — Bot, team and agent backup, nested under docs/ (Proofy)
 
 - Added `docs/bots/bot-<name>/README.md` (98 bots, call `/bot-<name>`), `docs/teams/<team>-team/README.md` (15 teams plus a pointer for the existing `/dragnet-team`), and `docs/agents/<name>/README.md` (pointers for 9 existing OpenRouter personas such as `/coder`, no prefix). Added `docs/CALL-NAMES.md`, `docs/README.md`, `docs/BOT-COMMON-RULES.md`, `docs/BOT-ROSTER.json`.

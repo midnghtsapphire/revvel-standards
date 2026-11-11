@@ -5,6 +5,13 @@ const fs = require("fs");
 const { assertCloudAllowed } = require("./llm-spend-gate");
 const https = require("https");
 const path = require("path");
+// PoT sits beside this file. The require is the strategy switch only.
+// scripts/pot-research/ does not call a model host. Paid calls stay in
+// callOpenRouter below, which already consults the spend gate.
+const {
+  dispatchResearchStrategy,
+  resolveResearchStrategy,
+} = require("./pot-research/strategy");
 
 const OPENROUTER_HOST = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
@@ -252,6 +259,10 @@ function getOptionsFromEnv(env = process.env) {
     depth: parseDepth(env.RESEARCH_DEPTH),
     extraContext: env.RESEARCH_CONTEXT || "",
     dryRun: env.DRY_RUN === "true",
+    // Unset, empty, or "linear" keeps the Ralph-loop fan-out. "pot" opts into
+    // the Policy-of-Thoughts search in scripts/pot-research/. Any other value
+    // throws from resolveResearchStrategy so a typo cannot silently run linear.
+    strategy: env.RESEARCH_STRATEGY || "linear",
   };
 }
 
@@ -980,11 +991,15 @@ async function runRalphLoop(context, caller = callOpenRouter) {
 
 async function runResearchEngine(options, caller = callOpenRouter) {
   const context = await hydrateContext(options);
+  // Resolve before labels or model calls. Unknown names throw here, so a typo
+  // is not reported as a missing-key packet and is not silently run as linear.
+  context.strategy = resolveResearchStrategy(context.strategy);
   await updateStartState(context);
 
   let laneReports;
   let synthesis;
   let status;
+  let potTrace = null;
 
   if (!context.apiKey) {
     const blocked = buildMissingKeyReport(context);
@@ -992,7 +1007,17 @@ async function runResearchEngine(options, caller = callOpenRouter) {
     synthesis = blocked.synthesis;
     status = "blocked";
   } else {
-    laneReports = await runRalphLoop(context, caller);
+    // REVVEL-DISABLED | AGENT: ResearchRodneyAIArchitect | MODEL: grok-4.7 | WR: #18341 | DATE: 2026-11-11 | STATUS: REPLACED | REASON: lane fan-out now goes through dispatchResearchStrategy, which calls runRalphLoop when strategy is linear
+    // laneReports = await runRalphLoop(context, caller);
+    // REVVEL-DISABLED-END
+    const dispatched = await dispatchResearchStrategy(context, caller, {
+      runLinear: runRalphLoop,
+      runLane,
+      lanes: LANE_DEFINITIONS,
+    });
+    laneReports = dispatched.laneReports;
+    potTrace = dispatched.potTrace;
+    context.researchStrategy = dispatched.strategy;
     synthesis = await synthesizeResearch(context, laneReports, caller);
     status = laneReports.some((report) => report.status === "complete") ? "complete" : "blocked";
   }
@@ -1009,7 +1034,16 @@ async function runResearchEngine(options, caller = callOpenRouter) {
     }
   }
 
-  return { context, laneReports, synthesis, status, outputPath, document };
+  return {
+    context,
+    laneReports,
+    synthesis,
+    status,
+    outputPath,
+    document,
+    strategy: context.strategy,
+    potTrace,
+  };
 }
 
 async function main() {
@@ -1018,6 +1052,7 @@ async function main() {
   console.log(`Repository: ${options.repository}`);
   console.log(`Query: ${options.query || options.issueTitle || "(issue-derived)"}`);
   console.log(`Depth: ${options.depth}`);
+  console.log(`Strategy: ${options.strategy || "linear"}`);
   console.log(`Output: ${options.outputFile}`);
 
   const result = await runResearchEngine(options);
@@ -1055,6 +1090,8 @@ module.exports = {
   getOptionsFromEnv,
   mergeLaneReports,
   parseDepth,
+  dispatchResearchStrategy,
+  resolveResearchStrategy,
   runLane,
   runRalphLoop,
   runResearchEngine,
