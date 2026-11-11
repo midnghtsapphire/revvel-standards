@@ -259,6 +259,18 @@ jobs:
           path: /tmp/agent-fte-artifacts
           destination: agent-as-fte
 
+  # WR #18338 — DSPy GEPA offline tests. Installs the pinned lock, runs DummyLM
+  # unit tests, and checks that a non-local optimize call is refused. This job
+  # does not call a model and does not read an API key.
+  dspy-gepa-offline:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Offline DSPy GEPA tests and spend refusal
+          no_output_timeout: 15m
+          command: bash .circleci/scripts/dspy-gepa-offline.sh
+
 workflows:
   version: 2
 
@@ -294,6 +306,10 @@ workflows:
             branches:
               ignore: main
       - affiliate-hub-image:
+          filters:
+            branches:
+              ignore: main
+      - dspy-gepa-offline:
           filters:
             branches:
               ignore: main
@@ -338,6 +354,10 @@ workflows:
             branches:
               only: main
       - affiliate-hub-image:
+          filters:
+            branches:
+              only: main
+      - dspy-gepa-offline:
           filters:
             branches:
               only: main
