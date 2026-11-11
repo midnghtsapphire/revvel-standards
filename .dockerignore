@@ -17,14 +17,25 @@ products/ghcr-console/tests
 **/.env
 **/.env.*
 **/npm-debug.log*
+# 2026-11-11 MarketShipper WR #18331: this image copies products/ai-video-toolkit.
+# The ** rule above would hide it, and Docker then fails COPY.
+!products/ai-video-toolkit/
+!products/ai-video-toolkit/**
+
 # 2026-11-11 MarketShipper WR #18330: the affiliate-hub image copies this
 # product and the file: packages it installs. The ** rule above would hide
 # them, and Docker then fails COPY. ghcr-console stays the only other product
 # in the context.
+# 2026-11-11 MarketShipper: merge onto main 419abfa9 keeps the ai-video-toolkit
+# un-ignore above as well. Both image jobs COPY from the root context.
 !products/affiliate-hub/
 !products/affiliate-hub/**
 !packages/
 !packages/**
+# 2026-11-11 MarketShipper: both product images COPY this shared server.
+# The packages un-ignore above already includes it. This line names the path.
+!packages/static-stripe-server/
+!packages/static-stripe-server/**
 # Last match wins. The un-ignore above would otherwise send a dev checkout's
 # node_modules, .next, and .env* into the build context and overwrite the
 # Linux tree produced by npm ci. These excludes must stay below the un-ignore.

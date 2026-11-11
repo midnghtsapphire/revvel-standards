@@ -232,6 +232,23 @@ jobs:
           # unreadable label is not permission. Setting it here again would
           # restore the deadlock, so leave it to the script.
 
+  # Product image gate for ai-video-toolkit. Builds the Dockerfile, runs the server
+  # tests, and requests /health inside the container. Unrelated diffs exit 0
+  # from product-diff.sh. The DigitalOcean job runs only on main and does
+  # nothing when DIGITALOCEAN_ACCESS_TOKEN is unset. A green skip is not a
+  # live site. Added 2026-11-11 by MarketShipper for WR #18331.
+  # 2026-11-11 MarketShipper: merged onto main 419abfa9. That comment described
+  # an earlier draft. This file still has no DigitalOcean create/update job.
+  ai-video-toolkit-image:
+    executor: node-executor
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build ai-video-toolkit image, test it, and request /health
+          no_output_timeout: 20m
+          command: bash .circleci/scripts/product-image-gate.sh ai-video-toolkit
+
   # Product image gate. Builds the Dockerfile, runs the server tests, and
   # requests /health inside the container. Unrelated diffs exit 0 from
   # product-diff.sh. This file does not create or update a DigitalOcean app.
@@ -293,6 +310,10 @@ workflows:
           filters:
             branches:
               ignore: main
+      - ai-video-toolkit-image:
+          filters:
+            branches:
+              ignore: main
       - affiliate-hub-image:
           filters:
             branches:
@@ -334,6 +355,10 @@ workflows:
       - deploy-railway:
           requires:
             - lint-and-test
+          filters:
+            branches:
+              only: main
+      - ai-video-toolkit-image:
           filters:
             branches:
               only: main
