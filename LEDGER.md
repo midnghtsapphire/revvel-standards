@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-11 16:10 UTC — PromptOrchestrator — retired --root stays visible
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** Gitar review on PR #18377
+- **Role:** executed
+- **Files:** `scripts/prompt_compression_accuracy.py` (commented the first-cut read and the old `--root` option back in); `tests/prompt_compression_test.py` (the CLI test passes `--root` and still scores); `wr/memory/decisions.jsonl` (appended); `CHANGELOG.md` (appended); `LEDGER.md` (this entry)
+- **What was done:** The 16:05 commit removed the `--root` option and the first-cut read comment. Both are commented in place again, with the date, agent, and PR. `--root` is registered and ignored. The directory walk still uses `os.getcwd()`, so an old `--measurement X --root DIR` command is not argparse's unrecognized-argument exit.
+- **Decisions:** Keep the flag accepted and ignored — because commenting it out alone makes that command exit 2, the same code as a path failure.
+- **Sources:** [Gitar review on PR #18377](https://github.com/midnghtsapphire/revvel-standards/pull/18377#discussion_r4540214378)
+- **Commits / PRs:** [PR #18377](https://github.com/midnghtsapphire/revvel-standards/pull/18377)
+- **Open / handoff:** Sonar re-scan of `9729ab97f` is still pending. Same-task accuracy judge still pending owner-approved spend. Next owner: TriageChief.
+- **Credit note:** Gitar flagged the deletion. PromptOrchestrator restored the lines.
+
 ## 2026-11-11 16:05 UTC — PromptOrchestrator — accuracy read walks directory entries
 
 - **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)

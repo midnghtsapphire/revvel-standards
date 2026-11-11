@@ -15,6 +15,10 @@
 - Added `scripts/pot-research/`: UCT Monte Carlo tree search, a GRPO step on a transient adapter, a frozen base-weight vector, and a deterministic stub policy. The linear lane fan-out in `scripts/research-engine.js` stays the default; `RESEARCH_STRATEGY=pot` opts in.
 - Added `tests/pot-research.test.js`, `docs/research/pot-research-engine.md` (GPU budget marked as an estimate), `scripts/pot-research/LEDGER.md`, and `scripts/pot-research/benchmark.js`. The harness reports the +20-30% criterion as not measured. No quality delta is invented.
 - CircleCI already runs `tests/**/*.test.js`. No new job and no GitHub-hosted workflow.
+## 2026-11-11 — PromptOrchestrator — keep the retired --root lines visible
+
+- `scripts/prompt_compression_accuracy.py`: the first-cut `args.measurement` read and the old `--root` option are commented in place. `--root` is still accepted and ignored so an old command is not an unrecognized-argument failure. The walk still uses the working directory. Review on PR #18377.
+
 ## 2026-11-11 — PromptOrchestrator — accuracy read walks directory entries
 
 - `scripts/prompt_compression_accuracy.py`: `--measurement` is matched against `os.scandir` names. The file read uses the directory entry, not a path joined from the CLI string. Sonar pythonsecurity:S8707 stayed open after the realpath check on PR #18377.

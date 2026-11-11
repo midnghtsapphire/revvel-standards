@@ -244,7 +244,7 @@ class CompressionTests(unittest.TestCase):
             previous = os.getcwd()
             os.chdir(tmp)
             try:
-                code = accuracy.main(["--measurement", "measure.json"])
+                code = accuracy.main(["--measurement", "measure.json", "--root", tmp])
                 paid = accuracy.main(["--measurement", "measure.json", "--execute-paid-judge"])
             finally:
                 os.chdir(previous)

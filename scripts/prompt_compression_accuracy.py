@@ -116,6 +116,8 @@ def measurement_json(raw: str, root) -> dict:
             raise ValueError(f"{raw} escapes {base}")
     if current.suffix.lower() != ".json":
         raise ValueError("measurement file must end in .json")
+    # 2026-11-11 first cut read args.measurement directly.
+    # payload = json.loads(Path(args.measurement).read_text(encoding="utf-8"))
     return json.loads(current.read_text(encoding="utf-8"))
 
 
@@ -123,6 +125,15 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Score a local LLMLingua-2 measurement. No paid calls.")
     parser.add_argument("--measurement", required=True,
                         help="Relative path under the working directory. Walked by directory entry name.")
+    # 2026-11-11 16:05 PromptOrchestrator, PR #18377: --root no longer selects
+    # the directory. Sonar S8707 treated a CLI root as tainted. The walk uses
+    # os.getcwd() below. The option stays registered so `--measurement X --root DIR`
+    # is not argparse's "unrecognized arguments", which exits 2, the same code
+    # as a real path failure.
+    # parser.add_argument("--root", default=".",
+    #                     help="--measurement must be a relative path inside this directory.")
+    parser.add_argument("--root", default=".",
+                        help="Accepted and ignored. The walk uses the working directory.")
     parser.add_argument("--execute-paid-judge", action="store_true",
                         help="Refuses. A paid judge is pending owner-approved spend.")
     args = parser.parse_args(argv)
