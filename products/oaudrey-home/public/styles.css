@@ -342,8 +342,8 @@ html[data-a11y="large_print"] summary { min-height: 48px; }
 
 .mascot-slot img {
   display: block;
-  width: 140px;
-  height: 140px;
+  width: 220px;
+  height: 220px;
   animation: mascot-float 3.2s ease-in-out infinite;
 }
 
@@ -351,11 +351,31 @@ html[data-a11y="large_print"] summary { min-height: 48px; }
   50% { transform: translateY(-8px); }
 }
 
+.world-band {
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.world-band .band-head,
+.world-band .theme-switch,
+.world-band .song-credit,
+.world-band .song-controls,
+#hub-boards,
+#world-tip,
+#hub-closed {
+  max-width: 1180px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
 #candy-world {
+  display: block;
   width: 100%;
   height: auto;
-  max-width: 960px;
-  border: 2px solid var(--line);
+  max-width: none;
   background: #07122e;
 }
 
@@ -384,5 +404,5 @@ html[data-a11y="large_print"] summary { min-height: 48px; }
 #hub-boards { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; }
 
 @media (max-width: 700px) {
-  .mascot-slot img { width: 96px; height: 96px; }
+  .mascot-slot img { width: 148px; height: 148px; }
 }
