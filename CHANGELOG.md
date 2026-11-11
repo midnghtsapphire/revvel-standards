@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-11
+
+- 2026-11-11 — Grok Bot (executor, for Audrey Evans) — Appended an update section to `docs/ZERO_TOUCH_SECRETS_DESIGN.md` recording the Q1 to Q4 answers from Discussion #18265 (Bitwarden Secrets Manager Free, broker on her Linux laptop, keep GlowVault, Secret drafts scopes and 1-Git-Triage second-checks), the unresolved laptop-sleep risk, and the remaining work. Docs only, append-only, no secrets. Refs #18270, #18273.
+
 ## 2026-11-05
 
 - 2026-11-05 — Grok Bot (Audrey-directed, TriageChief t59u) — Kill allow-destroy bypass (comment-out, not delete). `.circleci/scripts/check-archival-policy.sh`: old `resolve_allow_destroy` / label-ratify path commented out with Audrey quote ("ya not lets get rid of that") + AGENTS.md OWNER RULE (2026-10-30); deletions always fail closed. `scripts/no-destroy-guard.js` + `.github/workflows/no-destroy-guard.yml`: surgical comment-out of allow-destroy bypass wiring only (no new Actions). `tests/circleci-allow-destroy.test.js` + `tests/no-destroy-guard.test.js`: expect fail-closed / label ignored. Supersedes approach in draft #18261 (kept open). LEDGER.md not on base — no ledger line.
