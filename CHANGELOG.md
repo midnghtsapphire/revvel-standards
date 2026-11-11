@@ -5,6 +5,13 @@
 ## 2026-11-11 — MarketShipper — ai-video-toolkit deploy path (WR #18331)
 
 - Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `ai-video-toolkit.revvel.co` under `products/ai-video-toolkit/`. CircleCI job `ai-video-toolkit-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/ai-video-toolkit/CHANGELOG.md`.
+## 2026-11-11 (3) — MarketShipper — affiliate-hub image gate does not write to App Platform
+
+- Restacked onto main `7aceb6284` (#18364 and #18365 kept). CircleCI keeps `demo-kit-test`, `affiliate-hub-build`, and `affiliate-hub-image`. The DigitalOcean create/update job is not on this branch. `npm ci` in the image uses `--ignore-scripts`. Checkout rate limit keys on `do-connecting-ip`, then the first `X-Forwarded-For` hop.
+
+## 2026-11-11 — MarketShipper — affiliate-hub deploy path (WR #18330)
+
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `affiliate-hub.revvel.co` under `products/affiliate-hub/`. CircleCI job `affiliate-hub-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/affiliate-hub/CHANGELOG.md`.
 
 ## 2026-11-11 — MarketShipper (Grok 4.7, Cursor Cloud) — GOAP agent-as-FTE sales deck and landing
 

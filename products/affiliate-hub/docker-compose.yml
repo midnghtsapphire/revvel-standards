@@ -9,4 +9,23 @@
 #       - "${PORT:-8080}:8080"
 #     restart: unless-stopped
 #
-#
+# 2026-11-11 MarketShipper WR #18330: active compose file. The commented
+# service above is the retired 2026-11-10 configuration and stays in place.
+# Secrets are read from the shell environment. Empty values keep checkout
+# unavailable; they are not substitute keys.
+
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: products/affiliate-hub/Dockerfile
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      STRIPE_MODE: ${STRIPE_MODE:-test}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_PRICE_ID: ${STRIPE_PRICE_ID:-}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-}
+    restart: unless-stopped
