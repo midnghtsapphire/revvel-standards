@@ -17,6 +17,11 @@ products/ghcr-console/tests
 **/.env
 **/.env.*
 **/npm-debug.log*
+# 2026-11-11 MarketShipper WR #18332: this image copies products/screen-recorder-finder.
+# The ** rule above would hide it, and Docker then fails COPY.
+!products/screen-recorder-finder/
+!products/screen-recorder-finder/**
+
 # 2026-11-11 MarketShipper WR #18331: this image copies products/ai-video-toolkit.
 # The ** rule above would hide it, and Docker then fails COPY.
 !products/ai-video-toolkit/
@@ -28,6 +33,8 @@ products/ghcr-console/tests
 # in the context.
 # 2026-11-11 MarketShipper: merge onto main 419abfa9 keeps the ai-video-toolkit
 # un-ignore above as well. Both image jobs COPY from the root context.
+# 2026-11-11 MarketShipper: merge onto main 3d6ae9a8 also keeps the
+# screen-recorder-finder un-ignore above.
 !products/affiliate-hub/
 !products/affiliate-hub/**
 !packages/
