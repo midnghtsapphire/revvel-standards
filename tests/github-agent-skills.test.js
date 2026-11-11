@@ -72,6 +72,27 @@ test('each skill has a canonical playbook, a loader, and a machine config', () =
   }
 });
 
+test('union merge captures a non-zero exit and does not stage conflict markers', () => {
+  for (const rel of [
+    'docs/skills/resolve-conflicts/SKILL.md',
+    'docs/skills/github-read-write-admin/SKILL.md',
+  ]) {
+    const text = read(rel);
+    assert.ok(text.includes('|| rc=$?'), `${rel} must capture the merge-file exit code`);
+    assert.ok(!text.includes('> "$STAGE/merged" &&'), `${rel} must not skip the marker check when merge-file exits non-zero`);
+    assert.ok(text.includes('Do not stage it.'), `${rel} must stop instead of staging an unresolved file`);
+  }
+  const conflicts = read('docs/skills/resolve-conflicts/SKILL.md');
+  assert.ok(conflicts.includes('git rev-parse --git-path rebase-merge'));
+  assert.ok(conflicts.includes('git rev-parse --git-path rebase-apply'));
+  assert.ok(conflicts.includes('git rev-parse --git-path CHERRY_PICK_HEAD'));
+  assert.ok(conflicts.includes('GIT_EDITOR=true git rebase --continue'));
+  assert.ok(conflicts.includes('git cherry-pick --continue --no-edit'));
+  assert.ok(conflicts.includes('GIT_EDITOR=true git merge --continue'));
+  assert.ok(!conflicts.includes('.git/rebase-merge'));
+  assert.ok(!conflicts.includes('.git/CHERRY_PICK_HEAD'));
+});
+
 test('git-advanced-workflows keeps rebase, bisect, worktree, and reflog for unpushed work', () => {
   const text = read('docs/skills/git-advanced-workflows/SKILL.md');
   for (const phrase of ['git rebase', 'git bisect', 'git worktree', 'git reflog', 'have not been pushed']) {
