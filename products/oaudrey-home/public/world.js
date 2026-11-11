@@ -737,6 +737,7 @@
       root.requestAnimationFrame(frame);
     }
     function apply(team, hub) {
+      eaten = {};
       model = modelFromPayload(team, hub, themeOf(themeId), !!opts.fixture);
       fillDom(model);
       kick();
@@ -758,8 +759,8 @@
       var rect = canvas.getBoundingClientRect();
       var x = ((event.clientX - rect.left) / rect.width) * canvas.width;
       var y = ((event.clientY - rect.top) / rect.height) * canvas.height;
-      var hub = cellOrigin(LAYOUT.hub.c, LAYOUT.hub.r);
-      if (Math.hypot(hub[0] - x, hub[1] - y) < 90) root.open(model.boardLinks[0].url, '_blank', 'noopener');
+      var hub = cellOrigin(LAYOUT.hub.c + 1, LAYOUT.hub.r + 1);
+      if (Math.hypot(hub[0] - x, hub[1] - y) < CELL * 2) root.open(model.boardLinks[0].url, '_blank', 'noopener');
     });
     function setTheme(id) {
       themeId = themeOf(id).id;
