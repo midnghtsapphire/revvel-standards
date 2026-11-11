@@ -208,13 +208,14 @@ test('checkout rate limit uses the visitor IP, not the shared proxy socket', asy
     headers: { 'do-connecting-ip': '203.0.113.8', 'x-forwarded-for': '198.51.100.4, 10.0.0.1' },
     socket: { remoteAddress: '10.0.0.8' },
   };
-  assert.equal(clientAddress(both), '203.0.113.8');
+  assert.equal(clientAddress(both, {}), '203.0.113.8');
   const forwarded = {
     headers: { 'x-forwarded-for': '198.51.100.4, 10.0.0.1' },
     socket: { remoteAddress: '10.0.0.8' },
   };
-  assert.equal(clientAddress(forwarded), '198.51.100.4');
-  assert.equal(clientAddress({ headers: {}, socket: { remoteAddress: '127.0.0.1' } }), '127.0.0.1');
+  assert.equal(clientAddress(forwarded, {}), '10.0.0.8');
+  assert.equal(clientAddress(forwarded, { TRUST_PROXY: '1' }), '198.51.100.4');
+  assert.equal(clientAddress({ headers: {}, socket: { remoteAddress: '127.0.0.1' } }, {}), '127.0.0.1');
   const hits = new Map();
   hits.set('stale', [1]);
   assert.equal(rateLimited(hits, '203.0.113.8', 1_000_000), false);
