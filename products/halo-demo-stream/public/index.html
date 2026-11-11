@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>affiliate-hub live demo (AG-UI stream + session resume)</title>
+<style>
+  /* Every text/background pair below is >= 7:1; tests/page.test.js checks it. */
+  :root {
+    --c-bg: #ffffff;
+    --c-text: #111111;
+    --c-muted: #333333;
+    --c-panel: #f2f2f2;
+    --c-button-bg: #0b2a6b;
+    --c-button-text: #ffffff;
+    --c-link: #0b2a6b;
+    --c-error: #7a0000;
+    --c-ok: #0a4d1f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 1.25rem; background: var(--c-bg); color: var(--c-text);
+         font: 1.125rem/1.55 system-ui, -apple-system, "Segoe UI", Arial, sans-serif; max-width: 62rem; }
+  h1 { font-size: 1.75rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1.25rem; margin: 1.25rem 0 .5rem; }
+  p.lead, .note { color: var(--c-muted); margin: .25rem 0 1rem; }
+  a { color: var(--c-link); }
+  form { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; }
+  label { display: flex; flex-direction: column; font-weight: 600; gap: .25rem; }
+  input, select { font: inherit; padding: .5rem; color: var(--c-text); background: var(--c-bg); border: 2px solid var(--c-text); border-radius: 4px; }
+  button { font: inherit; font-weight: 700; padding: .6rem 1.1rem; color: var(--c-button-text); background: var(--c-button-bg);
+           border: 2px solid var(--c-button-bg); border-radius: 4px; cursor: pointer; }
+  button:disabled { cursor: progress; }
+  ::placeholder { color: var(--c-muted); opacity: 1; }
+  :focus-visible { outline: 3px solid var(--c-text); outline-offset: 2px; }
+  pre, .box { background: var(--c-panel); color: var(--c-text); padding: .75rem; border: 1px solid var(--c-text);
+              border-radius: 4px; overflow-x: auto; white-space: pre-wrap; margin: 0; min-height: 3rem; }
+  #status.ok { color: var(--c-ok); font-weight: 700; }
+  #status.err { color: var(--c-error); font-weight: 700; }
+  code { background: var(--c-panel); color: var(--c-text); padding: 0 .25rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>affiliate-hub live demo</h1>
+  <p class="lead">Runs the real affiliate-hub catalogue code on the server and streams the answer to this page using the
+  AG-UI event standard over Server-Sent Events. Your session is saved on the server, so you can pick it up on another device.</p>
+
+  <h2>1. Ask the agent</h2>
+  <form id="run-form">
+    <label>Search (name or audience)
+      <input id="searchTerm" name="searchTerm" type="text" value="" placeholder="e.g. course creators">
+    </label>
+    <label>Commission type
+      <select id="filterType"><option value="all">All</option><option value="recurring">Recurring</option>
+        <option value="one-time">One-time</option><option value="hybrid">Hybrid</option></select>
+    </label>
+    <label>Sort by
+      <select id="sortBy"><option value="ltv">Lifetime value</option><option value="name">Name</option></select>
+    </label>
+    <button id="run" type="submit">Run agent</button>
+  </form>
+  <p id="status" role="status" aria-live="polite">Loading session...</p>
+
+  <h2>2. Streamed answer</h2>
+  <div id="answer" class="box" aria-live="polite"></div>
+
+  <h2>3. Session (survives device switches)</h2>
+  <p class="note">Session id: <code id="session-id"></code>. To resume on another device, open this link there:
+  <a id="resume-link" href="#">resume link</a>. It shows the saved state before you run anything.</p>
+  <pre id="state" aria-label="Session state">{}</pre>
+
+  <h2>4. AG-UI events received</h2>
+  <pre id="events" aria-label="AG-UI event log"></pre>
+</main>
+<script type="module">
+import { createSSEParser, reduceEvent } from '/agui.js';
+
+const $ = (id) => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const rand = () => Math.random().toString(36).slice(2, 10);
+let sessionId = params.get('session') || localStorage.getItem('halo-demo-session') || `demo-${rand()}${rand()}`;
+localStorage.setItem('halo-demo-session', sessionId);
+const deviceId = params.get('device') || localStorage.getItem('halo-demo-device') || `browser-${rand().slice(0, 4)}`;
+localStorage.setItem('halo-demo-device', deviceId);
+
+const resumeUrl = () => `${location.origin}/?session=${encodeURIComponent(sessionId)}`;
+$('session-id').textContent = sessionId;
+$('resume-link').href = resumeUrl();
+$('resume-link').textContent = resumeUrl();
+history.replaceState(null, '', `/?session=${encodeURIComponent(sessionId)}`);
+
+const setStatus = (text, cls = '') => { $('status').textContent = text; $('status').className = cls; };
+const showState = (state) => {
+  $('state').textContent = JSON.stringify(state ?? {}, null, 2);
+  const q = state?.query;
+  if (q) { $('searchTerm').value = q.searchTerm; $('filterType').value = q.filterType; $('sortBy').value = q.sortBy; }
+};
+
+async function resume() {
+  const r = await fetch(`/a2ui/sessions/${encodeURIComponent(sessionId)}`);
+  if (r.status === 404) { setStatus('New session. Run the agent to start.'); return; }
+  const rec = await r.json();
+  showState(rec.state);
+  setStatus(`Resumed session at revision ${rec.revision} (last run on device "${rec.state.lastDevice}").`, 'ok');
+}
+
+$('run-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('run').disabled = true;
+  $('answer').textContent = '';
+  $('events').textContent = '';
+  setStatus('Running...');
+  let view = { state: {}, messages: [] };
+  const parser = createSSEParser();
+  try {
+    const res = await fetch('/agui', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
+      body: JSON.stringify({
+        threadId: sessionId,
+        runId: `run-${Date.now()}`,
+        messages: [],
+        state: {},
+        tools: [],
+        context: [],
+        forwardedProps: {
+          product: 'affiliate-hub',
+          deviceId,
+          query: { searchTerm: $('searchTerm').value, filterType: $('filterType').value, sortBy: $('sortBy').value },
+        },
+      }),
+    });
+    if (!res.ok) throw new Error(`server said ${res.status}`);
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      for (const event of parser.push(decoder.decode(value, { stream: true }))) {
+        view = reduceEvent(view, event);
+        $('events').textContent += `${event.type}\n`;
+        $('answer').textContent = view.messages.map((m) => m.text).join('\n');
+        if (view.state) showState(view.state);
+      }
+    }
+    if (view.status === 'finished') setStatus('Done. Session saved.', 'ok');
+    else setStatus(`Run did not finish: ${view.error ?? 'stream ended early'}`, 'err');
+  } catch (err) {
+    setStatus(`Error: ${err.message}`, 'err');
+  } finally {
+    $('run').disabled = false;
+  }
+});
+
+resume().catch((err) => setStatus(`Could not load session: ${err.message}`, 'err'));
+</script>
+</body>
+</html>
