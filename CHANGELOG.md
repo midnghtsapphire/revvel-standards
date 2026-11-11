@@ -1,3 +1,10 @@
+## 2026-11-11 — QuickWinBuilder — drop folders process themselves (WR #18379)
+
+- Added `config/drop-folders.json` (folder-to-handler table), `scripts/drop-folder-process.js` and `tests/drop-folder-process.test.js`. A push to any of `docs/research-drafts/`, `docs/notebook/`, `docs/chatgpt/`, `docs/claudeai/`, `docs/claudecode/`, `docs/claudecoworker/`, `docs/grok/` or `docs/inbox/` gets a report, per-topic digests and an inbox ingest plan as CircleCI artifacts. Report-only; a secret match fails the job.
+- Added CircleCI jobs `drop-folder-process` and `dashboard-build` (push-triggered, no cron, path filtering done in the job). The existing jobs are unchanged. The dashboard's Cloudflare Pages deploy is prepared and skips until `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` exist.
+- Annotated `.github/workflows/update-project-dashboard.yml` as superseded history. Nothing in it was removed.
+- Added `docs/DROP_FOLDERS.md`, `docs/DASHBOARD_HOSTING.md`, `Library/drop-folders/`.
+
 ## 2026-11-11 (4) — ResearchRodneyAIArchitect — PUCT priors reach the strategy entry point
 
 - `runPot` forwards `priorFor` into the search. Lane runs read `context.potPriorFor`. A test goes through `runStrategy`, not only `search`.

@@ -3,6 +3,20 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-11 16:30 UTC — QuickWinBuilder — drop folders process themselves; dashboard build prepared (WR #18379)
+
+- **Actor:** QuickWinBuilder (MoneyCrew Builder, Grok Bot)
+- **Requested by:** TriageChief, relaying Audrey ("Perfect. Figure it out.")
+- **Role:** executed
+- **Files:** `config/drop-folders.json` (routing table); `scripts/drop-folder-process.js`; `tests/drop-folder-process.test.js`; `.circleci/config.yml` (two jobs added, none changed); `.github/workflows/update-project-dashboard.yml` (comment header only); `docs/DROP_FOLDERS.md`; `docs/DASHBOARD_HOSTING.md`; `Library/drop-folders/README.md`; `Library/README.md`; `CHANGELOG.md`
+- **What was done:** A push-triggered CircleCI job reads the changed `.md` files in the 8 drop folders and runs the handler the table names: inbox intakes go through the existing runner-orchestrator in dry-run, research-drafts topics are checked and digested, per-source buckets are routed to a research-drafts topic. Report-only, with a secret scan. A second job builds the dashboard and has a Cloudflare Pages Direct Upload deploy that skips until its token exists.
+- **Decisions:** Path filtering is done in the job from the table instead of the setup-workflow and path-filtering orb, because a setup config breaks every job while the project's dynamic-config setting is off. Results are artifacts, not commits, because writing back needs a push token. The superseded Actions workflow is annotated, not removed.
+- **Not done:** Pages was not enabled, no Cloudflare or Vercel project was created, no secret was set, nothing was merged. NotebookLM auto-pull is only scoped (#18380).
+- **Sources:** [WR #18379](https://github.com/midnghtsapphire/revvel-standards/issues/18379), [WR #18380](https://github.com/midnghtsapphire/revvel-standards/issues/18380), `Library/drop-folders/README.md`
+- **Commits / PRs:** see the draft PR linked from WR #18379
+- **Open / handoff:** Audrey's yes on the items listed in the PR body. TriageChief merges.
+- **Credit note:** Conventions are from PR #14871 and PR #13637. The orchestrator and the dashboard generator already existed and are reused unchanged.
+
 ## 2026-11-11 14:25 UTC — Rules-Steward — merge main, keep both changelog entries
 
 - **Actor:** Rules-Steward (Cursor cloud agent, Grok 4.7)
