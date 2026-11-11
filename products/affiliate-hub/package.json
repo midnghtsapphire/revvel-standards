@@ -18,6 +18,7 @@
     "@revvel/browserslist-config": "file:../../packages/browserslist-config",
     "@revvel/eslint-config": "file:../../packages/eslint-config",
     "@revvel/prettier-config": "file:../../packages/prettier-config",
+    "@tailwindcss/postcss": "^4.3.5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

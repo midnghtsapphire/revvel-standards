@@ -22,8 +22,10 @@ on:
   # outages, rate-limit storms, cancelled runs). The resync-all-prs job is
   # gated on github.event_name == 'schedule' — without this trigger that job
   # could NEVER run automatically.
-  schedule:
-    - cron: '17 */6 * * *'
+  # 2026-11-10 Codex, #18313: preserve drift repair as a local command;
+  # owner requires no GitHub Actions scheduling dependency or new runner spend.
+  # schedule:
+  #   - cron: '17 */6 * * *'
   workflow_dispatch:
     inputs:
       pr_number:
@@ -58,7 +60,9 @@ jobs:
   pr-lifecycle:
     name: 🔄 PR Lifecycle Labels
     if: github.event_name == 'pull_request'
-    runs-on: self-hosted
+    # 2026-11-10: original generic label retained; cmd requires explicit Windows.
+    # runs-on: self-hosted
+    runs-on: [self-hosted, Windows]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -75,7 +79,9 @@ jobs:
   review-handler:
     name: 🔍 Review State Labels
     if: github.event_name == 'pull_request_review'
-    runs-on: self-hosted
+    # 2026-11-10: original generic label retained; cmd requires explicit Windows.
+    # runs-on: self-hosted
+    runs-on: [self-hosted, Windows]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -92,7 +98,9 @@ jobs:
   check-suite-handler:
     name: ✅ CI Check Suite Labels
     if: github.event_name == 'check_suite'
-    runs-on: self-hosted
+    # 2026-11-10: original generic label retained; cmd requires explicit Windows.
+    # runs-on: self-hosted
+    runs-on: [self-hosted, Windows]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -109,7 +117,9 @@ jobs:
   check-run-handler:
     name: ✅ CI Check Run Labels
     if: github.event_name == 'check_run'
-    runs-on: self-hosted
+    # 2026-11-10: original generic label retained; cmd requires explicit Windows.
+    # runs-on: self-hosted
+    runs-on: [self-hosted, Windows]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -126,7 +136,9 @@ jobs:
   resync-all-prs:
     name: 🔄 Re-sync All Open PRs
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number == '')
-    runs-on: self-hosted
+    # 2026-11-10: original generic label retained; cmd requires explicit Windows.
+    # runs-on: self-hosted
+    runs-on: [self-hosted, Windows]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -143,7 +155,9 @@ jobs:
   manual-reevaluate:
     name: 🔄 Manual Re-evaluate Single PR
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number != ''
-    runs-on: self-hosted
+    # 2026-11-10: original generic label retained; cmd requires explicit Windows.
+    # runs-on: self-hosted
+    runs-on: [self-hosted, Windows]
     steps:
       - uses: actions/checkout@v7
         with:

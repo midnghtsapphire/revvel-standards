@@ -3,7 +3,8 @@
   "repo": "midnghtsapphire/revvel-standards",
   "generated_by": "scripts/build-hub-registry.js",
   "hub_domain": "oaudrey.com",
-  "generated_at": "2026-11-10T09:11:58.420Z",
+  "generated_at": "11/10/2026 09:11:58",
+  "pages_base_url": "https://midnghtsapphire.github.io/revvel-standards/",
   "entries": [
     {
       "slug": "amazon-books",
@@ -15,7 +16,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/amazon-books",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/amazon-books/",
+      "live_url": "https://oaudrey.com/amazon-books/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "angel-reporter",
@@ -27,7 +32,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/angel-reporter",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/angel-reporter/",
+      "live_url": "https://oaudrey.com/angel-reporter/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "audrey-evans-official",
@@ -39,7 +48,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/audrey-evans-official",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/audrey-evans-official/",
+      "live_url": "https://oaudrey.com/audrey-evans-official/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "birthday-freebies",
@@ -51,7 +64,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/BirthdayFreebies",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/birthday-freebies/",
+      "live_url": "https://oaudrey.com/birthday-freebies/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "bodyfinders",
@@ -63,7 +80,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/bodyfinders",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/bodyfinders/",
+      "live_url": "https://oaudrey.com/bodyfinders/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "cancercurred",
@@ -75,7 +96,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/cancercurred",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/cancercurred/",
+      "live_url": "https://oaudrey.com/cancercurred/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "case-files",
@@ -87,7 +112,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/case-files",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/case-files/",
+      "live_url": "https://oaudrey.com/case-files/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "certifixes",
@@ -99,7 +128,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/certifixes",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/certifixes/",
+      "live_url": "https://oaudrey.com/certifixes/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "colorado-cle",
@@ -111,7 +144,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/colorado-cle-online",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/colorado-cle/",
+      "live_url": "https://oaudrey.com/colorado-cle/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "freedom-angel-corps",
@@ -125,7 +162,11 @@
       ],
       "repo": "midnghtsapphire/freedom-angel-corps",
       "status": "live",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://freedomangelcorps.com/",
+      "live_url": "https://freedomangelcorps.com/",
+      "tag": "live",
+      "issue": null
     },
     {
       "slug": "growlingeyes",
@@ -139,7 +180,11 @@
       ],
       "repo": "midnghtsapphire/growlingeyes",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://growlingeyes.com/",
+      "live_url": "https://growlingeyes.com/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "kdp-agent-fleet",
@@ -151,7 +196,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/kdp-agent-fleet",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/kdp-agent-fleet/",
+      "live_url": "https://oaudrey.com/kdp-agent-fleet/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "kdp-packager",
@@ -163,7 +212,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/kdp-packager",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/kdp-packager/",
+      "live_url": "https://oaudrey.com/kdp-packager/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "meetaudreyevans",
@@ -175,7 +228,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/Meetaudreyevans",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/meetaudreyevans/",
+      "live_url": "https://oaudrey.com/meetaudreyevans/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "oaudrey",
@@ -187,7 +244,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/oaudrey",
       "status": "live",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/",
+      "live_url": "https://oaudrey.com/",
+      "tag": "live",
+      "issue": null
     },
     {
       "slug": "rising-aloha",
@@ -199,7 +260,11 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/risingaloha",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://oaudrey.com/rising-aloha/",
+      "live_url": "https://oaudrey.com/rising-aloha/",
+      "tag": "building",
+      "issue": null
     },
     {
       "slug": "uprising-hope",
@@ -211,7 +276,23 @@
       "redirect_from": [],
       "repo": "midnghtsapphire/Uprising-Hope-LLC",
       "status": "building",
-      "added": "2026-11-10"
+      "added": "2026-11-10",
+      "path": "https://uprisinghope.com/",
+      "live_url": "https://uprisinghope.com/",
+      "tag": "building",
+      "issue": null
+    },
+    {
+      "slug": "veins-topology-lab",
+      "title": "VEINS Topology Lab",
+      "description": "Interactive sheaf cohomology + persistence diagram observatory. Self-healing governance as geometry — BIOME fleet constellation, imprint-at-spawn, investor-ready surface.",
+      "path": "./docs/bnatsheaf/observatory.html",
+      "tag": "Method · Living Manifold",
+      "issue": 16901,
+      "live_url": "https://midnghtsapphire.github.io/revvel-standards/docs/bnatsheaf/observatory.html",
+      "hub_url": "https://midnghtsapphire.github.io/revvel-standards/docs/bnatsheaf/observatory.html",
+      "domain_strategy": "path",
+      "status": "unverified"
     }
   ]
 }

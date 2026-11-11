@@ -26,6 +26,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const yaml = require('yaml');
+const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
 const wf = (name) => path.join(root, '.github/workflows', name);
@@ -37,8 +38,18 @@ const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
 function scriptOf(name, jobName) {
   const doc = readYaml(name);
   const step = doc.jobs[jobName].steps.find((s) => s.with && typeof s.with.script === 'string');
-  assert.ok(step, `expected an inline github-script step in ${name}:${jobName}`);
-  return step.with.script;
+  // 2026-11-10 Codex: Scripts-as-CI moved this logic out of github-script.
+  // Original inline-only assertion retained; the invoked source is now tested.
+  // assert.ok(step, `expected an inline github-script step in ${name}:${jobName}`);
+  // return step.with.script;
+  if (step) return step.with.script;
+  const invocation = doc.jobs[jobName].steps.find((s) =>
+    typeof s.run === 'string' && /^node scripts\/ci\/[\w-]+\.js [\w-]+\s*$/.test(s.run));
+  assert.ok(invocation, `expected an executable Scripts-as-CI step in ${name}:${jobName}`);
+  const relative = invocation.run.split(/\s+/)[1];
+  const source = path.resolve(root, relative);
+  assert.ok(source.startsWith(path.join(root, 'scripts', 'ci') + path.sep));
+  return fs.readFileSync(source, 'utf8');
 }
 
 test('pr-check-status confirms the whole PR before claiming success', () => {
@@ -113,7 +124,10 @@ test('pr-check-status embedded script is syntactically valid', () => {
   for (const job of ['check-suite-status', 'workflow-run-status']) {
     const script = scriptOf('pr-check-status.yml', job);
     assert.doesNotThrow(
-      () => new AsyncFunction('github', 'context', 'core', script),
+      // 2026-11-10: CommonJS files have a shebang and their own imports.
+      // Original inline compilation: () => new AsyncFunction('github', 'context', 'core', script),
+      () => script.startsWith('#!') ? new vm.Script(script) :
+        new AsyncFunction('github', 'context', 'core', script),
       `${job} script must parse`
     );
   }
@@ -189,4 +203,36 @@ test('the two previously-invalid workflows parse and keep their dispatch inputs'
     xai.on.workflow_dispatch.inputs['pull-request-number'],
     'pull-request-number stays declared'
   );
+});
+
+test('extracted status handler refuses passing labels for a failing combined status', async () => {
+  const { runCheckSuite } = require('../scripts/ci/pr-check-status');
+  const added = [];
+  const github = { rest: {
+    checks: { listForRef: async () => ({ data: { check_runs: [
+      { status: 'completed', conclusion: 'success' },
+    ] } }) },
+    repos: { getCombinedStatusForRef: async () => ({ data: { state: 'failure', total_count: 1 } }) },
+    issues: {
+      listLabelsOnIssue: async () => ({ data: [] }),
+      addLabels: async ({ labels }) => added.push(...labels),
+      listComments: async () => ({ data: [] }),
+      createComment: async () => ({}),
+    },
+  } };
+  await runCheckSuite(github, { repo: { owner: 'owner', repo: 'repo' }, runId: 1,
+    payload: { check_suite: { conclusion: 'success', head_sha: 'abc', pull_requests: [{ number: 1 }] } } });
+  assert.deepEqual(added, ['checks-failing']);
+});
+
+test('extracted label removal propagates authentication failure', async () => {
+  const { runCheckSuite } = require('../scripts/ci/pr-check-status');
+  const github = { rest: { issues: {
+    listLabelsOnIssue: async () => ({ data: [{ name: 'checks-passing' }] }),
+    removeLabel: async () => { throw Object.assign(new Error('forbidden'), { status: 403 }); },
+  } } };
+  await assert.rejects(() => runCheckSuite(github, {
+    repo: { owner: 'owner', repo: 'repo' },
+    payload: { check_suite: { conclusion: 'failure', pull_requests: [{ number: 1 }] } },
+  }), { status: 403 });
 });

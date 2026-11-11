@@ -113,3 +113,22 @@ console.log(tick.metrics, getResearchEvaluation().bugsAndRisks.length);
 ---
 
 Built for **midnghtsapphire/revvel-standards** · Closes WR-16500 scope for production-app delivery.
+
+## Agent pilot sales surface (WR #18334)
+
+`/agent-as-fte` contains a priced pilot offer and an interactive capacity ROI
+calculator. `/agent-as-fte/deck` provides twelve printable slides, and
+`/goap-agent-sales-deck.pdf` serves the generated twelve-page PDF. Build the PDF
+from the same slide copy with `python scripts/build_sales_deck.py` (ReportLab
+required). No hosted build service or GitHub App is required.
+
+The calculator uses editable assumptions, includes negative results, and
+defines zero-price/zero-rate cases without infinite ROI. The sales material
+describes the existing planner's capabilities and does not invent case studies,
+customer wins, production revenue, or guaranteed outcomes. Calendar booking is
+unavailable; the pilot request points to the verified owner GitHub discussion.
+
+Local verification on 2026-11-10: 13 Node tests passed, TypeScript passed, and
+the Next.js production build generated both sales routes. This establishes local
+readiness only. Domain deployment, Calendly setup, customer outreach, closed
+customers, and Stripe MRR remain acceptance work under #18334.

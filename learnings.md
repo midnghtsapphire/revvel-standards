@@ -1146,3 +1146,43 @@ the code to come back.
 line 48), `.github/copilot-instructions.md:7`, PR #18296, CLAUDE.md gotcha #9
 (*a marker nobody checks is decoration* — its mirror image: a guard that looks
 like decoration may be the only thing holding a lane open).
+
+## TM-0009 — Prove execution and retain failed evidence
+
+2026-11-10, Codex shipping team, PR #18348 and GIT-FLEET #2.
+
+The root prosecutor test inherited NODE_TEST_CONTEXT and returned success
+without executing its child tests. The real HULL integration then exposed an
+argparse false positive, unbounded edit-matrix work and strict-JSON records
+misclassified as executable copies. Independent review also found executable
+template interpolation hidden by a data heuristic and missing customer IDs
+comparing equal. These were reproducible defects, not reasons to delete tests.
+
+Recovery verifies child test summaries, bounded comparison properties, actual
+process-tree termination, signed HTTP identities and transaction rollback.
+Scheduler receipts bind immutable input and actual local head/diff; concurrent
+edits or interrupted execution are uncertain, never automatic success/replay.
+Keep earlier failed receipts beside final results so a later agent can see
+what was learned. Do not weaken legacy allowances or required merge checks.
+
+## TM-0010 — Comments must not conceal executable merge copies
+
+2026-11-10, Codex, PR #18348 discussion_r4529468829.
+
+The comment filter broke the duplicate detector's segment at every ordinary
+documentation line. Real adjacent executable copies with comments/JSDoc were
+therefore missed. An open block-comment state also leaked across diff hunks
+whose intervening source was unknown. Both cases reproduced with zero findings
+before correction and now yield findings. Keep documentation out of executable
+comparisons without treating it as a semantic barrier; recognize retirement
+only from explicit anchored headers. Ordinary prose mentioning retired tasks
+or history is not a retirement marker. Reset partial lexical assumptions when
+a diff no longer supplies continuous source. Preserve old rules and regression
+examples so this failure does not recur under another archive heuristic.
+
+Follow-up correction to the initial anchored-header proposal above: a label
+alone does not make executable code retired. Even REVVEL-DISABLED or a legacy
+archive heading between two active copies must not hide them. The final rule
+excludes only actual comment bodies, gives no comment/header a segment barrier,
+and retains active code after closing block-comment delimiters. Earlier header
+rules and assertions remain commented as evidence of the mistaken assumption.

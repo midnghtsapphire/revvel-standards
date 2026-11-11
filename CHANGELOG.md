@@ -357,3 +357,90 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 2026-10-30 — GitHubOrchestrator — recorded HUSK (elisymlabs/husk) integration requirements as proposed, pending Audrey's confirmation of repo identity; no code changes.
 - 2026-11-04 — Proofy — added 'Backups' section (back up to GitHub under backup-YYYY-MM-DD-<folder>-<bot>, verify size+sha256, never delete originals without Audrey's yes) to AGENTS.md and VISITING_AGENTS.md
 - 2026-11-04 (MST) — Proofy — recorded on behalf of Claude Code (out of usage): two comments in revvel-standards Discussion #18238 (a misplaced pointer to the tartaria-tablets whiteboard, `19400617`, and Claude Code's correction under it, `19400657`) were DELETED by Claude Code on Audrey Evans's explicit instruction ("Delete it"). Both were Claude Code's own comments, posted minutes earlier by mistake; nothing else was touched. tartaria-tablets commit `2de436c`'s statement that they were "left in place" is superseded by this line (full entry in tartaria-tablets CHANGELOG.md).
+
+## 2026-11-10 — Owned delivery and cross-repository integration
+
+- Added working pricing and health exports for affiliate-hub, ai-video-toolkit,
+  and screen-recorder-finder; fixed the affiliate Tailwind build and shared
+  ESLint consumer resolution. Standalone public-artifact packaging runs locally
+  on Node/Bun without repository webhooks or GitHub-hosted execution.
+- Added GOAP sales/ROI pages and a verified twelve-slide PDF, plus evidence-based
+  compliance readiness documentation. Billing and research acceptance remain
+  open until real transactions, benchmarks, and operating evidence exist.
+- Repaired the current scripts-as-CI checks, hub-registry compatibility, portable
+  npm integrity checks, and template contract. Superseded code is preserved as
+  dated comments, including the simulated root watcher at its original path.
+- Cross-repository review, per-issue acceptance matrix, HULL merge/execution
+  receipts, and pending hosting apply are recorded under wr/summaries/. HULL
+  execution merged in oaudrey PR #13. No live deployment is claimed here.
+
+## 2026-11-10 — Shipping continuation after Cloudflare handoff
+
+- Codex revenue specialist added the signed Lago HTTP receiver, durable SQLite
+  inbox, authoritative invoice/subscription reconciliation, persisted retry
+  backoff, degraded health and actual crash/replay tests. Public paid checkout
+  remains disabled until authenticated identity and live billing are verified.
+- Codex intelligence specialist connected the existing optional LangGraph
+  lifecycle to actual HULL policy execution, durable receipt references and
+  explicit recovery/review commands; no second command executor was introduced.
+- Codex prosecution specialist extended the existing prosecutor with local
+  operator policy, real bounded subprocess checks, retained per-run receipts,
+  stable repair IDs and advisory reviewer snippets. Fixed the root test wrapper
+  that previously inherited NODE_TEST_CONTEXT and silently missed child tests.
+- All 96 standards files were read across the assigned specialists before new
+  implementation. This closes the standards-directory reading gap; it does not
+  claim full semantic reading of the entire 824 MB archived corpus.
+- Existing GIT-FLEET scheduling is extended in its own repository; no Cloudflare,
+  Proofy, paid model, subscription, production access or DNS configuration changed.
+  Live deployment and original issue acceptance remain explicitly open.
+
+- Codex integration review retained the initial failed prosecution and passed
+  63-test HULL receipt. Corrected full-diff work bounds, strict JSON evidence
+  classification with duplicate-key rejection, executable template/regex
+  handling, complete skill discovery, and bounded multi-batch billing drain.
+  Added regression cases; no comparison budget, legacy allowance or merge gate
+  was relaxed. Continued source-head validation is recorded with PR #18348.
+
+- Codex operational verification: installed the separate owned local-checks
+  Windows task, observed two zero-exit executions, retained the final 78-test
+  HULL/prosecution receipt in GIT-FLEET PR #2, and recorded actual CircleCI
+  job 23006 success on the implementation source head. Product hosting remains
+  staged; no deployment, transaction, benchmark or customer result invented.
+
+- Codex final handoff: recorded confirmed implementation merges #18348 and
+  GIT-FLEET #2, exact reviewed/merged tree agreement, the installed local task,
+  successful required CircleCI job 23013 and retained final execution receipts.
+  Preserved an unstaged continuation-note appendix in a separate documentation
+  follow-up; original product/research/customer acceptance remains open.
+
+- Codex documentation completeness: added all nine Lago receiver environment
+  names to canonical .env.example, including explicit issuer/key/database
+  guidance. No credential values, live environment settings, listeners or
+  subscriptions were created or changed.
+
+- Codex follow-up gate repairs: registered Lago in the existing connections
+  source and canonical generated views, preserving README content outside its
+  generated marker. Corrected the timeout test's Linux postcondition to verify
+  absent or actually terminated zombie/dead state, never accept a live PID.
+  Retained the failing CI evidence and old assertion; no production timeout,
+  comparison budget, drift check or legacy allowance was weakened.
+
+- Codex prosecution integration: the larger 227 KB source packet now passes
+  within the unchanged comparison budget. A UTF-16 character-count lower bound
+  rejects mathematically impossible matches before edit-distance work; the
+  actual multiline billing-assertion false positive has regression coverage.
+  Independent review checked 35,962 cases against the exact legacy distance.
+  Final HULL/prosecution run passed 81 tests, zero findings/provider calls.
+
+- Codex, PR #18348 review follow-up: reproduced Cursor comment
+  discussion_r4529468829 against current main. Ordinary comments and JSDoc no
+  longer hide adjacent executable duplicates; partial comment state resets at
+  unknown diff boundaries. Only anchored, explicit retirement headers retain
+  the archive boundary. Added real regressions and preserved the old rules as
+  dated comments; no paid Cursor autofix or provider call used.
+
+- Codex final comment correction: a retirement header alone cannot exempt
+  active code. Removed all comment/header segment barriers while retaining
+  exclusion of actual commented bodies; active tails after closing block
+  comments remain checked. Preserved the earlier incorrect archive assertion
+  and rule as dated history. Forty-seven child regressions pass.

@@ -123,3 +123,23 @@ test("index.html wires the generated hub registry into the Live tabs grid", () =
   assert.ok(html.includes('src="hub-registry.js"'), "index.html must load hub-registry.js");
   assert.ok(html.includes("window.HUB_REGISTRY"), "index.html must render from window.HUB_REGISTRY");
 });
+
+test("default registry preserves project and legacy-page consumers without import writes", () => {
+  const root = path.join(__dirname, "..");
+  const registry = buildRegistry();
+  const projectSlugs = fs.readdirSync(path.join(root, "projects")).filter(slug =>
+    fs.existsSync(path.join(root, "projects", slug, "project.json")));
+  for (const slug of projectSlugs) assert.ok(registry.entries.some(entry => entry.slug === slug), `missing project ${slug}`);
+  assert.ok(registry.entries.some(entry => entry.slug === "veins-topology-lab"), "legacy observatory page must remain");
+  for (const entry of registry.entries) {
+    assert.equal(typeof entry.path, "string", "index.html needs path");
+    assert.ok(entry.hub_url.startsWith("https://"), "build-site-index.js needs a valid hub_url");
+  }
+  const files = ["hub-registry.json", "hub-registry.js"].map(file => path.join(root, file));
+  const before = files.map(file => fs.readFileSync(file, "utf8"));
+  const { execFileSync } = require("node:child_process");
+  const output = execFileSync(process.execPath, ["-e", `require(${JSON.stringify(path.join(root, "scripts/build-hub-registry.js"))})`], { encoding: "utf8" });
+  assert.equal(output, "", "requiring the library must not execute the CLI");
+  assert.deepEqual(files.map(file => fs.readFileSync(file, "utf8")), before, "import must not mutate generated artifacts");
+  assert.deepEqual(buildRegistry(), registry, "repeated builds must not invent changing timestamps");
+});

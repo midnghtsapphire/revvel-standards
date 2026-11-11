@@ -138,11 +138,34 @@ def build_system_prompt() -> str:
 
 def build_prompt(repo: str, issue_title: str, issue_body: str) -> str:
     """One flat prompt — the local lanes do not all accept a separate system role."""
+    selected_context = ""
+    # Opt in while relevance is evaluated against historical WRs. Failure is
+    # explicit: silently dropping mandatory owner rules would be unsafe context.
+    if env("REVVEL_CONTEXT_GRAPH") == "1":
+        from context_graph import select_context
+        selected = select_context(
+            _SCRIPTS_DIR.parent, f"{issue_title}\n{issue_body}",
+            max_chars=int(env("REVVEL_CONTEXT_MAX_CHARS", "60000")),
+        )
+        selected_context = "\n\n" + selected["content"]
+        if env("REVVEL_PROMPT_COMPRESSION") == "1":
+            from prompt_compression import compress_context
+            # Owner instructions are never compressed. Only optional references
+            # are candidates, so compression cannot silently weaken those rules.
+            from context_graph import MANDATORY, build_graph
+            documents, _ = build_graph(_SCRIPTS_DIR.parent)
+            mandatory = "\n\n".join(documents[name] for name in MANDATORY)
+            references = "\n\n".join(
+                documents[name] for name in selected["paths"] if name not in MANDATORY
+            )
+            compressed = compress_context(references, float(env("REVVEL_COMPRESSION_RATE", "0.3")))
+            selected_context = "\n\n" + mandatory + "\n\n" + compressed["content"]
     return (
         f"{build_system_prompt()}\n\n"
         f"Repository: {repo or '(unknown)'}\n\n"
         f"Issue title:\n{issue_title or '(no title)'}\n\n"
         f"Issue body:\n{issue_body or '(no body)'}\n"
+        + selected_context
     )
 
 
