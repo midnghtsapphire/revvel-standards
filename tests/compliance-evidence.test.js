@@ -12,9 +12,16 @@ const { collectReferences, missingReferences, root } = require('../scripts/compl
 const docDir = path.join(root, 'docs/compliance');
 
 test('a relative markdown link is a checked repository path', () => {
-  const text = 'See [gate](../../scripts/llm-spend-gate.js) and [web](https://csrc.nist.gov/Projects/cosis).';
+  const text = 'See [gate](../../scripts/llm-spend-gate.js) and [web](https://csrc.nist.gov/Projects/cosis) and [web2](http://example.com/x).';
   const found = [...collectReferences(text, docDir)];
   assert.deepStrictEqual(found, ['scripts/llm-spend-gate.js']);
+});
+
+test('a line fragment on a markdown link is stripped before the file check', () => {
+  const text = 'See [gate](../../scripts/llm-spend-gate.js#L69).';
+  const found = collectReferences(text, docDir);
+  assert.deepStrictEqual([...found], ['scripts/llm-spend-gate.js']);
+  assert.deepStrictEqual(missingReferences(found), []);
 });
 
 test('a backtick path under the old prefixes is still checked', () => {
