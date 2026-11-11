@@ -273,6 +273,8 @@ const MIME = {
   '.xml': 'application/xml; charset=utf-8',
   '.pdf': 'application/pdf',
   '.mp3': 'audio/mpeg',
+  '.mp4': 'video/mp4',
+  '.vtt': 'text/vtt; charset=utf-8',
   '.woff': 'font/woff',
   '.woff2': 'font/woff2',
 };

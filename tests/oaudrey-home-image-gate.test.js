@@ -97,6 +97,8 @@ test('the sales deck is served as a PDF and the other static types stay mapped',
   assert.equal(contentTypeFor('mark.svg'), 'image/svg+xml');
   assert.match(contentTypeFor('sitemap.xml'), /^application\/xml/);
   assert.equal(contentTypeFor('song.mp3'), 'audio/mpeg');
+  assert.equal(contentTypeFor('oaudrey-intro.mp4'), 'video/mp4');
+  assert.match(contentTypeFor('oaudrey-intro.vtt'), /^text\/vtt/);
   assert.equal(contentTypeFor('font.woff2'), 'font/woff2');
   assert.equal(contentTypeFor('unknown.bin'), 'application/octet-stream');
   const staticRoot = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'oaudrey-pdf-'));

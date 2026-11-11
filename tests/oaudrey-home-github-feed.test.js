@@ -421,6 +421,17 @@ test('front page scene stays original, quoted, and under the size budget', () =>
   assert.match(html, /https:\/\/music\.youtube\.com\/watch\?v=12AT-n9gttM/);
   assert.equal(/<iframe/i.test(html), false);
   assert.equal(/autoplay/i.test(html), false);
+  assert.match(html, /id="oaudrey-intro"/);
+  assert.match(html, /poster="oaudrey-intro-poster\.jpg"/);
+  assert.match(html, /controls/);
+  assert.match(html, /oaudrey-intro\.vtt/);
+  assert.match(html, /Aloha! Get GitHub Fused Today! Hula with us\./);
+  assert.match(html, /"@type": "VideoObject"/);
+  assert.match(html, /"duration": "PT5S"/);
+  assert.match(html, /"uploadDate": "2026-11-11"/);
+  assert.equal(/<video[^>]*\sloop[\s>]/i.test(html), false);
+  const intro = fs.statSync(path.join(ROOT, 'products/oaudrey-home/public/oaudrey-intro.mp4'));
+  assert.ok(intro.size > 10000 && intro.size < 2000000, `intro bytes ${intro.size}`);
   assert.match(html, /quoted from GitHub|world-caption/);
   const fixture = fs.readFileSync(path.join(ROOT, 'products/oaudrey-home/public/world-fixture.html'), 'utf8');
   assert.match(fixture, /Fixture — not live data/);
