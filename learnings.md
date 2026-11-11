@@ -1197,3 +1197,14 @@ The billing test also used wall time to assert a one-second retry stayed pending
 while other batches ran. A slow run let that retry become due. The launcher now
 propagates the exit code, and the test controls inbox time and verifies both
 sides of the retry boundary. Retain failed receipts as evidence.
+
+## TM-0012 — HTTP 200 on a parked domain is not a deployed product
+
+2026-11-11, MarketShipper, work request #18334.
+
+oaudrey.com returned HTTP 200 and then a GoDaddy-style parking page
+(`lander_type=parkweb`). GitHub Pages paths for this repo returned 404, the
+product hostnames in the deploy notes did not resolve, and the Vercel host
+returned 402. A sales case study can cite only a product whose URL is the
+product. A parked 200 is not that. The deck says proof pending and names issue
+18330 instead of inventing a customer.
