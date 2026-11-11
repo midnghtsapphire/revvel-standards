@@ -6,7 +6,8 @@
   <title>oAudrey — agents that show their work</title>
   <meta name="description" content="oAudrey front page for oaudrey.com. A browser demo of an agent loop, a GitHub team board when a read token is set, and links to three product subdomains.">
   <link rel="canonical" href="https://oaudrey.com/">
-  <link rel="icon" href="oaudrey-mascot.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta property="og:title" content="oAudrey — agents that show their work">
   <meta property="og:description" content="oAudrey front page for oaudrey.com. A browser demo of an agent loop, a GitHub team board when a read token is set, and links to three product subdomains.">
   <meta property="og:url" content="https://oaudrey.com/">
@@ -41,6 +42,19 @@
         "uploadDate": "2026-11-11",
         "contentUrl": "https://oaudrey.com/oaudrey-intro.mp4",
         "thumbnailUrl": "https://oaudrey.com/oaudrey-intro-poster.jpg"
+      },
+      {
+        "@type": "ItemList",
+        "name": "GitHub MCP servers",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "GitHub MCP server", "url": "https://docs.github.com/en/copilot/how-tos/copilot-in-your-ide/customize-copilot/extend-copilot-with-tools-and-context/set-up-the-github-mcp-server" },
+          { "@type": "ListItem", "position": 2, "name": "CircleCI MCP server", "url": "https://circleci.com/docs/guides/toolkit/circleci-mcp-overview/" },
+          { "@type": "ListItem", "position": 3, "name": "SonarQube Cloud MCP server", "url": "https://docs.sonarsource.com/sonarqube-mcp-server/setup/sonarqube-cloud-hosted" },
+          { "@type": "ListItem", "position": 4, "name": "Cubic MCP server", "url": "https://docs.cubic.dev/ide/mcp-server" },
+          { "@type": "ListItem", "position": 5, "name": "Devin MCP server", "url": "https://docs.devin.ai/work-with-devin/devin-mcp" },
+          { "@type": "ListItem", "position": 6, "name": "GitGuardian MCP server", "url": "https://docs.gitguardian.com/ggmcp-docs/installation" },
+          { "@type": "ListItem", "position": 7, "name": "Cursor Cloud MCP", "url": "https://cursor.com/docs/cloud-agent" }
+        ]
       }
     ]
   }
@@ -49,10 +63,11 @@
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <header class="top">
-    <a class="mark" href="#main">oAudrey</a>
+    <a class="mark" href="#main"><img src="oaudrey-logo-192.webp" width="44" height="44" alt="">oAudrey</a>
     <nav class="nav" aria-label="Page">
       <a href="#world">World</a>
       <a href="#team">Team</a>
+      <a href="#mcp">MCP</a>
       <a href="#loop">Loop</a>
       <a href="#github">GitHub</a>
       <a href="#products">Products</a>
@@ -130,7 +145,14 @@
         <button type="button" data-theme-id="candy">GitCandyland</button>
         <button type="button" data-theme-id="hawaiian">GitAloha</button>
       </div>
+      <div class="world-scroll">
       <canvas id="candy-world" width="1404" height="956" aria-label="Maze of process stations. Bots appear when the live feed is connected."></canvas>
+      </div>
+      <aside id="connect-legend">
+        <h3>How it connects</h3>
+        <p>Each chip is App, Action, CLI, MCP, API, or Status. A filled chip is live on this repo. An outline chip is offered in the vendor docs and is not wired here.</p>
+        <div id="connect-rows"></div>
+      </aside>
       <p id="world-tip" role="status"></p>
       <p id="hub-closed">Hub closed for the night</p>
       <div id="hub-boards"></div>
@@ -150,6 +172,23 @@
         <p id="team-mood"></p>
       </div>
       <div class="cards" id="team-board"></div>
+    </section>
+
+    <section class="band" id="mcp" aria-labelledby="mcp-title">
+      <div class="band-head">
+        <p class="kicker">MCP</p>
+        <h2 id="mcp-title">GitHub MCP servers</h2>
+        <p>GitHub's own official GitHub MCP server is listed first. The other rows are official MCP servers for tools that show up on this repo's checks. Each line is a doc link and a one-line setup snippet.</p>
+      </div>
+      <ul class="mcp-list">
+        <li><a href="https://docs.github.com/en/copilot/how-tos/copilot-in-your-ide/customize-copilot/extend-copilot-with-tools-and-context/set-up-the-github-mcp-server">GitHub MCP server</a><code>https://api.githubcopilot.com/mcp/</code></li>
+        <li><a href="https://circleci.com/docs/guides/toolkit/circleci-mcp-overview/">CircleCI MCP server</a><code>https://mcp.circleci.com/v1/mcp</code></li>
+        <li><a href="https://docs.sonarsource.com/sonarqube-mcp-server/setup/sonarqube-cloud-hosted">SonarQube Cloud MCP server</a><code>https://api.sonarcloud.io/mcp</code></li>
+        <li><a href="https://docs.cubic.dev/ide/mcp-server">Cubic MCP server</a><code>https://www.cubic.dev/api/mcp</code></li>
+        <li><a href="https://docs.devin.ai/work-with-devin/devin-mcp">Devin MCP server</a><code>https://mcp.devin.ai/mcp</code></li>
+        <li><a href="https://docs.gitguardian.com/ggmcp-docs/installation">GitGuardian MCP server</a><code>uvx --from git+https://github.com/GitGuardian/gg-mcp.git developer-mcp-server</code></li>
+        <li><a href="https://cursor.com/docs/cloud-agent">Cursor Cloud MCP</a><code>Built in for Cloud Agents</code></li>
+      </ul>
     </section>
 
     <section class="band" id="github" aria-labelledby="github-title">

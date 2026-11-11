@@ -78,6 +78,14 @@ input:focus-visible {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+  gap: 0.45rem;
+}
+
+.mark img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .nav { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; }
@@ -390,13 +398,38 @@ html[data-a11y="large_print"] summary { min-height: 48px; }
   padding-right: 1.25rem;
 }
 
+.world-scroll { overflow-x: auto; }
+
 #candy-world {
   display: block;
   width: 100%;
+  min-width: 980px;
   height: auto;
   max-width: none;
   background: #07122e;
 }
+
+#connect-legend {
+  max-width: 1180px;
+  margin: 0.75rem auto 0;
+  padding: 0 1.25rem 1rem;
+}
+
+.chip {
+  display: inline-block;
+  margin: 0.15rem 0.2rem 0.15rem 0;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}
+
+.chip.is-live { background: #16324f; color: #fff; }
+
+.mcp-list { list-style: disc; padding-left: 1.25rem; }
+.mcp-list li { margin: 0.45rem 0; }
+.mcp-list code { display: block; margin-top: 0.2rem; font-size: 0.85rem; }
 
 .theme-switch { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem; }
 

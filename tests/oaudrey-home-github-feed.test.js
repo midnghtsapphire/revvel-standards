@@ -51,6 +51,16 @@ test('a later pending check is a handoff, not hidden by the working state', asyn
   assert.equal(activityFor([{ id: 'circleci', status: 'pending', billing: false, at: '1' }]).activity, 'working');
 });
 
+test('crew names from a title become actors, and known logins stay mapped', async () => {
+  const { peopleFromPr } = await loadFeed();
+  assert.deepEqual(peopleFromPr({
+    login: 'midnghtsapphire',
+    title: '**MarketShipper:** ci: example',
+    events: [{ actor: { login: 'github-actions[bot]' } }],
+    reviews: [{ login: 'cursor[bot]' }],
+  }), ['midnghtsapphire', 'MarketShipper', 'github-actions[bot]', 'cursor[bot]']);
+});
+
 test('author comes from a title prefix, not a conventional type', async () => {
   const { authorFromTitle } = await loadFeed();
   assert.equal(authorFromTitle('**MarketShipper:** ci: example', 'midnghtsapphire'), 'MarketShipper');
@@ -226,6 +236,9 @@ test('GitHub Actions failures are not counted and bodies stay off the payload', 
   assert.equal(report.prs[0].status, 'failing');
   assert.equal(report.prs[0].stations.includes('prGate'), true);
   assert.equal(report.team.some((member) => member.id === 'github-actions' && member.activity === 'failed'), false);
+  assert.equal(report.team.some((member) => member.id === 'github-actions' && member.activity === 'billing' && member.station === 'castle'), true);
+  assert.equal(report.team.some((member) => member.name === 'MarketShipper' && member.logo == null && member.via === 'author'), true);
+  assert.equal(report.team.some((member) => member.id === 'sonarcloud' && member.station === 'fixIt'), true);
   assert.equal(report.spots.circleci === 'off', false);
   assert.equal(report.spots.sonarcloud === 'off', false);
   assert.equal(report.release.lit, true);
@@ -417,6 +430,26 @@ test('front page scene stays original, quoted, and under the size budget', () =>
   assert.match(themes, /GitAloha/);
   const html = fs.readFileSync(path.join(ROOT, 'products/oaudrey-home/public/index.html'), 'utf8');
   assert.match(html, /oaudrey-mascot\.svg/);
+  assert.match(html, /oaudrey-logo-192\.webp/);
+  assert.match(html, /GitHub MCP servers/);
+  assert.match(html, /GitHub MCP server/);
+  assert.match(html, /"@type": "ItemList"/);
+  assert.match(world, /roundRect\(ctx, -32, -10, 64, 44, 14\)/);
+  assert.match(world, /How it connects/);
+  const connections = JSON.parse(fs.readFileSync(path.join(ROOT, 'products/oaudrey-home/public/team-connections.json'), 'utf8'));
+  assert.equal(connections.githubMcp.name, 'GitHub MCP server');
+  assert.match(connections.githubMcp.docs, /^https:\/\//);
+  assert.match(connections.githubMcp.snippet, /api\.githubcopilot\.com\/mcp/);
+  Object.values(connections.tools).forEach((tool) => {
+    assert.ok(tool.paths.length > 0);
+    tool.paths.forEach((pathInfo) => {
+      assert.match(pathInfo.docs, /^https:\/\//);
+      assert.match(pathInfo.chip, /^(App|Action|CLI|MCP|API|Status)$/);
+    });
+  });
+  ['oaudrey-logo.jpg', 'oaudrey-logo-512.webp', 'oaudrey-logo-192.webp', 'favicon-32.png', 'apple-touch-icon.png'].forEach((name) => {
+    assert.ok(fs.statSync(path.join(ROOT, 'products/oaudrey-home/public', name)).size > 500);
+  });
   assert.match(html, /rel="noopener noreferrer"/);
   assert.match(html, /https:\/\/music\.youtube\.com\/watch\?v=12AT-n9gttM/);
   assert.equal(/<iframe/i.test(html), false);

@@ -385,8 +385,11 @@
     ctx.fillText(box.text, box.x + 9, box.y + box.h / 2);
   }
 
-  function drawBot(ctx, theme, bot, t) {
-    var home = stationById(bot.station || 'prGate');
+  function drawBot(ctx, theme, bot, t, index, fixture) {
+    var billing = bot.activity === 'billing';
+    var home = billing && LAYOUT.hub
+      ? { c: LAYOUT.hub.c + 1, r: LAYOUT.hub.r + 1, x: cellOrigin(LAYOUT.hub.c + 1, LAYOUT.hub.r + 1)[0], y: cellOrigin(LAYOUT.hub.c + 1, LAYOUT.hub.r + 1)[1] }
+      : stationById(bot.station || 'prGate');
     var dest = bot.activity === 'handoff' ? stationById(bot.handoffStation || 'reviewHut') : home;
     var path = bot.activity === 'handoff' ? bfs(home, dest) : [cellOrigin(home.c, home.r)];
     var u = bot.activity === 'handoff' ? ((Math.sin(t / 40) + 1) / 2) * (path.length - 1) : 0;
@@ -407,67 +410,73 @@
         if (m > 0.45) eaten[step[0] + ',' + step[1]] = true;
       }
     }
-    if (bot.activity === 'idle') p = [home.x + 6, home.y + 4];
+    if (bot.activity === 'idle') {
+      var seed = index * 1.7;
+      p = [home.x + Math.sin(t / 18 + seed) * 22, home.y + Math.cos(t / 22 + seed) * 10];
+    }
+    if (billing) p = [home.x + (index - 1) * 36, home.y - 8];
     ctx.save();
     ctx.translate(p[0], p[1]);
     ctx.strokeStyle = theme.ink;
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.moveTo(-12, 14);
-    ctx.lineTo(-18, 30);
-    ctx.moveTo(12, 14);
-    ctx.lineTo(18, 30);
+    ctx.moveTo(-16, 18);
+    ctx.lineTo(-24, 40);
+    ctx.moveTo(16, 18);
+    ctx.lineTo(24, 40);
     ctx.stroke();
-    ctx.fillStyle = '#f7f4ee';
-    roundRect(ctx, -24, -8, 48, 36, 12);
+    ctx.fillStyle = bot.activity === 'failed' ? '#ffd0c8' : '#f7f4ee';
+    roundRect(ctx, -32, -10, 64, 44, 14);
     ctx.fill();
     ctx.stroke();
     var logo = bot.logo ? loadImage(bot.logo) : null;
     ctx.fillStyle = '#fff';
     ctx.beginPath();
-    ctx.arc(0, -24, 16, 0, Math.PI * 2);
+    ctx.arc(0, -32, 22, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
-    if (logo && logo.complete && logo.naturalWidth) ctx.drawImage(logo, -12, -36, 24, 24);
+    if (logo && logo.complete && logo.naturalWidth) ctx.drawImage(logo, -16, -48, 32, 32);
     ctx.fillStyle = '#16324f';
-    if (bot.activity === 'idle') {
-      ctx.fillRect(-14, 6, 12, 3);
-      ctx.fillRect(2, 6, 12, 3);
-      ctx.font = 'bold 22px ui-monospace, Menlo, monospace';
-      ctx.fillText('z z z', 18, -46 + Math.sin(t / 8) * 3);
+    ctx.lineWidth = 3;
+    if (bot.activity === 'failed') {
+      ctx.beginPath();
+      ctx.arc(-10, 6, 4, 0.2, Math.PI - 0.2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(10, 6, 4, 0.2, Math.PI - 0.2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, 16, 8, Math.PI + 0.4, -0.4);
+      ctx.stroke();
+    } else if (billing || bot.activity === 'idle') {
+      ctx.fillRect(-16, 4, 12, 3);
+      ctx.fillRect(4, 4, 12, 3);
+      ctx.font = 'bold 18px ui-monospace, Menlo, monospace';
+      ctx.fillText('z z z', 28, -40 + Math.sin(t / 8) * 3);
     } else {
       ctx.beginPath();
-      ctx.arc(-8, 8, 3, 0, Math.PI * 2);
-      ctx.arc(8, 8, 3, 0, Math.PI * 2);
+      ctx.arc(-10, 6, 3.5, 0, Math.PI * 2);
+      ctx.arc(10, 6, 3.5, 0, Math.PI * 2);
       ctx.fill();
     }
-    if (bot.activity === 'failed') {
-      ctx.fillStyle = theme.tree === 'palm' ? '#355070' : '#c6f25a';
-      ctx.beginPath();
-      ctx.arc(26, 8, 12, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
+    ctx.font = 'bold 13px ui-monospace, Menlo, monospace';
+    ctx.textAlign = 'center';
+    var tag = String(bot.name || bot.id || '').slice(0, 16);
+    var tw = ctx.measureText(tag).width + 12;
+    ctx.fillStyle = '#fffef8';
+    roundRect(ctx, -tw / 2, 34, tw, 18, 8);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = theme.ink;
+    ctx.fillText(tag, 0, 47);
+    if (billing) {
+      ctx.font = 'bold 12px ui-monospace, Menlo, monospace';
+      ctx.fillText('skipped (billing)', 0, 68);
     }
-    if (bot.activity === 'handoff') {
-      ctx.fillStyle = theme.handoff === 'surf' ? '#f2c14e' : '#fff';
-      roundRect(ctx, 20, -18, 28, 16, 3);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = theme.ink;
-      ctx.font = '11px ui-monospace, Menlo, monospace';
-      ctx.fillText(bot.prNumber ? '#' + bot.prNumber : '#', 24, -6);
-    }
-    if (bot.speech) {
-      ctx.font = '12px ui-monospace, Menlo, monospace';
-      var quote = String(bot.speech).slice(0, 26);
-      var bw = ctx.measureText(quote).width + 14;
-      ctx.fillStyle = '#fffef8';
-      roundRect(ctx, -bw / 2, -48, bw, 20, 8);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = theme.ink;
-      ctx.textAlign = 'center';
-      ctx.fillText(quote, 0, -34);
+    if (fixture) {
+      ctx.font = 'bold 12px ui-monospace, Menlo, monospace';
+      ctx.fillStyle = '#9a1b12';
+      ctx.fillText('fixture', 0, billing ? 84 : 68);
     }
     ctx.restore();
     bot._x = p[0];
@@ -588,7 +597,7 @@
       ctx.textAlign = 'left';
       ctx.fillText('#' + item.number, ep[0] - 12, ep[1] - 15);
     });
-    (model.bots || []).forEach(function (bot) { drawBot(ctx, theme, bot, t); });
+    (model.bots || []).forEach(function (bot, index) { drawBot(ctx, theme, bot, t, index, !!model.fixture); });
   }
 
   function card(bot) {
@@ -676,7 +685,7 @@
     });
     var bots = (team.team || []).map(function (bot) {
       var next = Object.assign({}, bot);
-      if (bot.handoffTo) {
+      if (!next.handoffStation && bot.handoffTo) {
         var other = (team.team || []).find(function (item) { return item.id === bot.handoffTo; });
         next.handoffStation = other && other.station ? other.station : 'reviewHut';
       }
@@ -710,6 +719,48 @@
     var t = 0;
     var model = { connected: false, stations: {}, bots: [], boards: [] };
     var tip = document.getElementById('world-tip');
+    var connections = null;
+    function connectLine(bot) {
+      var tool = connections && connections.tools ? connections.tools[bot.id] : null;
+      if (!tool) {
+        if (bot.via === 'author') return 'How it connects: seen as a commit or comment author on this repo.';
+        return 'How it connects: GitHub App check run is live here. Other paths are not listed.';
+      }
+      var live = [];
+      var other = [];
+      (tool.paths || []).forEach(function (path) {
+        var on = (path.liveWhen || []).indexOf(bot.via) !== -1;
+        if (on) live.push(path.chip);
+        else other.push(path.chip);
+      });
+      var line = 'How it connects: ';
+      line += live.length ? live.join(', ') + ' live here.' : 'none of the listed paths are live on this actor.';
+      if (other.length) line += ' ' + other.join(', ') + ' available, not wired here.';
+      return line;
+    }
+    function renderLegend() {
+      var rows = document.getElementById('connect-rows');
+      if (!rows || !connections) return;
+      rows.replaceChildren();
+      Object.keys(connections.tools || {}).forEach(function (id) {
+        var tool = connections.tools[id];
+        var row = document.createElement('p');
+        var name = document.createElement('strong');
+        name.textContent = tool.name + ' ';
+        row.appendChild(name);
+        var actor = (model.bots || []).find(function (bot) { return bot.id === id; });
+        (tool.paths || []).forEach(function (path) {
+          var on = actor && (path.liveWhen || []).indexOf(actor.via) !== -1;
+          var chip = document.createElement('span');
+          chip.className = 'chip' + (on ? ' is-live' : '');
+          chip.textContent = path.chip;
+          chip.title = path.summary + ' ' + path.docs;
+          row.appendChild(chip);
+          row.appendChild(document.createTextNode(' '));
+        });
+        rows.appendChild(row);
+      });
+    }
     function stillFrame() {
       var mode = document.documentElement.getAttribute('data-a11y');
       return reduced || mode === 'sensory' || mode === 'eco';
@@ -742,6 +793,7 @@
       eaten = {};
       model = modelFromPayload(team, hub, themeOf(themeId), !!opts.fixture);
       fillDom(model);
+      renderLegend();
       kick();
     }
     canvas.addEventListener('pointermove', function (event) {
@@ -750,11 +802,19 @@
       var x = ((event.clientX - rect.left) / rect.width) * canvas.width;
       var y = ((event.clientY - rect.top) / rect.height) * canvas.height;
       var hit = (model.bots || []).find(function (bot) {
-        return bot._x != null && Math.hypot(bot._x - x, bot._y - y) < 36;
+        return bot._x != null && Math.hypot(bot._x - x, bot._y - y) < 56;
       });
-      tip.textContent = hit
-        ? (hit.name || hit.id) + ' · ' + (hit.activity || 'idle') + (hit.speech ? ' · quoted from GitHub' : '')
-        : '';
+      if (!hit) {
+        tip.textContent = '';
+        return;
+      }
+      var status = hit.checkStatus || hit.activity || 'idle';
+      tip.textContent = (model.fixture ? 'fixture · ' : '')
+        + (hit.name || hit.id)
+        + (hit.checkName ? ' · ' + hit.checkName : '')
+        + ' · ' + status
+        + (hit.checkAt ? ' · ' + hit.checkAt : '')
+        + '. ' + connectLine(hit);
     });
     canvas.addEventListener('click', function (event) {
       if (!model.boardLinks || !model.boardLinks[0] || !LAYOUT.hub) return;
@@ -795,6 +855,10 @@
     }
     document.documentElement.dataset.theme = themeId;
     showSkin();
+    fetch('team-connections.json').then(function (res) { return res.ok ? res.json() : null; }).then(function (data) {
+      connections = data;
+      renderLegend();
+    }).catch(function () { connections = null; });
     if (opts.fixture) apply(opts.fixture.team, opts.fixture.hub);
     else {
       function poll() {

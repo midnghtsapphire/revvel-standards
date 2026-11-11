@@ -1,0 +1,273 @@
+{
+  "chips": [
+    { "id": "app", "label": "App" },
+    { "id": "action", "label": "Action" },
+    { "id": "cli", "label": "CLI" },
+    { "id": "mcp", "label": "MCP" },
+    { "id": "api", "label": "API" },
+    { "id": "status", "label": "Status" }
+  ],
+  "githubMcp": {
+    "name": "GitHub MCP server",
+    "docs": "https://docs.github.com/en/copilot/how-tos/copilot-in-your-ide/customize-copilot/extend-copilot-with-tools-and-context/set-up-the-github-mcp-server",
+    "snippet": "https://api.githubcopilot.com/mcp/"
+  },
+  "tools": {
+    "circleci": {
+      "name": "CircleCI",
+      "logo": "/logos/circleci.svg",
+      "paths": [
+        {
+          "id": "status",
+          "chip": "Status",
+          "liveWhen": ["commit_status"],
+          "summary": "Commit status updates are on by default for GitHub.",
+          "docs": "https://circleci.com/docs/guides/integration/status-updates/",
+          "snippet": "ci/circleci"
+        },
+        {
+          "id": "cli",
+          "chip": "CLI",
+          "liveWhen": [],
+          "summary": "The CircleCI CLI runs in the terminal.",
+          "docs": "https://circleci.com/docs/guides/toolkit/circleci-cli/",
+          "snippet": "circleci version"
+        },
+        {
+          "id": "mcp",
+          "chip": "MCP",
+          "liveWhen": [],
+          "summary": "CircleCI hosts an MCP server and also ships one in the CLI.",
+          "docs": "https://circleci.com/docs/guides/toolkit/circleci-mcp-overview/",
+          "snippet": "https://mcp.circleci.com/v1/mcp"
+        },
+        {
+          "id": "api",
+          "chip": "API",
+          "liveWhen": [],
+          "summary": "The CLI can call the CircleCI API.",
+          "docs": "https://circleci.com/docs/guides/toolkit/circleci-mcp-overview/",
+          "snippet": "circleci api"
+        }
+      ]
+    },
+    "sonarcloud": {
+      "name": "SonarCloud",
+      "logo": "/logos/sonarcloud.svg",
+      "paths": [
+        {
+          "id": "action",
+          "chip": "Action",
+          "liveWhen": [],
+          "summary": "SonarQube Scan is a GitHub Action.",
+          "docs": "https://docs.sonarsource.com/sonarqube-cloud/analyzing-source-code/ci-based-analysis/github-actions-for-sonarcloud",
+          "snippet": "sonarqube-scan-action"
+        },
+        {
+          "id": "cli",
+          "chip": "CLI",
+          "liveWhen": [],
+          "summary": "SonarScanner CLI analyzes a project from the terminal.",
+          "docs": "https://docs.sonarsource.com/sonarqube-cloud/analyzing-source-code/scanners/sonarscanner-cli",
+          "snippet": "sonar-scanner -h"
+        },
+        {
+          "id": "mcp",
+          "chip": "MCP",
+          "liveWhen": [],
+          "summary": "Sonar hosts an MCP server for SonarQube Cloud.",
+          "docs": "https://docs.sonarsource.com/sonarqube-mcp-server/setup/sonarqube-cloud-hosted",
+          "snippet": "https://api.sonarcloud.io/mcp"
+        },
+        {
+          "id": "api",
+          "chip": "API",
+          "liveWhen": [],
+          "summary": "The SonarQube CLI can call the Web API.",
+          "docs": "https://docs.sonarsource.com/sonarqube-cli",
+          "snippet": "sonar api"
+        },
+        {
+          "id": "app",
+          "chip": "App",
+          "liveWhen": ["check_run"],
+          "summary": "A check run on a pull request is posted by a GitHub App. SonarCloud shows up here as the sonarqubecloud app.",
+          "docs": "https://docs.github.com/en/rest/checks/runs",
+          "snippet": "sonarqubecloud"
+        }
+      ]
+    },
+    "cursor": {
+      "name": "Cursor",
+      "logo": "/logos/cursor.png",
+      "paths": [
+        {
+          "id": "app",
+          "chip": "App",
+          "liveWhen": ["check_run"],
+          "summary": "The Cursor GitHub app connects a repository for Bugbot and Cloud Agents.",
+          "docs": "https://cursor.com/docs/integrations/github",
+          "snippet": "cursor"
+        },
+        {
+          "id": "api",
+          "chip": "API",
+          "liveWhen": [],
+          "summary": "The Cloud Agents API launches an agent.",
+          "docs": "https://cursor.com/docs/cloud-agent/api/endpoints",
+          "snippet": "POST https://api.cursor.com/v1/agents"
+        },
+        {
+          "id": "mcp",
+          "chip": "MCP",
+          "liveWhen": [],
+          "summary": "Cloud Agents include a built-in Cursor Cloud MCP for run diagnostics.",
+          "docs": "https://cursor.com/docs/cloud-agent",
+          "snippet": "Built in for Cloud Agents"
+        }
+      ]
+    },
+    "cubic": {
+      "name": "Cubic",
+      "logo": "/logos/cubic.png",
+      "paths": [
+        {
+          "id": "app",
+          "chip": "App",
+          "liveWhen": ["check_run"],
+          "summary": "Cubic reviews pull requests through its GitHub App.",
+          "docs": "https://docs.cubic.dev/ai-review/quickstart",
+          "snippet": "@cubic-dev-ai review this PR"
+        },
+        {
+          "id": "cli",
+          "chip": "CLI",
+          "liveWhen": [],
+          "summary": "The cubic CLI reviews a local checkout.",
+          "docs": "https://docs.cubic.dev/ide/cli-review",
+          "snippet": "cubic review"
+        },
+        {
+          "id": "mcp",
+          "chip": "MCP",
+          "liveWhen": [],
+          "summary": "Cubic's MCP server reads reviews and can request one.",
+          "docs": "https://docs.cubic.dev/ide/mcp-server",
+          "snippet": "https://www.cubic.dev/api/mcp"
+        }
+      ]
+    },
+    "devin": {
+      "name": "Devin",
+      "logo": "/logos/devin.png",
+      "paths": [
+        {
+          "id": "app",
+          "chip": "App",
+          "liveWhen": ["check_run"],
+          "summary": "Devin connects to GitHub with a GitHub App.",
+          "docs": "https://docs.devin.ai/integrations/gh",
+          "snippet": "/devin review"
+        },
+        {
+          "id": "status",
+          "chip": "Status",
+          "liveWhen": ["commit_status"],
+          "summary": "A commit status whose context names Devin is the live signal on this repo.",
+          "docs": "https://docs.github.com/en/rest/commits/statuses",
+          "snippet": "Devin Review"
+        },
+        {
+          "id": "cli",
+          "chip": "CLI",
+          "liveWhen": [],
+          "summary": "Devin CLI can add an MCP server.",
+          "docs": "https://docs.devin.ai/cli/extensibility/mcp/configuration",
+          "snippet": "devin mcp add"
+        },
+        {
+          "id": "mcp",
+          "chip": "MCP",
+          "liveWhen": [],
+          "summary": "Devin publishes an MCP server for sessions and repository docs.",
+          "docs": "https://docs.devin.ai/work-with-devin/devin-mcp",
+          "snippet": "https://mcp.devin.ai/mcp"
+        }
+      ]
+    },
+    "github-actions": {
+      "name": "GitHub Actions",
+      "logo": "/logos/github-actions.svg",
+      "paths": [
+        {
+          "id": "action",
+          "chip": "Action",
+          "liveWhen": ["check_run"],
+          "summary": "GitHub Actions runs the workflow. On this repo those checks are skipped for billing.",
+          "docs": "https://docs.github.com/en/actions",
+          "snippet": "github-actions"
+        },
+        {
+          "id": "cli",
+          "chip": "CLI",
+          "liveWhen": [],
+          "summary": "GitHub CLI can list workflow runs.",
+          "docs": "https://cli.github.com/manual/gh_run",
+          "snippet": "gh run list"
+        },
+        {
+          "id": "api",
+          "chip": "API",
+          "liveWhen": [],
+          "summary": "The Actions REST API lists workflow runs.",
+          "docs": "https://docs.github.com/en/rest/actions/workflow-runs",
+          "snippet": "GET /repos/{owner}/{repo}/actions/runs"
+        },
+        {
+          "id": "mcp",
+          "chip": "MCP",
+          "liveWhen": [],
+          "summary": "The GitHub MCP server has an actions toolset. It is the same GitHub MCP server, not a second product.",
+          "docs": "https://docs.github.com/en/copilot/how-tos/copilot-in-your-ide/customize-copilot/extend-copilot-with-tools-and-context/configure-toolsets",
+          "snippet": "https://api.githubcopilot.com/mcp/"
+        }
+      ]
+    },
+    "gitguardian": {
+      "name": "GitGuardian",
+      "logo": "/logos/gitguardian.png",
+      "paths": [
+        {
+          "id": "app",
+          "chip": "App",
+          "liveWhen": ["check_run"],
+          "summary": "A check run is posted by a GitHub App. GitGuardian shows up here under that app slug.",
+          "docs": "https://docs.github.com/en/rest/checks/runs",
+          "snippet": "gitguardian"
+        },
+        {
+          "id": "mcp",
+          "chip": "MCP",
+          "liveWhen": [],
+          "summary": "GitGuardian documents an MCP server.",
+          "docs": "https://docs.gitguardian.com/ggmcp-docs/installation",
+          "snippet": "uvx --from git+https://github.com/GitGuardian/gg-mcp.git developer-mcp-server"
+        }
+      ]
+    },
+    "gitar": {
+      "name": "Gitar",
+      "logo": "/logos/gitar.png",
+      "paths": [
+        {
+          "id": "app",
+          "chip": "App",
+          "liveWhen": ["check_run"],
+          "summary": "Gitar shows up as a check run, which GitHub says is created by a GitHub App. No official CLI or MCP page was confirmed, so those paths are not listed.",
+          "docs": "https://docs.github.com/en/rest/checks/runs",
+          "snippet": "gitar-bot"
+        }
+      ]
+    }
+  }
+}

@@ -26,13 +26,13 @@ const SOURCES_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), '..
 const gates = new WeakMap();
 
 export const SERVICE_CATALOG = {
-  circleci: { id: 'circleci', name: 'CircleCI', logo: '/logos/circleci.png' },
-  sonarcloud: { id: 'sonarcloud', name: 'SonarCloud', logo: '/logos/sonarcloud.png' },
+  circleci: { id: 'circleci', name: 'CircleCI', logo: '/logos/circleci.svg' },
+  sonarcloud: { id: 'sonarcloud', name: 'SonarCloud', logo: '/logos/sonarcloud.svg' },
   cursor: { id: 'cursor', name: 'Cursor', logo: '/logos/cursor.png' },
   cubic: { id: 'cubic', name: 'Cubic', logo: '/logos/cubic.png' },
   gitar: { id: 'gitar', name: 'Gitar', logo: '/logos/gitar.png' },
   gitguardian: { id: 'gitguardian', name: 'GitGuardian', logo: '/logos/gitguardian.png' },
-  'github-actions': { id: 'github-actions', name: 'GitHub Actions', logo: '/logos/github-actions.png', billing: true },
+  'github-actions': { id: 'github-actions', name: 'GitHub Actions', logo: '/logos/github-actions.svg', billing: true },
   devin: { id: 'devin', name: 'Devin', logo: '/logos/devin.png' },
 };
 
@@ -57,6 +57,7 @@ const LOGIN_TO_ID = {
   'sonarqubecloud[bot]': 'sonarcloud',
   'gitguardian[bot]': 'gitguardian',
   'cubic-dev-ai[bot]': 'cubic',
+  'github-actions[bot]': 'github-actions',
 };
 
 const CONVENTIONAL = /^(feat|fix|docs|chore|refactor|test|ci|style|perf|build|revert)(\([^)]+\))?$/i;
@@ -114,6 +115,28 @@ export function serviceIdFromLogin(login) {
   return LOGIN_TO_ID[login] || null;
 }
 
+export function peopleFromPr({ login, title, events, reviews }) {
+  const names = [];
+  if (login) names.push(login);
+  const titled = authorFromTitle(title, null);
+  if (titled && titled !== 'unknown' && titled !== login) names.push(titled);
+  for (const event of events || []) {
+    const who = event?.actor?.login || event?.user?.login || event?.author?.login;
+    if (who) names.push(who);
+  }
+  for (const review of reviews || []) {
+    if (review?.login) names.push(review.login);
+  }
+  return [...new Set(names)];
+}
+
+const REVIEW_ACTORS = new Set(['cursor', 'cubic', 'gitar', 'devin']);
+
+function handoffStop(id) {
+  if (REVIEW_ACTORS.has(id)) return { station: 'reviewHut', handoffStation: 'mergeLagoon' };
+  return { station: 'checkGrove', handoffStation: 'reviewHut' };
+}
+
 function catalogEntry(id) {
   if (!id) return null;
   if (SERVICE_CATALOG[id]) return SERVICE_CATALOG[id];
@@ -126,7 +149,7 @@ export function classifyCheck(run) {
   const at = run?.completed_at || run?.started_at || null;
   const name = typeof run?.name === 'string' ? run.name.slice(0, 120) : 'check';
   if (billing) {
-    return { id, name, status: 'skipped (billing)', billing: true, at, title: '', summary: '' };
+    return { id, name, status: 'skipped (billing)', billing: true, at, title: '', summary: '', via: 'check_run' };
   }
   const state = run?.status;
   const conclusion = run?.conclusion;
@@ -143,6 +166,7 @@ export function classifyCheck(run) {
     status,
     billing: false,
     at,
+    via: 'check_run',
     title: typeof run?.output?.title === 'string' ? run.output.title : '',
     summary: typeof run?.output?.summary === 'string' ? run.output.summary : '',
   };
@@ -428,6 +452,7 @@ async function loadTeam({ fetchImpl, now, cache, token, gate }) {
       let reviews = [];
       let rawChecks = [];
       let rawStatuses = [];
+      let issueEvents = [];
       let timeline = { stations: [], subject: '', subjectAt: '' };
       try {
         const checkPayload = await get(`/repos/${REPO}/commits/${sha}/check-runs?per_page=100`);
@@ -445,6 +470,7 @@ async function loadTeam({ fetchImpl, now, cache, token, gate }) {
             status,
             billing: false,
             at: item.updated_at || item.created_at || null,
+            via: 'commit_status',
             title: typeof item.description === 'string' ? item.description : '',
             summary: '',
           });
@@ -457,8 +483,9 @@ async function loadTeam({ fetchImpl, now, cache, token, gate }) {
           body: typeof review?.body === 'string' ? review.body : '',
         }));
         const events = await get(`/repos/${REPO}/issues/${pr.number}/timeline?per_page=100`);
+        issueEvents = Array.isArray(events) ? events : [];
         timeline = stationsFromStreams({
-          issues: Array.isArray(events) ? events : [],
+          issues: issueEvents,
           checks: rawChecks,
           statuses: rawStatuses,
         });
@@ -512,31 +539,88 @@ async function loadTeam({ fetchImpl, now, cache, token, gate }) {
           speech: null,
           quoteSource: null,
           handoffTo: null,
+          handoffStation: null,
           prNumber: pr.number,
           station,
+          via: check.via || 'check_run',
+          checkName: check.name,
+          checkStatus: check.status,
+          checkAt: check.at,
         };
         if (!check.billing && check.status === 'passing') current.passing += 1;
         if (!check.billing && check.status === 'failing') current.failing += 1;
         if (!check.billing && check.status === 'pending') current.pending += 1;
-        const rank = { failed: 4, working: 3, handoff: 2, idle: 1 };
+        const rank = { billing: 5, failed: 4, working: 3, handoff: 2, idle: 1 };
         let nextActivity = 'idle';
         let handoffTo = null;
+        let nextStation = station;
+        let nextHandoffStation = null;
         const rolled = activityFor(checks);
-        if (check.status === 'failing' && !check.billing) nextActivity = 'failed';
-        else if (rolled.activity === 'handoff' && rolled.from === check.id) {
+        if (check.billing) {
+          nextActivity = 'billing';
+          nextStation = 'castle';
+        } else if (check.status === 'failing') {
+          nextActivity = 'failed';
+          nextStation = 'fixIt';
+        } else if (rolled.activity === 'handoff' && rolled.from === check.id) {
           nextActivity = 'handoff';
           handoffTo = rolled.handoffTo;
-        } else if (rolled.activity === 'handoff' && rolled.handoffTo === check.id) nextActivity = 'working';
-        else if (check.status === 'pending' && !check.billing) nextActivity = 'working';
-        if (rank[nextActivity] >= rank[current.activity]) {
+          const stop = handoffStop(check.id);
+          nextStation = stop.station;
+          nextHandoffStation = stop.handoffStation;
+        } else if (rolled.activity === 'handoff' && rolled.handoffTo === check.id) {
+          nextActivity = 'working';
+          nextStation = 'checkGrove';
+        } else if (check.status === 'pending') {
+          nextActivity = 'working';
+          nextStation = 'checkGrove';
+        } else if (check.status === 'passing') {
+          nextActivity = 'handoff';
+          const stop = handoffStop(check.id);
+          nextStation = stop.station;
+          nextHandoffStation = stop.handoffStation;
+        }
+        if (!current.checkAt || String(check.at || '') >= String(current.checkAt || '')) {
+          current.checkName = check.name;
+          current.checkStatus = check.status;
+          current.checkAt = check.at;
+          current.via = check.via || 'check_run';
+        }
+        if ((rank[nextActivity] || 0) >= (rank[current.activity] || 0)) {
           current.activity = nextActivity;
           current.handoffTo = handoffTo;
+          current.handoffStation = nextHandoffStation;
           current.prNumber = pr.number;
-          current.station = station;
+          current.station = nextStation;
           current.speech = quote ? quote.text : null;
           current.quoteSource = quote ? quote.source : null;
         }
         teamMap.set(check.id, current);
+      }
+      for (const name of peopleFromPr({ login, title: pr.title, events: issueEvents, reviews })) {
+        const mapped = serviceIdFromLogin(name);
+        const id = mapped || name;
+        if (teamMap.has(id)) continue;
+        const entry = catalogEntry(mapped || id);
+        teamMap.set(id, {
+          id: entry.id,
+          name: mapped ? entry.name : name,
+          logo: mapped ? entry.logo : null,
+          passing: 0,
+          failing: 0,
+          pending: 0,
+          activity: 'idle',
+          speech: null,
+          quoteSource: null,
+          handoffTo: null,
+          handoffStation: null,
+          prNumber: pr.number,
+          station: 'reviewHut',
+          via: 'author',
+          checkName: null,
+          checkStatus: 'none',
+          checkAt: pr.updated_at || null,
+        });
       }
       for (const review of reviews) {
         const id = serviceIdFromLogin(review.login);

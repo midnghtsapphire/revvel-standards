@@ -40,6 +40,7 @@
       <circle cx="111" cy="107" r="2.5" fill="#fff"/>
       <circle cx="151" cy="107" r="2.5" fill="#fff"/>
     </g>
+    <!-- 2026-11-11 MarketShipper: the strokes below shot off the head and read as spiky hair.
     <path d="M86 108 C70 62 28 48 16 78" fill="none" stroke="#111" stroke-width="5" stroke-linecap="round"/>
     <path d="M96 102 C78 36 36 18 22 58" fill="none" stroke="#111" stroke-width="5" stroke-linecap="round"/>
     <path d="M106 98 C98 22 62 4 48 46" fill="none" stroke="#111" stroke-width="5" stroke-linecap="round"/>
@@ -48,6 +49,13 @@
     <path d="M160 102 C178 36 220 18 234 58" fill="none" stroke="#111" stroke-width="5" stroke-linecap="round"/>
     <path d="M150 98 C158 22 194 4 208 46" fill="none" stroke="#111" stroke-width="5" stroke-linecap="round"/>
     <path d="M140 96 C134 18 106 2 88 40" fill="none" stroke="#111" stroke-width="4.5" stroke-linecap="round"/>
+    -->
+    <path d="M100 105 C94 78 116 74 110 100" fill="none" stroke="#111" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M106 102 C100 68 126 66 116 98" fill="none" stroke="#111" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M114 100 C118 70 136 74 122 98" fill="none" stroke="#111" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M156 105 C162 78 140 74 146 100" fill="none" stroke="#111" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M150 102 C156 68 130 66 140 98" fill="none" stroke="#111" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M142 100 C138 70 120 74 134 98" fill="none" stroke="#111" stroke-width="3.5" stroke-linecap="round"/>
     <ellipse cx="94" cy="124" rx="8" ry="5" fill="#ff9bb8" opacity="0.9"/>
     <ellipse cx="162" cy="124" rx="8" ry="5" fill="#ff9bb8" opacity="0.9"/>
     <path d="M116 128 q12 10 24 0" fill="none" stroke="#102033" stroke-width="3" stroke-linecap="round"/>

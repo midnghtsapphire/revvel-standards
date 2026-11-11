@@ -18,3 +18,15 @@ were not on the sampled check runs or reviews, so they have no file here.
 | `gitguardian.png` | <https://avatars.githubusercontent.com/u/27360172?s=64&v=4> (app slug `gitguardian`) |
 | `github-actions.png` | <https://avatars.githubusercontent.com/u/9919?s=64&v=4> (app slug `github-actions`) |
 | `devin.png` | <https://avatars.githubusercontent.com/in/811515?s=64&v=4> (commit status `Devin Review`) |
+
+SVG marks added 2026-11-11 by MarketShipper from Simple Icons 11.14.0.
+Those files are CC0-1.0. The PNG avatars above stay in place.
+Cursor, Cubic, Devin, Gitar, and GitGuardian have no Simple Icons file here,
+so the sprite keeps the PNG avatar already listed.
+
+| File | Where it came from |
+| --- | --- |
+| `circleci.svg` | <https://github.com/simple-icons/simple-icons/blob/11.14.0/icons/circleci.svg> (CC0-1.0) |
+| `sonarcloud.svg` | <https://github.com/simple-icons/simple-icons/blob/11.14.0/icons/sonarcloud.svg> (CC0-1.0) |
+| `github-actions.svg` | <https://github.com/simple-icons/simple-icons/blob/11.14.0/icons/githubactions.svg> (CC0-1.0) |
+| `github.svg` | <https://github.com/simple-icons/simple-icons/blob/11.14.0/icons/github.svg> (CC0-1.0) |
