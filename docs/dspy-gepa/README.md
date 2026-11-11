@@ -51,9 +51,10 @@ export PYTHONPATH=scripts
 `offline-demo` and the unit tests call `dspy.GEPA` with `dspy.utils.DummyLM`.
 They do not read an API key.
 
-CircleCI job `dspy-gepa-offline` in `.circleci/config.yml` installs the lock,
-runs those tests, prints the estimate, and requires `optimize` to refuse a
-non-local endpoint. It does not start the optimizer.
+CircleCI job `dspy-gepa-offline` in `.circleci/config.yml` installs the lock
+on `cimg/python:3.12.16` (the node image's Python 3.10 cannot install this
+lock), runs those tests, prints the estimate, and requires `optimize` to
+refuse a non-local endpoint. It does not start the optimizer.
 
 ## Real run (owner, after spend is approved)
 
