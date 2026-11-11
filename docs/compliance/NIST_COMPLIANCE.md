@@ -66,3 +66,10 @@ effective merely because a routing workflow or configuration file exists.
 - [NCCoE agent identity and authorization concept paper](https://www.nccoe.nist.gov/sites/default/files/2026-02/accelerating-the-adoption-of-software-and-ai-agent-identity-and-authorization-concept-paper.pdf)
 
 See [SP-800-53-OVERLAYS.md](SP-800-53-OVERLAYS.md) for the repository-specific mapping.
+
+## Rescope note (2026-11-11, Rules-Steward, WR #18343)
+
+TriageChief approved a rescope the same day. The paragraphs above stay as written.
+The labelled readiness mapping is [NIST_READINESS.md](NIST_READINESS.md).
+SP-800-53-OVERLAYS.md stays deferred until NISTIR 8605D is published.
+Neither file is a compliance attestation.

@@ -2,6 +2,20 @@
 
 - Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `ai-video-toolkit.revvel.co` under `products/ai-video-toolkit/`. CircleCI job `ai-video-toolkit-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/ai-video-toolkit/CHANGELOG.md`.
 
+## 2026-11-11 (2) — Rules-Steward — evidence checker follows readiness links
+
+- 2026-11-11 — Rules-Steward (Cursor, Grok 4.7) — `scripts/compliance-evidence.js`: relative markdown links in the compliance docs are checked for file presence, beside the existing backtick-path scan. Bugbot on PR #18365. `tests/compliance-evidence.test.js` covers a relative link, a skipped web link, and a missing file.
+
+## 2026-11-11 — Rules-Steward — NIST readiness mapping (WR #18343)
+
+- 2026-11-11 — Rules-Steward (Cursor, Grok 4.7) — `docs/compliance/NIST_READINESS.md`: readiness mapping of repository controls to SP 800-53 Rev. 5 families. Statuses are implemented, partial, or gap. Not a compliance attestation. NISTIR 8605D is not drafted. Appended rescope notes to the 2026-11-10 NIST docs. Root `LEDGER.md` opened with this entry because the file was absent.
+## 2026-11-11 — halo-demo-stream: AG-UI streaming + session-resume demo kit, wired to affiliate-hub (QuickWinBuilder, WR #18342)
+
+- Added `products/halo-demo-stream/`: zero-dependency Node kit. `POST /agui` streams AG-UI standard events over SSE (RUN_STARTED, STATE_SNAPSHOT, TEXT_MESSAGE_START/CONTENT/END, STATE_DELTA as JSON Patch, RUN_FINISHED, RUN_ERROR). File-backed sessions resume by session id on any new client, including after a server restart. Plain HTML demo page, every text colour pair at least 7:1. 15 tests.
+- Moved the affiliate-hub program catalogue and filter/sort logic out of `products/affiliate-hub/app/page.tsx` into `app/lib/programs.mjs` (+ `.d.mts`), so the page and the demo kit run the same code. `next build` passes. No behaviour change.
+- CircleCI: new `demo-kit-test` job (kit tests) and `affiliate-hub-build` job (`npm ci` + `next build`), in both workflows. No GitHub Actions.
+- Not done: ai-video-toolkit and screen-recorder-finder adapters, any deploy, cross-device test on live URLs (blocked on #18330 to #18332).
+
 ## 2026-11-10 (3) — Bot, team and agent backup, nested under docs/ (Proofy)
 
 - Added `docs/bots/bot-<name>/README.md` (98 bots, call `/bot-<name>`), `docs/teams/<team>-team/README.md` (15 teams plus a pointer for the existing `/dragnet-team`), and `docs/agents/<name>/README.md` (pointers for 9 existing OpenRouter personas such as `/coder`, no prefix). Added `docs/CALL-NAMES.md`, `docs/README.md`, `docs/BOT-COMMON-RULES.md`, `docs/BOT-ROSTER.json`.
