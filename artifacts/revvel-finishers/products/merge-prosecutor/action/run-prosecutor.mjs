@@ -468,6 +468,16 @@ export function detectDuplicatedBlocks(diffText) {
       // incorrect assumption. Headers never split active-code adjacency;
       // only actual comment payload is excluded from executable comparison.
       // Earlier overbroad rule retained:
+      function handleComments(c, isBlock) {
+        if (isBlock || c.startsWith('/*') || c.startsWith('*/')) {
+          const closing = c.indexOf('*/');
+          if (closing < 0) return { content: '', blockComment: true, continueLoop: false };
+          const rest = c.slice(closing + 2).trim();
+          return { content: rest, blockComment: false, continueLoop: true };
+        }
+        return { content: '', blockComment: isBlock, continueLoop: false };
+      }
+
       // 2026-11-10 #18313: owner-retained commented history is not executing
       // twice. Keep it in source but exclude full comment lines, breaking the
       // candidate segment so active copies across an archive never align.
@@ -488,16 +498,13 @@ export function detectDuplicatedBlocks(diffText) {
         // const commentHeader = content.replace(/^(?:\/\/|#|\/\*\*?|\*|<!--)\s*/, '');
         // if (/^(?:REVVEL-DISABLED\b|retired historical implementation\b|retained history\b|historical implementation\b)/i.test(commentHeader)) segment++;
         // Historical whole-line discard: continue;
-        if (blockComment || content.startsWith('/*') || content.startsWith('*/')) {
-          const closing = content.indexOf('*/');
-          if (closing < 0) { blockComment = true; content = ''; break; }
-          blockComment = false;
-          content = content.slice(closing + 2).trim();
-          // Peel another leading comment, or compare the remaining executable
-          // tail normally. This is deliberately limited to leading comments.
-          continue;
+        const res = handleComments(content, blockComment);
+        blockComment = res.blockComment;
+        content = res.content;
+        if (res.continueLoop) {
+            continue;
         }
-        content = ''; // //, # and documentation-only lines have no active tail.
+        break;
       }
       if (content.length > 5) {
         // Historical concatenation: additions.push({ file: currentFile, text: content });
@@ -791,11 +798,15 @@ if (process.argv[1] && process.argv[1].endsWith('run-prosecutor.mjs')) {
     // 2026-11-10, #18313: explicit local mode reuses these detectors through
     // HULL/owned execution; the historical GitHub adapter remains available.
     // Historical unconditional entrypoint retained: main().catch(err => {
-    const execution = process.argv.includes('--local')
-      ? import('./local-prosecution.mjs').then(async ({ localCLI }) => { process.exitCode = await localCLI(process.argv.slice(2)); })
-      : main();
-    execution.catch(err => {
+    try {
+      if (process.argv.includes('--local')) {
+        const { localCLI } = await import('./local-prosecution.mjs');
+        process.exitCode = await localCLI(process.argv.slice(2));
+      } else {
+        await main();
+      }
+    } catch (err) {
         console.error(err);
         process.exit(1);
-    });
+    }
 }
