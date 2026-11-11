@@ -127,3 +127,5 @@ Priority 7 is already a live owner thread (a licence-style request to Merlini wa
 - GORILA / lineara.xyz papers: `midnghtsapphire/linear-a` (including `src/grammar/lineara.xyz/papers`)
 - Packard 1974 PDF: already in the Linear A libraries
 - An existing research index: `midnghtsapphire/linear-a` `docs/proposals/deep-index-2026-11-10.csv`
+
+- DatDas folder (2026-11-10): [`docs/datdas/`](../datdas/README.md) — holdings, archive probe, proposed schema, and dated LLM-chat sessions. The databank records are not held. Unverified; not run.

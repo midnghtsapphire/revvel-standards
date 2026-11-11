@@ -1,3 +1,8 @@
+## 2026-11-10 (5) — docs/datdas: DatDas holdings, probe, schema, and LLM-chat folder
+
+- LinearA-Untried — Added `docs/datdas/`: what DatDas is (Marco Merlini's Databank of the Danube script), a holdings table (paths only; no PDFs copied), the proposed unpopulated `schema/datdas.sql`, the 2026-11-10 Wayback/Arquivo probe (small text), and `llm-chats/` for dated sessions. Status: unverified, not run. AI answers are leads, not sources. The databank records are not held. The 227 KB five-LLM attachment was not on the box at commit time; `llm-chats/INDEX.md` leaves room for that file and later sessions.
+- `Library/README.md` and `docs/deep-sweep/README.md`: append-only pointers.
+
 ## 2026-11-10 (4) — docs/deep-sweep: recovered t9u schema and probe script
 
 - LinearA-Untried — Replaced the gap-note bodies of `docs/deep-sweep/schema/schema.sql` and `schema/datdas.sql` with the verbatim t9u paste, keeping the unverified/not-run headers. Added `code/ingest/probe_datdas_domains.py`. Updated README and VERIFICATION gap notes. Not run.

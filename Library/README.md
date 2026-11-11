@@ -16,3 +16,5 @@ Original archival material elsewhere in the repository remains intact.
   validated in the final source-head check described in the continuation report.
 
 - [Deep Sweep method pack (unverified AI-chat output, 2026-11-10)](../docs/deep-sweep/README.md): archived Gemma / Venice / DeepSeek materials under `docs/deep-sweep/`. Leads only; see `VERIFICATION.md`.
+
+- [DatDas folder (unverified, 2026-11-10)](../docs/datdas/README.md): Marco Merlini's Databank of the Danube script — holdings, 2026-11-10 archive probe, proposed schema, and dated LLM-chat sessions. Leads only; the databank itself is not held.
