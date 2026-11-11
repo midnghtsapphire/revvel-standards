@@ -626,6 +626,8 @@
     var team = document.getElementById('team-board');
     var score = document.getElementById('team-score');
     var mood = document.getElementById('team-mood');
+    var brand = document.getElementById('world-brand');
+    if (brand && model.brand) brand.textContent = model.brand;
     if (model.fixture) {
       if (caption) caption.textContent = 'Fixture — not live data';
     } else if (!model.connected) {
@@ -762,12 +764,24 @@
       var hub = cellOrigin(LAYOUT.hub.c + 1, LAYOUT.hub.r + 1);
       if (Math.hypot(hub[0] - x, hub[1] - y) < CELL * 2) root.open(model.boardLinks[0].url, '_blank', 'noopener');
     });
+    function showSkin() {
+      var theme = themeOf(themeId);
+      model.brand = theme.brand;
+      var brand = document.getElementById('world-brand');
+      if (brand) brand.textContent = theme.brand;
+      var caption = document.getElementById('world-caption');
+      if (!caption) return;
+      if (model.fixture) caption.textContent = 'Fixture — not live data';
+      else if (!model.connected) caption.textContent = "Live feed not connected — everyone's on break";
+      else caption.textContent = theme.brand + ' · live from GitHub';
+    }
     function setTheme(id) {
       themeId = themeOf(id).id;
       if (!params.get('skin')) {
         try { root.localStorage.setItem('oaudrey-theme', themeId); } catch (error) { /* storage can be blocked */ }
       }
       document.documentElement.dataset.theme = themeId;
+      showSkin();
       kick();
     }
     document.querySelectorAll('[data-theme-id]').forEach(function (button) {
@@ -780,6 +794,7 @@
       } catch (error) { /* ignore */ }
     }
     document.documentElement.dataset.theme = themeId;
+    showSkin();
     if (opts.fixture) apply(opts.fixture.team, opts.fixture.hub);
     else {
       function poll() {

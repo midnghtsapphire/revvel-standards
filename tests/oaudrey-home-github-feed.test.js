@@ -15,11 +15,12 @@ function loadFeed() {
   )).href);
 }
 
-function response(body, status = 200, remaining = '500') {
+function response(body, status = 200, remaining = '500', extra = {}) {
+  const headers = { 'x-ratelimit-remaining': remaining, ...extra };
   return {
     ok: status >= 200 && status < 300,
     status,
-    headers: { get: (name) => (name.toLowerCase() === 'x-ratelimit-remaining' ? remaining : null) },
+    headers: { get: (name) => headers[name.toLowerCase()] ?? null },
     json: async () => body,
   };
 }
@@ -56,18 +57,33 @@ test('author comes from a title prefix, not a conventional type', async () => {
   assert.equal(authorFromTitle('feat: add a gate', 'midnghtsapphire'), 'midnghtsapphire');
 });
 
-test('timeline walks stations in order and a later push is the fix stop', async () => {
-  const { stationsFromTimeline } = await loadFeed();
-  const walked = stationsFromTimeline([
-    { event: 'opened', created_at: '2026-11-11T00:00:00Z' },
-    { event: 'committed', created_at: '2026-11-11T01:00:00Z', message: 'subject line\n\nmore' },
-    { event: 'check_run', created_at: '2026-11-11T02:00:00Z', conclusion: 'failure' },
-    { event: 'committed', created_at: '2026-11-11T03:00:00Z', message: 'fix the gate' },
-    { event: 'reviewed', created_at: '2026-11-11T04:00:00Z' },
-    { event: 'merged', created_at: '2026-11-11T05:00:00Z' },
-  ]);
+test('issue, check, and status streams sort on their own timestamps', async () => {
+  const { stationsFromStreams, stationsFromTimeline } = await loadFeed();
+  const walked = stationsFromStreams({
+    issues: [
+      { event: 'opened', created_at: '2026-11-11T00:00:00Z' },
+      { event: 'committed', author: { date: '2026-11-11T01:00:00Z' }, message: 'subject line\n\nmore' },
+      { event: 'committed', updated_at: '2026-11-11T03:00:00Z', message: 'fix the gate' },
+      { event: 'reviewed', updated_at: '2026-11-11T04:00:00Z' },
+      { event: 'merged', updated_at: '2026-11-11T05:00:00Z' },
+      { event: 'check_run', created_at: '2026-11-11T00:00:01Z', conclusion: 'failure' },
+    ],
+    checks: [
+      { conclusion: 'failure', completed_at: '2026-11-11T02:00:00Z', app: { slug: 'sonarqubecloud' } },
+      { conclusion: 'failure', completed_at: '2026-11-11T01:30:00Z', app: { slug: 'github-actions' } },
+    ],
+    statuses: [
+      { state: 'pending', updated_at: '2026-11-11T01:45:00Z', context: 'ci/circleci: lint' },
+    ],
+  });
   assert.deepEqual(walked.stations, ['prGate', 'pushPier', 'checkGrove', 'fixIt', 'reviewHut', 'mergeLagoon']);
   assert.equal(walked.subject, 'fix the gate');
+  const issueOnly = stationsFromTimeline([
+    { event: 'opened', created_at: '2026-11-11T00:00:00Z' },
+    { event: 'check_run', created_at: '2026-11-11T02:00:00Z', conclusion: 'failure' },
+    { event: 'status', created_at: '2026-11-11T02:00:00Z', state: 'failure' },
+  ]);
+  assert.deepEqual(issueOnly.stations, ['prGate']);
 });
 
 test('quotes use GitHub text and a pending check is only thinking', async () => {
@@ -263,6 +279,127 @@ test('hub bodies stay off unless a source opts in, and then they are redacted', 
   assert.equal(shown.boards[0].threads[0].comments[0].body.includes('sk_live_'), false);
 });
 
+test('a 403 is permission unless the rate-limit signals are present', async () => {
+  const { githubFailureReason, buildTeamReport } = await loadFeed();
+  const headers = (map) => ({ get: (name) => map[name.toLowerCase()] ?? null });
+  assert.equal(githubFailureReason(403, headers({ 'x-ratelimit-remaining': '4000' }), { message: 'Resource not accessible by integration' }), 'permission');
+  assert.equal(githubFailureReason(403, headers({ 'x-ratelimit-remaining': '0', 'x-ratelimit-reset': '1' }), { message: 'API rate limit exceeded' }), 'rate_limited');
+  assert.equal(githubFailureReason(403, headers({ 'retry-after': '30' }), { message: 'slow down' }), 'rate_limited');
+  assert.equal(githubFailureReason(403, headers({}), { message: 'You have exceeded a secondary rate limit.' }), 'rate_limited');
+
+  let calls = 0;
+  const fetchImpl = async (url) => {
+    calls += 1;
+    if (url.includes('state=open')) {
+      return response({ message: 'Resource not accessible by integration' }, 403, '4000');
+    }
+    return response({}, 404);
+  };
+  const denied = await buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl,
+    now: 1_000,
+    cache: new Map(),
+  });
+  assert.equal(denied.connected, false);
+  assert.equal(denied.reason, 'permission');
+  assert.equal(denied.partial, false);
+});
+
+test('a partial board is not cached as a live connection, and one build is shared', async () => {
+  const { buildTeamReport } = await loadFeed();
+  let calls = 0;
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  const fetchImpl = async (url) => {
+    calls += 1;
+    if (url.includes('state=open')) {
+      await gate;
+      return response([{
+        number: 1,
+        title: 'feat: example',
+        html_url: 'https://github.com/midnghtsapphire/revvel-standards/pull/1',
+        updated_at: '2026-11-11T04:00:00Z',
+        merged_at: null,
+        user: { login: 'midnghtsapphire' },
+        head: { sha: 'abc' },
+      }]);
+    }
+    if (url.includes('state=closed')) return response([]);
+    if (url.includes('/check-runs')) {
+      return response({ message: 'Resource not accessible by integration' }, 403, '4000');
+    }
+    return response({}, 404);
+  };
+  const cache = new Map();
+  const first = buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl,
+    now: 5_000,
+    cache,
+  });
+  const second = buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl,
+    now: 5_000,
+    cache,
+  });
+  assert.equal(calls, 1);
+  release();
+  const [report, again] = await Promise.all([first, second]);
+  assert.equal(again, report);
+  assert.equal(report.partial, true);
+  assert.equal(report.connected, false);
+  const before = calls;
+  const cached = await buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl,
+    now: 6_000,
+    cache,
+  });
+  assert.equal(cached, report);
+  assert.equal(calls, before);
+  const later = await buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl,
+    now: 5_000 + 61_000,
+    cache,
+  });
+  assert.equal(later.connected, false);
+  assert.equal(calls > before, true);
+
+  let limitedCalls = 0;
+  const reset = String(Math.floor((20_000 + 120_000) / 1000));
+  const limitedFetch = async () => {
+    limitedCalls += 1;
+    return response({ message: 'API rate limit exceeded' }, 403, '0', { 'x-ratelimit-reset': reset });
+  };
+  const limitedCache = new Map();
+  const blocked = await buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl: limitedFetch,
+    now: 20_000,
+    cache: limitedCache,
+  });
+  assert.equal(blocked.reason, 'rate_limited');
+  assert.equal(blocked.connected, false);
+  const during = limitedCalls;
+  await buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl: limitedFetch,
+    now: 30_000,
+    cache: limitedCache,
+  });
+  assert.equal(limitedCalls, during);
+  await buildTeamReport({
+    env: { GITHUB_READ_TOKEN: 'test-token-not-real' },
+    fetchImpl: limitedFetch,
+    now: 20_000 + 121_000,
+    cache: limitedCache,
+  });
+  assert.equal(limitedCalls > during, true);
+});
+
 test('front page scene stays original, quoted, and under the size budget', () => {
   const scene = ['world.js', 'themes.js', 'oaudrey-mascot.svg']
     .map((name) => fs.readFileSync(path.join(ROOT, 'products/oaudrey-home/public', name)))
@@ -288,4 +425,8 @@ test('front page scene stays original, quoted, and under the size budget', () =>
   const fixture = fs.readFileSync(path.join(ROOT, 'products/oaudrey-home/public/world-fixture.html'), 'utf8');
   assert.match(fixture, /Fixture — not live data/);
   assert.match(fixture, /noindex/);
+  assert.match(world, /function showSkin\(\)[\s\S]{0,400}world-brand/);
+  const afterSave = world.slice(world.indexOf("getItem('oaudrey-theme')"));
+  assert.match(afterSave.slice(0, afterSave.indexOf('function boot')), /showSkin\(\)/);
+  assert.match(world.slice(world.indexOf('function setTheme')), /showSkin\(\)/);
 });

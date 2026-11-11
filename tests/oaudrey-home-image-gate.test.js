@@ -80,6 +80,38 @@ test('front page names the three subdomains, the demo, and the deck', () => {
   assert.equal(/fetch\(\s*['"]https?:/.test(js), false);
 });
 
+test('the sales deck is served as a PDF and the other static types stay mapped', async () => {
+  const imported = await import(pathToFileURL(path.join(
+    ROOT,
+    'products/oaudrey-home/server/static-stripe-server.mjs',
+  )).href);
+  const { contentTypeFor, createApp } = imported.api;
+  assert.equal(contentTypeFor('goap-agent-sales-deck.pdf'), 'application/pdf');
+  assert.match(contentTypeFor('index.html'), /^text\/html/);
+  assert.match(contentTypeFor('styles.css'), /^text\/css/);
+  assert.match(contentTypeFor('site.js'), /^text\/javascript/);
+  assert.match(contentTypeFor('hub.json'), /^application\/json/);
+  assert.equal(contentTypeFor('logo.png'), 'image/png');
+  assert.equal(contentTypeFor('logo.jpg'), 'image/jpeg');
+  assert.equal(contentTypeFor('logo.webp'), 'image/webp');
+  assert.equal(contentTypeFor('mark.svg'), 'image/svg+xml');
+  assert.match(contentTypeFor('sitemap.xml'), /^application\/xml/);
+  assert.equal(contentTypeFor('song.mp3'), 'audio/mpeg');
+  assert.equal(contentTypeFor('font.woff2'), 'font/woff2');
+  assert.equal(contentTypeFor('unknown.bin'), 'application/octet-stream');
+  const staticRoot = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'oaudrey-pdf-'));
+  fs.writeFileSync(path.join(staticRoot, 'goap-agent-sales-deck.pdf'), '%PDF-1.4\n');
+  const server = createApp({ env: {}, staticRoot });
+  const port = await listen(server);
+  try {
+    const deck = await fetch(`http://127.0.0.1:${port}/goap-agent-sales-deck.pdf`);
+    assert.equal(deck.status, 200);
+    assert.equal(deck.headers.get('content-type'), 'application/pdf');
+  } finally {
+    server.close();
+  }
+});
+
 test('health returns 200 and checkout stays unavailable', async () => {
   const imported = await import(pathToFileURL(path.join(
     ROOT,

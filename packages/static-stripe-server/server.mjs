@@ -265,12 +265,21 @@ const MIME = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.gif': 'image/gif',
   '.ico': 'image/x-icon',
   '.txt': 'text/plain; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.xml': 'application/xml; charset=utf-8',
+  '.pdf': 'application/pdf',
+  '.mp3': 'audio/mpeg',
+  '.woff': 'font/woff',
   '.woff2': 'font/woff2',
 };
+
+export function contentTypeFor(file) {
+  return MIME[path.extname(String(file)).toLowerCase()] || 'application/octet-stream';
+}
 
 export async function resolveStatic(root, urlPath) {
   let pathname;
@@ -385,7 +394,7 @@ async function serveStatic(req, res, ctx, pathname) {
     return;
   }
   const data = await readFile(file);
-  const type = MIME[path.extname(file).toLowerCase()] || 'application/octet-stream';
+  const type = contentTypeFor(file);
   const immutable = pathname.includes('/_next/static/');
   res.writeHead(200, {
     'content-type': type,
@@ -471,6 +480,7 @@ export function bindProduct(service, moduleUrl, extras = {}) {
     clientAddress,
     rateLimited,
     resolveStatic,
+    contentTypeFor,
     createCheckoutSession(args = {}) {
       return createCheckoutSession({ ...args, service });
     },

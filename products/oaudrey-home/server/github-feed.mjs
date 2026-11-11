@@ -5,9 +5,12 @@
 // REST API does not list discussion comments. Checks, reviews, commits, and
 // the issue timeline stay on REST.
 //
-// Cache is five minutes in this process. A low rate-limit remaining count
-// stops further calls and returns the rows already read. Missing token or a
-// GitHub error returns connected:false and no invented rows.
+// A complete report is cached for five minutes in this process. A partial
+// report is marked partial and is not stored as connected:true. One in-flight
+// build is shared per cache. The rate-limit reset is kept on that cache so a
+// remaining count of 0 waits until the reset time. A 403 is permission unless
+// the remaining count is 0, Retry-After is set, or the body says secondary
+// rate limit. Missing token returns connected:false and no invented rows.
 //
 // What breaks if this file is removed: the world has no live feed and the
 // whiteboards stay on the closed-for-the-night state.
@@ -18,7 +21,9 @@ import { fileURLToPath } from 'node:url';
 
 const REPO = 'midnghtsapphire/revvel-standards';
 const TTL_MS = 5 * 60 * 1000;
+const SHORT_TTL_MS = 60 * 1000;
 const SOURCES_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), '../hub-sources.json');
+const gates = new WeakMap();
 
 export const SERVICE_CATALOG = {
   circleci: { id: 'circleci', name: 'CircleCI', logo: '/logos/circleci.png' },
@@ -149,33 +154,74 @@ export function commitSubject(event) {
   return redactPublic(line).slice(0, 180);
 }
 
-export function stationsFromTimeline(events) {
-  const sorted = [...(events || [])].sort((a, b) => String(a.created_at || a.submitted_at || '').localeCompare(String(b.created_at || b.submitted_at || '')));
+// 2026-11-11 MarketShipper. The old walker sorted every object on
+// created_at || submitted_at and treated check_run and status as issue
+// timeline events. Committed events carry author.date, and the issue
+// timeline does not emit checks, so that walk skipped checkGrove.
+// export function stationsFromTimeline(events) {
+//   const sorted = [...(events || [])].sort((a, b) => String(a.created_at || a.submitted_at || '').localeCompare(String(b.created_at || b.submitted_at || '')));
+//   ... else if (kind === 'status' || kind === 'check_run') station = 'checkGrove';
+// }
+
+export function streamTime(item, stream) {
+  if (stream === 'check') return item?.completed_at || item?.started_at || '';
+  if (stream === 'status') return item?.updated_at || item?.created_at || '';
+  return item?.updated_at || item?.created_at || item?.submitted_at || item?.author?.date || '';
+}
+
+export function sortStream(items, stream) {
+  return [...(items || [])].sort((a, b) => String(streamTime(a, stream)).localeCompare(String(streamTime(b, stream))));
+}
+
+export function stationsFromStreams({ issues, checks, statuses } = {}) {
+  const issueEvents = sortStream(issues, 'issue').filter((event) => {
+    const kind = event?.event || '';
+    return kind !== 'check_run' && kind !== 'status' && kind !== 'check_suite';
+  });
+  const checkEvents = sortStream(checks, 'check').filter((event) => event?.app?.slug !== 'github-actions');
+  const statusEvents = sortStream(statuses, 'status');
+  const merged = [
+    ...issueEvents.map((event) => ({ stream: 'issue', at: streamTime(event, 'issue'), event })),
+    ...checkEvents.map((event) => ({ stream: 'check', at: streamTime(event, 'check'), event })),
+    ...statusEvents.map((event) => ({ stream: 'status', at: streamTime(event, 'status'), event })),
+  ].sort((a, b) => String(a.at).localeCompare(String(b.at)) || a.stream.localeCompare(b.stream));
   const stations = [];
   let failedEarlier = false;
   let subject = '';
   let subjectAt = '';
-  for (const event of sorted) {
-    const kind = event?.event || '';
-    if (kind === 'check_run' && (event.conclusion === 'failure' || event.conclusion === 'timed_out')) {
-      failedEarlier = true;
+  for (const row of merged) {
+    if (row.stream === 'check') {
+      const conclusion = row.event?.conclusion;
+      if (conclusion === 'failure' || conclusion === 'timed_out' || conclusion === 'startup_failure') failedEarlier = true;
+      if (stations[stations.length - 1] !== 'checkGrove') stations.push('checkGrove');
+      continue;
     }
+    if (row.stream === 'status') {
+      const state = row.event?.state;
+      if (state === 'failure' || state === 'error') failedEarlier = true;
+      if (stations[stations.length - 1] !== 'checkGrove') stations.push('checkGrove');
+      continue;
+    }
+    const kind = row.event?.event || '';
     let station = null;
     if (kind === 'merged') station = 'mergeLagoon';
     else if (kind === 'reviewed' || kind === 'commented') station = 'reviewHut';
     else if (kind === 'opened' || kind === 'ready_for_review' || kind === 'reopened') station = 'prGate';
     else if (kind === 'committed' || kind === 'head_ref_force_pushed') station = failedEarlier ? 'fixIt' : 'pushPier';
-    else if (kind === 'status' || kind === 'check_run') station = 'checkGrove';
     if (station && stations[stations.length - 1] !== station) stations.push(station);
     if (kind === 'committed') {
-      const next = commitSubject(event);
+      const next = commitSubject(row.event);
       if (next) {
         subject = next;
-        subjectAt = event.created_at || event.author?.date || '';
+        subjectAt = streamTime(row.event, 'issue');
       }
     }
   }
   return { stations, subject, subjectAt, failedEarlier };
+}
+
+export function stationsFromTimeline(events) {
+  return stationsFromStreams({ issues: events, checks: [], statuses: [] });
 }
 
 function reviewSentence(body) {
@@ -206,6 +252,7 @@ export function quoteFromParts({ checks, reviews, commit }) {
 function emptyTeam(reason) {
   return {
     connected: false,
+    partial: false,
     reason,
     fetchedAt: null,
     passing: 0,
@@ -220,7 +267,7 @@ function emptyTeam(reason) {
 }
 
 function emptyHub(reason) {
-  return { connected: false, reason, fetchedAt: null, boards: [] };
+  return { connected: false, partial: false, reason, fetchedAt: null, boards: [] };
 }
 
 function sendJson(res, status, body) {
@@ -233,8 +280,44 @@ function sendJson(res, status, body) {
   res.end(json);
 }
 
-async function github(url, token, fetchImpl, state) {
-  if (state.remaining === 0) {
+function gateFor(cache) {
+  let gate = gates.get(cache);
+  if (!gate) {
+    gate = { remaining: null, resetAt: 0, inflight: new Map() };
+    gates.set(cache, gate);
+  }
+  return gate;
+}
+
+export function githubFailureReason(status, headers, body) {
+  const remaining = typeof headers?.get === 'function' ? headers.get('x-ratelimit-remaining') : null;
+  const retry = typeof headers?.get === 'function' ? headers.get('retry-after') : null;
+  const message = typeof body === 'string' ? body : String(body?.message || '');
+  if (remaining === '0') return 'rate_limited';
+  if (retry) return 'rate_limited';
+  if (/secondary rate limit/i.test(message)) return 'rate_limited';
+  if (status === 403 || status === 401) return 'permission';
+  return 'github_error';
+}
+
+function noteLimit(response, gate) {
+  const headers = response?.headers;
+  if (typeof headers?.get !== 'function') return;
+  const remaining = headers.get('x-ratelimit-remaining');
+  const reset = headers.get('x-ratelimit-reset');
+  if (remaining != null && remaining !== '') gate.remaining = Number(remaining);
+  if (reset) gate.resetAt = Number(reset) * 1000;
+}
+
+function backedOff(gate, now) {
+  if (gate.remaining !== 0) return false;
+  if (!gate.resetAt || now < gate.resetAt) return true;
+  gate.remaining = null;
+  return false;
+}
+
+async function github(url, token, fetchImpl, gate, now) {
+  if (backedOff(gate, now)) {
     const error = new Error('rate_limited');
     error.reason = 'rate_limited';
     throw error;
@@ -247,11 +330,13 @@ async function github(url, token, fetchImpl, state) {
       'X-GitHub-Api-Version': '2022-11-28',
     },
   });
-  const rawRemaining = typeof response.headers?.get === 'function' ? response.headers.get('x-ratelimit-remaining') : null;
-  if (rawRemaining != null && rawRemaining !== '') state.remaining = Number(rawRemaining);
-  if (response.status === 403 || response.status === 429) {
-    const error = new Error('rate_limited');
-    error.reason = 'rate_limited';
+  noteLimit(response, gate);
+  if (response.status === 403 || response.status === 401 || response.status === 429) {
+    let body = {};
+    try { body = await response.json(); } catch { body = {}; }
+    const reason = githubFailureReason(response.status, response.headers, body);
+    const error = new Error(reason);
+    error.reason = reason;
     throw error;
   }
   if (!response.ok) {
@@ -266,8 +351,14 @@ async function github(url, token, fetchImpl, state) {
 function cacheGet(cache, key, now) {
   const hit = cache.get(key);
   if (!hit) return null;
-  if (now - hit.at > TTL_MS) return null;
+  const ttl = hit.ttl ?? TTL_MS;
+  if (now - hit.at > ttl) return null;
   return hit.value;
+}
+
+function cachePut(cache, key, now, value, ttl) {
+  cache.set(key, { at: now, value, ttl });
+  return value;
 }
 
 function publicCheck(check) {
@@ -302,10 +393,20 @@ export function activityFor(checks) {
 export async function buildTeamReport({ env, fetchImpl, now, cache }) {
   const token = String(env?.GITHUB_READ_TOKEN || '');
   if (!token) return emptyTeam('missing_token');
+  const gate = gateFor(cache);
   const hit = cacheGet(cache, 'team', now);
   if (hit) return hit;
-  const state = { remaining: null };
-  const get = (urlPath) => github(`https://api.github.com${urlPath}`, token, fetchImpl, state);
+  if (backedOff(gate, now)) return cachePut(cache, 'team', now, emptyTeam('rate_limited'), SHORT_TTL_MS);
+  if (gate.inflight.has('team')) return gate.inflight.get('team');
+  const job = loadTeam({ env, fetchImpl, now, cache, token, gate }).finally(() => {
+    if (gate.inflight.get('team') === job) gate.inflight.delete('team');
+  });
+  gate.inflight.set('team', job);
+  return job;
+}
+
+async function loadTeam({ fetchImpl, now, cache, token, gate }) {
+  const get = (urlPath) => github(`https://api.github.com${urlPath}`, token, fetchImpl, gate, now);
   try {
     const open = await get(`/repos/${REPO}/pulls?state=open&per_page=15&sort=updated&direction=desc`);
     const closed = await get(`/repos/${REPO}/pulls?state=closed&per_page=15&sort=updated&direction=desc`);
@@ -319,18 +420,22 @@ export async function buildTeamReport({ env, fetchImpl, now, cache }) {
     let passing = 0;
     let failing = 0;
     let pending = 0;
-    let truncated = false;
+    let partial = false;
     for (const pr of selected) {
       const sha = pr?.head?.sha;
       if (!sha || !pr.number) continue;
       let checks = [];
       let reviews = [];
+      let rawChecks = [];
+      let rawStatuses = [];
       let timeline = { stations: [], subject: '', subjectAt: '' };
       try {
         const checkPayload = await get(`/repos/${REPO}/commits/${sha}/check-runs?per_page=100`);
-        checks = (checkPayload.check_runs || []).map(classifyCheck).filter((check) => check.id);
+        rawChecks = checkPayload.check_runs || [];
+        checks = rawChecks.map(classifyCheck).filter((check) => check.id);
         const statusPayload = await get(`/repos/${REPO}/commits/${sha}/status`);
-        for (const item of statusPayload.statuses || []) {
+        rawStatuses = statusPayload.statuses || [];
+        for (const item of rawStatuses) {
           const id = serviceIdFromContext(item.context);
           if (!id) continue;
           const status = item.state === 'success' ? 'passing' : item.state === 'failure' || item.state === 'error' ? 'failing' : item.state === 'pending' ? 'pending' : 'none';
@@ -352,12 +457,17 @@ export async function buildTeamReport({ env, fetchImpl, now, cache }) {
           body: typeof review?.body === 'string' ? review.body : '',
         }));
         const events = await get(`/repos/${REPO}/issues/${pr.number}/timeline?per_page=100`);
-        timeline = stationsFromTimeline(Array.isArray(events) ? events : []);
+        timeline = stationsFromStreams({
+          issues: Array.isArray(events) ? events : [],
+          checks: rawChecks,
+          statuses: rawStatuses,
+        });
       } catch (error) {
         if (error.reason === 'rate_limited') {
-          truncated = true;
+          partial = true;
           break;
         }
+        if (error.reason === 'permission') partial = true;
         continue;
       }
       if (pr.merged_at && timeline.stations[timeline.stations.length - 1] !== 'mergeLagoon') {
@@ -460,7 +570,7 @@ export async function buildTeamReport({ env, fetchImpl, now, cache }) {
         if (Array.isArray(tags) && tags[0]?.name) release = { lit: true, name: String(tags[0].name).slice(0, 80), at: null };
       }
     } catch (error) {
-      if (error.reason === 'rate_limited') truncated = true;
+      if (error.reason === 'rate_limited' || error.reason === 'permission') partial = true;
     }
     const stations = {
       pushPier: { lit: false, count: 0 },
@@ -478,23 +588,22 @@ export async function buildTeamReport({ env, fetchImpl, now, cache }) {
     }
     if (pending > 0) stations.checkGrove.lit = true;
     const report = {
-      connected: true,
-      reason: null,
+      connected: !partial,
+      partial,
+      reason: partial ? 'partial' : null,
       fetchedAt: new Date(now).toISOString(),
       passing,
       failing,
       pending,
-      truncated,
       prs,
       team: [...teamMap.values()],
       stations,
       spots,
       release,
     };
-    cache.set('team', { at: now, value: report });
-    return report;
+    return cachePut(cache, 'team', now, report, partial ? SHORT_TTL_MS : TTL_MS);
   } catch (error) {
-    return emptyTeam(error.reason || 'github_error');
+    return cachePut(cache, 'team', now, emptyTeam(error.reason || 'github_error'), SHORT_TTL_MS);
   }
 }
 
@@ -528,7 +637,12 @@ function threadFromDiscussion(node, showBodies) {
   };
 }
 
-async function githubGraphql(query, variables, token, fetchImpl, state) {
+async function githubGraphql(query, variables, token, fetchImpl, gate, now) {
+  if (backedOff(gate, now)) {
+    const error = new Error('rate_limited');
+    error.reason = 'rate_limited';
+    throw error;
+  }
   const response = await fetchImpl('https://api.github.com/graphql', {
     method: 'POST',
     headers: {
@@ -538,11 +652,13 @@ async function githubGraphql(query, variables, token, fetchImpl, state) {
     },
     body: JSON.stringify({ query, variables }),
   });
-  const rawRemaining = typeof response.headers?.get === 'function' ? response.headers.get('x-ratelimit-remaining') : null;
-  if (rawRemaining != null && rawRemaining !== '') state.remaining = Number(rawRemaining);
-  if (response.status === 403 || response.status === 429 || state.remaining === 0) {
-    const error = new Error('rate_limited');
-    error.reason = 'rate_limited';
+  noteLimit(response, gate);
+  if (response.status === 403 || response.status === 401 || response.status === 429) {
+    let body = {};
+    try { body = await response.json(); } catch { body = {}; }
+    const reason = githubFailureReason(response.status, response.headers, body);
+    const error = new Error(reason);
+    error.reason = reason;
     throw error;
   }
   if (!response.ok) {
@@ -557,10 +673,21 @@ async function githubGraphql(query, variables, token, fetchImpl, state) {
 export async function buildHubReport({ env, fetchImpl, now, cache, sources }) {
   const token = String(env?.GITHUB_READ_TOKEN || '');
   if (!token) return emptyHub('missing_token');
+  const gate = gateFor(cache);
   const hit = cacheGet(cache, 'hub', now);
   if (hit) return hit;
-  const state = { remaining: null };
+  if (backedOff(gate, now)) return cachePut(cache, 'hub', now, emptyHub('rate_limited'), SHORT_TTL_MS);
+  if (gate.inflight.has('hub')) return gate.inflight.get('hub');
+  const job = loadHub({ fetchImpl, now, cache, sources, token, gate }).finally(() => {
+    if (gate.inflight.get('hub') === job) gate.inflight.delete('hub');
+  });
+  gate.inflight.set('hub', job);
+  return job;
+}
+
+async function loadHub({ fetchImpl, now, cache, sources, token, gate }) {
   const boards = [];
+  let partial = false;
   for (const source of sources) {
     const board = { id: source.id, label: source.label, unavailable: false, threads: [] };
     try {
@@ -577,7 +704,8 @@ export async function buildHubReport({ env, fetchImpl, now, cache, sources }) {
           { owner: source.owner, name: source.repo },
           token,
           fetchImpl,
-          state,
+          gate,
+          now,
         );
         const nodes = data?.repository?.discussions?.nodes;
         if (!data?.repository) board.unavailable = true;
@@ -596,7 +724,8 @@ export async function buildHubReport({ env, fetchImpl, now, cache, sources }) {
           { owner: source.owner, name: source.repo, number: source.number },
           token,
           fetchImpl,
-          state,
+          gate,
+          now,
         );
         const node = data?.repository?.discussion;
         if (!node) board.unavailable = true;
@@ -606,18 +735,24 @@ export async function buildHubReport({ env, fetchImpl, now, cache, sources }) {
         }
       }
     } catch (error) {
+      board.unavailable = true;
       if (error.reason === 'rate_limited') {
-        board.unavailable = true;
+        partial = true;
         boards.push(board);
         break;
       }
-      board.unavailable = true;
+      if (error.reason === 'permission') partial = true;
     }
     boards.push(board);
   }
-  const report = { connected: true, reason: null, fetchedAt: new Date(now).toISOString(), boards };
-  cache.set('hub', { at: now, value: report });
-  return report;
+  const report = {
+    connected: !partial,
+    partial,
+    reason: partial ? 'partial' : null,
+    fetchedAt: new Date(now).toISOString(),
+    boards,
+  };
+  return cachePut(cache, 'hub', now, report, partial ? SHORT_TTL_MS : TTL_MS);
 }
 
 export function createGithubRoutes(options = {}) {
