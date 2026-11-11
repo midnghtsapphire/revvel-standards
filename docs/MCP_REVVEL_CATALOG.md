@@ -311,6 +311,48 @@ Exposes Chrome DevTools Protocol (CDP) capabilities as MCP tools. AI agents can 
 
 ---
 
+## DigitalOcean action-gateway (remote HTTP)
+
+Claude and Codex both register one DigitalOcean action-gateway endpoint. The work requests are [#18288](https://github.com/midnghtsapphire/revvel-standards/issues/18288) (Claude) and [#18290](https://github.com/midnghtsapphire/revvel-standards/issues/18290) (Codex). The endpoint URL is already public on those issues. It is not a token. Nothing in git holds a key, a bearer token, or an `Authorization` header. Claude auth is `claude mcp login action-gateway` on the operator machine. Codex auth is the DigitalOcean sign-in that operator runs on that same machine. CI does not run either command.
+
+| Client | Checked-in config | Shape |
+|---|---|---|
+| Claude | `.mcp.json` key `action-gateway` | HTTP transport: `"type": "http"` plus `url` |
+| Codex | `.codex/config.toml` table `mcp_servers.action-gateway` | `url` only |
+
+**Claude project entry** (`.mcp.json`):
+
+```json
+"action-gateway": {
+  "type": "http",
+  "url": "https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"
+}
+```
+
+Operator commands for Claude. Run these on the machine that should hold the login. Do not put the resulting session in the repo:
+
+```bash
+claude mcp add --transport http action-gateway "https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"
+claude mcp login action-gateway
+```
+
+**Codex project entry** (`.codex/config.toml`):
+
+```toml
+[mcp_servers.action-gateway]
+url = "https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"
+```
+
+Operator command for Codex:
+
+```bash
+codex mcp add action-gateway --url "https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"
+```
+
+This endpoint stays out of `templates/mcp/mcp.*.json`. Those files are the stdio profiles `scripts/setup-mcp.sh` copies onto a new project, and a copy would publish this repository's DigitalOcean endpoint into unrelated projects. The registration for this repository is the root `.mcp.json` entry and `.codex/config.toml`. The same decision is recorded in `docs/Master_Inventory/MCP_STANDARD.md` section 14.
+
+---
+
 ## Group B: MCT Microservice Modules (InTheWild Platform)
 
 These 20 modules are the building blocks of the InTheWild platform. Each is an Express REST API microservice + Docker container. Most include an `@modelcontextprotocol/sdk` layer that can expose their business logic as MCP tools.

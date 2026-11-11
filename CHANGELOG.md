@@ -1,3 +1,7 @@
+## 2026-11-11 — Cloudy — DigitalOcean action-gateway for Claude and Codex
+
+- Registered the public action-gateway endpoint in `.mcp.json` (Claude, HTTP transport) and `.codex/config.toml` (Codex, url). Documented `claude mcp login action-gateway` and both client commands. WRs #18288 and #18290. No token in git.
+
 ## 2026-11-11 (4) — MarketShipper — one static Stripe server for affiliate-hub and ai-video-toolkit
 
 - `packages/static-stripe-server/` is the server, the checkout button, and the image-gate cases. Each product file names its service and keeps the previous copy as line comments. `deploy_on_push` stays false. No DigitalOcean deploy job was added.

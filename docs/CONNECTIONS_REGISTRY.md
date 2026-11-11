@@ -3,7 +3,7 @@
 
 Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what each can reach. **Generated from `config/connections.yml`** — edit the YAML, run `npm run connections`, never hand-edit this file.
 
-**49** connections · **44** verified · **5** unverified (confirm before relying on them).
+**50** connections · **45** verified · **5** unverified (confirm before relying on them).
 
 ## Agents & orchestration
 
@@ -26,6 +26,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `mcp-airtable` (Airtable MCP) | ✅ verified | oauth | bases, tables, records | airtable | — | — |
 | `mcp-canva` (Canva MCP) | ✅ verified | oauth | design, export, brand-templates | canva | — | — |
 | `mcp-clickup` (ClickUp MCP) | ✅ verified | oauth | tasks, docs, time-tracking | clickup | — | — |
+| `mcp-action-gateway` (DigitalOcean action-gateway MCP) | ✅ verified | oauth | digitalocean-actions | digitalocean | .mcp.json, .codex/config.toml | Public HTTP endpoint shared by Claude (type http in .mcp.json) and Codex (url in .codex/config.toml). WRs 18288 and 18290. No token in git. Claude auth is the operator command claude mcp login action-gateway. Endpoint <https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a> |
 | `mcp-figma` (Figma MCP) | ✅ verified | oauth | design-read, design-write, code-connect | figma | — | — |
 | `mcp-github` (GitHub MCP) | ✅ verified | oauth | pr, issues, ci, code-search, releases, merge | github | — | — |
 | `mcp-google` (Google Workspace MCP (Gmail / Calendar / Drive)) | ✅ verified | oauth | email, calendar, files | google | — | — |
@@ -79,4 +80,4 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `stacker-bot` (Stacker (stacked PRs)) | ✅ verified | free | stacked-prs, pr-toc, merge-order-guard | github | stacker-bot[bot], docs/STACKER_BOT_INSTALLATION.md | Free stacked-PR GitHub App (installation 150619571). Bot login stacker-bot[bot]. Pairs with the stacker CLI (brew tap stackedpr/stacker). See docs/STACKER_BOT_INSTALLATION.md and skills/stacker-bot/SKILL.md. Complementary to Graphite (docs/GRAPHITE_INTEGRATION.md); Stacker is the free, already-installed lane for splitting large agent diffs. |
 | `vercel` (Vercel) | ⚠️ unverified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | BLOCKED as of 2026-08-17. All three projects (revvel-standards, standards, marketplace-relister) report "Account is blocked." on every commit, on main as well as PRs. No deploy has succeeded since at least 13:18 UTC that day. Downgraded from verified because the registry must not assert a working integration that demonstrably is not working. Cause is account-level (billing or a usage/abuse flag), not repo config — see <https://vercel.com/knowledge/why-is-my-account-deployment-blocked> Re-verify and restore status: verified only after a deploy actually succeeds. |
 
-*Last generated: 2026-11-10 from `config/connections.yml`.*
+*Last generated: 2026-11-11 from `config/connections.yml`.*

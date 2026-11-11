@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-11 15:31 UTC — Cloudy — DigitalOcean action-gateway for Claude and Codex
+
+- **Actor:** Cloudy (Cursor cloud agent, Grok 4.7)
+- **Requested by:** Audrey Evans, WRs #18288 and #18290, routed by TriageChief on 2026-11-11
+- **Role:** executed
+- **Files:** `.mcp.json` (added `action-gateway`); `.codex/config.toml` (added); `docs/MCP_REVVEL_CATALOG.md` (added the remote HTTP section); `docs/Master_Inventory/MCP_STANDARD.md` (added section 14); `config/connections.yml` (added `mcp-action-gateway`); `docs/CONNECTIONS_REGISTRY.md`, `README.md`, and `connections-dashboard.html` (regenerated from that YAML); `tests/action-gateway-mcp.test.js` (added); `CHANGELOG.md` (prepended); `LEDGER.md` (prepended); `wr/memory/decisions.jsonl` (appended)
+- **What was done:** Registered the same public DigitalOcean endpoint for Claude as HTTP transport (`type: http` plus `url` in `.mcp.json`) and for Codex as `url` in `.codex/config.toml`. Documented `claude mcp add --transport http`, `claude mcp login action-gateway`, and `codex mcp add --url`. No token, key, or `.env` file.
+- **Decisions:** Left `templates/mcp/mcp.*.json` unchanged — because `scripts/setup-mcp.sh` copies those stdio profiles onto other projects, and copying this URL would publish this repository's endpoint into unrelated projects. The checked-in registration is the root Claude file and the Codex project file.
+- **Sources:** [WR #18288](https://github.com/midnghtsapphire/revvel-standards/issues/18288); [WR #18290](https://github.com/midnghtsapphire/revvel-standards/issues/18290); TriageChief comments on both issues (2026-11-11). No `Library/` copy; the issues are the source.
+- **Commits / PRs:** PR link follows the push. Branch `cursor/do-action-gateway-mcp-5603`.
+- **Open / handoff:** Audrey runs the Claude login and the Codex add on her own machine. TriageChief merges after CircleCI `lint-and-test` is green. Do not merge from this agent.
+- **Credit note:** Cloudy registered the endpoint and the docs. Audrey owns the login. TriageChief routed the work requests.
+
 ## 2026-11-11 14:25 UTC — Rules-Steward — merge main, keep both changelog entries
 
 - **Actor:** Rules-Steward (Cursor cloud agent, Grok 4.7)
