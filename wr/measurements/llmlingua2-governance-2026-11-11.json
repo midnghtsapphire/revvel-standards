@@ -1,0 +1,2846 @@
+{
+  "wr": 18335,
+  "model": "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
+  "token_counter": "LLMLingua-2 origin_tokens/compressed_tokens, tiktoken gpt-3.5-turbo via use_oai_tokenizer=True",
+  "paid_calls": false,
+  "notes": [
+    "Transformers warns when a document exceeds 512 tokens. LLMLingua-2 chunks before the classifier runs. That warning is expected and is not a failed compression."
+  ],
+  "accuracy_benchmark": {
+    "status": "pending-owner-approved-spend",
+    "reason": "Same-task accuracy needs a judge model. The deterministic term and token score is scripts/prompt_compression_accuracy.py. The paid judge was not executed."
+  },
+  "rate": 0.3,
+  "force_tokens": [
+    "UPREV",
+    "WR",
+    "MCP"
+  ],
+  "mandatory_paths": [
+    "AGENTS.md",
+    "START_HERE_CALL_CHAIN.md",
+    "MASTER.md",
+    "VISITING_AGENTS.md"
+  ],
+  "reference_subset": {
+    "files": 137,
+    "accepted_files": 137,
+    "rejected_files": 0,
+    "chars": 1123598,
+    "raw_model": {
+      "origin_tokens": 285009,
+      "compressed_tokens": 85707,
+      "ratio": 3.325387657950926,
+      "kept_fraction": 0.30071681946885886
+    },
+    "guarded": {
+      "origin_tokens": 285009,
+      "compressed_tokens": 85707,
+      "ratio": 3.325387657950926,
+      "kept_fraction": 0.30071681946885886
+    },
+    "rows": [
+      {
+        "path": "AGENT-DEPLOY-ONEFILE.md",
+        "chars": 9780,
+        "origin_tokens": 2506,
+        "compressed_tokens": 736,
+        "guarded_tokens": 736,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "AGENT-DEPLOY-ONEFILE_COPILOT.md",
+        "chars": 12575,
+        "origin_tokens": 3153,
+        "compressed_tokens": 908,
+        "guarded_tokens": 908,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "AGENT-DEPLOY-ONEFILE_Guardrails.md",
+        "chars": 15583,
+        "origin_tokens": 3460,
+        "compressed_tokens": 896,
+        "guarded_tokens": 896,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "AGENT_BUILD_PROMPT.md",
+        "chars": 8138,
+        "origin_tokens": 1983,
+        "compressed_tokens": 588,
+        "guarded_tokens": 588,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "ARTIFACT_GENERATOR.md",
+        "chars": 10850,
+        "origin_tokens": 2712,
+        "compressed_tokens": 855,
+        "guarded_tokens": 855,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "ASSUMPTIONS.md",
+        "chars": 1145,
+        "origin_tokens": 257,
+        "compressed_tokens": 93,
+        "guarded_tokens": 93,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "BUSINESSES.md",
+        "chars": 11278,
+        "origin_tokens": 3189,
+        "compressed_tokens": 999,
+        "guarded_tokens": 999,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "CHANGELOG.md",
+        "chars": 40368,
+        "origin_tokens": 10288,
+        "compressed_tokens": 2987,
+        "guarded_tokens": 2987,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "CLAUDE.md",
+        "chars": 6203,
+        "origin_tokens": 1591,
+        "compressed_tokens": 421,
+        "guarded_tokens": 421,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "CODE_REVIEW_STANDARD.md",
+        "chars": 5517,
+        "origin_tokens": 1265,
+        "compressed_tokens": 383,
+        "guarded_tokens": 383,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "DASHBOARD_QUICKREF.md",
+        "chars": 4934,
+        "origin_tokens": 1307,
+        "compressed_tokens": 377,
+        "guarded_tokens": 377,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "DECISIONS-TODAY.md",
+        "chars": 314,
+        "origin_tokens": 75,
+        "compressed_tokens": 21,
+        "guarded_tokens": 21,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "DECISIONS.md",
+        "chars": 8019,
+        "origin_tokens": 2050,
+        "compressed_tokens": 659,
+        "guarded_tokens": 659,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "GOAL.md",
+        "chars": 1023,
+        "origin_tokens": 307,
+        "compressed_tokens": 140,
+        "guarded_tokens": 140,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "GOAP.md",
+        "chars": 5503,
+        "origin_tokens": 1357,
+        "compressed_tokens": 445,
+        "guarded_tokens": 445,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "GOAP_AGENT_PROMPT.md",
+        "chars": 16331,
+        "origin_tokens": 3750,
+        "compressed_tokens": 1080,
+        "guarded_tokens": 1080,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "HANDOFF.md",
+        "chars": 9207,
+        "origin_tokens": 2373,
+        "compressed_tokens": 756,
+        "guarded_tokens": 756,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "IMPLEMENTATION_SUMMARY.md",
+        "chars": 12351,
+        "origin_tokens": 3125,
+        "compressed_tokens": 958,
+        "guarded_tokens": 958,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "IMPLEMENTATION_SUMMARY_BITO_AI.md",
+        "chars": 5764,
+        "origin_tokens": 1452,
+        "compressed_tokens": 408,
+        "guarded_tokens": 408,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "LEDGER.md",
+        "chars": 5189,
+        "origin_tokens": 1429,
+        "compressed_tokens": 491,
+        "guarded_tokens": 491,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "MEMORIES.md",
+        "chars": 343,
+        "origin_tokens": 86,
+        "compressed_tokens": 31,
+        "guarded_tokens": 31,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "MODEL_CONFIG.md",
+        "chars": 4336,
+        "origin_tokens": 1286,
+        "compressed_tokens": 385,
+        "guarded_tokens": 385,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "QUICKSTART.md",
+        "chars": 2915,
+        "origin_tokens": 803,
+        "compressed_tokens": 235,
+        "guarded_tokens": 235,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "README.md",
+        "chars": 49551,
+        "origin_tokens": 12445,
+        "compressed_tokens": 4108,
+        "guarded_tokens": 4108,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "README_SOCIAL_MEDIA_AUTOMATION.md",
+        "chars": 1337,
+        "origin_tokens": 293,
+        "compressed_tokens": 86,
+        "guarded_tokens": 86,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "REMINDERS.md",
+        "chars": 9841,
+        "origin_tokens": 2377,
+        "compressed_tokens": 735,
+        "guarded_tokens": 735,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "REPO_AUDIT.md",
+        "chars": 4644,
+        "origin_tokens": 1317,
+        "compressed_tokens": 363,
+        "guarded_tokens": 363,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "REPO_LIBRARY_STANDARD.md",
+        "chars": 635,
+        "origin_tokens": 155,
+        "compressed_tokens": 44,
+        "guarded_tokens": 44,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "REVENUE_GATE.md",
+        "chars": 2311,
+        "origin_tokens": 600,
+        "compressed_tokens": 176,
+        "guarded_tokens": 176,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "SHIP_STATUS.md",
+        "chars": 6635,
+        "origin_tokens": 1880,
+        "compressed_tokens": 649,
+        "guarded_tokens": 649,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "SYSTEM_STATE.md",
+        "chars": 27417,
+        "origin_tokens": 6880,
+        "compressed_tokens": 2086,
+        "guarded_tokens": 2086,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "THINKING_SCRATCHPAD.md",
+        "chars": 9573,
+        "origin_tokens": 2498,
+        "compressed_tokens": 784,
+        "guarded_tokens": 784,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "TRUSTFORGE_SETUP.md",
+        "chars": 6276,
+        "origin_tokens": 1792,
+        "compressed_tokens": 543,
+        "guarded_tokens": 543,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "UPREV_METHOD.md",
+        "chars": 8382,
+        "origin_tokens": 1981,
+        "compressed_tokens": 633,
+        "guarded_tokens": 633,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "WRITE_AS_YOU_GO_STANDARD.md",
+        "chars": 660,
+        "origin_tokens": 171,
+        "compressed_tokens": 51,
+        "guarded_tokens": 51,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "WR_RESEARCH_MANDATE.md",
+        "chars": 9599,
+        "origin_tokens": 2357,
+        "compressed_tokens": 704,
+        "guarded_tokens": 704,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "WR_TEMPLATE.md",
+        "chars": 1268,
+        "origin_tokens": 326,
+        "compressed_tokens": 108,
+        "guarded_tokens": 108,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "WR_TEMPLATE_BASIC.md",
+        "chars": 1992,
+        "origin_tokens": 505,
+        "compressed_tokens": 191,
+        "guarded_tokens": 191,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "learnings.md",
+        "chars": 85707,
+        "origin_tokens": 21117,
+        "compressed_tokens": 6289,
+        "guarded_tokens": 6289,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "promptforproject.md",
+        "chars": 5665,
+        "origin_tokens": 1305,
+        "compressed_tokens": 361,
+        "guarded_tokens": 361,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "recurse-rules.md",
+        "chars": 12138,
+        "origin_tokens": 2812,
+        "compressed_tokens": 804,
+        "guarded_tokens": 804,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "seed.md",
+        "chars": 2296,
+        "origin_tokens": 589,
+        "compressed_tokens": 172,
+        "guarded_tokens": 172,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AGENTS_STAR_OPTIMIZER.md",
+        "chars": 2448,
+        "origin_tokens": 622,
+        "compressed_tokens": 188,
+        "guarded_tokens": 188,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AGENT_BOARD_STANDARD.md",
+        "chars": 5481,
+        "origin_tokens": 1093,
+        "compressed_tokens": 313,
+        "guarded_tokens": 313,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md",
+        "chars": 6221,
+        "origin_tokens": 1578,
+        "compressed_tokens": 452,
+        "guarded_tokens": 452,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AGENT_SCAFFOLDING_BAN.md",
+        "chars": 3596,
+        "origin_tokens": 926,
+        "compressed_tokens": 245,
+        "guarded_tokens": 245,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AGENT_STACK_SETUP.md",
+        "chars": 1691,
+        "origin_tokens": 452,
+        "compressed_tokens": 128,
+        "guarded_tokens": 128,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AI_TAX_INTEGRATION.md",
+        "chars": 3629,
+        "origin_tokens": 863,
+        "compressed_tokens": 261,
+        "guarded_tokens": 261,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AMPLITUDE_INTEGRATION_STANDARD.md",
+        "chars": 5166,
+        "origin_tokens": 1312,
+        "compressed_tokens": 393,
+        "guarded_tokens": 393,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AMPLITUDE_NOTION_AGENT_STANDARD.md",
+        "chars": 6408,
+        "origin_tokens": 1644,
+        "compressed_tokens": 507,
+        "guarded_tokens": 507,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/API_GATEWAY.md",
+        "chars": 14099,
+        "origin_tokens": 3902,
+        "compressed_tokens": 1175,
+        "guarded_tokens": 1175,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+        "chars": 19652,
+        "origin_tokens": 5033,
+        "compressed_tokens": 1405,
+        "guarded_tokens": 1405,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+        "chars": 18934,
+        "origin_tokens": 4622,
+        "compressed_tokens": 1334,
+        "guarded_tokens": 1334,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AUTOMATION_FIRST_STACK.md",
+        "chars": 1721,
+        "origin_tokens": 440,
+        "compressed_tokens": 127,
+        "guarded_tokens": 127,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AUTO_BOOTSTRAP_STANDARD.md",
+        "chars": 5072,
+        "origin_tokens": 1340,
+        "compressed_tokens": 424,
+        "guarded_tokens": 424,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/BADGES_AND_STATUS.md",
+        "chars": 3008,
+        "origin_tokens": 787,
+        "compressed_tokens": 235,
+        "guarded_tokens": 235,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/BITO_AI_INTEGRATION_STANDARD.md",
+        "chars": 6137,
+        "origin_tokens": 1612,
+        "compressed_tokens": 464,
+        "guarded_tokens": 464,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/BNAT_SHEAF_STANDARD.md",
+        "chars": 4330,
+        "origin_tokens": 1184,
+        "compressed_tokens": 321,
+        "guarded_tokens": 321,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/BUSINESS_AUDIT_SYSTEM.md",
+        "chars": 4294,
+        "origin_tokens": 984,
+        "compressed_tokens": 328,
+        "guarded_tokens": 328,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CIRCLECI_INTEGRATION_STANDARD.md",
+        "chars": 4196,
+        "origin_tokens": 1109,
+        "compressed_tokens": 322,
+        "guarded_tokens": 322,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CLI_MCP_AUTOMATION.md",
+        "chars": 8390,
+        "origin_tokens": 2089,
+        "compressed_tokens": 599,
+        "guarded_tokens": 599,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CODE_COMMENTING_STANDARD.md",
+        "chars": 3274,
+        "origin_tokens": 859,
+        "compressed_tokens": 253,
+        "guarded_tokens": 253,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/COMMENT-DONT-DELETE.md",
+        "chars": 9525,
+        "origin_tokens": 2786,
+        "compressed_tokens": 890,
+        "guarded_tokens": 890,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CONTENT_AUTOMATION_STANDARD.md",
+        "chars": 11952,
+        "origin_tokens": 2961,
+        "compressed_tokens": 871,
+        "guarded_tokens": 871,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CONTROLLER_CHARTER.md",
+        "chars": 13061,
+        "origin_tokens": 3199,
+        "compressed_tokens": 877,
+        "guarded_tokens": 877,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CREDENTIAL_AUDIT_SYSTEM.md",
+        "chars": 621,
+        "origin_tokens": 159,
+        "compressed_tokens": 53,
+        "guarded_tokens": 53,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CRON_REQUIREMENTS.md",
+        "chars": 1779,
+        "origin_tokens": 446,
+        "compressed_tokens": 162,
+        "guarded_tokens": 162,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CRON_SYSTEM.md",
+        "chars": 2814,
+        "origin_tokens": 739,
+        "compressed_tokens": 223,
+        "guarded_tokens": 223,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/DECISION_SCORING_ENGINE_STANDARD.md",
+        "chars": 4498,
+        "origin_tokens": 944,
+        "compressed_tokens": 258,
+        "guarded_tokens": 258,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/DELIVERY_MATRIX.md",
+        "chars": 11435,
+        "origin_tokens": 2802,
+        "compressed_tokens": 750,
+        "guarded_tokens": 750,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/DOCKER.md",
+        "chars": 4016,
+        "origin_tokens": 1108,
+        "compressed_tokens": 332,
+        "guarded_tokens": 332,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/DRAGNET_FRAMEWORK.md",
+        "chars": 8808,
+        "origin_tokens": 2225,
+        "compressed_tokens": 625,
+        "guarded_tokens": 625,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/DROPLET_SSH_ACCESS.md",
+        "chars": 6124,
+        "origin_tokens": 1807,
+        "compressed_tokens": 608,
+        "guarded_tokens": 608,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/ERROR_REPORTING_STANDARD.md",
+        "chars": 8979,
+        "origin_tokens": 2139,
+        "compressed_tokens": 662,
+        "guarded_tokens": 662,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/FORMAL_VERIFY_AUTO_WR.md",
+        "chars": 2693,
+        "origin_tokens": 697,
+        "compressed_tokens": 195,
+        "guarded_tokens": 195,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GATEKEEPER.md",
+        "chars": 19476,
+        "origin_tokens": 5090,
+        "compressed_tokens": 1454,
+        "guarded_tokens": 1454,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GENZ_INT_OSINT.md",
+        "chars": 23374,
+        "origin_tokens": 5826,
+        "compressed_tokens": 1772,
+        "guarded_tokens": 1772,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GITHUB_AUTH_TOKEN_MATRIX.md",
+        "chars": 7603,
+        "origin_tokens": 1941,
+        "compressed_tokens": 544,
+        "guarded_tokens": 544,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GITHUB_MODELS_AND_ADVANCED.md",
+        "chars": 3073,
+        "origin_tokens": 712,
+        "compressed_tokens": 201,
+        "guarded_tokens": 201,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GITHUB_PROJECT_FIELDS.md",
+        "chars": 5199,
+        "origin_tokens": 1350,
+        "compressed_tokens": 401,
+        "guarded_tokens": 401,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GOAP_SWARM_RULES.md",
+        "chars": 3661,
+        "origin_tokens": 900,
+        "compressed_tokens": 261,
+        "guarded_tokens": 261,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GREEN_MAIN_STANDARD.md",
+        "chars": 4316,
+        "origin_tokens": 1054,
+        "compressed_tokens": 297,
+        "guarded_tokens": 297,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GREEN_WEBSITE_REPORTING_STANDARD.md",
+        "chars": 2863,
+        "origin_tokens": 652,
+        "compressed_tokens": 171,
+        "guarded_tokens": 171,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/IMAGE_CREATION_SEO_AUTOMATION.md",
+        "chars": 3044,
+        "origin_tokens": 826,
+        "compressed_tokens": 258,
+        "guarded_tokens": 258,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+        "chars": 9712,
+        "origin_tokens": 2343,
+        "compressed_tokens": 660,
+        "guarded_tokens": 660,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/INTEGRATIONS.md",
+        "chars": 12465,
+        "origin_tokens": 2832,
+        "compressed_tokens": 994,
+        "guarded_tokens": 994,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/INTEGRATION_MEASUREMENT_TEMPLATE.md",
+        "chars": 4347,
+        "origin_tokens": 1277,
+        "compressed_tokens": 378,
+        "guarded_tokens": 378,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/LEDGER_STANDARD.md",
+        "chars": 2154,
+        "origin_tokens": 551,
+        "compressed_tokens": 164,
+        "guarded_tokens": 164,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/LOVABLE_INTEGRATION_STANDARD.md",
+        "chars": 5147,
+        "origin_tokens": 1347,
+        "compressed_tokens": 429,
+        "guarded_tokens": 429,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/MALAMA_SELF_HEALING_AGENT_STANDARD.md",
+        "chars": 5349,
+        "origin_tokens": 1342,
+        "compressed_tokens": 378,
+        "guarded_tokens": 378,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/MEASUREMENT_STANDARD.md",
+        "chars": 5316,
+        "origin_tokens": 1404,
+        "compressed_tokens": 440,
+        "guarded_tokens": 440,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/MOBILE_TESTING.md",
+        "chars": 5867,
+        "origin_tokens": 1577,
+        "compressed_tokens": 497,
+        "guarded_tokens": 497,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/MONITORING.md",
+        "chars": 1778,
+        "origin_tokens": 491,
+        "compressed_tokens": 156,
+        "guarded_tokens": 156,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/MULTI_ENTITY_TAX_OPTIMIZATION.md",
+        "chars": 4937,
+        "origin_tokens": 1116,
+        "compressed_tokens": 316,
+        "guarded_tokens": 316,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/MVI_CONTRACT_STANDARD.md",
+        "chars": 6014,
+        "origin_tokens": 1421,
+        "compressed_tokens": 411,
+        "guarded_tokens": 411,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/NOIMOSAI_INTEGRATION_STANDARD.md",
+        "chars": 7382,
+        "origin_tokens": 1984,
+        "compressed_tokens": 593,
+        "guarded_tokens": 593,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/NOTION_INTEGRATION_STANDARD.md",
+        "chars": 9111,
+        "origin_tokens": 2260,
+        "compressed_tokens": 551,
+        "guarded_tokens": 551,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/OAUDREY_DEPLOYMENT_STANDARD.md",
+        "chars": 31313,
+        "origin_tokens": 8288,
+        "compressed_tokens": 2498,
+        "guarded_tokens": 2498,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/OPERATIONAL_CONTROL_DOCUMENTATION_STANDARD.md",
+        "chars": 8089,
+        "origin_tokens": 1893,
+        "compressed_tokens": 553,
+        "guarded_tokens": 553,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PEDAL_TO_THE_METAL_ENTERPRISE.md",
+        "chars": 3198,
+        "origin_tokens": 891,
+        "compressed_tokens": 284,
+        "guarded_tokens": 284,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PRESERVE_GOALS_AND_HISTORY.md",
+        "chars": 2822,
+        "origin_tokens": 741,
+        "compressed_tokens": 219,
+        "guarded_tokens": 219,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PRICING.md",
+        "chars": 5501,
+        "origin_tokens": 1674,
+        "compressed_tokens": 717,
+        "guarded_tokens": 717,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PROACTIVE_PREFLIGHT.md",
+        "chars": 2910,
+        "origin_tokens": 737,
+        "compressed_tokens": 205,
+        "guarded_tokens": 205,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PRODUCT_INCUBATION_STANDARD.md",
+        "chars": 1179,
+        "origin_tokens": 288,
+        "compressed_tokens": 78,
+        "guarded_tokens": 78,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PROJECT_MANAGEMENT.md",
+        "chars": 5652,
+        "origin_tokens": 1467,
+        "compressed_tokens": 531,
+        "guarded_tokens": 531,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PUTER_PERPLEXITY_INTEGRATION_STANDARD.md",
+        "chars": 4554,
+        "origin_tokens": 1067,
+        "compressed_tokens": 359,
+        "guarded_tokens": 359,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/README_LANDING_AUTOMATION.md",
+        "chars": 1541,
+        "origin_tokens": 423,
+        "compressed_tokens": 118,
+        "guarded_tokens": 118,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/REVENUECAT.md",
+        "chars": 11137,
+        "origin_tokens": 2766,
+        "compressed_tokens": 843,
+        "guarded_tokens": 843,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+        "chars": 36489,
+        "origin_tokens": 9158,
+        "compressed_tokens": 2583,
+        "guarded_tokens": 2583,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/SAAS_PRODUCTS.md",
+        "chars": 7355,
+        "origin_tokens": 1935,
+        "compressed_tokens": 649,
+        "guarded_tokens": 649,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/SEARCH_AND_SOURCING.md",
+        "chars": 6950,
+        "origin_tokens": 1775,
+        "compressed_tokens": 515,
+        "guarded_tokens": 515,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/SECURITY.md",
+        "chars": 3856,
+        "origin_tokens": 975,
+        "compressed_tokens": 299,
+        "guarded_tokens": 299,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/SELF_HEALING_STANDARDS.md",
+        "chars": 19959,
+        "origin_tokens": 5524,
+        "compressed_tokens": 1519,
+        "guarded_tokens": 1519,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/SUGGESTION_HANDLING_STANDARD.md",
+        "chars": 5275,
+        "origin_tokens": 1232,
+        "compressed_tokens": 366,
+        "guarded_tokens": 366,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/SYSTEM_STATE_STANDARD.md",
+        "chars": 4782,
+        "origin_tokens": 1347,
+        "compressed_tokens": 403,
+        "guarded_tokens": 403,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/TESTING.md",
+        "chars": 3252,
+        "origin_tokens": 875,
+        "compressed_tokens": 296,
+        "guarded_tokens": 296,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/VERIFY_THE_POSTCONDITION.md",
+        "chars": 8083,
+        "origin_tokens": 2030,
+        "compressed_tokens": 591,
+        "guarded_tokens": 591,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4471-lint-autofix-loop.md",
+        "chars": 1340,
+        "origin_tokens": 363,
+        "compressed_tokens": 109,
+        "guarded_tokens": 109,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4472-ci-gate-self-heal.md",
+        "chars": 1314,
+        "origin_tokens": 350,
+        "compressed_tokens": 103,
+        "guarded_tokens": 103,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4473-precommit-enforcement.md",
+        "chars": 1249,
+        "origin_tokens": 336,
+        "compressed_tokens": 103,
+        "guarded_tokens": 103,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4474-runtime-gateway-triage.md",
+        "chars": 3356,
+        "origin_tokens": 915,
+        "compressed_tokens": 290,
+        "guarded_tokens": 290,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4481-lane-failover.md",
+        "chars": 2635,
+        "origin_tokens": 703,
+        "compressed_tokens": 227,
+        "guarded_tokens": 227,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4482-evidence-first-directive.md",
+        "chars": 4970,
+        "origin_tokens": 1145,
+        "compressed_tokens": 325,
+        "guarded_tokens": 325,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4483-ensemble-ahp-engine.md",
+        "chars": 4204,
+        "origin_tokens": 1099,
+        "compressed_tokens": 318,
+        "guarded_tokens": 318,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4484-bnat-invention-loop.md",
+        "chars": 26250,
+        "origin_tokens": 7227,
+        "compressed_tokens": 2200,
+        "guarded_tokens": 2200,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4485-underdog-register.md",
+        "chars": 17163,
+        "origin_tokens": 4640,
+        "compressed_tokens": 1457,
+        "guarded_tokens": 1457,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4486-judge-gated-rewrite-sweep.md",
+        "chars": 3805,
+        "origin_tokens": 964,
+        "compressed_tokens": 289,
+        "guarded_tokens": 289,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/ZERO_HUMAN_FRAMEWORK.md",
+        "chars": 4325,
+        "origin_tokens": 1129,
+        "compressed_tokens": 334,
+        "guarded_tokens": 334,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/API.md",
+        "chars": 6902,
+        "origin_tokens": 1752,
+        "compressed_tokens": 527,
+        "guarded_tokens": 527,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/APP.md",
+        "chars": 8733,
+        "origin_tokens": 2283,
+        "compressed_tokens": 712,
+        "guarded_tokens": 712,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/CLI.md",
+        "chars": 6826,
+        "origin_tokens": 1755,
+        "compressed_tokens": 540,
+        "guarded_tokens": 540,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/EXCEL.md",
+        "chars": 7010,
+        "origin_tokens": 1708,
+        "compressed_tokens": 544,
+        "guarded_tokens": 544,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/MCP.md",
+        "chars": 8724,
+        "origin_tokens": 2095,
+        "compressed_tokens": 622,
+        "guarded_tokens": 622,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/PDF.md",
+        "chars": 16024,
+        "origin_tokens": 3915,
+        "compressed_tokens": 1196,
+        "guarded_tokens": 1196,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/README.md",
+        "chars": 1703,
+        "origin_tokens": 421,
+        "compressed_tokens": 132,
+        "guarded_tokens": 132,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/SKILL.md",
+        "chars": 5786,
+        "origin_tokens": 1390,
+        "compressed_tokens": 434,
+        "guarded_tokens": 434,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/TOKEN.md",
+        "chars": 7549,
+        "origin_tokens": 1770,
+        "compressed_tokens": 574,
+        "guarded_tokens": 574,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      }
+    ]
+  },
+  "full_governance": {
+    "files": 141,
+    "accepted_files": 141,
+    "rejected_files": 0,
+    "chars": 1179598,
+    "raw_model": {
+      "origin_tokens": 299593,
+      "compressed_tokens": 89978,
+      "ratio": 3.3296250194491988,
+      "kept_fraction": 0.30033411995607373
+    },
+    "guarded": {
+      "origin_tokens": 299593,
+      "compressed_tokens": 89978,
+      "ratio": 3.3296250194491988,
+      "kept_fraction": 0.30033411995607373
+    },
+    "rows": [
+      {
+        "path": "AGENT-DEPLOY-ONEFILE.md",
+        "chars": 9780,
+        "origin_tokens": 2506,
+        "compressed_tokens": 736,
+        "guarded_tokens": 736,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "AGENT-DEPLOY-ONEFILE_COPILOT.md",
+        "chars": 12575,
+        "origin_tokens": 3153,
+        "compressed_tokens": 908,
+        "guarded_tokens": 908,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "AGENT-DEPLOY-ONEFILE_Guardrails.md",
+        "chars": 15583,
+        "origin_tokens": 3460,
+        "compressed_tokens": 896,
+        "guarded_tokens": 896,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "AGENTS.md",
+        "chars": 25978,
+        "origin_tokens": 6645,
+        "compressed_tokens": 1939,
+        "guarded_tokens": 1939,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "AGENT_BUILD_PROMPT.md",
+        "chars": 8138,
+        "origin_tokens": 1983,
+        "compressed_tokens": 588,
+        "guarded_tokens": 588,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "ARTIFACT_GENERATOR.md",
+        "chars": 10850,
+        "origin_tokens": 2712,
+        "compressed_tokens": 855,
+        "guarded_tokens": 855,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "ASSUMPTIONS.md",
+        "chars": 1145,
+        "origin_tokens": 257,
+        "compressed_tokens": 93,
+        "guarded_tokens": 93,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "BUSINESSES.md",
+        "chars": 11278,
+        "origin_tokens": 3189,
+        "compressed_tokens": 999,
+        "guarded_tokens": 999,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "CHANGELOG.md",
+        "chars": 40368,
+        "origin_tokens": 10288,
+        "compressed_tokens": 2987,
+        "guarded_tokens": 2987,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "CLAUDE.md",
+        "chars": 6203,
+        "origin_tokens": 1591,
+        "compressed_tokens": 421,
+        "guarded_tokens": 421,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "CODE_REVIEW_STANDARD.md",
+        "chars": 5517,
+        "origin_tokens": 1265,
+        "compressed_tokens": 383,
+        "guarded_tokens": 383,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "DASHBOARD_QUICKREF.md",
+        "chars": 4934,
+        "origin_tokens": 1307,
+        "compressed_tokens": 377,
+        "guarded_tokens": 377,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "DECISIONS-TODAY.md",
+        "chars": 314,
+        "origin_tokens": 75,
+        "compressed_tokens": 21,
+        "guarded_tokens": 21,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "DECISIONS.md",
+        "chars": 8019,
+        "origin_tokens": 2050,
+        "compressed_tokens": 659,
+        "guarded_tokens": 659,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "GOAL.md",
+        "chars": 1023,
+        "origin_tokens": 307,
+        "compressed_tokens": 140,
+        "guarded_tokens": 140,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "GOAP.md",
+        "chars": 5503,
+        "origin_tokens": 1357,
+        "compressed_tokens": 445,
+        "guarded_tokens": 445,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "GOAP_AGENT_PROMPT.md",
+        "chars": 16331,
+        "origin_tokens": 3750,
+        "compressed_tokens": 1080,
+        "guarded_tokens": 1080,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "HANDOFF.md",
+        "chars": 9207,
+        "origin_tokens": 2373,
+        "compressed_tokens": 756,
+        "guarded_tokens": 756,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "IMPLEMENTATION_SUMMARY.md",
+        "chars": 12351,
+        "origin_tokens": 3125,
+        "compressed_tokens": 958,
+        "guarded_tokens": 958,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "IMPLEMENTATION_SUMMARY_BITO_AI.md",
+        "chars": 5764,
+        "origin_tokens": 1452,
+        "compressed_tokens": 408,
+        "guarded_tokens": 408,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "LEDGER.md",
+        "chars": 5189,
+        "origin_tokens": 1429,
+        "compressed_tokens": 491,
+        "guarded_tokens": 491,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "MASTER.md",
+        "chars": 9908,
+        "origin_tokens": 2652,
+        "compressed_tokens": 806,
+        "guarded_tokens": 806,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "MEMORIES.md",
+        "chars": 343,
+        "origin_tokens": 86,
+        "compressed_tokens": 31,
+        "guarded_tokens": 31,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "MODEL_CONFIG.md",
+        "chars": 4336,
+        "origin_tokens": 1286,
+        "compressed_tokens": 385,
+        "guarded_tokens": 385,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "QUICKSTART.md",
+        "chars": 2915,
+        "origin_tokens": 803,
+        "compressed_tokens": 235,
+        "guarded_tokens": 235,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "README.md",
+        "chars": 49551,
+        "origin_tokens": 12445,
+        "compressed_tokens": 4108,
+        "guarded_tokens": 4108,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "README_SOCIAL_MEDIA_AUTOMATION.md",
+        "chars": 1337,
+        "origin_tokens": 293,
+        "compressed_tokens": 86,
+        "guarded_tokens": 86,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "REMINDERS.md",
+        "chars": 9841,
+        "origin_tokens": 2377,
+        "compressed_tokens": 735,
+        "guarded_tokens": 735,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "REPO_AUDIT.md",
+        "chars": 4644,
+        "origin_tokens": 1317,
+        "compressed_tokens": 363,
+        "guarded_tokens": 363,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "REPO_LIBRARY_STANDARD.md",
+        "chars": 635,
+        "origin_tokens": 155,
+        "compressed_tokens": 44,
+        "guarded_tokens": 44,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "REVENUE_GATE.md",
+        "chars": 2311,
+        "origin_tokens": 600,
+        "compressed_tokens": 176,
+        "guarded_tokens": 176,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "SHIP_STATUS.md",
+        "chars": 6635,
+        "origin_tokens": 1880,
+        "compressed_tokens": 649,
+        "guarded_tokens": 649,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "START_HERE_CALL_CHAIN.md",
+        "chars": 8748,
+        "origin_tokens": 2278,
+        "compressed_tokens": 642,
+        "guarded_tokens": 642,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "SYSTEM_STATE.md",
+        "chars": 27417,
+        "origin_tokens": 6880,
+        "compressed_tokens": 2086,
+        "guarded_tokens": 2086,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "THINKING_SCRATCHPAD.md",
+        "chars": 9573,
+        "origin_tokens": 2498,
+        "compressed_tokens": 784,
+        "guarded_tokens": 784,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "TRUSTFORGE_SETUP.md",
+        "chars": 6276,
+        "origin_tokens": 1792,
+        "compressed_tokens": 543,
+        "guarded_tokens": 543,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "UPREV_METHOD.md",
+        "chars": 8382,
+        "origin_tokens": 1981,
+        "compressed_tokens": 633,
+        "guarded_tokens": 633,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "VISITING_AGENTS.md",
+        "chars": 11366,
+        "origin_tokens": 3009,
+        "compressed_tokens": 884,
+        "guarded_tokens": 884,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "WRITE_AS_YOU_GO_STANDARD.md",
+        "chars": 660,
+        "origin_tokens": 171,
+        "compressed_tokens": 51,
+        "guarded_tokens": 51,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "WR_RESEARCH_MANDATE.md",
+        "chars": 9599,
+        "origin_tokens": 2357,
+        "compressed_tokens": 704,
+        "guarded_tokens": 704,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "WR_TEMPLATE.md",
+        "chars": 1268,
+        "origin_tokens": 326,
+        "compressed_tokens": 108,
+        "guarded_tokens": 108,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "WR_TEMPLATE_BASIC.md",
+        "chars": 1992,
+        "origin_tokens": 505,
+        "compressed_tokens": 191,
+        "guarded_tokens": 191,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "learnings.md",
+        "chars": 85707,
+        "origin_tokens": 21117,
+        "compressed_tokens": 6289,
+        "guarded_tokens": 6289,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "promptforproject.md",
+        "chars": 5665,
+        "origin_tokens": 1305,
+        "compressed_tokens": 361,
+        "guarded_tokens": 361,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "recurse-rules.md",
+        "chars": 12138,
+        "origin_tokens": 2812,
+        "compressed_tokens": 804,
+        "guarded_tokens": 804,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "seed.md",
+        "chars": 2296,
+        "origin_tokens": 589,
+        "compressed_tokens": 172,
+        "guarded_tokens": 172,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AGENTS_STAR_OPTIMIZER.md",
+        "chars": 2448,
+        "origin_tokens": 622,
+        "compressed_tokens": 188,
+        "guarded_tokens": 188,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AGENT_BOARD_STANDARD.md",
+        "chars": 5481,
+        "origin_tokens": 1093,
+        "compressed_tokens": 313,
+        "guarded_tokens": 313,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md",
+        "chars": 6221,
+        "origin_tokens": 1578,
+        "compressed_tokens": 452,
+        "guarded_tokens": 452,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AGENT_SCAFFOLDING_BAN.md",
+        "chars": 3596,
+        "origin_tokens": 926,
+        "compressed_tokens": 245,
+        "guarded_tokens": 245,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AGENT_STACK_SETUP.md",
+        "chars": 1691,
+        "origin_tokens": 452,
+        "compressed_tokens": 128,
+        "guarded_tokens": 128,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AI_TAX_INTEGRATION.md",
+        "chars": 3629,
+        "origin_tokens": 863,
+        "compressed_tokens": 261,
+        "guarded_tokens": 261,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AMPLITUDE_INTEGRATION_STANDARD.md",
+        "chars": 5166,
+        "origin_tokens": 1312,
+        "compressed_tokens": 393,
+        "guarded_tokens": 393,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AMPLITUDE_NOTION_AGENT_STANDARD.md",
+        "chars": 6408,
+        "origin_tokens": 1644,
+        "compressed_tokens": 507,
+        "guarded_tokens": 507,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/API_GATEWAY.md",
+        "chars": 14099,
+        "origin_tokens": 3902,
+        "compressed_tokens": 1175,
+        "guarded_tokens": 1175,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+        "chars": 19652,
+        "origin_tokens": 5033,
+        "compressed_tokens": 1405,
+        "guarded_tokens": 1405,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+        "chars": 18934,
+        "origin_tokens": 4622,
+        "compressed_tokens": 1334,
+        "guarded_tokens": 1334,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AUTOMATION_FIRST_STACK.md",
+        "chars": 1721,
+        "origin_tokens": 440,
+        "compressed_tokens": 127,
+        "guarded_tokens": 127,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/AUTO_BOOTSTRAP_STANDARD.md",
+        "chars": 5072,
+        "origin_tokens": 1340,
+        "compressed_tokens": 424,
+        "guarded_tokens": 424,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/BADGES_AND_STATUS.md",
+        "chars": 3008,
+        "origin_tokens": 787,
+        "compressed_tokens": 235,
+        "guarded_tokens": 235,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/BITO_AI_INTEGRATION_STANDARD.md",
+        "chars": 6137,
+        "origin_tokens": 1612,
+        "compressed_tokens": 464,
+        "guarded_tokens": 464,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/BNAT_SHEAF_STANDARD.md",
+        "chars": 4330,
+        "origin_tokens": 1184,
+        "compressed_tokens": 321,
+        "guarded_tokens": 321,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/BUSINESS_AUDIT_SYSTEM.md",
+        "chars": 4294,
+        "origin_tokens": 984,
+        "compressed_tokens": 328,
+        "guarded_tokens": 328,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CIRCLECI_INTEGRATION_STANDARD.md",
+        "chars": 4196,
+        "origin_tokens": 1109,
+        "compressed_tokens": 322,
+        "guarded_tokens": 322,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CLI_MCP_AUTOMATION.md",
+        "chars": 8390,
+        "origin_tokens": 2089,
+        "compressed_tokens": 599,
+        "guarded_tokens": 599,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CODE_COMMENTING_STANDARD.md",
+        "chars": 3274,
+        "origin_tokens": 859,
+        "compressed_tokens": 253,
+        "guarded_tokens": 253,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/COMMENT-DONT-DELETE.md",
+        "chars": 9525,
+        "origin_tokens": 2786,
+        "compressed_tokens": 890,
+        "guarded_tokens": 890,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CONTENT_AUTOMATION_STANDARD.md",
+        "chars": 11952,
+        "origin_tokens": 2961,
+        "compressed_tokens": 871,
+        "guarded_tokens": 871,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CONTROLLER_CHARTER.md",
+        "chars": 13061,
+        "origin_tokens": 3199,
+        "compressed_tokens": 877,
+        "guarded_tokens": 877,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CREDENTIAL_AUDIT_SYSTEM.md",
+        "chars": 621,
+        "origin_tokens": 159,
+        "compressed_tokens": 53,
+        "guarded_tokens": 53,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CRON_REQUIREMENTS.md",
+        "chars": 1779,
+        "origin_tokens": 446,
+        "compressed_tokens": 162,
+        "guarded_tokens": 162,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/CRON_SYSTEM.md",
+        "chars": 2814,
+        "origin_tokens": 739,
+        "compressed_tokens": 223,
+        "guarded_tokens": 223,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/DECISION_SCORING_ENGINE_STANDARD.md",
+        "chars": 4498,
+        "origin_tokens": 944,
+        "compressed_tokens": 258,
+        "guarded_tokens": 258,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/DELIVERY_MATRIX.md",
+        "chars": 11435,
+        "origin_tokens": 2802,
+        "compressed_tokens": 750,
+        "guarded_tokens": 750,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/DOCKER.md",
+        "chars": 4016,
+        "origin_tokens": 1108,
+        "compressed_tokens": 332,
+        "guarded_tokens": 332,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/DRAGNET_FRAMEWORK.md",
+        "chars": 8808,
+        "origin_tokens": 2225,
+        "compressed_tokens": 625,
+        "guarded_tokens": 625,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/DROPLET_SSH_ACCESS.md",
+        "chars": 6124,
+        "origin_tokens": 1807,
+        "compressed_tokens": 608,
+        "guarded_tokens": 608,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/ERROR_REPORTING_STANDARD.md",
+        "chars": 8979,
+        "origin_tokens": 2139,
+        "compressed_tokens": 662,
+        "guarded_tokens": 662,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/FORMAL_VERIFY_AUTO_WR.md",
+        "chars": 2693,
+        "origin_tokens": 697,
+        "compressed_tokens": 195,
+        "guarded_tokens": 195,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GATEKEEPER.md",
+        "chars": 19476,
+        "origin_tokens": 5090,
+        "compressed_tokens": 1454,
+        "guarded_tokens": 1454,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GENZ_INT_OSINT.md",
+        "chars": 23374,
+        "origin_tokens": 5826,
+        "compressed_tokens": 1772,
+        "guarded_tokens": 1772,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GITHUB_AUTH_TOKEN_MATRIX.md",
+        "chars": 7603,
+        "origin_tokens": 1941,
+        "compressed_tokens": 544,
+        "guarded_tokens": 544,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GITHUB_MODELS_AND_ADVANCED.md",
+        "chars": 3073,
+        "origin_tokens": 712,
+        "compressed_tokens": 201,
+        "guarded_tokens": 201,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GITHUB_PROJECT_FIELDS.md",
+        "chars": 5199,
+        "origin_tokens": 1350,
+        "compressed_tokens": 401,
+        "guarded_tokens": 401,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GOAP_SWARM_RULES.md",
+        "chars": 3661,
+        "origin_tokens": 900,
+        "compressed_tokens": 261,
+        "guarded_tokens": 261,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GREEN_MAIN_STANDARD.md",
+        "chars": 4316,
+        "origin_tokens": 1054,
+        "compressed_tokens": 297,
+        "guarded_tokens": 297,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/GREEN_WEBSITE_REPORTING_STANDARD.md",
+        "chars": 2863,
+        "origin_tokens": 652,
+        "compressed_tokens": 171,
+        "guarded_tokens": 171,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/IMAGE_CREATION_SEO_AUTOMATION.md",
+        "chars": 3044,
+        "origin_tokens": 826,
+        "compressed_tokens": 258,
+        "guarded_tokens": 258,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+        "chars": 9712,
+        "origin_tokens": 2343,
+        "compressed_tokens": 660,
+        "guarded_tokens": 660,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/INTEGRATIONS.md",
+        "chars": 12465,
+        "origin_tokens": 2832,
+        "compressed_tokens": 994,
+        "guarded_tokens": 994,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/INTEGRATION_MEASUREMENT_TEMPLATE.md",
+        "chars": 4347,
+        "origin_tokens": 1277,
+        "compressed_tokens": 378,
+        "guarded_tokens": 378,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/LEDGER_STANDARD.md",
+        "chars": 2154,
+        "origin_tokens": 551,
+        "compressed_tokens": 164,
+        "guarded_tokens": 164,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/LOVABLE_INTEGRATION_STANDARD.md",
+        "chars": 5147,
+        "origin_tokens": 1347,
+        "compressed_tokens": 429,
+        "guarded_tokens": 429,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/MALAMA_SELF_HEALING_AGENT_STANDARD.md",
+        "chars": 5349,
+        "origin_tokens": 1342,
+        "compressed_tokens": 378,
+        "guarded_tokens": 378,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/MEASUREMENT_STANDARD.md",
+        "chars": 5316,
+        "origin_tokens": 1404,
+        "compressed_tokens": 440,
+        "guarded_tokens": 440,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/MOBILE_TESTING.md",
+        "chars": 5867,
+        "origin_tokens": 1577,
+        "compressed_tokens": 497,
+        "guarded_tokens": 497,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/MONITORING.md",
+        "chars": 1778,
+        "origin_tokens": 491,
+        "compressed_tokens": 156,
+        "guarded_tokens": 156,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/MULTI_ENTITY_TAX_OPTIMIZATION.md",
+        "chars": 4937,
+        "origin_tokens": 1116,
+        "compressed_tokens": 316,
+        "guarded_tokens": 316,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/MVI_CONTRACT_STANDARD.md",
+        "chars": 6014,
+        "origin_tokens": 1421,
+        "compressed_tokens": 411,
+        "guarded_tokens": 411,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/NOIMOSAI_INTEGRATION_STANDARD.md",
+        "chars": 7382,
+        "origin_tokens": 1984,
+        "compressed_tokens": 593,
+        "guarded_tokens": 593,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/NOTION_INTEGRATION_STANDARD.md",
+        "chars": 9111,
+        "origin_tokens": 2260,
+        "compressed_tokens": 551,
+        "guarded_tokens": 551,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/OAUDREY_DEPLOYMENT_STANDARD.md",
+        "chars": 31313,
+        "origin_tokens": 8288,
+        "compressed_tokens": 2498,
+        "guarded_tokens": 2498,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/OPERATIONAL_CONTROL_DOCUMENTATION_STANDARD.md",
+        "chars": 8089,
+        "origin_tokens": 1893,
+        "compressed_tokens": 553,
+        "guarded_tokens": 553,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PEDAL_TO_THE_METAL_ENTERPRISE.md",
+        "chars": 3198,
+        "origin_tokens": 891,
+        "compressed_tokens": 284,
+        "guarded_tokens": 284,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PRESERVE_GOALS_AND_HISTORY.md",
+        "chars": 2822,
+        "origin_tokens": 741,
+        "compressed_tokens": 219,
+        "guarded_tokens": 219,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PRICING.md",
+        "chars": 5501,
+        "origin_tokens": 1674,
+        "compressed_tokens": 717,
+        "guarded_tokens": 717,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PROACTIVE_PREFLIGHT.md",
+        "chars": 2910,
+        "origin_tokens": 737,
+        "compressed_tokens": 205,
+        "guarded_tokens": 205,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PRODUCT_INCUBATION_STANDARD.md",
+        "chars": 1179,
+        "origin_tokens": 288,
+        "compressed_tokens": 78,
+        "guarded_tokens": 78,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PROJECT_MANAGEMENT.md",
+        "chars": 5652,
+        "origin_tokens": 1467,
+        "compressed_tokens": 531,
+        "guarded_tokens": 531,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/PUTER_PERPLEXITY_INTEGRATION_STANDARD.md",
+        "chars": 4554,
+        "origin_tokens": 1067,
+        "compressed_tokens": 359,
+        "guarded_tokens": 359,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/README_LANDING_AUTOMATION.md",
+        "chars": 1541,
+        "origin_tokens": 423,
+        "compressed_tokens": 118,
+        "guarded_tokens": 118,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/REVENUECAT.md",
+        "chars": 11137,
+        "origin_tokens": 2766,
+        "compressed_tokens": 843,
+        "guarded_tokens": 843,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+        "chars": 36489,
+        "origin_tokens": 9158,
+        "compressed_tokens": 2583,
+        "guarded_tokens": 2583,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/SAAS_PRODUCTS.md",
+        "chars": 7355,
+        "origin_tokens": 1935,
+        "compressed_tokens": 649,
+        "guarded_tokens": 649,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/SEARCH_AND_SOURCING.md",
+        "chars": 6950,
+        "origin_tokens": 1775,
+        "compressed_tokens": 515,
+        "guarded_tokens": 515,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/SECURITY.md",
+        "chars": 3856,
+        "origin_tokens": 975,
+        "compressed_tokens": 299,
+        "guarded_tokens": 299,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/SELF_HEALING_STANDARDS.md",
+        "chars": 19959,
+        "origin_tokens": 5524,
+        "compressed_tokens": 1519,
+        "guarded_tokens": 1519,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/SUGGESTION_HANDLING_STANDARD.md",
+        "chars": 5275,
+        "origin_tokens": 1232,
+        "compressed_tokens": 366,
+        "guarded_tokens": 366,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/SYSTEM_STATE_STANDARD.md",
+        "chars": 4782,
+        "origin_tokens": 1347,
+        "compressed_tokens": 403,
+        "guarded_tokens": 403,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/TESTING.md",
+        "chars": 3252,
+        "origin_tokens": 875,
+        "compressed_tokens": 296,
+        "guarded_tokens": 296,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/VERIFY_THE_POSTCONDITION.md",
+        "chars": 8083,
+        "origin_tokens": 2030,
+        "compressed_tokens": 591,
+        "guarded_tokens": 591,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4471-lint-autofix-loop.md",
+        "chars": 1340,
+        "origin_tokens": 363,
+        "compressed_tokens": 109,
+        "guarded_tokens": 109,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4472-ci-gate-self-heal.md",
+        "chars": 1314,
+        "origin_tokens": 350,
+        "compressed_tokens": 103,
+        "guarded_tokens": 103,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4473-precommit-enforcement.md",
+        "chars": 1249,
+        "origin_tokens": 336,
+        "compressed_tokens": 103,
+        "guarded_tokens": 103,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4474-runtime-gateway-triage.md",
+        "chars": 3356,
+        "origin_tokens": 915,
+        "compressed_tokens": 290,
+        "guarded_tokens": 290,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4481-lane-failover.md",
+        "chars": 2635,
+        "origin_tokens": 703,
+        "compressed_tokens": 227,
+        "guarded_tokens": 227,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4482-evidence-first-directive.md",
+        "chars": 4970,
+        "origin_tokens": 1145,
+        "compressed_tokens": 325,
+        "guarded_tokens": 325,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4483-ensemble-ahp-engine.md",
+        "chars": 4204,
+        "origin_tokens": 1099,
+        "compressed_tokens": 318,
+        "guarded_tokens": 318,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4484-bnat-invention-loop.md",
+        "chars": 26250,
+        "origin_tokens": 7227,
+        "compressed_tokens": 2200,
+        "guarded_tokens": 2200,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4485-underdog-register.md",
+        "chars": 17163,
+        "origin_tokens": 4640,
+        "compressed_tokens": 1457,
+        "guarded_tokens": 1457,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/WR-4486-judge-gated-rewrite-sweep.md",
+        "chars": 3805,
+        "origin_tokens": 964,
+        "compressed_tokens": 289,
+        "guarded_tokens": 289,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/ZERO_HUMAN_FRAMEWORK.md",
+        "chars": 4325,
+        "origin_tokens": 1129,
+        "compressed_tokens": 334,
+        "guarded_tokens": 334,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/API.md",
+        "chars": 6902,
+        "origin_tokens": 1752,
+        "compressed_tokens": 527,
+        "guarded_tokens": 527,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/APP.md",
+        "chars": 8733,
+        "origin_tokens": 2283,
+        "compressed_tokens": 712,
+        "guarded_tokens": 712,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/CLI.md",
+        "chars": 6826,
+        "origin_tokens": 1755,
+        "compressed_tokens": 540,
+        "guarded_tokens": 540,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/EXCEL.md",
+        "chars": 7010,
+        "origin_tokens": 1708,
+        "compressed_tokens": 544,
+        "guarded_tokens": 544,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/MCP.md",
+        "chars": 8724,
+        "origin_tokens": 2095,
+        "compressed_tokens": 622,
+        "guarded_tokens": 622,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/PDF.md",
+        "chars": 16024,
+        "origin_tokens": 3915,
+        "compressed_tokens": 1196,
+        "guarded_tokens": 1196,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/README.md",
+        "chars": 1703,
+        "origin_tokens": 421,
+        "compressed_tokens": 132,
+        "guarded_tokens": 132,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/SKILL.md",
+        "chars": 5786,
+        "origin_tokens": 1390,
+        "compressed_tokens": 434,
+        "guarded_tokens": 434,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      },
+      {
+        "path": "standards/shapes/TOKEN.md",
+        "chars": 7549,
+        "origin_tokens": 1770,
+        "compressed_tokens": 574,
+        "guarded_tokens": 574,
+        "compressed": true,
+        "reason": null,
+        "missing_terms": []
+      }
+    ]
+  },
+  "measured_at": "2026-11-11T15:38:41+00:00"
+}

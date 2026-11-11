@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-11 15:45 UTC — PromptOrchestrator — LLMLingua-2 governance compression (WR #18335)
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** Audrey Evans, 2026-11-11, approved starting the draft pull requests on already-approved spend and posting honest status. TriageChief routed #18335 to PromptOrchestrator.
+- **Role:** executed
+- **Files:** `scripts/prompt_compression.py` (extended); `scripts/prompt_compression_accuracy.py` (added); `scripts/requirements-llmlingua.txt` (added); `tests/prompt_compression_test.py` (extended); `docs/prompt-compression.md` (added); `wr/measurements/llmlingua2-governance-2026-11-11.json` (added); `.circleci/config.yml` (job `prompt-compression` added on both workflows); `wr/summaries/optional-intelligence-experiments-2026-11-10.md` (appended); `CHANGELOG.md` (appended); `wr/memory/decisions.jsonl` (appended); `LEDGER.md` (this entry)
+- **What was done:** Extended the existing local LLMLingua-2 adapter. Default keep-rate remains 0.3. Force tokens remain UPREV, WR, and MCP, plus `REVVEL_FORCE_TOKENS` or a caller list. A whole-token match replaced the substring check after the first measurement rejected three files because WRONG, WRs, and WRAPPED contain the letters WR. The substring check is commented in place. Ran `microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank` on CPU over the context-graph index (root Markdown plus `standards/**/*.md`). Full index: 141 files, 1,179,598 characters, 299,593 tokens to 89,978 tokens, ratio 3.3296250194491988, 0 term-loss rejections. Reference subset (what the coder compresses): 137 files, 285,009 to 85,707, ratio 3.325387657950926. Counts are tiktoken gpt-3.5-turbo via LLMLingua-2. No paid LLM call. The same-task accuracy harness records that score and refuses a paid judge.
+- **Decisions:** Default model is the smaller official MeetingBank checkpoint — because that is the checkpoint that was loaded and measured on this 16GB CPU host. The 2026-11-10 large checkpoint name stays selectable via `REVVEL_LLMLINGUA_MODEL` or `--model`. Mandatory governance files stay uncompressed on the coder path — because the 2026-11-10 adapter refused to let compression weaken owner instructions. The accuracy judge was not run — because it would be a new paid call and this task allows only spend that is already approved.
+- **Sources:** [Microsoft LLMLingua compressor](https://github.com/microsoft/LLMLingua/blob/main/llmlingua/prompt_compressor.py); [LLMLingua-2 evaluation compress.py](https://github.com/microsoft/LLMLingua/blob/main/experiments/llmlingua2/evaluation/compress.py). No Library/ copy of those files was already in the repo, so the links are the record. Measured counts: `wr/measurements/llmlingua2-governance-2026-11-11.json`.
+- **Commits / PRs:** branch `feat/wr-18335-llmlingua2`. PR link to be added in a later ledger entry after the PR exists, not by rewriting this one.
+- **Open / handoff:** Same-task accuracy benchmark remains pending owner-approved spend. CircleCI job `prompt-compression` runs the deterministic tests. TriageChief merges. Next owner: TriageChief.
+- **Credit note:** PromptOrchestrator executed the integration and the local measurement. Audrey Evans approved the spend limit and the draft pull request. TriageChief assigned the work request.
+
 ## 2026-11-11 14:25 UTC — Rules-Steward — merge main, keep both changelog entries
 
 - **Actor:** Rules-Steward (Cursor cloud agent, Grok 4.7)

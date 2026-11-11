@@ -259,6 +259,19 @@ jobs:
           path: /tmp/agent-fte-artifacts
           destination: agent-as-fte
 
+  # WR #18335 — LLMLingua-2 token preservation, rate config, and reduction
+  # measurement. Stdlib unittest only: the MeetingBank weights are provisioned
+  # by hand (docs/prompt-compression.md) and the measured counts are committed.
+  # This job does not download a model and does not call a paid API.
+  # Manual twin: python3 -m unittest discover -s tests -p prompt_compression_test.py -v
+  prompt-compression:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: LLMLingua-2 compression tests
+          command: python3 -m unittest discover -s tests -p prompt_compression_test.py -v
+
 workflows:
   version: 2
 
@@ -294,6 +307,10 @@ workflows:
             branches:
               ignore: main
       - affiliate-hub-image:
+          filters:
+            branches:
+              ignore: main
+      - prompt-compression:
           filters:
             branches:
               ignore: main
@@ -338,6 +355,10 @@ workflows:
             branches:
               only: main
       - affiliate-hub-image:
+          filters:
+            branches:
+              only: main
+      - prompt-compression:
           filters:
             branches:
               only: main
