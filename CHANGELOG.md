@@ -1,3 +1,7 @@
+## 2026-11-10 (3) — restore deleted workflows as commented-out files
+
+- **Git-Master:** Restored `.github/workflows/agent-approval-check.yml` (deleted in `ed0f322`, 2026-11-10 8:08 AM MST) and `.github/workflows/probe-selfhosted.yml` (deleted in `4e6a47f`, 2026-11-09 12:48 PM MST) with every original line commented out, per Audrey's direction 2026-11-10: "yes they need to go back in commented out." House rule: comment out, never delete. No other workflow files were deleted on main in this window. These files are inert (fully commented out) and do not run as GitHub Actions.
+
 ## 2026-11-10 (2) — scripts-as-CI wave 2: PR Lifecycle + PR Check Status + shared client
 
 - `scripts/ci/lib/mini-github.js` — shared zero-dep client; listForRef/listComments now paginate fully (MEASURED: 235 check runs on main).
