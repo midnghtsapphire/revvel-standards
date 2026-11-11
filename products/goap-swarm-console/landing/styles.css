@@ -1,0 +1,61 @@
+:root {
+  color-scheme: dark;
+  --bg: #071323;
+  --card: #0f1c2e;
+  --line: #294059;
+  --text: #f8fafc;
+  --muted: #cbd5e1;
+  --dim: #94a3b8;
+  --accent: #67e8f9;
+  --ink: #082f49;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+a { color: var(--accent); }
+.wrap { max-width: 960px; margin: 0 auto; padding: 32px 20px 64px; }
+.nav { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; }
+.kicker { color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.85rem; }
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.15; margin: 8px 0; }
+h2 { font-size: 1.6rem; margin: 0 0 8px; }
+.lead { font-size: 1.2rem; color: var(--muted); max-width: 42rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.button, button.button {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 700;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 18px;
+  cursor: pointer;
+}
+.button.secondary { background: transparent; color: var(--text); border: 1px solid var(--line); }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.card, .panel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+section { margin-top: 36px; }
+label { display: block; font-weight: 600; }
+input {
+  width: 100%;
+  margin-top: 6px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #071323;
+  color: var(--text);
+  font-size: 1rem;
+}
+input:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+.results { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-top: 16px; }
+.results strong { display: block; font-size: 1.8rem; }
+.note { color: var(--dim); font-size: 0.95rem; }
+.calendly-inline-widget { width: 100%; }
+@media (max-width: 640px) {
+  .wrap { padding: 20px 14px 48px; }
+}

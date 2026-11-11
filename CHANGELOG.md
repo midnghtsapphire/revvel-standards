@@ -6,6 +6,14 @@
 
 - Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `ai-video-toolkit.revvel.co` under `products/ai-video-toolkit/`. CircleCI job `ai-video-toolkit-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/ai-video-toolkit/CHANGELOG.md`.
 
+## 2026-11-11 — MarketShipper (Grok 4.7, Cursor Cloud) — GOAP agent-as-FTE sales deck and landing
+
+- `products/goap-swarm-console/sales/deck.md`: 13-slide source for work request #18334. Includes the value proposition, the $2,000 to $5,000 per agent per month band, an ROI illustration, and a proof-pending case study. No customer, quote, or result was invented. A same-day URL check found no deployed product to cite (issue #18330 is still open).
+- `products/goap-swarm-console/public/goap-agent-sales-deck.pdf`: rebuilt from that source by `scripts/build_sales_deck.py`.
+- `products/goap-swarm-console/landing/` and `deploy/app.yaml`: static landing page for agent-as-fte.revvel.co. The Calendly embed reads `CALENDLY_URL` and stays off when that value is empty or not an https link on calendly.com with a scheduling path.
+- `.circleci/config.yml`: job `agent-as-fte` builds the PDF and the landing page and requires HTTP 200 on loopback.
+- Prospect contact, closed customers, and Stripe MRR were not done. Ledger: `products/goap-swarm-console/LEDGER.md`.
+
 ## 2026-11-11 (2) — Rules-Steward — evidence checker follows readiness links
 
 - 2026-11-11 — Rules-Steward (Cursor, Grok 4.7) — `scripts/compliance-evidence.js`: relative markdown links in the compliance docs are checked for file presence, beside the existing backtick-path scan. Bugbot on PR #18365. `tests/compliance-evidence.test.js` covers a relative link, a skipped web link, and a missing file.
@@ -13,6 +21,7 @@
 ## 2026-11-11 — Rules-Steward — NIST readiness mapping (WR #18343)
 
 - 2026-11-11 — Rules-Steward (Cursor, Grok 4.7) — `docs/compliance/NIST_READINESS.md`: readiness mapping of repository controls to SP 800-53 Rev. 5 families. Statuses are implemented, partial, or gap. Not a compliance attestation. NISTIR 8605D is not drafted. Appended rescope notes to the 2026-11-10 NIST docs. Root `LEDGER.md` opened with this entry because the file was absent.
+
 ## 2026-11-11 — halo-demo-stream: AG-UI streaming + session-resume demo kit, wired to affiliate-hub (QuickWinBuilder, WR #18342)
 
 - Added `products/halo-demo-stream/`: zero-dependency Node kit. `POST /agui` streams AG-UI standard events over SSE (RUN_STARTED, STATE_SNAPSHOT, TEXT_MESSAGE_START/CONTENT/END, STATE_DELTA as JSON Patch, RUN_FINISHED, RUN_ERROR). File-backed sessions resume by session id on any new client, including after a server restart. Plain HTML demo page, every text colour pair at least 7:1. 15 tests.

@@ -247,6 +247,19 @@ jobs:
           no_output_timeout: 20m
           command: bash .circleci/scripts/product-image-gate.sh ai-video-toolkit
 
+  # WR #18334 — build the GOAP agent-as-FTE PDF and the static landing page,
+  # then require HTTP 200 from a local server. This job does not deploy, send
+  # mail, or contact a prospect. The PDF it stores is the CircleCI artifact.
+  agent-as-fte:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Build sales PDF and landing page, then require HTTP 200
+          command: bash .circleci/scripts/build-agent-fte.sh
+      - store_artifacts:
+          path: /tmp/agent-fte-artifacts
+          destination: agent-as-fte
 
 workflows:
   version: 2
@@ -267,6 +280,10 @@ workflows:
             branches:
               ignore: main
       - veins-monitor:
+          filters:
+            branches:
+              ignore: main
+      - agent-as-fte:
           filters:
             branches:
               ignore: main
@@ -299,6 +316,10 @@ workflows:
             branches:
               only: main
       - veins-monitor:
+          filters:
+            branches:
+              only: main
+      - agent-as-fte:
           filters:
             branches:
               only: main
