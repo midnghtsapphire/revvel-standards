@@ -1,3 +1,7 @@
+## 2026-11-11 (2) — Rules-Steward — evidence checker follows readiness links
+
+- 2026-11-11 — Rules-Steward (Cursor, Grok 4.7) — `scripts/compliance-evidence.js`: relative markdown links in the compliance docs are checked for file presence, beside the existing backtick-path scan. Bugbot on PR #18365. `tests/compliance-evidence.test.js` covers a relative link, a skipped web link, and a missing file.
+
 ## 2026-11-11 — Rules-Steward — NIST readiness mapping (WR #18343)
 
 - 2026-11-11 — Rules-Steward (Cursor, Grok 4.7) — `docs/compliance/NIST_READINESS.md`: readiness mapping of repository controls to SP 800-53 Rev. 5 families. Statuses are implemented, partial, or gap. Not a compliance attestation. NISTIR 8605D is not drafted. Appended rescope notes to the 2026-11-10 NIST docs. Root `LEDGER.md` opened with this entry because the file was absent.

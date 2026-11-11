@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-11 14:20 UTC — Rules-Steward — evidence checker follows mapping links
+
+- **Actor:** Rules-Steward (Cursor cloud agent, Grok 4.7)
+- **Requested by:** Cursor Bugbot review on PR #18365
+- **Role:** executed
+- **Files:** `scripts/compliance-evidence.js` (added markdown-link collection beside the existing backtick scan); `tests/compliance-evidence.test.js` (added)
+- **What was done:** The checker only collected backtick paths under `products/`, `scripts/`, `mcp-servers/`, `.github/`, and `.circleci/`. `NIST_READINESS.md` cites those files as relative markdown links, so a deleted citation still reported `missing: []`. Relative links are now resolved from the document directory. `http` links stay out. The live check reports 37 paths and none missing.
+- **Decisions:** Keep the old backtick rule and add link resolution next to it — because replacing the checker would drop the 2026-11-10 behavior.
+- **Sources:** [Bugbot review on PR #18365](https://github.com/midnghtsapphire/revvel-standards/pull/18365#discussion_r4538945807)
+- **Commits / PRs:** [PR #18365](https://github.com/midnghtsapphire/revvel-standards/pull/18365)
+- **Open / handoff:** TriageChief still merges. Issue #18343 body edit remains blocked by the 403 on the installation token.
+- **Credit note:** Bugbot found the gap. Rules-Steward fixed it.
+
 ## 2026-11-11 14:10 UTC — Rules-Steward — NIST readiness mapping (WR #18343)
 
 - **Actor:** Rules-Steward (Cursor cloud agent, Grok 4.7)
