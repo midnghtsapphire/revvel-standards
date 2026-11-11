@@ -713,17 +713,33 @@
       return reduced || mode === 'sensory' || mode === 'eco';
     }
     function frame() {
-      var still = stillFrame();
-      paint(ctx, themeOf(themeId), model, still ? 0 : t);
-      if (!still) {
-        t += 1;
-        root.requestAnimationFrame(frame);
+      if (stillFrame()) {
+        looping = false;
+        paintNow();
+        return;
       }
+      paintNow();
+      t += 1;
+      root.requestAnimationFrame(frame);
+    }
+    var looping = false;
+    function paintNow() {
+      paint(ctx, themeOf(themeId), model, stillFrame() ? 0 : t);
+    }
+    function kick() {
+      if (stillFrame()) {
+        looping = false;
+        paintNow();
+        return;
+      }
+      if (looping) return;
+      looping = true;
+      root.requestAnimationFrame(frame);
     }
     function apply(team, hub) {
       model = modelFromPayload(team, hub, themeOf(themeId), !!opts.fixture);
       fillDom(model);
-      if (reduced) paint(ctx, themeOf(themeId), model, 0);
+      kick();
     }
     canvas.addEventListener('pointermove', function (event) {
       if (!tip) return;
@@ -751,6 +767,7 @@
         try { root.localStorage.setItem('oaudrey-theme', themeId); } catch (error) { /* storage can be blocked */ }
       }
       document.documentElement.dataset.theme = themeId;
+      kick();
     }
     document.querySelectorAll('[data-theme-id]').forEach(function (button) {
       button.addEventListener('click', function () { setTheme(button.getAttribute('data-theme-id')); });
@@ -775,7 +792,7 @@
       poll();
       root.setInterval(poll, 60000);
     }
-    frame();
+    kick();
     return { setTheme: setTheme, apply: apply };
   }
 

@@ -547,7 +547,6 @@ would be `4xx`/`5xx`). Triage in this order:
    Empty output → DNS not provisioned. Confirm the Cloudflare zone for
    `oaudrey.com` has the App Platform records. Do not move the zone to
    DigitalOcean nameservers. See [DNS Configuration](#dns-configuration-cloudflare).
-<!-- 2026-11-11 MarketShipper: the paragraph above previously said to confirm Namecheap nameservers point at DigitalOcean. Audrey said DNS for her domains is on Cloudflare. -->
 
 2. **App Platform deploy state** — confirm the app exists and is healthy:
 
@@ -666,8 +665,9 @@ Once both bootstrap secrets are present, the daily sentinel (`secrets-sentinel.y
 3. Run `deploy-oaudrey.yml` via `workflow_dispatch` to deploy to DigitalOcean App Platform
 4. In DigitalOcean dashboard: confirm `oaudrey.com` and `fieldwork.oaudrey.com` are custom domains on the app
 5. In Cloudflare DNS: confirm the App Platform records exist for `oaudrey.com`. Do not point nameservers at `ns1-3.digitalocean.com`.
-<!-- 2026-11-11 MarketShipper: item 5 previously said to confirm Namecheap nameservers. Audrey said DNS for her domains is on Cloudflare. -->
 6. Re-run `oaudrey-retro.yml` — expect `HTTP 200`/`301`/`302` for both domains
+
+<!-- 2026-11-11 MarketShipper: item 5 previously said to confirm Namecheap nameservers. Audrey said DNS for her domains is on Cloudflare. -->
 
 ---
 
@@ -691,8 +691,9 @@ Once both bootstrap secrets are present, the daily sentinel (`secrets-sentinel.y
 2. Run `deploy-oaudrey.yml` manually via `workflow_dispatch`
 3. In DigitalOcean dashboard: add `oaudrey.com` and `fieldwork.oaudrey.com` as custom domains on the app
 4. In Cloudflare DNS: add the App Platform records for `oaudrey.com`. Do not point nameservers at `ns1-3.digitalocean.com`.
-<!-- 2026-11-11 MarketShipper: item 4 previously said to point Namecheap nameservers at DigitalOcean. Audrey said DNS for her domains is on Cloudflare. The 2026-04-28 finding text above is the historical note and stays. -->
 5. Re-run `oaudrey-retro.yml` — expect `HTTP 200`/`301`/`302` for both domains
+
+<!-- 2026-11-11 MarketShipper: item 4 previously said to point Namecheap nameservers at DigitalOcean. Audrey said DNS for her domains is on Cloudflare. The 2026-04-28 finding text above is the historical note and stays. -->
 
 ---
 

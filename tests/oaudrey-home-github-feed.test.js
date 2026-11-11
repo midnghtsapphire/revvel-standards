@@ -38,6 +38,18 @@ test('redaction strips mail, tokens, and query strings', async () => {
   assert.match(sentences, /Two stays\./);
 });
 
+test('a later pending check is a handoff, not hidden by the working state', async () => {
+  const { activityFor } = await loadFeed();
+  const rolled = activityFor([
+    { id: 'circleci', status: 'passing', billing: false, at: '2026-11-11T01:00:00Z' },
+    { id: 'sonarcloud', status: 'pending', billing: false, at: '2026-11-11T02:00:00Z' },
+  ]);
+  assert.equal(rolled.activity, 'handoff');
+  assert.equal(rolled.from, 'circleci');
+  assert.equal(rolled.handoffTo, 'sonarcloud');
+  assert.equal(activityFor([{ id: 'circleci', status: 'pending', billing: false, at: '1' }]).activity, 'working');
+});
+
 test('author comes from a title prefix, not a conventional type', async () => {
   const { authorFromTitle } = await loadFeed();
   assert.equal(authorFromTitle('**MarketShipper:** ci: example', 'midnghtsapphire'), 'MarketShipper');

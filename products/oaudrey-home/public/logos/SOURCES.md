@@ -10,11 +10,11 @@ were not on the sampled check runs or reviews, so they have no file here.
 
 | File | Where it came from |
 | --- | --- |
-| `circleci.png` | https://avatars.githubusercontent.com/oa/4808?s=64&v=4 (commit status `ci/circleci`) |
-| `sonarcloud.png` | https://avatars.githubusercontent.com/u/545988?s=64&v=4 (app slug `sonarqubecloud`) |
-| `cursor.png` | https://avatars.githubusercontent.com/u/126759922?s=64&v=4 (app slug `cursor`, Cursor Bugbot) |
-| `cubic.png` | https://avatars.githubusercontent.com/u/189440881?s=64&v=4 (app slug `cubic-dev-ai`) |
-| `gitar.png` | https://avatars.githubusercontent.com/u/149709435?s=64&v=4 (app slug `gitar-bot`) |
-| `gitguardian.png` | https://avatars.githubusercontent.com/u/27360172?s=64&v=4 (app slug `gitguardian`) |
-| `github-actions.png` | https://avatars.githubusercontent.com/u/9919?s=64&v=4 (app slug `github-actions`) |
-| `devin.png` | https://avatars.githubusercontent.com/in/811515?s=64&v=4 (commit status `Devin Review`) |
+| `circleci.png` | <https://avatars.githubusercontent.com/oa/4808?s=64&v=4> (commit status `ci/circleci`) |
+| `sonarcloud.png` | <https://avatars.githubusercontent.com/u/545988?s=64&v=4> (app slug `sonarqubecloud`) |
+| `cursor.png` | <https://avatars.githubusercontent.com/u/126759922?s=64&v=4> (app slug `cursor`, Cursor Bugbot) |
+| `cubic.png` | <https://avatars.githubusercontent.com/u/189440881?s=64&v=4> (app slug `cubic-dev-ai`) |
+| `gitar.png` | <https://avatars.githubusercontent.com/u/149709435?s=64&v=4> (app slug `gitar-bot`) |
+| `gitguardian.png` | <https://avatars.githubusercontent.com/u/27360172?s=64&v=4> (app slug `gitguardian`) |
+| `github-actions.png` | <https://avatars.githubusercontent.com/u/9919?s=64&v=4> (app slug `github-actions`) |
+| `devin.png` | <https://avatars.githubusercontent.com/in/811515?s=64&v=4> (commit status `Devin Review`) |

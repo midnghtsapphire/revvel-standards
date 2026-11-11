@@ -287,17 +287,16 @@ function rollupStatus(checks) {
   return 'none';
 }
 
-function activityFor(checks) {
+export function activityFor(checks) {
   const real = checks.filter((check) => check.id && !check.billing);
-  if (real.some((check) => check.status === 'failing')) return 'failed';
-  if (real.some((check) => check.status === 'pending')) return 'working';
-  const finished = real.filter((check) => check.status === 'passing' && check.at);
+  if (real.some((check) => check.status === 'failing')) return { activity: 'failed', handoffTo: null, from: null };
   const pending = real.filter((check) => check.status === 'pending');
-  for (const done of finished) {
+  for (const done of real.filter((check) => check.status === 'passing' && check.at)) {
     const next = pending.find((item) => item.id !== done.id && String(item.at || '') >= String(done.at || ''));
-    if (next) return { activity: 'handoff', handoffTo: next.id };
+    if (next) return { activity: 'handoff', handoffTo: next.id, from: done.id };
   }
-  return 'idle';
+  if (pending.length) return { activity: 'working', handoffTo: null, from: null };
+  return { activity: 'idle', handoffTo: null, from: null };
 }
 
 export async function buildTeamReport({ env, fetchImpl, now, cache }) {
@@ -412,17 +411,13 @@ export async function buildTeamReport({ env, fetchImpl, now, cache }) {
         const rank = { failed: 4, working: 3, handoff: 2, idle: 1 };
         let nextActivity = 'idle';
         let handoffTo = null;
-        const rolled = activityFor(checks.filter((item) => item.id === check.id || true));
+        const rolled = activityFor(checks);
         if (check.status === 'failing' && !check.billing) nextActivity = 'failed';
+        else if (rolled.activity === 'handoff' && rolled.from === check.id) {
+          nextActivity = 'handoff';
+          handoffTo = rolled.handoffTo;
+        } else if (rolled.activity === 'handoff' && rolled.handoffTo === check.id) nextActivity = 'working';
         else if (check.status === 'pending' && !check.billing) nextActivity = 'working';
-        else if (typeof rolled === 'object' && rolled.handoffTo === check.id) nextActivity = 'working';
-        else if (typeof rolled === 'object' && rolled.activity === 'handoff') {
-          const giver = checks.find((item) => item.status === 'passing' && item.id !== rolled.handoffTo);
-          if (giver && giver.id === check.id) {
-            nextActivity = 'handoff';
-            handoffTo = rolled.handoffTo;
-          }
-        }
         if (rank[nextActivity] >= rank[current.activity]) {
           current.activity = nextActivity;
           current.handoffTo = handoffTo;
