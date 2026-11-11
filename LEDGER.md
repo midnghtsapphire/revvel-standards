@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-11 15:37 UTC — PromptOrchestrator — graph prompting context selection (WR 18336)
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** Audrey Evans, via the approved start of WR 18336. TriageChief had assigned the WR to PromptOrchestrator.
+- **Role:** executed
+- **Files:** `scripts/context_graph.py` (extended the 2026-11-10 selector; old corpus line and pack-until-budget loop commented in place); `tests/graph_prompting_test.py` (added); `tests/context_graph_test.py` (unchanged, still passes); `docs/graph-prompting/` (generator artifact, sample queries, token measurements, accuracy record, readme); `.circleci/config.yml` and `.circleci/scripts/graph-prompting.sh` (one job added to the existing workflows); `package.json` (two npm scripts); `standards/CIRCLECI_INTEGRATION_STANDARD.md` (one table row); `wr/memory/decisions.jsonl` (one line)
+- **What was done:** Built a context graph over root markdown, the standards tree, and the work-request template. Edges are governs, referenced_by, and populates, taken from local links and path mentions. Query routing returns the subgraph, cached by content hash. The ten fixed queries were measured with the local revvel-local-4byte tokenizer against loading every graph node. The counts, the mean, and the minimum are the committed file `docs/graph-prompting/token-measurements.json`. Each query included its expected document. The mean cleared 60 percent. No model was called.
+- **Decisions:** Extend `scripts/context_graph.py` instead of a second graph — because the coder opt-in already calls `select_context`. Leave `scripts/prompt_compression.py` and `.github/scripts/openrouter_coder.py` untouched so WR 18335 can keep compressing `reference_text`. Do not run the accuracy harness — because that needs model completions and this run had no approved spend for them. The record is `docs/graph-prompting/accuracy-benchmark.json`.
+- **Sources:** Issue 18336. Existing selector and the note in `wr/summaries/optional-intelligence-experiments-2026-11-10.md`. BNAT imprint: consistency_check passed (energy 0). `imprint_agent --agent PromptOrchestrator` exited 1 because that name is not a sheaf stalk. Obstructions were empty, so the work proceeded.
+- **Commits / PRs:** draft PR into `daily/2026-11-11`. The link belongs in the next ledger entry if this one would have to be rewritten to add it.
+- **Open / handoff:** The 25 percent accuracy comparison is pending owner-approved spend. The coder opt-in still passes a 60000 character budget, which can drop the standard a query needs. Default coder behavior is unchanged. Next owner: Audrey Evans for the accuracy spend, TriageChief for merge. Do not merge from this agent.
+- **Credit note:** PromptOrchestrator executed the graph, the router, the measurement, and the tests. Audrey Evans approved the start. TriageChief assigned the WR.
+
 ## 2026-11-11 14:25 UTC — Rules-Steward — merge main, keep both changelog entries
 
 - **Actor:** Rules-Steward (Cursor cloud agent, Grok 4.7)

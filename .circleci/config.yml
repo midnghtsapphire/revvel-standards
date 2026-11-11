@@ -259,6 +259,20 @@ jobs:
           path: /tmp/agent-fte-artifacts
           destination: agent-as-fte
 
+  # WR #18336 — graph prompting. Stdlib Python. Rebuilds the standards graph,
+  # checks the committed artifact and the local token measurements, and runs
+  # the routing tests. The accuracy harness check confirms the pending-spend
+  # record and does not call a model.
+  # Manual, from the repo root:
+  #   npm run graph-prompting:test && npm run graph-prompting:check
+  graph-prompting:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Graph prompting tests and measurement check
+          command: bash .circleci/scripts/graph-prompting.sh
+
 workflows:
   version: 2
 
@@ -274,6 +288,10 @@ workflows:
             branches:
               ignore: main
       - policy-check:
+          filters:
+            branches:
+              ignore: main
+      - graph-prompting:
           filters:
             branches:
               ignore: main
@@ -310,6 +328,10 @@ workflows:
             branches:
               only: main
       - policy-check:
+          filters:
+            branches:
+              only: main
+      - graph-prompting:
           filters:
             branches:
               only: main
