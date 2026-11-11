@@ -16,7 +16,7 @@ metadata:
 triggers:
   - "tdd"
   - "test first"
-  - "failing test"
+  - "test-first failing test"
   - "reproduce the bug"
   - "node:test"
 
@@ -35,7 +35,7 @@ implementation:
   content: |
     Load docs/skills/tdd-workflow/SKILL.md and follow it.
     That file is the canonical playbook. This YAML is discovery metadata.
-    Sign every write as **BotName** at the start and — BotName at the end.
+    Sign issue bodies, pull request titles and bodies, reviews, comments, and commit messages as **BotName** at the start and — BotName at the end. Do not sign source files.
     Do not delete, force-push, or print a secret.
     CircleCI lint-and-test is the check that counts. GitHub Actions runners currently do not start.
     Do not merge from this skill. Merge gates live in docs/skills/github-read-write-admin/SKILL.md and apply only when that playbook is loaded and the task asked for the merge.

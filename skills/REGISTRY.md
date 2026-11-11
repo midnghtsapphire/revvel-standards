@@ -763,7 +763,7 @@ _2026-11-11 TriageChief: appended `github-read-write-admin` and the fourteen Git
 
 - **Path:** `docs/skills/git-advanced-workflows/SKILL.md` (canonical). Loader: `skills/git-advanced-workflows/SKILL.md`. Machine config: `skills/git-advanced-workflows/git-advanced-workflows.skill.yml`.
 - **Description:** Rebase, bisect, worktree, and reflog for local commits that have not been pushed. License: MIT. Copyright (c) 2024 Seth Hobson.
-- **Trigger:** "rebase unpushed", "git bisect", "git worktree", "git reflog", "recover a local commit"
+- **Trigger:** "rebase unpushed", "git bisect", "unpushed worktree", "git reflog", "recover a local commit"
 - **Status:** Active (2026-11-11, TriageChief)
 
 ### `changelog-orchestrator`
@@ -776,7 +776,7 @@ _2026-11-11 TriageChief: appended `github-read-write-admin` and the fourteen Git
 ### `pr-review-reply`
 
 - **Path:** `docs/skills/pr-review-reply/SKILL.md` (canonical). Loader: `skills/pr-review-reply/SKILL.md`. Machine config: `skills/pr-review-reply/pr-review-reply.skill.yml`.
-- **Description:** Reply to pull request review comments and resolve a thread only after a signed reply. License: Apache-2.0. Copyright 2025 Stacklok, Inc..
+- **Description:** Reply to pull request review comments and resolve a thread only after a signed reply. License: Apache-2.0. Copyright 2025 Stacklok, Inc.
 - **Trigger:** "reply to review", "resolve review thread", "review comment", "fixed in SHA"
 - **Status:** Active (2026-11-11, TriageChief)
 
@@ -797,7 +797,7 @@ _2026-11-11 TriageChief: appended `github-read-write-admin` and the fourteen Git
 ### `pr-create-from-body`
 
 - **Path:** `docs/skills/pr-create-from-body/SKILL.md` (canonical). Loader: `skills/pr-create-from-body/SKILL.md`. Machine config: `skills/pr-create-from-body/pr-create-from-body.skill.yml`.
-- **Description:** Open a pull request whose body comes from a local Markdown file, signed, into the daily branch. License: MIT. Copyright (c) 2023 Bytedance, Inc. and its affiliates..
+- **Description:** Open a pull request whose body comes from a local Markdown file, signed, into the daily branch. License: MIT. Copyright (c) 2023 Bytedance, Inc. and its affiliates.
 - **Trigger:** "create pull request from body file", "body-file", "open a pr from markdown"
 - **Status:** Active (2026-11-11, TriageChief)
 
@@ -826,7 +826,7 @@ _2026-11-11 TriageChief: appended `github-read-write-admin` and the fourteen Git
 
 - **Path:** `docs/skills/tdd-workflow/SKILL.md` (canonical). Loader: `skills/tdd-workflow/SKILL.md`. Machine config: `skills/tdd-workflow/tdd-workflow.skill.yml`.
 - **Description:** Write a failing test, then the code that makes it pass, in the runner the repo already uses. License: MIT. Copyright (c) 2025 cfrs2005.
-- **Trigger:** "tdd", "test first", "failing test", "reproduce the bug", "node:test"
+- **Trigger:** "tdd", "test first", "test-first failing test", "reproduce the bug", "node:test"
 - **Status:** Active (2026-11-11, TriageChief)
 
 ### `karpathy-guidelines`
@@ -839,6 +839,6 @@ _2026-11-11 TriageChief: appended `github-read-write-admin` and the fourteen Git
 ### `agentic-eval`
 
 - **Path:** `docs/skills/agentic-eval/SKILL.md` (canonical). Loader: `skills/agentic-eval/SKILL.md`. Machine config: `skills/agentic-eval/agentic-eval.skill.yml`.
-- **Description:** Evaluate an agent output against a named bar and revise the failing parts, at most three times. Model calls go through the local LLM gate. License: MIT. Copyright GitHub, Inc..
+- **Description:** Evaluate an agent output against a named bar and revise the failing parts, at most three times. Model calls go through the local LLM gate. License: MIT. Copyright GitHub, Inc.
 - **Trigger:** "agentic eval", "rubric", "self-check loop", "evaluator", "refine until the test passes"
 - **Status:** Active (2026-11-11, TriageChief)

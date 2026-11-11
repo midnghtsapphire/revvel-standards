@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 2026-11-11
 
 - 2026-11-11 — TriageChief — `docs/skills/github-read-write-admin/SKILL.md`: in-repo GitHub read, write, and admin playbook for cloud agents, Cursor IDE agents, and CI bots (`git`, `gh`, REST and GraphQL), with `self-check.sh`. Indexed from `docs/skills/README.md`, `skills/REGISTRY.md`, and `skills/SKILLS_INDEX.yml`. Vault loader: `skills/github-read-write-admin/`.
+- 2026-11-11 — TriageChief — Semgrep SARIF stays off stdout, review-thread queries take `after:`, and a failed union merge does not copy or stage. Pull-request body files are checked for content and removed after create.
 - 2026-11-11 — TriageChief — `git merge-file --union` reads index stages 1, 2, and 3 into a temp directory. The shell truncates the target of `>` first, so the result is not redirected onto the ledger.
 - 2026-11-11 — TriageChief — skill procedures: pinned license blob URLs, `schema_version: "1.0"` on the new machine configs, no merge grant in those configs, Semgrep SARIF output, signed cherry-pick, focused bisect, changelog base fallback, and review-thread pagination.
 - 2026-11-11 — TriageChief — `docs/skills/github-read-write-admin/SKILL.md`: the union-merge note is visible, not only an HTML comment. A whole-branch merge is a normal `git merge`. Copy `merged.jsonl` onto the conflicted path before `git add`. The playbook test requires `git merge-file --union`.

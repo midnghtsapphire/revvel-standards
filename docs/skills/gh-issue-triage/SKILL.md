@@ -76,13 +76,15 @@ One type label and one `priority:pN` label. Area labels (`wr:docs`, `wr:code`, `
 
 ```bash
 FULL=midnghtsapphire/revvel-standards
-gh issue view NUMBER --repo "$FULL" --json number,title,state,author,labels,url,body
+gh issue view NUMBER --repo "$FULL" --json number,title,state,author,labels,url,body \
+  | jq '.body |= gsub("(?i)(github_pat_[A-Za-z0-9_]+|gh[pousr]_[A-Za-z0-9_]+)"; "[REDACTED]")'
 gh search issues --repo "$FULL" --state open --limit 20 -- "KEYWORDS"
+gh search issues --repo "$FULL" --state closed --limit 20 -- "KEYWORDS"
 ```
 
 1. Read the issue. Search for a duplicate before you add a type.
 2. Duplicate: add `duplicate`, comment with `signed_body` naming the original number, and run `gh issue close NUMBER --repo "$FULL" --reason "not planned"`. Do not delete the issue. Add any new fact as a comment on the original.
-3. The report is too thin to act on ("it does not work", no steps, no environment): add `needs-human` and comment with the exact fact you need. Leave `triage` in place.
+3. The report is too thin to act on ("it does not work", no steps, no environment): add `needs-human` and `triage` if either is missing, then comment with the exact fact you need. Leave every label that is already there.
 4. Otherwise add the type label, one `priority:pN` label, and `triage` if it is missing. If the issue already has a different type label or a different `priority:pN` label, leave those labels in place and comment that a human has to pick one. Do not add a second type or a second priority.
 
 ```bash

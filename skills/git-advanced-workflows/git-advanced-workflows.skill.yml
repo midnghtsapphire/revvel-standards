@@ -16,7 +16,7 @@ metadata:
 triggers:
   - "rebase unpushed"
   - "git bisect"
-  - "git worktree"
+  - "unpushed worktree"
   - "git reflog"
   - "recover a local commit"
 
