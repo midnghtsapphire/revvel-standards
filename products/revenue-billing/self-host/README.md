@@ -22,7 +22,7 @@ reading the release notes first, and re-running the checks below.
 
 ## How this differs from the official file
 
-- Every secret is **required** (`${VAR:?...}`). Compose refuses to start with
+- Every secret is **required** (`${VAR:?required}`). Compose refuses to start with
   a blank one. No vendor default such as an upstream sample password is used.
 - `api` and `front` bind to `127.0.0.1`. `db` and `redis` publish no ports.
   Put a TLS reverse proxy that you control in front.
