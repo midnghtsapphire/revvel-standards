@@ -186,10 +186,6 @@ jobs:
   # `npm test` only globs tests/**/*.test.js, so these .mjs tests run here
   # explicitly. Added by DBArchitect; no existing job was changed.
   billing-selfhost-lint:
-  # DigitalOcean App Platform updates. Not part of pr-workflow. A merge can
-  # create or update apps once DIGITALOCEAN_ACCESS_TOKEN is set. Audrey must
-  # approve that before this leaves draft. Added 2026-11-11 by MarketShipper.
-  affiliate-hub-do-deploy:
     executor: node-executor
     steps:
       - checkout
@@ -243,6 +239,15 @@ jobs:
       - run:
           name: Apply twice and assert (db/test.sh)
           command: bash products/revenue-billing/db/test.sh
+
+  # DigitalOcean App Platform updates. Not part of pr-workflow. A merge can
+  # create or update apps once DIGITALOCEAN_ACCESS_TOKEN is set. Audrey must
+  # approve that before this leaves draft. Added 2026-11-11 by MarketShipper.
+  affiliate-hub-do-deploy:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
           name: Update DigitalOcean app affiliate-hub when the token is set
           no_output_timeout: 15m
           command: bash .circleci/scripts/do-app-update.sh affiliate-hub
@@ -406,6 +411,9 @@ workflows:
             branches:
               ignore: main
       - billing-sql-validate:
+          filters:
+            branches:
+              ignore: main
       - agent-as-fte:
           filters:
             branches:
@@ -455,6 +463,9 @@ workflows:
             branches:
               only: main
       - billing-sql-validate:
+          filters:
+            branches:
+              only: main
       - agent-as-fte:
           filters:
             branches:
@@ -492,6 +503,9 @@ workflows:
             branches:
               only: main
       - screen-recorder-finder-do-deploy:
+          filters:
+            branches:
+              only: main
       - screen-recorder-finder-image:
           filters:
             branches:
