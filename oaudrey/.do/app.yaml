@@ -34,6 +34,18 @@ static_sites:
     routes:
       - path: /
 
+  - name: audit-landing
+    github:
+      repo: midnghtsapphire/revvel-standards
+      branch: main
+      deploy_on_push: true
+    source_dir: /oaudrey/audit
+    output_dir: /
+    index_document: index.html
+    error_document: 404.html
+    routes:
+      - path: /
+
 # Custom domains — declaring these here means `doctl apps create/update` registers
 # them automatically, removing the need for a manual step in the DO dashboard.
 # DNS (Namecheap → DigitalOcean nameservers) must point to the App Platform ingress
@@ -47,4 +59,6 @@ domains:
   - domain: www.oaudrey.com
     type: ALIAS
   - domain: fieldwork.oaudrey.com
+    type: ALIAS
+  - domain: audit.oaudrey.com
     type: ALIAS
