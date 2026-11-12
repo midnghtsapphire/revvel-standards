@@ -1,0 +1,19 @@
+{
+  "billable_metrics": [
+    {
+      "code": "llm_call",
+      "name": "LLM calls",
+      "aggregation": "count"
+    },
+    {
+      "code": "book_packaged",
+      "name": "KDP packages",
+      "aggregation": "count"
+    },
+    {
+      "code": "deploy",
+      "name": "Production deploys",
+      "aggregation": "count"
+    }
+  ]
+}
