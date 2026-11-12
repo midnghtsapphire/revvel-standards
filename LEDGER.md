@@ -3,6 +3,16 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-13 — Triage session — Register Manus API, Bitrise CI, and Notion connector
+
+- **Actor:** Kimi (triage agent)
+- **Requested by:** Audrey Evans, 2026-11-13 ("i added manus_api_key ... i added bitrise connections and some others today")
+- **Role:** executed
+- **Files:** `config/connections.yml` (3 entries: manus, bitrise, notion-connector); `docs/CONNECTIONS_REGISTRY.md` and `README.md` (regenerated via `npm run connections`, never hand-edited); `LEDGER.md` (this entry)
+- **What was done:** Verified the owner's 2026-11-12 additions from the GitHub side — secret MANUS_API_KEY (updated 2026-11-12T21:04Z, value never read), Bitrise webhook id 711028295 (hooks.bitrise.io, active on push/pull_request/issue_comment), Notion read-only connector (manus PR #4, Docker kit + notion_cli.py). Registered all three in the connections SSOT as verified. Registry now 53 connections / 48 verified. Drift check clean.
+- **Decisions:** Registered as separate entries rather than folding into existing ones — they have distinct auth and reach.
+- **Open / handoff:** If Bitrise should build a mobile app repo (skill-builder-mobile, wedlock-wizard-mobile), add its webhook there too; currently wired to revvel-standards only.
+
 ## 2026-11-11 15:40 UTC — Cloudy — Codex OAuth login command
 
 - **Actor:** Cloudy (Cursor cloud agent, Grok 4.7)

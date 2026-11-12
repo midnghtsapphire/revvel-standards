@@ -337,6 +337,39 @@ connections:
     used_by: [.mcp.json, .codex/config.toml]
     note: "Public HTTP endpoint shared by Claude (type http in .mcp.json) and Codex (url in .codex/config.toml). WRs 18288 and 18290. No token in git. Claude auth is the operator command claude mcp login action-gateway. Codex OAuth is the operator command codex mcp login action-gateway. Adding the URL does not start that login. Endpoint https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"
 
+  - id: manus
+    name: Manus API
+    type: api
+    auth: key
+    env: MANUS_API_KEY
+    status: verified
+    access: [task-creation, agent-runs]
+    connects_to: [manus-cloud]
+    used_by: [github-actions]
+    note: "Key added as repo secret MANUS_API_KEY on 2026-11-12 by owner. Manus cloud agent API for dispatching autonomous tasks from workflows."
+
+  - id: bitrise
+    name: Bitrise CI
+    type: app
+    auth: webhook
+    status: verified
+    access: [ci, mobile-builds]
+    connects_to: [github-webhooks]
+    used_by: [revvel-standards]
+    note: "Connected 2026-11-12 by owner. GitHub webhook hooks.bitrise.io (hook id 711028295) active on push, pull_request, issue_comment. Mobile CI/CD pipeline; evaluated in docs/CI_APPS_MOBILE_EVAL_2026-04-23.md."
+
+  - id: notion-connector
+    name: Notion connector (read-only)
+    type: api
+    auth: key
+    env: NOTION_API_KEY
+    status: verified
+    access: [notion-read, docs-sync]
+    connects_to: [notion]
+    used_by: [manus-repo, docker]
+    note: "Landed via manus PR #4 (2026-11-12): integrations/notion-connector/ with Docker kit, notion_cli.py, and scheduled workflow. Read-only by design per its docs/governance.md."
+
+
   # ── Research / data / infra APIs (keys in .env.example) ───────────────────
   - id: lago
     name: Lago (owner-hosted billing authority)
