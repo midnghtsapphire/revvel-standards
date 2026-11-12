@@ -1,0 +1,3436 @@
+{
+  "edge_count": 540,
+  "edge_rules": {
+    "governs": "from is a standard or root governance document; to is the document it governs",
+    "populates": "from is a data file a document points at; to is that document",
+    "referenced_by": "from is the target document; to is the document that mentions it"
+  },
+  "edge_types": [
+    "governs",
+    "populates",
+    "referenced_by"
+  ],
+  "edges": [
+    {
+      "from": "AGENTS.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "governs"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "BUSINESSES.md",
+      "type": "governs"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "CHANGELOG.md",
+      "type": "governs"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "CODE_REVIEW_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "HANDOFF.md",
+      "type": "governs"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "IMPLEMENTATION_SUMMARY.md",
+      "type": "governs"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "governs"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "THINKING_SCRATCHPAD.md",
+      "type": "governs"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "VISITING_AGENTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "learnings.md",
+      "type": "governs"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "seed.md",
+      "type": "governs"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "standards/BNAT_SHEAF_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "standards/CODE_COMMENTING_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "learnings.md",
+      "type": "governs"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "type": "governs"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "standards/GREEN_MAIN_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "standards/VERIFY_THE_POSTCONDITION.md",
+      "type": "governs"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "governs"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "ARTIFACT_GENERATOR.md",
+      "type": "governs"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "CHANGELOG.md",
+      "type": "governs"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "LEDGER.md",
+      "type": "governs"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "REPO_LIBRARY_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "governs"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "UPREV_METHOD.md",
+      "type": "governs"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "WRITE_AS_YOU_GO_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "WR_RESEARCH_MANDATE.md",
+      "type": "governs"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "WR_TEMPLATE_BASIC.md",
+      "type": "governs"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "standards/LEDGER_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "standards/PRODUCT_INCUBATION_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "AGENTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "governs"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "GOAL.md",
+      "type": "governs"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "MASTER.md",
+      "type": "governs"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "README.md",
+      "type": "governs"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "REMINDERS.md",
+      "type": "governs"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "SYSTEM_STATE.md",
+      "type": "governs"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "VISITING_AGENTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "seed.md",
+      "type": "governs"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "standards/DELIVERY_MATRIX.md",
+      "type": "governs"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "standards/PEDAL_TO_THE_METAL_ENTERPRISE.md",
+      "type": "governs"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "standards/shapes/PDF.md",
+      "type": "governs"
+    },
+    {
+      "from": "UPREV_METHOD.md",
+      "to": ".github/ISSUE_TEMPLATE/work_request.yml",
+      "type": "governs"
+    },
+    {
+      "from": "UPREV_METHOD.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "governs"
+    },
+    {
+      "from": "UPREV_METHOD.md",
+      "to": "ARTIFACT_GENERATOR.md",
+      "type": "governs"
+    },
+    {
+      "from": "UPREV_METHOD.md",
+      "to": "MASTER.md",
+      "type": "governs"
+    },
+    {
+      "from": "UPREV_METHOD.md",
+      "to": "README.md",
+      "type": "governs"
+    },
+    {
+      "from": "UPREV_METHOD.md",
+      "to": "WR_RESEARCH_MANDATE.md",
+      "type": "governs"
+    },
+    {
+      "from": "UPREV_METHOD.md",
+      "to": "learnings.md",
+      "type": "governs"
+    },
+    {
+      "from": "VISITING_AGENTS.md",
+      "to": "AGENTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "VISITING_AGENTS.md",
+      "to": "CHANGELOG.md",
+      "type": "governs"
+    },
+    {
+      "from": "VISITING_AGENTS.md",
+      "to": "HANDOFF.md",
+      "type": "governs"
+    },
+    {
+      "from": "VISITING_AGENTS.md",
+      "to": "seed.md",
+      "type": "governs"
+    },
+    {
+      "from": "VISITING_AGENTS.md",
+      "to": "standards/BNAT_SHEAF_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md",
+      "to": "AGENTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md",
+      "to": "learnings.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AMPLITUDE_NOTION_AGENT_STANDARD.md",
+      "to": "standards/AMPLITUDE_INTEGRATION_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/API_GATEWAY.md",
+      "to": "README.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/API_GATEWAY.md",
+      "to": "standards/DOCKER.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/API_GATEWAY.md",
+      "to": "standards/MONITORING.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "to": "CLAUDE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "to": "learnings.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "to": "standards/GREEN_MAIN_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "to": "standards/VERIFY_THE_POSTCONDITION.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "DECISIONS-TODAY.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "DECISIONS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "recurse-rules.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/CRON_REQUIREMENTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/CRON_SYSTEM.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/GATEKEEPER.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/MVI_CONTRACT_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/OAUDREY_DEPLOYMENT_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/PRICING.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/SAAS_PRODUCTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/ZERO_HUMAN_FRAMEWORK.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/API.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/APP.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/CLI.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/EXCEL.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/MCP.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/PDF.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/README.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/SKILL.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/TOKEN.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/BADGES_AND_STATUS.md",
+      "to": "README.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/BITO_AI_INTEGRATION_STANDARD.md",
+      "to": "IMPLEMENTATION_SUMMARY_BITO_AI.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/BNAT_SHEAF_STANDARD.md",
+      "to": "CLAUDE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/BUSINESS_AUDIT_SYSTEM.md",
+      "to": "standards/MONITORING.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/BUSINESS_AUDIT_SYSTEM.md",
+      "to": "standards/MULTI_ENTITY_TAX_OPTIMIZATION.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/BUSINESS_AUDIT_SYSTEM.md",
+      "to": "standards/SECURITY.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/CIRCLECI_INTEGRATION_STANDARD.md",
+      "to": "LEDGER.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/CLI_MCP_AUTOMATION.md",
+      "to": "QUICKSTART.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/CODE_COMMENTING_STANDARD.md",
+      "to": "standards/COMMENT-DONT-DELETE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/CODE_COMMENTING_STANDARD.md",
+      "to": "standards/ERROR_REPORTING_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/CODE_COMMENTING_STANDARD.md",
+      "to": "standards/SELF_HEALING_STANDARDS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/COMMENT-DONT-DELETE.md",
+      "to": "CLAUDE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/COMMENT-DONT-DELETE.md",
+      "to": "standards/audit-trail-check.yml",
+      "type": "governs"
+    },
+    {
+      "from": "standards/CONTROLLER_CHARTER.md",
+      "to": "MODEL_CONFIG.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/CREDENTIAL_AUDIT_SYSTEM.md",
+      "to": "standards/GATEKEEPER.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/CRON_REQUIREMENTS.md",
+      "to": "standards/CRON_SYSTEM.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/CRON_REQUIREMENTS.md",
+      "to": "standards/MONITORING.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/CRON_SYSTEM.md",
+      "to": "standards/MONITORING.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/DOCKER.md",
+      "to": "QUICKSTART.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/DRAGNET_FRAMEWORK.md",
+      "to": "standards/AI_TAX_INTEGRATION.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/DRAGNET_FRAMEWORK.md",
+      "to": "standards/CRON_SYSTEM.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/DRAGNET_FRAMEWORK.md",
+      "to": "standards/ERROR_REPORTING_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/DRAGNET_FRAMEWORK.md",
+      "to": "standards/MONITORING.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/DRAGNET_FRAMEWORK.md",
+      "to": "standards/ZERO_HUMAN_FRAMEWORK.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/DROPLET_SSH_ACCESS.md",
+      "to": "standards/SECURITY.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GATEKEEPER.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GATEKEEPER.md",
+      "to": "standards/CREDENTIAL_AUDIT_SYSTEM.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GATEKEEPER.md",
+      "to": "standards/GENZ_INT_OSINT.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GATEKEEPER.md",
+      "to": "standards/SECURITY.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GATEKEEPER.md",
+      "to": "standards/shapes/MCP.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GENZ_INT_OSINT.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GITHUB_AUTH_TOKEN_MATRIX.md",
+      "to": "standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GITHUB_AUTH_TOKEN_MATRIX.md",
+      "to": "standards/AUTOMATION_FIRST_STACK.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GITHUB_AUTH_TOKEN_MATRIX.md",
+      "to": "standards/FORMAL_VERIFY_AUTO_WR.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GITHUB_MODELS_AND_ADVANCED.md",
+      "to": "MODEL_CONFIG.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GITHUB_MODELS_AND_ADVANCED.md",
+      "to": "standards/GITHUB_PROJECT_FIELDS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GITHUB_MODELS_AND_ADVANCED.md",
+      "to": "standards/PROACTIVE_PREFLIGHT.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GITHUB_PROJECT_FIELDS.md",
+      "to": "standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GITHUB_PROJECT_FIELDS.md",
+      "to": "standards/FORMAL_VERIFY_AUTO_WR.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GOAP_SWARM_RULES.md",
+      "to": "GOAP.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GOAP_SWARM_RULES.md",
+      "to": "learnings.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GREEN_MAIN_STANDARD.md",
+      "to": "learnings.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GREEN_WEBSITE_REPORTING_STANDARD.md",
+      "to": "README.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/GREEN_WEBSITE_REPORTING_STANDARD.md",
+      "to": "SYSTEM_STATE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+      "to": "AGENTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+      "to": "CLAUDE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+      "to": "learnings.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+      "to": "standards/SUGGESTION_HANDLING_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/INTEGRATIONS.md",
+      "to": "QUICKSTART.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/INTEGRATIONS.md",
+      "to": "standards/REVENUECAT.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/INTEGRATION_MEASUREMENT_TEMPLATE.md",
+      "to": "README.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/INTEGRATION_MEASUREMENT_TEMPLATE.md",
+      "to": "SYSTEM_STATE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/INTEGRATION_MEASUREMENT_TEMPLATE.md",
+      "to": "standards/MEASUREMENT_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/LEDGER_STANDARD.md",
+      "to": "ARTIFACT_GENERATOR.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/LEDGER_STANDARD.md",
+      "to": "CHANGELOG.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/LEDGER_STANDARD.md",
+      "to": "LEDGER.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/LEDGER_STANDARD.md",
+      "to": "WRITE_AS_YOU_GO_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MALAMA_SELF_HEALING_AGENT_STANDARD.md",
+      "to": "learnings.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MALAMA_SELF_HEALING_AGENT_STANDARD.md",
+      "to": "standards/MONITORING.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MALAMA_SELF_HEALING_AGENT_STANDARD.md",
+      "to": "standards/SELF_HEALING_STANDARDS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MEASUREMENT_STANDARD.md",
+      "to": "SYSTEM_STATE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MEASUREMENT_STANDARD.md",
+      "to": "standards/AGENT_SCAFFOLDING_BAN.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MEASUREMENT_STANDARD.md",
+      "to": "standards/MVI_CONTRACT_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MEASUREMENT_STANDARD.md",
+      "to": "standards/SELF_HEALING_STANDARDS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MEASUREMENT_STANDARD.md",
+      "to": "standards/SYSTEM_STATE_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MOBILE_TESTING.md",
+      "to": "AGENTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MOBILE_TESTING.md",
+      "to": "CHANGELOG.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MOBILE_TESTING.md",
+      "to": "DECISIONS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MOBILE_TESTING.md",
+      "to": "standards/TESTING.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MULTI_ENTITY_TAX_OPTIMIZATION.md",
+      "to": "standards/AI_TAX_INTEGRATION.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MULTI_ENTITY_TAX_OPTIMIZATION.md",
+      "to": "standards/MONITORING.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MULTI_ENTITY_TAX_OPTIMIZATION.md",
+      "to": "standards/SECURITY.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MVI_CONTRACT_STANDARD.md",
+      "to": "SYSTEM_STATE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/MVI_CONTRACT_STANDARD.md",
+      "to": "standards/SYSTEM_STATE_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/NOTION_INTEGRATION_STANDARD.md",
+      "to": "standards/LOVABLE_INTEGRATION_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/PEDAL_TO_THE_METAL_ENTERPRISE.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/PEDAL_TO_THE_METAL_ENTERPRISE.md",
+      "to": "standards/GOAP_SWARM_RULES.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/PRESERVE_GOALS_AND_HISTORY.md",
+      "to": "GOAL.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/PRESERVE_GOALS_AND_HISTORY.md",
+      "to": "standards/COMMENT-DONT-DELETE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/PRICING.md",
+      "to": "QUICKSTART.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/PROACTIVE_PREFLIGHT.md",
+      "to": "AGENTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/PROACTIVE_PREFLIGHT.md",
+      "to": "MODEL_CONFIG.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/PROACTIVE_PREFLIGHT.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/PROACTIVE_PREFLIGHT.md",
+      "to": "learnings.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/PRODUCT_INCUBATION_STANDARD.md",
+      "to": "AGENTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/PRODUCT_INCUBATION_STANDARD.md",
+      "to": "CHANGELOG.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/README_LANDING_AUTOMATION.md",
+      "to": "README.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/README_LANDING_AUTOMATION.md",
+      "to": "standards/AUTOMATION_FIRST_STACK.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/README_LANDING_AUTOMATION.md",
+      "to": "standards/IMAGE_CREATION_SEO_AUTOMATION.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/REVENUECAT.md",
+      "to": "DECISIONS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/REVENUECAT.md",
+      "to": "standards/INTEGRATIONS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/REVENUECAT.md",
+      "to": "standards/PRICING.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+      "to": "standards/AGENT_SCAFFOLDING_BAN.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+      "to": "standards/COMMENT-DONT-DELETE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+      "to": "standards/MVI_CONTRACT_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+      "to": "standards/PRESERVE_GOALS_AND_HISTORY.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+      "to": "standards/SECURITY.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/SEARCH_AND_SOURCING.md",
+      "to": "AGENTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/SECURITY.md",
+      "to": "QUICKSTART.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/SECURITY.md",
+      "to": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/SELF_HEALING_STANDARDS.md",
+      "to": "AGENTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/SELF_HEALING_STANDARDS.md",
+      "to": "CODE_REVIEW_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/SELF_HEALING_STANDARDS.md",
+      "to": "WR_TEMPLATE_BASIC.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/SELF_HEALING_STANDARDS.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/SELF_HEALING_STANDARDS.md",
+      "to": "standards/CREDENTIAL_AUDIT_SYSTEM.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/SUGGESTION_HANDLING_STANDARD.md",
+      "to": "standards/SELF_HEALING_STANDARDS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/SUGGESTION_HANDLING_STANDARD.md",
+      "to": "standards/ZERO_HUMAN_FRAMEWORK.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/SYSTEM_STATE_STANDARD.md",
+      "to": "SYSTEM_STATE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/TESTING.md",
+      "to": "CHANGELOG.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/TESTING.md",
+      "to": "QUICKSTART.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/VERIFY_THE_POSTCONDITION.md",
+      "to": "CLAUDE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/VERIFY_THE_POSTCONDITION.md",
+      "to": "learnings.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/VERIFY_THE_POSTCONDITION.md",
+      "to": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/VERIFY_THE_POSTCONDITION.md",
+      "to": "standards/COMMENT-DONT-DELETE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/VERIFY_THE_POSTCONDITION.md",
+      "to": "standards/DELIVERY_MATRIX.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/VERIFY_THE_POSTCONDITION.md",
+      "to": "standards/GREEN_MAIN_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/VERIFY_THE_POSTCONDITION.md",
+      "to": "standards/PRESERVE_GOALS_AND_HISTORY.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/WR-4484-bnat-invention-loop.md",
+      "to": "README.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/ZERO_HUMAN_FRAMEWORK.md",
+      "to": "QUICKSTART.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/API.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/API.md",
+      "to": "standards/shapes/README.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/APP.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/APP.md",
+      "to": "standards/MVI_CONTRACT_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/APP.md",
+      "to": "standards/OAUDREY_DEPLOYMENT_STANDARD.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/APP.md",
+      "to": "standards/SAAS_PRODUCTS.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/APP.md",
+      "to": "standards/shapes/TOKEN.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/CLI.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/CLI.md",
+      "to": "standards/shapes/README.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/EXCEL.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/MCP.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/MCP.md",
+      "to": "standards/CLI_MCP_AUTOMATION.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/MCP.md",
+      "to": "standards/shapes/README.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/PDF.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/API.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/APP.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/CLI.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/EXCEL.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/MCP.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/PDF.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/SKILL.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/TOKEN.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/SKILL.md",
+      "to": "CLAUDE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/SKILL.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/SKILL.md",
+      "to": "standards/shapes/README.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/TOKEN.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "governs"
+    },
+    {
+      "from": "standards/shapes/TOKEN.md",
+      "to": "standards/shapes/README.md",
+      "type": "governs"
+    },
+    {
+      "from": ".github/ISSUE_TEMPLATE/work_request.yml",
+      "to": "MASTER.md",
+      "type": "populates"
+    },
+    {
+      "from": "standards/audit-trail-check.yml",
+      "to": "standards/COMMENT-DONT-DELETE.md",
+      "type": "populates"
+    },
+    {
+      "from": ".github/ISSUE_TEMPLATE/work_request.yml",
+      "to": "MASTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "BUSINESSES.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "CODE_REVIEW_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "HANDOFF.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "IMPLEMENTATION_SUMMARY.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "THINKING_SCRATCHPAD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "VISITING_AGENTS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "learnings.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "seed.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "standards/MOBILE_TESTING.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "standards/PROACTIVE_PREFLIGHT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "standards/PRODUCT_INCUBATION_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "standards/SEARCH_AND_SOURCING.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENTS.md",
+      "to": "standards/SELF_HEALING_STANDARDS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENT_BUILD_PROMPT.md",
+      "to": ".github/ISSUE_TEMPLATE/work_request.yml",
+      "type": "referenced_by"
+    },
+    {
+      "from": "AGENT_BUILD_PROMPT.md",
+      "to": "MASTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "ARTIFACT_GENERATOR.md",
+      "to": ".github/ISSUE_TEMPLATE/work_request.yml",
+      "type": "referenced_by"
+    },
+    {
+      "from": "ARTIFACT_GENERATOR.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "ARTIFACT_GENERATOR.md",
+      "to": "MASTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "ASSUMPTIONS.md",
+      "to": "HANDOFF.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CHANGELOG.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CHANGELOG.md",
+      "to": "GOAP_AGENT_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CHANGELOG.md",
+      "to": "LEDGER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CHANGELOG.md",
+      "to": "README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CHANGELOG.md",
+      "to": "WRITE_AS_YOU_GO_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CHANGELOG.md",
+      "to": "standards/LEDGER_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "learnings.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "standards/BNAT_SHEAF_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "standards/COMMENT-DONT-DELETE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "standards/VERIFY_THE_POSTCONDITION.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CLAUDE.md",
+      "to": "standards/shapes/SKILL.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CODE_REVIEW_STANDARD.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "CODE_REVIEW_STANDARD.md",
+      "to": "standards/SELF_HEALING_STANDARDS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "DECISIONS-TODAY.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "DECISIONS.md",
+      "to": "HANDOFF.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "DECISIONS.md",
+      "to": "learnings.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "DECISIONS.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "DECISIONS.md",
+      "to": "standards/MOBILE_TESTING.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "DECISIONS.md",
+      "to": "standards/REVENUECAT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAL.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAL.md",
+      "to": "GOAP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAL.md",
+      "to": "GOAP_AGENT_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAL.md",
+      "to": "HANDOFF.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAL.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAL.md",
+      "to": "standards/PRESERVE_GOALS_AND_HISTORY.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAP.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAP.md",
+      "to": "GOAP_AGENT_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAP.md",
+      "to": "HANDOFF.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAP_AGENT_PROMPT.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAP_AGENT_PROMPT.md",
+      "to": "GOAP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAP_AGENT_PROMPT.md",
+      "to": "IMPLEMENTATION_SUMMARY.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "GOAP_AGENT_PROMPT.md",
+      "to": "README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "HANDOFF.md",
+      "to": "AGENTS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "HANDOFF.md",
+      "to": "VISITING_AGENTS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "LEDGER.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "LEDGER.md",
+      "to": "ARTIFACT_GENERATOR.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "LEDGER.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "LEDGER.md",
+      "to": "MASTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "LEDGER.md",
+      "to": "standards/LEDGER_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "ARTIFACT_GENERATOR.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "UPREV_METHOD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "MASTER.md",
+      "to": "WR_RESEARCH_MANDATE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "MODEL_CONFIG.md",
+      "to": "learnings.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "MODEL_CONFIG.md",
+      "to": "standards/CONTROLLER_CHARTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "MODEL_CONFIG.md",
+      "to": "standards/GITHUB_MODELS_AND_ADVANCED.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "MODEL_CONFIG.md",
+      "to": "standards/PROACTIVE_PREFLIGHT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "ARTIFACT_GENERATOR.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "GOAP_AGENT_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "REMINDERS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "REPO_LIBRARY_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "UPREV_METHOD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "promptforproject.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "standards/API_GATEWAY.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "standards/BADGES_AND_STATUS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "standards/GREEN_WEBSITE_REPORTING_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "standards/INTEGRATION_MEASUREMENT_TEMPLATE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "standards/README_LANDING_AUTOMATION.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "README.md",
+      "to": "standards/WR-4484-bnat-invention-loop.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "REMINDERS.md",
+      "to": "README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "REMINDERS.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "REPO_AUDIT.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "REPO_LIBRARY_STANDARD.md",
+      "to": "ARTIFACT_GENERATOR.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "REPO_LIBRARY_STANDARD.md",
+      "to": "MASTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "AGENTS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "MASTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "REMINDERS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "seed.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "standards/PEDAL_TO_THE_METAL_ENTERPRISE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "START_HERE_CALL_CHAIN.md",
+      "to": "standards/PROACTIVE_PREFLIGHT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "SYSTEM_STATE.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "SYSTEM_STATE.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "SYSTEM_STATE.md",
+      "to": "GOAP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "SYSTEM_STATE.md",
+      "to": "HANDOFF.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "SYSTEM_STATE.md",
+      "to": "REMINDERS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "SYSTEM_STATE.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "SYSTEM_STATE.md",
+      "to": "standards/INTEGRATION_MEASUREMENT_TEMPLATE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "SYSTEM_STATE.md",
+      "to": "standards/MEASUREMENT_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "SYSTEM_STATE.md",
+      "to": "standards/MVI_CONTRACT_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "SYSTEM_STATE.md",
+      "to": "standards/SYSTEM_STATE_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "UPREV_METHOD.md",
+      "to": ".github/ISSUE_TEMPLATE/work_request.yml",
+      "type": "referenced_by"
+    },
+    {
+      "from": "UPREV_METHOD.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "UPREV_METHOD.md",
+      "to": "ARTIFACT_GENERATOR.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "UPREV_METHOD.md",
+      "to": "MASTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "UPREV_METHOD.md",
+      "to": "WR_RESEARCH_MANDATE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "VISITING_AGENTS.md",
+      "to": "AGENTS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "VISITING_AGENTS.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "VISITING_AGENTS.md",
+      "to": "HANDOFF.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "VISITING_AGENTS.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "VISITING_AGENTS.md",
+      "to": "seed.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "WRITE_AS_YOU_GO_STANDARD.md",
+      "to": ".github/ISSUE_TEMPLATE/work_request.yml",
+      "type": "referenced_by"
+    },
+    {
+      "from": "WRITE_AS_YOU_GO_STANDARD.md",
+      "to": "MASTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "WRITE_AS_YOU_GO_STANDARD.md",
+      "to": "standards/LEDGER_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "WR_RESEARCH_MANDATE.md",
+      "to": ".github/ISSUE_TEMPLATE/work_request.yml",
+      "type": "referenced_by"
+    },
+    {
+      "from": "WR_RESEARCH_MANDATE.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "WR_RESEARCH_MANDATE.md",
+      "to": "MASTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "WR_TEMPLATE_BASIC.md",
+      "to": "MASTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "WR_TEMPLATE_BASIC.md",
+      "to": "WR_RESEARCH_MANDATE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "WR_TEMPLATE_BASIC.md",
+      "to": "WR_TEMPLATE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "WR_TEMPLATE_BASIC.md",
+      "to": "standards/SELF_HEALING_STANDARDS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": ".github/ISSUE_TEMPLATE/work_request.yml",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "AGENTS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "AGENT_BUILD_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "CLAUDE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "GOAP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "GOAP_AGENT_PROMPT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "HANDOFF.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "IMPLEMENTATION_SUMMARY.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "REPO_AUDIT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "REVENUE_GATE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "THINKING_SCRATCHPAD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "UPREV_METHOD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "promptforproject.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "seed.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "standards/GOAP_SWARM_RULES.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "standards/GREEN_MAIN_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "standards/MALAMA_SELF_HEALING_AGENT_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "learnings.md",
+      "to": "standards/PROACTIVE_PREFLIGHT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "promptforproject.md",
+      "to": "README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "promptforproject.md",
+      "to": "REMINDERS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "promptforproject.md",
+      "to": "SYSTEM_STATE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "recurse-rules.md",
+      "to": "IMPLEMENTATION_SUMMARY.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "recurse-rules.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md",
+      "to": "standards/GITHUB_AUTH_TOKEN_MATRIX.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md",
+      "to": "standards/GITHUB_PROJECT_FIELDS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AGENT_SCAFFOLDING_BAN.md",
+      "to": "standards/MEASUREMENT_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AGENT_SCAFFOLDING_BAN.md",
+      "to": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AI_TAX_INTEGRATION.md",
+      "to": "standards/DRAGNET_FRAMEWORK.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AI_TAX_INTEGRATION.md",
+      "to": "standards/MULTI_ENTITY_TAX_OPTIMIZATION.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AMPLITUDE_INTEGRATION_STANDARD.md",
+      "to": "standards/AMPLITUDE_NOTION_AGENT_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "to": "CLAUDE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "to": "learnings.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "to": "standards/VERIFY_THE_POSTCONDITION.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/GATEKEEPER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/GENZ_INT_OSINT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/SELF_HEALING_STANDARDS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/API.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/APP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/CLI.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/EXCEL.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/MCP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/PDF.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/SKILL.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "to": "standards/shapes/TOKEN.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATION_FIRST_STACK.md",
+      "to": "standards/GITHUB_AUTH_TOKEN_MATRIX.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/AUTOMATION_FIRST_STACK.md",
+      "to": "standards/README_LANDING_AUTOMATION.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/BITO_AI_INTEGRATION_STANDARD.md",
+      "to": "IMPLEMENTATION_SUMMARY_BITO_AI.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/BNAT_SHEAF_STANDARD.md",
+      "to": "AGENTS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/BNAT_SHEAF_STANDARD.md",
+      "to": "VISITING_AGENTS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/CIRCLECI_INTEGRATION_STANDARD.md",
+      "to": "LEDGER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/CLI_MCP_AUTOMATION.md",
+      "to": "QUICKSTART.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/CLI_MCP_AUTOMATION.md",
+      "to": "standards/shapes/MCP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/CODE_COMMENTING_STANDARD.md",
+      "to": "AGENTS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/COMMENT-DONT-DELETE.md",
+      "to": "standards/CODE_COMMENTING_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/COMMENT-DONT-DELETE.md",
+      "to": "standards/PRESERVE_GOALS_AND_HISTORY.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/COMMENT-DONT-DELETE.md",
+      "to": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/COMMENT-DONT-DELETE.md",
+      "to": "standards/VERIFY_THE_POSTCONDITION.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/COMMENT-DONT-DELETE.md",
+      "to": "standards/audit-trail-check.yml",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/CREDENTIAL_AUDIT_SYSTEM.md",
+      "to": "standards/GATEKEEPER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/CREDENTIAL_AUDIT_SYSTEM.md",
+      "to": "standards/SELF_HEALING_STANDARDS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/CRON_REQUIREMENTS.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/CRON_SYSTEM.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/CRON_SYSTEM.md",
+      "to": "standards/CRON_REQUIREMENTS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/CRON_SYSTEM.md",
+      "to": "standards/DRAGNET_FRAMEWORK.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/DELIVERY_MATRIX.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/DELIVERY_MATRIX.md",
+      "to": "standards/VERIFY_THE_POSTCONDITION.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/DOCKER.md",
+      "to": "QUICKSTART.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/DOCKER.md",
+      "to": "standards/API_GATEWAY.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/ERROR_REPORTING_STANDARD.md",
+      "to": "standards/CODE_COMMENTING_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/ERROR_REPORTING_STANDARD.md",
+      "to": "standards/DRAGNET_FRAMEWORK.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/FORMAL_VERIFY_AUTO_WR.md",
+      "to": "standards/GITHUB_AUTH_TOKEN_MATRIX.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/FORMAL_VERIFY_AUTO_WR.md",
+      "to": "standards/GITHUB_PROJECT_FIELDS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/GATEKEEPER.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/GATEKEEPER.md",
+      "to": "standards/CREDENTIAL_AUDIT_SYSTEM.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/GENZ_INT_OSINT.md",
+      "to": "standards/GATEKEEPER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/GITHUB_PROJECT_FIELDS.md",
+      "to": "standards/GITHUB_MODELS_AND_ADVANCED.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/GOAP_SWARM_RULES.md",
+      "to": "GOAP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/GOAP_SWARM_RULES.md",
+      "to": "standards/PEDAL_TO_THE_METAL_ENTERPRISE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/GREEN_MAIN_STANDARD.md",
+      "to": "CLAUDE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/GREEN_MAIN_STANDARD.md",
+      "to": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/GREEN_MAIN_STANDARD.md",
+      "to": "standards/VERIFY_THE_POSTCONDITION.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/GREEN_WEBSITE_REPORTING_STANDARD.md",
+      "to": "README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/GREEN_WEBSITE_REPORTING_STANDARD.md",
+      "to": "SYSTEM_STATE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/IMAGE_CREATION_SEO_AUTOMATION.md",
+      "to": "standards/README_LANDING_AUTOMATION.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+      "to": "standards/SECURITY.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/INTEGRATIONS.md",
+      "to": "QUICKSTART.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/INTEGRATIONS.md",
+      "to": "standards/REVENUECAT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/LEDGER_STANDARD.md",
+      "to": "ARTIFACT_GENERATOR.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/LEDGER_STANDARD.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/LEDGER_STANDARD.md",
+      "to": "MASTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/LOVABLE_INTEGRATION_STANDARD.md",
+      "to": "standards/NOTION_INTEGRATION_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MEASUREMENT_STANDARD.md",
+      "to": "standards/INTEGRATION_MEASUREMENT_TEMPLATE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MOBILE_TESTING.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MONITORING.md",
+      "to": "standards/API_GATEWAY.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MONITORING.md",
+      "to": "standards/BUSINESS_AUDIT_SYSTEM.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MONITORING.md",
+      "to": "standards/CRON_REQUIREMENTS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MONITORING.md",
+      "to": "standards/CRON_SYSTEM.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MONITORING.md",
+      "to": "standards/DRAGNET_FRAMEWORK.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MONITORING.md",
+      "to": "standards/MALAMA_SELF_HEALING_AGENT_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MONITORING.md",
+      "to": "standards/MULTI_ENTITY_TAX_OPTIMIZATION.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MULTI_ENTITY_TAX_OPTIMIZATION.md",
+      "to": "standards/BUSINESS_AUDIT_SYSTEM.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MVI_CONTRACT_STANDARD.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MVI_CONTRACT_STANDARD.md",
+      "to": "standards/MEASUREMENT_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MVI_CONTRACT_STANDARD.md",
+      "to": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/MVI_CONTRACT_STANDARD.md",
+      "to": "standards/shapes/APP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/OAUDREY_DEPLOYMENT_STANDARD.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/OAUDREY_DEPLOYMENT_STANDARD.md",
+      "to": "standards/shapes/APP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/PEDAL_TO_THE_METAL_ENTERPRISE.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/PRESERVE_GOALS_AND_HISTORY.md",
+      "to": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/PRESERVE_GOALS_AND_HISTORY.md",
+      "to": "standards/VERIFY_THE_POSTCONDITION.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/PRICING.md",
+      "to": "QUICKSTART.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/PRICING.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/PRICING.md",
+      "to": "standards/REVENUECAT.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/PROACTIVE_PREFLIGHT.md",
+      "to": "standards/GITHUB_MODELS_AND_ADVANCED.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/PRODUCT_INCUBATION_STANDARD.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/PRODUCT_INCUBATION_STANDARD.md",
+      "to": "MASTER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/REVENUECAT.md",
+      "to": "standards/INTEGRATIONS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SAAS_PRODUCTS.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SAAS_PRODUCTS.md",
+      "to": "standards/shapes/APP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SECURITY.md",
+      "to": "QUICKSTART.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SECURITY.md",
+      "to": "standards/BUSINESS_AUDIT_SYSTEM.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SECURITY.md",
+      "to": "standards/DROPLET_SSH_ACCESS.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SECURITY.md",
+      "to": "standards/GATEKEEPER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SECURITY.md",
+      "to": "standards/MULTI_ENTITY_TAX_OPTIMIZATION.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SECURITY.md",
+      "to": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SELF_HEALING_STANDARDS.md",
+      "to": "standards/CODE_COMMENTING_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SELF_HEALING_STANDARDS.md",
+      "to": "standards/MALAMA_SELF_HEALING_AGENT_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SELF_HEALING_STANDARDS.md",
+      "to": "standards/MEASUREMENT_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SELF_HEALING_STANDARDS.md",
+      "to": "standards/SUGGESTION_HANDLING_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SUGGESTION_HANDLING_STANDARD.md",
+      "to": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SYSTEM_STATE_STANDARD.md",
+      "to": "SYSTEM_STATE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SYSTEM_STATE_STANDARD.md",
+      "to": "standards/MEASUREMENT_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/SYSTEM_STATE_STANDARD.md",
+      "to": "standards/MVI_CONTRACT_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/TESTING.md",
+      "to": "CHANGELOG.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/TESTING.md",
+      "to": "QUICKSTART.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/TESTING.md",
+      "to": "standards/MOBILE_TESTING.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/VERIFY_THE_POSTCONDITION.md",
+      "to": "CLAUDE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/VERIFY_THE_POSTCONDITION.md",
+      "to": "learnings.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/VERIFY_THE_POSTCONDITION.md",
+      "to": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/ZERO_HUMAN_FRAMEWORK.md",
+      "to": "QUICKSTART.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/ZERO_HUMAN_FRAMEWORK.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/ZERO_HUMAN_FRAMEWORK.md",
+      "to": "standards/DRAGNET_FRAMEWORK.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/ZERO_HUMAN_FRAMEWORK.md",
+      "to": "standards/SUGGESTION_HANDLING_STANDARD.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/audit-trail-check.yml",
+      "to": "standards/COMMENT-DONT-DELETE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/API.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/API.md",
+      "to": "standards/shapes/README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/APP.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/APP.md",
+      "to": "standards/shapes/README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/CLI.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/CLI.md",
+      "to": "standards/shapes/README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/EXCEL.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/EXCEL.md",
+      "to": "standards/shapes/README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/MCP.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/MCP.md",
+      "to": "standards/GATEKEEPER.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/MCP.md",
+      "to": "standards/shapes/README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/PDF.md",
+      "to": "START_HERE_CALL_CHAIN.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/PDF.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/PDF.md",
+      "to": "standards/shapes/README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/API.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/CLI.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/MCP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/SKILL.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/README.md",
+      "to": "standards/shapes/TOKEN.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/SKILL.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/SKILL.md",
+      "to": "standards/shapes/README.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/TOKEN.md",
+      "to": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/TOKEN.md",
+      "to": "standards/shapes/APP.md",
+      "type": "referenced_by"
+    },
+    {
+      "from": "standards/shapes/TOKEN.md",
+      "to": "standards/shapes/README.md",
+      "type": "referenced_by"
+    }
+  ],
+  "fingerprint": "bb6f7402064f3d5d54e56abde42d9b5626edd4072e5d5e20a093f0cf702a4bf0",
+  "generator": "scripts/context_graph.py",
+  "node_count": 143,
+  "nodes": [
+    {
+      "bytes": 10587,
+      "id": ".github/ISSUE_TEMPLATE/work_request.yml",
+      "role": "data"
+    },
+    {
+      "bytes": 9882,
+      "id": "AGENT-DEPLOY-ONEFILE.md",
+      "role": "document"
+    },
+    {
+      "bytes": 12689,
+      "id": "AGENT-DEPLOY-ONEFILE_COPILOT.md",
+      "role": "document"
+    },
+    {
+      "bytes": 15603,
+      "id": "AGENT-DEPLOY-ONEFILE_Guardrails.md",
+      "role": "document"
+    },
+    {
+      "bytes": 26170,
+      "id": "AGENTS.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 8179,
+      "id": "AGENT_BUILD_PROMPT.md",
+      "role": "document"
+    },
+    {
+      "bytes": 10945,
+      "id": "ARTIFACT_GENERATOR.md",
+      "role": "document"
+    },
+    {
+      "bytes": 1145,
+      "id": "ASSUMPTIONS.md",
+      "role": "document"
+    },
+    {
+      "bytes": 11390,
+      "id": "BUSINESSES.md",
+      "role": "document"
+    },
+    {
+      "bytes": 41138,
+      "id": "CHANGELOG.md",
+      "role": "document"
+    },
+    {
+      "bytes": 6234,
+      "id": "CLAUDE.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5535,
+      "id": "CODE_REVIEW_STANDARD.md",
+      "role": "document"
+    },
+    {
+      "bytes": 5095,
+      "id": "DASHBOARD_QUICKREF.md",
+      "role": "document"
+    },
+    {
+      "bytes": 320,
+      "id": "DECISIONS-TODAY.md",
+      "role": "document"
+    },
+    {
+      "bytes": 8072,
+      "id": "DECISIONS.md",
+      "role": "document"
+    },
+    {
+      "bytes": 1025,
+      "id": "GOAL.md",
+      "role": "document"
+    },
+    {
+      "bytes": 5541,
+      "id": "GOAP.md",
+      "role": "document"
+    },
+    {
+      "bytes": 16445,
+      "id": "GOAP_AGENT_PROMPT.md",
+      "role": "document"
+    },
+    {
+      "bytes": 9311,
+      "id": "HANDOFF.md",
+      "role": "document"
+    },
+    {
+      "bytes": 12464,
+      "id": "IMPLEMENTATION_SUMMARY.md",
+      "role": "document"
+    },
+    {
+      "bytes": 5834,
+      "id": "IMPLEMENTATION_SUMMARY_BITO_AI.md",
+      "role": "document"
+    },
+    {
+      "bytes": 8098,
+      "id": "LEDGER.md",
+      "role": "document"
+    },
+    {
+      "bytes": 10157,
+      "id": "MASTER.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 343,
+      "id": "MEMORIES.md",
+      "role": "document"
+    },
+    {
+      "bytes": 4356,
+      "id": "MODEL_CONFIG.md",
+      "role": "document"
+    },
+    {
+      "bytes": 2927,
+      "id": "QUICKSTART.md",
+      "role": "document"
+    },
+    {
+      "bytes": 49908,
+      "id": "README.md",
+      "role": "document"
+    },
+    {
+      "bytes": 1337,
+      "id": "README_SOCIAL_MEDIA_AUTOMATION.md",
+      "role": "document"
+    },
+    {
+      "bytes": 9918,
+      "id": "REMINDERS.md",
+      "role": "document"
+    },
+    {
+      "bytes": 4760,
+      "id": "REPO_AUDIT.md",
+      "role": "document"
+    },
+    {
+      "bytes": 635,
+      "id": "REPO_LIBRARY_STANDARD.md",
+      "role": "document"
+    },
+    {
+      "bytes": 2343,
+      "id": "REVENUE_GATE.md",
+      "role": "document"
+    },
+    {
+      "bytes": 6669,
+      "id": "SHIP_STATUS.md",
+      "role": "document"
+    },
+    {
+      "bytes": 9358,
+      "id": "START_HERE_CALL_CHAIN.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 27635,
+      "id": "SYSTEM_STATE.md",
+      "role": "document"
+    },
+    {
+      "bytes": 9647,
+      "id": "THINKING_SCRATCHPAD.md",
+      "role": "document"
+    },
+    {
+      "bytes": 6364,
+      "id": "TRUSTFORGE_SETUP.md",
+      "role": "document"
+    },
+    {
+      "bytes": 8445,
+      "id": "UPREV_METHOD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 11443,
+      "id": "VISITING_AGENTS.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 664,
+      "id": "WRITE_AS_YOU_GO_STANDARD.md",
+      "role": "document"
+    },
+    {
+      "bytes": 9708,
+      "id": "WR_RESEARCH_MANDATE.md",
+      "role": "document"
+    },
+    {
+      "bytes": 1286,
+      "id": "WR_TEMPLATE.md",
+      "role": "document"
+    },
+    {
+      "bytes": 1996,
+      "id": "WR_TEMPLATE_BASIC.md",
+      "role": "document"
+    },
+    {
+      "bytes": 86122,
+      "id": "learnings.md",
+      "role": "document"
+    },
+    {
+      "bytes": 5677,
+      "id": "promptforproject.md",
+      "role": "document"
+    },
+    {
+      "bytes": 12168,
+      "id": "recurse-rules.md",
+      "role": "document"
+    },
+    {
+      "bytes": 2324,
+      "id": "seed.md",
+      "role": "document"
+    },
+    {
+      "bytes": 2448,
+      "id": "standards/AGENTS_STAR_OPTIMIZER.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5481,
+      "id": "standards/AGENT_BOARD_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 6246,
+      "id": "standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 3602,
+      "id": "standards/AGENT_SCAFFOLDING_BAN.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 1724,
+      "id": "standards/AGENT_STACK_SETUP.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 4001,
+      "id": "standards/AI_TAX_INTEGRATION.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5200,
+      "id": "standards/AMPLITUDE_INTEGRATION_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 6500,
+      "id": "standards/AMPLITUDE_NOTION_AGENT_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 14635,
+      "id": "standards/API_GATEWAY.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 19752,
+      "id": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 19526,
+      "id": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 1732,
+      "id": "standards/AUTOMATION_FIRST_STACK.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5086,
+      "id": "standards/AUTO_BOOTSTRAP_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 3023,
+      "id": "standards/BADGES_AND_STATUS.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 6267,
+      "id": "standards/BITO_AI_INTEGRATION_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 4356,
+      "id": "standards/BNAT_SHEAF_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 4736,
+      "id": "standards/BUSINESS_AUDIT_SYSTEM.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 4372,
+      "id": "standards/CIRCLECI_INTEGRATION_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 8886,
+      "id": "standards/CLI_MCP_AUTOMATION.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 3293,
+      "id": "standards/CODE_COMMENTING_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 9561,
+      "id": "standards/COMMENT-DONT-DELETE.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 12115,
+      "id": "standards/CONTENT_AUTOMATION_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 13140,
+      "id": "standards/CONTROLLER_CHARTER.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 623,
+      "id": "standards/CREDENTIAL_AUDIT_SYSTEM.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 1815,
+      "id": "standards/CRON_REQUIREMENTS.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 2824,
+      "id": "standards/CRON_SYSTEM.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 4498,
+      "id": "standards/DECISION_SCORING_ENGINE_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 11565,
+      "id": "standards/DELIVERY_MATRIX.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 4026,
+      "id": "standards/DOCKER.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 9654,
+      "id": "standards/DRAGNET_FRAMEWORK.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 6130,
+      "id": "standards/DROPLET_SSH_ACCESS.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 9017,
+      "id": "standards/ERROR_REPORTING_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 2708,
+      "id": "standards/FORMAL_VERIFY_AUTO_WR.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 20764,
+      "id": "standards/GATEKEEPER.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 24824,
+      "id": "standards/GENZ_INT_OSINT.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 8029,
+      "id": "standards/GITHUB_AUTH_TOKEN_MATRIX.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 3078,
+      "id": "standards/GITHUB_MODELS_AND_ADVANCED.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5233,
+      "id": "standards/GITHUB_PROJECT_FIELDS.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 3703,
+      "id": "standards/GOAP_SWARM_RULES.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 4338,
+      "id": "standards/GREEN_MAIN_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 2863,
+      "id": "standards/GREEN_WEBSITE_REPORTING_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 3081,
+      "id": "standards/IMAGE_CREATION_SEO_AUTOMATION.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 9751,
+      "id": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 12493,
+      "id": "standards/INTEGRATIONS.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5089,
+      "id": "standards/INTEGRATION_MEASUREMENT_TEMPLATE.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 2168,
+      "id": "standards/LEDGER_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5202,
+      "id": "standards/LOVABLE_INTEGRATION_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5396,
+      "id": "standards/MALAMA_SELF_HEALING_AGENT_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5394,
+      "id": "standards/MEASUREMENT_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5967,
+      "id": "standards/MOBILE_TESTING.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 1778,
+      "id": "standards/MONITORING.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5453,
+      "id": "standards/MULTI_ENTITY_TAX_OPTIMIZATION.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 6038,
+      "id": "standards/MVI_CONTRACT_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 7487,
+      "id": "standards/NOIMOSAI_INTEGRATION_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 12043,
+      "id": "standards/NOTION_INTEGRATION_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 31655,
+      "id": "standards/OAUDREY_DEPLOYMENT_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 8119,
+      "id": "standards/OPERATIONAL_CONTROL_DOCUMENTATION_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 3227,
+      "id": "standards/PEDAL_TO_THE_METAL_ENTERPRISE.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 2829,
+      "id": "standards/PRESERVE_GOALS_AND_HISTORY.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5504,
+      "id": "standards/PRICING.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 2935,
+      "id": "standards/PROACTIVE_PREFLIGHT.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 1179,
+      "id": "standards/PRODUCT_INCUBATION_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5678,
+      "id": "standards/PROJECT_MANAGEMENT.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 4558,
+      "id": "standards/PUTER_PERPLEXITY_INTEGRATION_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 1584,
+      "id": "standards/README_LANDING_AUTOMATION.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 11193,
+      "id": "standards/REVENUECAT.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 36606,
+      "id": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 7359,
+      "id": "standards/SAAS_PRODUCTS.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 6957,
+      "id": "standards/SEARCH_AND_SOURCING.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 3858,
+      "id": "standards/SECURITY.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 21627,
+      "id": "standards/SELF_HEALING_STANDARDS.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5299,
+      "id": "standards/SUGGESTION_HANDLING_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 4902,
+      "id": "standards/SYSTEM_STATE_STANDARD.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 3252,
+      "id": "standards/TESTING.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 8122,
+      "id": "standards/VERIFY_THE_POSTCONDITION.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 1350,
+      "id": "standards/WR-4471-lint-autofix-loop.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 1332,
+      "id": "standards/WR-4472-ci-gate-self-heal.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 1255,
+      "id": "standards/WR-4473-precommit-enforcement.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 3395,
+      "id": "standards/WR-4474-runtime-gateway-triage.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 2668,
+      "id": "standards/WR-4481-lane-failover.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5023,
+      "id": "standards/WR-4482-evidence-first-directive.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 4216,
+      "id": "standards/WR-4483-ensemble-ahp-engine.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 26612,
+      "id": "standards/WR-4484-bnat-invention-loop.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 17278,
+      "id": "standards/WR-4485-underdog-register.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 3819,
+      "id": "standards/WR-4486-judge-gated-rewrite-sweep.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 4751,
+      "id": "standards/ZERO_HUMAN_FRAMEWORK.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5259,
+      "id": "standards/audit-trail-check.yml",
+      "role": "data"
+    },
+    {
+      "bytes": 6937,
+      "id": "standards/shapes/API.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 8775,
+      "id": "standards/shapes/APP.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 6847,
+      "id": "standards/shapes/CLI.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 7045,
+      "id": "standards/shapes/EXCEL.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 8750,
+      "id": "standards/shapes/MCP.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 16138,
+      "id": "standards/shapes/PDF.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 1737,
+      "id": "standards/shapes/README.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 5811,
+      "id": "standards/shapes/SKILL.md",
+      "role": "governance"
+    },
+    {
+      "bytes": 7575,
+      "id": "standards/shapes/TOKEN.md",
+      "role": "governance"
+    }
+  ],
+  "wr": 18336
+}

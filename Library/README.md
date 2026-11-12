@@ -20,3 +20,7 @@ Original archival material elsewhere in the repository remains intact.
 - [AG-UI demo kit evidence](halo-demo-stream/README.md):
   what was tested for the streaming and session-resume demo kit (WR #18342),
   and what is not verified.
+- [Drop folders and dashboard hosting sources, 2026-11-11](drop-folders/README.md):
+  the PRs that set the drop-folder conventions, the Cloudflare Pages limits
+  and Direct Upload docs, and the Gemini Notebook API docs used to scope
+  the NotebookLM WR (WR #18379, #18380).

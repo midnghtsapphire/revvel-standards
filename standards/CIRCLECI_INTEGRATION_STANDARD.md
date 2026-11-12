@@ -32,6 +32,7 @@ first.
 | `validate-registries` | PR + main | Persona registry parses and resolves; `skills/SKILLS_INDEX.yml` is valid YAML |
 | `policy-check` | PR + main | RVS-AGENT-001 archival gate — no silent deletions, REVVEL-DISABLED metadata present |
 | `veins-monitor` | PR + main | Observer-only VEINS snapshot artifact (never fails the pipeline) |
+| `graph-prompting` | PR + main | WR #18336. `npm run graph-prompting:test` and `npm run graph-prompting:check`. Stdlib Python. No model call. |
 | `deploy-railway` | **main only**, after `lint-and-test` | Deploys to Railway using `RAILWAY_TOKEN`. Skips with a clear message if the token is absent. Set `RAILWAY_TOKEN` in CircleCI project env vars (app.circleci.com → Project Settings → Environment Variables) and in GitHub Actions secrets for `ship-to-market.yml`. Token source: <https://railway.app/account/tokens> |
 
 ## 3. House rules

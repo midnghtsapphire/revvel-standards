@@ -27,6 +27,13 @@ executors:
   node-next-executor:
     docker:
       - image: cimg/node:22.14
+  # WR #18338. The node executors ship Python 3.10. The GEPA lock was resolved
+  # on Python 3.12, and cachetools 8.0.0 refuses to install on 3.10 (CircleCI
+  # build 23634). This image matches that lock. Pinned to 3.12.16, not the
+  # floating 3.12 tag.
+  python-gepa-executor:
+    docker:
+      - image: cimg/python:3.12.16
 
 jobs:
   lint-and-test:
@@ -265,12 +272,117 @@ jobs:
   # This job does not download a model and does not call a paid API.
   # Manual twin: python3 -m unittest discover -s tests -p prompt_compression_test.py -v
   prompt-compression:
+  # WR #18379: the docs drop folders process themselves. Push-triggered, no cron.
+  # Path filtering happens inside the job from config/drop-folders.json: it diffs
+  # against the merge-base with main (or HEAD~1 on main) and does nothing when no
+  # drop-folder .md changed. Report-only: it writes a report, per-topic digests and
+  # the inbox ingest plan as CircleCI artifacts. It never commits or pushes, and it
+  # needs no secrets. A secret pattern in a processed file fails the job.
+  # Also runnable by hand: `node scripts/drop-folder-process.js --all`.
+  # The setup-workflow / path-filtering orb route was not used on purpose: it would
+  # turn this whole file into a setup config and break every job if the project's
+  # "dynamic config" setting is off. See docs/DROP_FOLDERS.md.
+  drop-folder-process:
+  # WR #18336 — graph prompting. Stdlib Python. Rebuilds the standards graph,
+  # checks the committed artifact and the local token measurements, and runs
+  # the routing tests. The accuracy harness check confirms the pending-spend
+  # record and does not call a model.
+  # Manual, from the repo root:
+  #   npm run graph-prompting:test && npm run graph-prompting:check
+  graph-prompting:
     executor: node-executor
     steps:
       - checkout
       - run:
           name: LLMLingua-2 compression tests
           command: python3 -m unittest discover -s tests -p prompt_compression_test.py -v
+          name: Fetch origin/main for the merge-base diff
+          command: git fetch origin main --depth=200 || true
+      - run:
+          name: Install dependencies only when an inbox intake changed
+          command: |
+            if [ "$(node scripts/drop-folder-process.js --base auto --needs-deps)" = "true" ]; then
+              npm ci --ignore-scripts --no-audit --no-fund
+            else
+              echo "No inbox intake changed; the orchestrator is not needed."
+            fi
+      - run:
+          name: Process changed drop-folder files
+          command: node scripts/drop-folder-process.js --base auto --out /tmp/drop-folder-artifacts
+      - store_artifacts:
+          path: /tmp/drop-folder-artifacts
+          destination: drop-folders
+
+  # WR #18379: the project dashboard from PR #549, built here because GitHub
+  # Pages is off and GitHub-hosted Actions are billing-locked. Builds
+  # dashboard.html + dashboard-data.json when a dashboard input changed
+  # (config/drop-folders.json "triggers.dashboard") and stores them as artifacts.
+  # The deploy step is PREPARED, not live: it only runs on main and only when
+  # CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID exist in the CircleCI project
+  # env vars. Without them it prints SKIPPED and exits 0. A green skip is not a
+  # live site. Target: Cloudflare Pages direct upload, served at
+  # dashboard.oaudrey.com once Audrey attaches the domain. Supersedes
+  # .github/workflows/update-project-dashboard.yml (kept as history).
+  dashboard-build:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Fetch origin/main for the merge-base diff
+          command: git fetch origin main --depth=200 || true
+      - run:
+          name: Skip when no dashboard input changed
+          command: |
+            if [ "$(node scripts/drop-folder-process.js --base auto --check-trigger dashboard)" != "true" ]; then
+              echo "No dashboard input changed; nothing to build."
+              circleci-agent step halt
+            fi
+      - run:
+          name: Generate dashboard.html and dashboard-data.json
+          command: node scripts/aggregate-project-dashboard.js
+      - run:
+          name: Stage the publish directory
+          command: |
+            mkdir -p public
+            cp dashboard.html public/dashboard.html
+            cp dashboard.html public/index.html
+            cp dashboard-data.json public/dashboard-data.json
+      - store_artifacts:
+          path: public
+          destination: dashboard
+      - run:
+          name: Deploy to Cloudflare Pages (skips until the token exists)
+          command: |
+            if [ "${CIRCLE_BRANCH:-}" != "main" ]; then
+              echo "SKIPPED: deploys run on main only."
+              exit 0
+            fi
+            if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+              echo "============================================================"
+              echo "SKIPPED: CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set."
+              echo "The dashboard was built and stored as an artifact, not deployed."
+              echo "See docs/DASHBOARD_HOSTING.md for the one-time setup."
+              echo "============================================================"
+              exit 0
+            fi
+            # Version pinned (config/drop-folders.json dashboard.wrangler_version).
+            WRANGLER="npx --yes wrangler@4.160.1"
+            # Creates the Direct Upload project on first run; harmless if it exists.
+            $WRANGLER pages project create revvel-dashboard --production-branch main || true
+            $WRANGLER pages deploy public --project-name revvel-dashboard --branch main
+          name: Graph prompting tests and measurement check
+          command: bash .circleci/scripts/graph-prompting.sh
+  # WR #18338 — DSPy GEPA offline tests. Installs the pinned lock, runs DummyLM
+  # unit tests, and checks that a non-local optimize call is refused. This job
+  # does not call a model and does not read an API key.
+  dspy-gepa-offline:
+    executor: python-gepa-executor
+    steps:
+      - checkout
+      - run:
+          name: Offline DSPy GEPA tests and spend refusal
+          no_output_timeout: 15m
+          command: bash .circleci/scripts/dspy-gepa-offline.sh
 
 workflows:
   version: 2
@@ -287,6 +399,10 @@ workflows:
             branches:
               ignore: main
       - policy-check:
+          filters:
+            branches:
+              ignore: main
+      - graph-prompting:
           filters:
             branches:
               ignore: main
@@ -311,6 +427,12 @@ workflows:
             branches:
               ignore: main
       - prompt-compression:
+      - drop-folder-process:
+          filters:
+            branches:
+              ignore: main
+      - dashboard-build:
+      - dspy-gepa-offline:
           filters:
             branches:
               ignore: main
@@ -327,6 +449,10 @@ workflows:
             branches:
               only: main
       - policy-check:
+          filters:
+            branches:
+              only: main
+      - graph-prompting:
           filters:
             branches:
               only: main
@@ -359,6 +485,12 @@ workflows:
             branches:
               only: main
       - prompt-compression:
+      - drop-folder-process:
+          filters:
+            branches:
+              only: main
+      - dashboard-build:
+      - dspy-gepa-offline:
           filters:
             branches:
               only: main

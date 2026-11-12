@@ -1,0 +1,30 @@
+# GEPA settings for WR #18338.
+# Offline tests do not use auto=light. They pass max_metric_calls to DummyLM.
+# A real run uses auto=light and is refused on a non-local endpoint until
+# REVVEL_LLM_ALLOW_CLOUD and REVVEL_GEPA_SPEND_APPROVED are both exactly "1".
+dspy_version: "3.5.0"
+gepa_version: "0.1.4"
+openai_version: "3.49.0"
+optimizer: GEPA
+auto: light
+num_threads: 1
+seed: 0
+issues_dir: wr/issues
+trainset_output: wr/memory/dspy-gepa-trainset.json
+versions_output: .github/agent-prompts.yml
+minimum_examples: 100
+validation_cap: 24
+prompts:
+  - id: goap-agent
+    source: GOAP_AGENT_PROMPT.md
+  - id: agent-build
+    source: AGENT_BUILD_PROMPT.md
+pending_owner_spend:
+  optimizer_run: pending-owner-approved-spend
+  benchmark_target_pp: 10
+  benchmark_status: not-measured
+  gates:
+    - REVVEL_LLM_ALLOW_CLOUD
+    - REVVEL_GEPA_SPEND_APPROVED
+  required_value: "1"
+  key_name: OPENROUTER_API_KEY
