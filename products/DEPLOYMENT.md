@@ -65,9 +65,10 @@ vercel --prod
 Configure custom domains in Vercel Dashboard:
 
 ### Suggested Domains
-- `affiliate-hub.revvel.co` → affiliate-hub
-- `ai-video.revvel.co` → ai-video-toolkit
-- `screen-recorder.revvel.co` → screen-recorder-finder
+<!-- 2026-11-11 MarketShipper: Audrey chose oaudrey.com subdomains for the three products below. DNS for those names is Cloudflare. The previous host strings are in git history. promptforge was not part of that choice. -->
+- `affiliate-hub.oaudrey.com` → affiliate-hub
+- `ai-video-toolkit.oaudrey.com` → ai-video-toolkit
+- `screen-recorder-finder.oaudrey.com` → screen-recorder-finder
 - `promptforge.revvel.co` → prompt-generation-app
 
 ### DNS Configuration

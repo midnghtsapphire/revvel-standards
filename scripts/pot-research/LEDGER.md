@@ -2,6 +2,19 @@
 
 Play-by-play for `scripts/pot-research/`, per `standards/LEDGER_STANDARD.md`. Newest first. Do not rewrite an entry; add a later one that points at it.
 
+## 2026-11-11 16:25 UTC — ResearchRodneyAIArchitect — research-gold-v1 and benchmark wiring
+
+- **Actor:** ResearchRodneyAIArchitect (Grok Bot executor)
+- **Requested by:** Audrey Evans ("Start building"), via ResearchRodneyAIArchitect
+- **Role:** executed
+- **Files:** `products/rnd-research-fleet/eval/fixtures/research-gold-v1.jsonl`, `products/rnd-research-fleet/eval/fixtures/RESEARCH_GOLD_V1.md`, `products/rnd-research-fleet/eval/fixtures/research-gold-v1.skipped.json`, `products/rnd-research-fleet/eval/build-research-gold.js`, `scripts/pot-research/benchmark.js`, `tests/research-gold.test.js`, `docs/research/pot-research-engine.md`, `scripts/pot-research/README.md`, `CHANGELOG.md`, this ledger
+- **What was done:** Collected only existing research that records a decided answer: linear-a ledger hypotheses with a test result, claim checks marked Confirmed or Wrong, tartaria-tablets errata marked Settled, draft-sweep claims marked Correct, and published fact-check verdicts. 23 rows qualified. Skipped rows and reasons are listed in the skipped file. The benchmark validates the file and reports the count and shortfall.
+- **Decisions:** This repository is public and `linear-a` has a PRIVATE_DATA_NOTICE, so private-source rows are committed as provenance plus SHA-256 hashes, and a builder script rebuilds their text locally from pinned blobs. The set is not padded to reach 100. `difficulty` is null because no source states one.
+- **Sources:** midnghtsapphire/linear-a at `1d1ec1b7496822c6726a10fc5cc2c25dd0623b16`; midnghtsapphire/tartaria-tablets at `a04b4db530ee4b8c19277a050d8f48ec0adc6ac5`; midnghtsapphire/risingaloha at `83a727d46540788a17ecd851d62bb804e33ebcee`. midnghtsapphire/searchcrew-library holds only a README and searchcrew-libraries is empty.
+- **Commits / PRs:** branch `cursor/research-gold-v1-5f2a`; pull request number added in a later entry.
+- **Open / handoff:** 77 more examples are needed. No scored run has happened and no paid run is authorized. The owner decides whether to supply a set she holds or to have the verify-resolutions sections curated into questions.
+- **Credit note:** ResearchRodneyAIArchitect built the set. Audrey Evans owns the research it came from.
+
 ## 2026-11-11 16:55 UTC — ResearchRodneyAIArchitect — priors pass through runPot
 
 - **Actor:** ResearchRodneyAIArchitect (Cursor cloud agent, Grok 4.7)

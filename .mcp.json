@@ -119,6 +119,11 @@
       },
       "disabled": true,
       "disabledReason": "Enable only for local dev or CI E2E testing. Prerequisites: (1) Start Chrome with --remote-debugging-port=9222 --user-data-dir=/tmp/cdp-test-profile, (2) Clone the fork: git clone https://github.com/midnghtsapphire/chrome-devtools-mcp, (3) npm install in the fork dir, (4) Set CHROME_DEVTOOLS_MCP_PATH to the fork's entry point (e.g. /path/to/chrome-devtools-mcp/dist/index.js), (5) Set CHROME_DEBUG_PORT=9222 in .env. SECURITY REQUIREMENT: Only call cdp_get_cookies, cdp_get_local_storage, cdp_get_session_storage, and cdp_network_intercept against localhost or test origins you own. Never use against production user sessions."
+    },
+    "action-gateway": {
+      "_comment": "DigitalOcean action-gateway. WRs #18288 (Claude) and #18290 (Codex) register this same public endpoint. type http is Claude's HTTP transport (claude mcp add --transport http). The URL is the endpoint id already published on those issues. It is not a credential. Do not add a token, Authorization header, or env key here. Claude auth is the operator command `claude mcp login action-gateway`. Codex reads the same URL from .codex/config.toml. Docs: docs/MCP_REVVEL_CATALOG.md (DigitalOcean action-gateway).",
+      "type": "http",
+      "url": "https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"
     }
   }
 }

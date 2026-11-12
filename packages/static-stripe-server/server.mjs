@@ -93,7 +93,12 @@ export function publicOrigin(requestUrl, env = process.env) {
   }
   const host = requestUrl.hostname;
   const local = host === 'localhost' || host === '127.0.0.1';
-  const allowed = local || host.endsWith('.revvel.co') || host.endsWith('.ondigitalocean.app');
+  // 2026-11-11 MarketShipper: Audrey moved the three product subdomains and the
+  // apex to oaudrey.com. hosts that this change did not rename still match the
+  // older suffix. What breaks if the apex check is removed: checkout on
+  // https://oaudrey.com is refused as origin_not_allowed.
+  const onOaudrey = host === 'oaudrey.com' || host.endsWith('.oaudrey.com');
+  const allowed = local || onOaudrey || host.endsWith('.revvel.co') || host.endsWith('.ondigitalocean.app');
   if (!allowed) return null;
   const protocol = local ? 'http:' : 'https:';
   return `${protocol}//${requestUrl.host}`;
@@ -257,14 +262,54 @@ const MIME = {
   '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
-  '.svg': 'image/svg+xml',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.gif': 'image/gif',
   '.ico': 'image/x-icon',
   '.txt': 'text/plain; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.xml': 'application/xml; charset=utf-8',
+  '.pdf': 'application/pdf',
+  '.mp3': 'audio/mpeg',
+  '.mp4': 'video/mp4',
+  '.vtt': 'text/vtt; charset=utf-8',
+  '.woff': 'font/woff',
   '.woff2': 'font/woff2',
 };
+
+export function contentTypeFor(file) {
+  return MIME[path.extname(String(file)).toLowerCase()] || 'application/octet-stream';
+}
+
+// Safari asks for a byte range before it will play a local mp4. A 200 of the
+// whole file leaves the player on the poster. Added 2026-11-11 by MarketShipper.
+export function parseByteRange(header, size) {
+  if (header == null || header === '') return null;
+  const match = /^bytes=(\d*)-(\d*)$/i.exec(String(header).trim());
+  if (!match || size < 0) return 'invalid';
+  const rawStart = match[1];
+  const rawEnd = match[2];
+  if (rawStart === '' && rawEnd === '') return 'invalid';
+  if (size === 0) return 'invalid';
+  let start;
+  let end;
+  if (rawStart === '') {
+    const suffix = Number(rawEnd);
+    if (!Number.isFinite(suffix) || suffix <= 0) return 'invalid';
+    start = suffix >= size ? 0 : size - suffix;
+    end = size - 1;
+  } else {
+    start = Number(rawStart);
+    end = rawEnd === '' ? size - 1 : Number(rawEnd);
+    if (end >= size) end = size - 1;
+  }
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || start >= size || end < start) {
+    return 'invalid';
+  }
+  return { start, end };
+}
 
 export async function resolveStatic(root, urlPath) {
   let pathname;
@@ -379,12 +424,36 @@ async function serveStatic(req, res, ctx, pathname) {
     return;
   }
   const data = await readFile(file);
-  const type = MIME[path.extname(file).toLowerCase()] || 'application/octet-stream';
+  const type = contentTypeFor(file);
   const immutable = pathname.includes('/_next/static/');
-  res.writeHead(200, {
+  const headers = {
     'content-type': type,
-    'content-length': data.length,
+    'accept-ranges': 'bytes',
     'cache-control': immutable ? 'public, max-age=31536000, immutable' : 'no-cache',
+  };
+  const range = parseByteRange(req.headers.range, data.length);
+  if (range === 'invalid') {
+    res.writeHead(416, {
+      ...headers,
+      'content-range': `bytes */${data.length}`,
+      'content-length': 0,
+    });
+    res.end();
+    return;
+  }
+  if (range) {
+    const slice = data.subarray(range.start, range.end + 1);
+    res.writeHead(206, {
+      ...headers,
+      'content-range': `bytes ${range.start}-${range.end}/${data.length}`,
+      'content-length': slice.length,
+    });
+    res.end(req.method === 'HEAD' ? undefined : slice);
+    return;
+  }
+  res.writeHead(200, {
+    ...headers,
+    'content-length': data.length,
   });
   res.end(req.method === 'HEAD' ? undefined : data);
 }
@@ -408,6 +477,14 @@ async function handle(req, res, ctx) {
     await postWebhook(req, res, ctx);
     return;
   }
+  // Optional product routes. oaudrey-home serves /api/team and /api/hub here
+  // so this file stays the only server implementation (SonarCloud duplication).
+  // What breaks if this call is removed: those two paths fall through to static
+  // files and the front page cannot read GitHub.
+  if (typeof ctx.routes === 'function') {
+    const handled = await ctx.routes(req, res, ctx);
+    if (handled) return;
+  }
   await serveStatic(req, res, ctx, pathname);
 }
 
@@ -421,6 +498,7 @@ export function createApp(options = {}) {
     now: options.now || Date.now,
     hits: new Map(),
     service: options.service,
+    routes: options.routes || null,
   };
   return http.createServer(async (req, res) => {
     try {
@@ -438,7 +516,7 @@ export function createApp(options = {}) {
   });
 }
 
-export function bindProduct(service, moduleUrl) {
+export function bindProduct(service, moduleUrl, extras = {}) {
   // staticRoot is the product's out/ directory, not this package. moduleUrl is
   // the product wrapper (products/<slug>/server/static-stripe-server.mjs).
   // STATIC_ROOT overrides that for the image, where the export is copied to
@@ -456,6 +534,8 @@ export function bindProduct(service, moduleUrl) {
     clientAddress,
     rateLimited,
     resolveStatic,
+    contentTypeFor,
+    parseByteRange,
     createCheckoutSession(args = {}) {
       return createCheckoutSession({ ...args, service });
     },
@@ -464,6 +544,7 @@ export function bindProduct(service, moduleUrl) {
         ...options,
         service: options.service || service,
         staticRoot: options.staticRoot || defaultStaticRoot(),
+        routes: options.routes || extras.routes || null,
       });
     },
     listen() {
