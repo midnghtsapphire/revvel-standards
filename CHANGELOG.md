@@ -3,6 +3,9 @@
 - Added `products/rnd-research-fleet/eval/fixtures/research-gold-v1.jsonl`: 23 real research items with a recorded verdict and a pinned source commit. Rows from the private `linear-a` and `tartaria-tablets` repos carry provenance and hashes only; `RESEARCH_GOLD_V1.md` explains how to rebuild their text. This is below the 100 the work request needs, and the shortfall is reported, not padded.
 - `scripts/pot-research/benchmark.js` validates the set and prints `gold_count`, `gold_shortfall` and per-source counts. It still prints `NOT_MEASURED` and `quality_delta: null`. Added `tests/research-gold.test.js`. No new CI job and no GitHub-hosted workflow.
 
+## 2026-11-11 (3) — MarketShipper — draft App Platform deploy jobs
+
+- `do-app-update.sh` and the three `*-do-deploy` CircleCI jobs live only on this draft. They are not in the product image-gate PRs. A merge can create or update DigitalOcean apps after Audrey sets `DIGITALOCEAN_ACCESS_TOKEN`. This draft is not approved.
 ## 2026-11-11 (5) — MarketShipper — screen-recorder-finder binds the shared Stripe server
 
 - Restacked onto main `3d6ae9a8`. CircleCI keeps every job from main and adds `screen-recorder-finder-image`. The product calls `bindProduct('screen-recorder-finder')` in `packages/static-stripe-server`. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
