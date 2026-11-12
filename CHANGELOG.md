@@ -1,3 +1,8 @@
+## 2026-11-11 — BALLS — official fleet mascot family (Auky and Lil Aud-Bod)
+
+- Added `docs/brand/mascots/MASCOTS.md` documenting Auky and Lil Aud-Bod aka BALLS as the fleet mascot duo, plus Auky artwork from WebForge and the BALLS pixel avatar.
+- Added `docs/bots/bot-balls/README.md` (brand-development bot profile). Index pointers appended in `docs/CALL-NAMES.md`, `docs/README.md`, `docs/BOT-ROSTER.json`, `docs/BRAND_ARCHITECTURE.md`, `docs/PORTFOLIO.md`, and `templates/brand/README.md`. Nothing posts without Audrey's explicit yes.
+
 ## 2026-11-11 (3) — MarketShipper — draft App Platform deploy jobs
 
 - `do-app-update.sh` and the three `*-do-deploy` CircleCI jobs live only on this draft. They are not in the product image-gate PRs. A merge can create or update DigitalOcean apps after Audrey sets `DIGITALOCEAN_ACCESS_TOKEN`. This draft is not approved.

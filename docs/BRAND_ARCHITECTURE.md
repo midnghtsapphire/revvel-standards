@@ -21,3 +21,7 @@
 - Revvel — product brand family
 - TruthSlayer — content/reviews brand
 - oAudrey — personal subdomain root for live apps
+
+## Fleet mascots (added 2026-11-11)
+
+Fleet mascots (Auky and Lil Aud-Bod aka BALLS) sit alongside the Revvel Emblem, which remains the product logo system. See [brand/mascots/MASCOTS.md](brand/mascots/MASCOTS.md). Official only after Audrey merges that document.
