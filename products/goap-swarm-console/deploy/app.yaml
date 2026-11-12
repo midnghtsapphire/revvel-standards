@@ -1,0 +1,43 @@
+# DigitalOcean App Platform spec for agent-as-fte.revvel.co
+# WR #18334. MarketShipper, 2026-11-11.
+#
+# Same shape as oaudrey/.do/app.yaml: a static site component, GitHub source,
+# and a custom domain. This file does not deploy anything by itself. Audrey
+# applies it with doctl after DIGITALOCEAN_ACCESS_TOKEN is set, then adds the
+# DNS records App Platform prints to Namecheap for agent-as-fte.revvel.co.
+#
+# deploy_on_push stays false until that DNS exists. Turning it on earlier
+# would attach a hostname that does not resolve.
+#
+# CALENDLY_URL is empty in git on purpose. Set the real https://calendly.com/
+# path in the App Platform environment for this component, then rebuild.
+# An empty value ships the page with the booking embed turned off.
+
+name: agent-as-fte
+region: nyc
+
+static_sites:
+  - name: agent-as-fte
+    github:
+      repo: midnghtsapphire/revvel-standards
+      branch: main
+      deploy_on_push: false
+    source_dir: /products/goap-swarm-console
+    environment_slug: node-js
+    build_command: node scripts/build-agent-fte-landing.mjs
+    output_dir: /landing-dist
+    index_document: index.html
+    error_document: index.html
+    catchall_document: index.html
+    envs:
+      - key: CALENDLY_URL
+        scope: BUILD_TIME
+        value: ""
+
+domains:
+  - domain: agent-as-fte.revvel.co
+    type: PRIMARY
+
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
