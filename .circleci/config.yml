@@ -266,6 +266,12 @@ jobs:
           path: /tmp/agent-fte-artifacts
           destination: agent-as-fte
 
+  # WR #18335 — LLMLingua-2 token preservation, rate config, and reduction
+  # measurement. Stdlib unittest only: the MeetingBank weights are provisioned
+  # by hand (docs/prompt-compression.md) and the measured counts are committed.
+  # This job does not download a model and does not call a paid API.
+  # Manual twin: python3 -m unittest discover -s tests -p prompt_compression_test.py -v
+  prompt-compression:
   # WR #18379: the docs drop folders process themselves. Push-triggered, no cron.
   # Path filtering happens inside the job from config/drop-folders.json: it diffs
   # against the merge-base with main (or HEAD~1 on main) and does nothing when no
@@ -288,6 +294,8 @@ jobs:
     steps:
       - checkout
       - run:
+          name: LLMLingua-2 compression tests
+          command: python3 -m unittest discover -s tests -p prompt_compression_test.py -v
           name: Fetch origin/main for the merge-base diff
           command: git fetch origin main --depth=200 || true
       - run:
@@ -418,6 +426,7 @@ workflows:
           filters:
             branches:
               ignore: main
+      - prompt-compression:
       - drop-folder-process:
           filters:
             branches:
@@ -475,6 +484,7 @@ workflows:
           filters:
             branches:
               only: main
+      - prompt-compression:
       - drop-folder-process:
           filters:
             branches:

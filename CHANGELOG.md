@@ -25,6 +25,25 @@
 - Added `scripts/pot-research/`: UCT Monte Carlo tree search, a GRPO step on a transient adapter, a frozen base-weight vector, and a deterministic stub policy. The linear lane fan-out in `scripts/research-engine.js` stays the default; `RESEARCH_STRATEGY=pot` opts in.
 - Added `tests/pot-research.test.js`, `docs/research/pot-research-engine.md` (GPU budget marked as an estimate), `scripts/pot-research/LEDGER.md`, and `scripts/pot-research/benchmark.js`. The harness reports the +20-30% criterion as not measured. No quality delta is invented.
 - CircleCI already runs `tests/**/*.test.js`. No new job and no GitHub-hosted workflow.
+## 2026-11-11 — PromptOrchestrator — keep the retired --root lines visible
+
+- `scripts/prompt_compression_accuracy.py`: the first-cut `args.measurement` read and the old `--root` option are commented in place. `--root` is still accepted and ignored so an old command is not an unrecognized-argument failure. The walk still uses the working directory. Review on PR #18377.
+
+## 2026-11-11 — PromptOrchestrator — accuracy read walks directory entries
+
+- `scripts/prompt_compression_accuracy.py`: `--measurement` is matched against `os.scandir` names. The file read uses the directory entry, not a path joined from the CLI string. Sonar pythonsecurity:S8707 stayed open after the realpath check on PR #18377.
+
+## 2026-11-11 — PromptOrchestrator — CLI paths stay inside --root
+
+- `scripts/prompt_compression_accuracy.py` and `scripts/prompt_compression.py`: relative paths only. Absolute paths and `..` escapes are refused before a read or write. Sonar pythonsecurity:S8707 on PR #18377.
+
+## 2026-11-11 — PromptOrchestrator — measure refuses to overwrite its record
+
+- `scripts/prompt_compression.py`: `measure` writes only with `--output`, refuses an existing path, and exits 2 when any document lost a force token. Review on PR #18377. The 2026-11-11 JSON was not rewritten.
+
+## 2026-11-11 — PromptOrchestrator — LLMLingua-2 governance compression (WR #18335)
+
+- Local MeetingBank compression at keep-rate 0.3 with whole-token preservation of UPREV, WR, and MCP. Measured 299,593 tokens down to 89,978 (3.33x) on 141 indexed governance files, 0 term-loss rejections. CircleCI job `prompt-compression`. Same-task accuracy judge not run (pending owner-approved spend). Runbook: `docs/prompt-compression.md`.
 ## 2026-11-11 (2) — PromptOrchestrator — GEPA CircleCI job on Python 3.12.16
 
 - `dspy-gepa-offline` uses `cimg/python:3.12.16` after build 23634 refused `cachetools==8.0.0` on the node image's Python 3.10.

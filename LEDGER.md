@@ -3,6 +3,70 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-11 16:10 UTC — PromptOrchestrator — retired --root stays visible
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** Gitar review on PR #18377
+- **Role:** executed
+- **Files:** `scripts/prompt_compression_accuracy.py` (commented the first-cut read and the old `--root` option back in); `tests/prompt_compression_test.py` (the CLI test passes `--root` and still scores); `wr/memory/decisions.jsonl` (appended); `CHANGELOG.md` (appended); `LEDGER.md` (this entry)
+- **What was done:** The 16:05 commit removed the `--root` option and the first-cut read comment. Both are commented in place again, with the date, agent, and PR. `--root` is registered and ignored. The directory walk still uses `os.getcwd()`, so an old `--measurement X --root DIR` command is not argparse's unrecognized-argument exit.
+- **Decisions:** Keep the flag accepted and ignored — because commenting it out alone makes that command exit 2, the same code as a path failure.
+- **Sources:** [Gitar review on PR #18377](https://github.com/midnghtsapphire/revvel-standards/pull/18377#discussion_r4540214378)
+- **Commits / PRs:** [PR #18377](https://github.com/midnghtsapphire/revvel-standards/pull/18377)
+- **Open / handoff:** Sonar re-scan of `9729ab97f` is still pending. Same-task accuracy judge still pending owner-approved spend. Next owner: TriageChief.
+- **Credit note:** Gitar flagged the deletion. PromptOrchestrator restored the lines.
+
+## 2026-11-11 16:05 UTC — PromptOrchestrator — accuracy read walks directory entries
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** SonarQube Cloud re-scan of `08233bfb1` on PR #18377. pythonsecurity:S8707 stayed open.
+- **Role:** executed
+- **Files:** `scripts/prompt_compression_accuracy.py` (read path is a scandir entry, not a joined CLI string); `tests/prompt_compression_test.py` (added a missing-file case and a working-directory CLI call); `docs/prompt-compression.md` (one sentence); `wr/memory/decisions.jsonl` (appended); `CHANGELOG.md` (appended); `LEDGER.md` (this entry)
+- **What was done:** The realpath-plus-commonpath check did not clear Sonar's taint trace into `read_text`. `measurement_json` now walks `os.scandir` from the working directory and reads `entry.path` after a name match. Absolute paths, `.`, and `..` are refused before the walk. The 15:59 join is commented in the function.
+- **Decisions:** Rebuild the path from directory entries — because Sonar's S8707 rule does not treat `realpath` and `commonpath` as a sanitizer.
+- **Sources:** [Sonar issue on PR #18377](https://sonarcloud.io/project/issues?id=midnghtsapphire_revvel-standards&pullRequest=18377&issueStatuses=OPEN,CONFIRMED&sinceLeakPeriod=true)
+- **Commits / PRs:** [PR #18377](https://github.com/midnghtsapphire/revvel-standards/pull/18377)
+- **Open / handoff:** The quality gate stays red until Sonar re-scans this commit. Same-task accuracy judge still pending owner-approved spend. Next owner: TriageChief.
+- **Credit note:** SonarQube Cloud reported the remaining taint. PromptOrchestrator changed the read.
+
+## 2026-11-11 16:00 UTC — PromptOrchestrator — CLI paths stay inside --root
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** SonarQube Cloud quality gate on PR #18377, rule pythonsecurity:S8707
+- **Role:** executed
+- **Files:** `scripts/prompt_compression_accuracy.py` (path check added; the direct `args.measurement` read is commented); `scripts/prompt_compression.py` (`contained_path` added for `compress --file` and `measure --output`); `tests/prompt_compression_test.py` (added); `docs/prompt-compression.md` (one sentence); `wr/memory/decisions.jsonl` (appended); `CHANGELOG.md` (appended); `LEDGER.md` (this entry)
+- **What was done:** `--measurement`, `compress --file`, and `measure --output` must be relative paths. `os.path.realpath` plus `os.path.commonpath` rejects absolute paths and `..` escapes before any read or write. The paid-judge flag still returns 3 before opening a file.
+- **Decisions:** Refuse absolute paths — because joining an absolute path onto `--root` drops the root on POSIX, and the Sonar finding is an agent-supplied path read.
+- **Sources:** [Sonar quality gate on PR #18377](https://sonarcloud.io/dashboard?id=midnghtsapphire_revvel-standards&pullRequest=18377)
+- **Commits / PRs:** [PR #18377](https://github.com/midnghtsapphire/revvel-standards/pull/18377)
+- **Open / handoff:** Same-task accuracy judge still pending owner-approved spend. Next owner: TriageChief.
+- **Credit note:** SonarQube Cloud reported the path finding. PromptOrchestrator constrained the paths.
+
+## 2026-11-11 15:55 UTC — PromptOrchestrator — measure must not overwrite its record
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** Gitar review on PR #18377
+- **Role:** executed
+- **Files:** `scripts/prompt_compression.py` (added a destination check and a non-zero exit); `tests/prompt_compression_test.py` (added); `docs/prompt-compression.md` (appended the new command behavior); `wr/memory/decisions.jsonl` (appended); `CHANGELOG.md` (appended); `LEDGER.md` (this entry)
+- **What was done:** `measure` no longer defaults `--output` to `wr/measurements/llmlingua2-governance-2026-11-11.json`. With no `--output` it prints the summary and writes nothing. An existing path raises `FileExistsError` and the command exits 2. A run with any term-loss rejection also exits 2. The old default argument line is commented in place. The committed JSON was not rewritten.
+- **Decisions:** Refuse an existing file rather than writing a new dated name automatically — because the operator chooses the path, and a silent new file would still look like a second record nobody asked to commit.
+- **Sources:** [Gitar review on PR #18377](https://github.com/midnghtsapphire/revvel-standards/pull/18377#issuecomment-6800319486)
+- **Commits / PRs:** [PR #18377](https://github.com/midnghtsapphire/revvel-standards/pull/18377)
+- **Open / handoff:** Same-task accuracy judge still pending owner-approved spend. The Azure blob failures Gitar reported on GitHub Actions are outside this change. CircleCI on the previous head was green. Next owner: TriageChief.
+- **Credit note:** Gitar requested the two changes. PromptOrchestrator applied them.
+
+## 2026-11-11 15:45 UTC — PromptOrchestrator — LLMLingua-2 governance compression (WR #18335)
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** Audrey Evans, 2026-11-11, approved starting the draft pull requests on already-approved spend and posting honest status. TriageChief routed #18335 to PromptOrchestrator.
+- **Role:** executed
+- **Files:** `scripts/prompt_compression.py` (extended); `scripts/prompt_compression_accuracy.py` (added); `scripts/requirements-llmlingua.txt` (added); `tests/prompt_compression_test.py` (extended); `docs/prompt-compression.md` (added); `wr/measurements/llmlingua2-governance-2026-11-11.json` (added); `.circleci/config.yml` (job `prompt-compression` added on both workflows); `wr/summaries/optional-intelligence-experiments-2026-11-10.md` (appended); `CHANGELOG.md` (appended); `wr/memory/decisions.jsonl` (appended); `LEDGER.md` (this entry)
+- **What was done:** Extended the existing local LLMLingua-2 adapter. Default keep-rate remains 0.3. Force tokens remain UPREV, WR, and MCP, plus `REVVEL_FORCE_TOKENS` or a caller list. A whole-token match replaced the substring check after the first measurement rejected three files because WRONG, WRs, and WRAPPED contain the letters WR. The substring check is commented in place. Ran `microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank` on CPU over the context-graph index (root Markdown plus `standards/**/*.md`). Full index: 141 files, 1,179,598 characters, 299,593 tokens to 89,978 tokens, ratio 3.3296250194491988, 0 term-loss rejections. Reference subset (what the coder compresses): 137 files, 285,009 to 85,707, ratio 3.325387657950926. Counts are tiktoken gpt-3.5-turbo via LLMLingua-2. No paid LLM call. The same-task accuracy harness records that score and refuses a paid judge.
+- **Decisions:** Default model is the smaller official MeetingBank checkpoint — because that is the checkpoint that was loaded and measured on this 16GB CPU host. The 2026-11-10 large checkpoint name stays selectable via `REVVEL_LLMLINGUA_MODEL` or `--model`. Mandatory governance files stay uncompressed on the coder path — because the 2026-11-10 adapter refused to let compression weaken owner instructions. The accuracy judge was not run — because it would be a new paid call and this task allows only spend that is already approved.
+- **Sources:** [Microsoft LLMLingua compressor](https://github.com/microsoft/LLMLingua/blob/main/llmlingua/prompt_compressor.py); [LLMLingua-2 evaluation compress.py](https://github.com/microsoft/LLMLingua/blob/main/experiments/llmlingua2/evaluation/compress.py). No Library/ copy of those files was already in the repo, so the links are the record. Measured counts: `wr/measurements/llmlingua2-governance-2026-11-11.json`.
+- **Commits / PRs:** branch `feat/wr-18335-llmlingua2`. PR link to be added in a later ledger entry after the PR exists, not by rewriting this one.
+- **Open / handoff:** Same-task accuracy benchmark remains pending owner-approved spend. CircleCI job `prompt-compression` runs the deterministic tests. TriageChief merges. Next owner: TriageChief.
+- **Credit note:** PromptOrchestrator executed the integration and the local measurement. Audrey Evans approved the spend limit and the draft pull request. TriageChief assigned the work request.
 ## 2026-11-11 16:30 UTC — QuickWinBuilder — drop folders process themselves; dashboard build prepared (WR #18379)
 
 - **Actor:** QuickWinBuilder (MoneyCrew Builder, Grok Bot)

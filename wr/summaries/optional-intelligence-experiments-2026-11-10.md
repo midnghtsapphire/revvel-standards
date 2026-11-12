@@ -119,3 +119,12 @@ Primary API references reviewed:
 - [LLMLingua-2 evaluation integration](https://github.com/microsoft/LLMLingua/blob/main/experiments/llmlingua2/evaluation/compress.py)
 - [LangGraph persistence](https://docs.langchain.com/oss/python/langgraph/persistence)
 - [DSPy GEPA optimization](https://dspy.ai/learn/optimization/optimizers/)
+
+## 2026-11-11 — LLMLingua-2 measurement, WR #18335
+
+PromptOrchestrator ran the local MeetingBank bert-base checkpoint on the
+indexed governance set. Counts are in
+`wr/measurements/llmlingua2-governance-2026-11-11.json`. Full index: 299,593
+tokens to 89,978 (3.33x), 0 term-loss rejections. The same-task accuracy
+judge is still pending owner-approved spend. The paragraphs above this
+heading are the 2026-11-10 record and stay as written.
