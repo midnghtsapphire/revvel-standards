@@ -21,7 +21,10 @@ alerts:
   - rule: DEPLOYMENT_FAILED
   - rule: DOMAIN_FAILED
 domains:
-  - domain: screen-recorder-finder.revvel.co
+  # 2026-11-11 MarketShipper WR #18332: primary domain moved to the oaudrey.com
+  # subdomain Audrey chose. The previous host string is in git history.
+  # DNS for this name is Cloudflare. deploy_on_push stays false.
+  - domain: screen-recorder-finder.oaudrey.com
     type: PRIMARY
     minimum_tls_version: "1.2"
 services:
@@ -52,7 +55,7 @@ services:
         type: GENERAL
       - key: PUBLIC_BASE_URL
         scope: RUN_TIME
-        value: https://screen-recorder-finder.revvel.co
+        value: https://screen-recorder-finder.oaudrey.com
         type: GENERAL
       - key: STRIPE_SECRET_KEY
         scope: RUN_TIME

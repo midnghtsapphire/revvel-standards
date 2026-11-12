@@ -217,8 +217,8 @@
 
 | Service | Provider | Free Tier | Cost | Priority | Status | Notes |
 |---|---|---|---|---|---|---|
-| **Cloudflare DNS** | Cloudflare | ✅ Free | $0 | P0 | 🔵 Recommended | Free DNS + DDoS protection + CDN for all Revvel domains |
-| **Namecheap DNS** | Namecheap | ✅ Free (with domain) | $0 | P0 | ✅ Active | Current DNS provider |
+| **Cloudflare DNS** | Cloudflare | ✅ Free | $0 | P0 | ✅ Active | Current DNS provider for Audrey's domains (2026-11-11) |
+| **Namecheap DNS** | Namecheap | ✅ Free (with domain) | $0 | P0 | retired as DNS host 2026-11-11 | Registrar rows elsewhere can still name Namecheap. DNS for her domains is Cloudflare. The previous status cell said Active / Current DNS provider. |
 
 ---
 

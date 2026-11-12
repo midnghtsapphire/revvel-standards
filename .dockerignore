@@ -37,6 +37,16 @@ products/ghcr-console/tests
 # screen-recorder-finder un-ignore above.
 !products/affiliate-hub/
 !products/affiliate-hub/**
+# 2026-11-11 MarketShipper: the oaudrey.com front page image copies this
+# product. The ** rule above would hide it, and Docker then fails COPY.
+# The deck PDF is copied from the GOAP console so the page can serve it
+# without a second copy in git.
+!products/oaudrey-home/
+!products/oaudrey-home/**
+# Parent directories must be un-ignored or Docker will not see the PDF.
+!products/goap-swarm-console/
+!products/goap-swarm-console/public/
+!products/goap-swarm-console/public/goap-agent-sales-deck.pdf
 !packages/
 !packages/**
 # 2026-11-11 MarketShipper: both product images COPY this shared server.

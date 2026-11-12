@@ -122,9 +122,11 @@ APP_ID=$(doctl apps list --format ID,Spec.Name --no-header | grep "oaudrey-hub" 
 doctl apps update "$APP_ID" --spec oaudrey/.do/app.yaml
 ```
 
-### DNS Setup (multi-registrar — Namecheap / GoDaddy / Porkbun)
+### DNS Setup (Cloudflare)
 
-`oaudrey.com` may live on Namecheap, GoDaddy, or Porkbun. The repo ships a
+<!-- 2026-11-11 MarketShipper: this heading previously said "multi-registrar — Namecheap / GoDaddy / Porkbun". Audrey said DNS for her domains is on Cloudflare. The registrar table below stays as the history of `scripts/sync-dns-records.js`. Do not move the oaudrey.com zone to DigitalOcean nameservers. -->
+
+DNS for `oaudrey.com` is Cloudflare. Add the records App Platform prints in that zone. The repo still ships a
 **registrar-agnostic** sync that pushes the declarative record list in
 [`oaudrey/dns-records.yml`](./dns-records.yml) to whichever registrar is
 holding the domain — no code changes when you migrate.

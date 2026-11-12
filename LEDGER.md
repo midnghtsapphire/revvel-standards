@@ -29,6 +29,19 @@ This file was absent at the repository root on 2026-11-11. This entry is the fir
 - **Open / handoff:** Audrey runs the Claude login and the Codex add on her own machine. TriageChief merges after CircleCI `lint-and-test` is green. Do not merge from this agent.
 - **Credit note:** Cloudy registered the endpoint and the docs. Audrey owns the login. TriageChief routed the work requests.
 
+## 2026-11-11 09:00 MST — QuickWinBuilder — tool history log and visiting-agent rule check
+
+- **Actor:** QuickWinBuilder (MoneyCrew Builder, Grok Bot)
+- **Requested by:** Audrey Evans, through TriageChief and WR #18374
+- **Role:** executed
+- **Files:** `docs/tool-history/` (added: README, `TOOLS.csv`, 44 tool files, `visiting-llms.md`); `VISITING_AGENTS.md` (added section 1b; nothing removed); `scripts/visiting-agent-scan.js`, `config/visiting-agent-patterns.json`, `tests/visiting-agent-scan.test.js` (added); `.circleci/config.yml` (added one step); `CHANGELOG.md`, `Library/README.md`, `LEDGER.md` (appended)
+- **What was done:** Searched `midnghtsapphire` and `freedom-angel-corp` issues and PRs, the repo files, and commit history for each tool, and logged what the evidence shows. Recorded the verdicts Audrey stated on 2026-11-11 (Manus, visiting LLMs forgetting rules, Grok token limits, mabl local, Bito paid). Added the check for tracker, marketing, affiliate, and branding strings.
+- **Decisions:** Created `docs/tool-history/` because no per-tool history existed; `DECISIONS.md`, the cost index, and the subscriptions file are linked, not edited. Kept `RECORDED` (repo decision under the shared login) separate from `AUDREY` (her words). Baselined the 145 hits in 40 files that were already in the repo instead of deleting or editing them.
+- **Sources:** each tool file lists its own links.
+- **Commits / PRs:** branch `task/tool-history-log-20261111`, draft PR into `main`.
+- **Open / handoff:** Manus account recovery is separate (recovered content goes to `docs/agents/manus/recovered/` in a later PR). Audrey owns the `NEEDS AUDREY` list. TriageChief merges after CircleCI is green.
+- **Credit note:** QuickWinBuilder wrote the log. Audrey supplied the verdicts. Earlier agents wrote the repo records it cites.
+
 ## 2026-11-11 14:25 UTC — Rules-Steward — merge main, keep both changelog entries
 
 - **Actor:** Rules-Steward (Cursor cloud agent, Grok 4.7)

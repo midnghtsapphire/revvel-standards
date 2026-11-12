@@ -103,7 +103,7 @@ registerStaticStripeProduct({
 //       STRIPE_SECRET_KEY: 'sk_test_unit',
 //       STRIPE_PRICE_ID: 'price_unit',
 //     },
-//     origin: 'https://ai-video-toolkit.revvel.co',
+//     origin: 'https://ai-video-toolkit.oaudrey.com',
 //     fetchImpl: async (url, options) => {
 //       auth = options.headers.Authorization;
 //       body = options.body;
@@ -183,17 +183,17 @@ registerStaticStripeProduct({
 //   }
 // });
 //
-// test('checkout origin is limited to local, revvel.co, and ondigitalocean.app', async () => {
+// test('checkout origin allows local, oaudrey.com, and ondigitalocean.app', async () => {
 //   const { publicOrigin } = await loadServer();
 //   assert.equal(publicOrigin(new URL('http://evil.example/pricing'), {}), null);
 //   assert.equal(publicOrigin(new URL('http://127.0.0.1:8080/pricing'), {}), 'http://127.0.0.1:8080');
 //   assert.equal(
-//     publicOrigin(new URL('https://ai-video-toolkit.revvel.co/pricing'), {}),
-//     'https://ai-video-toolkit.revvel.co',
+//     publicOrigin(new URL('https://ai-video-toolkit.oaudrey.com/pricing'), {}),
+//     'https://ai-video-toolkit.oaudrey.com',
 //   );
 //   assert.equal(
-//     publicOrigin(new URL('http://ignored.example/pricing'), { PUBLIC_BASE_URL: 'https://ai-video-toolkit.revvel.co' }),
-//     'https://ai-video-toolkit.revvel.co',
+//     publicOrigin(new URL('http://ignored.example/pricing'), { PUBLIC_BASE_URL: 'https://ai-video-toolkit.oaudrey.com' }),
+//     'https://ai-video-toolkit.oaudrey.com',
 //   );
 // });
 //

@@ -1,0 +1,217 @@
+[
+  {
+    "source": "linear-a/data/ledger/hypotheses.jsonl",
+    "locator": "H-0004",
+    "reason": "status_conflict: ledger says rejected, receipt says inconclusive (docs/findings/INDEX.md)"
+  },
+  {
+    "source": "linear-a/data/ledger/hypotheses.jsonl",
+    "locator": "H-0005",
+    "reason": "status_conflict: ledger says rejected, receipt says inconclusive (docs/findings/INDEX.md)"
+  },
+  {
+    "source": "linear-a/data/ledger/hypotheses.jsonl",
+    "locator": "H-0006",
+    "reason": "status_conflict: ledger says rejected, receipt says inconclusive (docs/findings/INDEX.md)"
+  },
+  {
+    "source": "linear-a/data/ledger/hypotheses.jsonl",
+    "locator": "H-0008",
+    "reason": "ledger annotation links or re-tiers this result (contested)"
+  },
+  {
+    "source": "linear-a/data/ledger/hypotheses.jsonl",
+    "locator": "H-0009",
+    "reason": "ledger annotation links or re-tiers this result (contested)"
+  },
+  {
+    "source": "linear-a/data/ledger/hypotheses.jsonl",
+    "locator": "H-0010",
+    "reason": "ledger annotation links or re-tiers this result (contested)"
+  },
+  {
+    "source": "linear-a/data/ledger/hypotheses.jsonl",
+    "locator": "H-0011",
+    "reason": "record's own notes say it is not a settled resolution"
+  },
+  {
+    "source": "linear-a/data/ledger/hypotheses.jsonl",
+    "locator": "H-0014",
+    "reason": "final status preregistered is not settled"
+  },
+  {
+    "source": "linear-a/data/ledger/hypotheses.jsonl",
+    "locator": "H-0016",
+    "reason": "final status preregistered is not settled"
+  },
+  {
+    "source": "linear-a/data/ledger/hypotheses.jsonl",
+    "locator": "H-0017",
+    "reason": "final status preregistered is not settled"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "1.2",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "1.3",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "1.4",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "1.5",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "1.6",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "1.7",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "1.8",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "1.9",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "1.10",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "2.1",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "2.2",
+    "reason": "verdict not decided (partly confirmed)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "2.3",
+    "reason": "verdict not decided (consistent with another document, no verdict of its own)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "3.1",
+    "reason": "verdict not decided (consistent with another document, no verdict of its own)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "3.2",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "3.3",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "3.4",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "4.1",
+    "reason": "verdict not decided (mixed or partial)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "4.2",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "4.3",
+    "reason": "verdict not decided (unverified)"
+  },
+  {
+    "source": "tartaria-tablets/appendix-errata-in-the-sources.md",
+    "locator": "A1",
+    "reason": "the As-printed text already states the finding, so the question would leak the answer"
+  },
+  {
+    "source": "tartaria-tablets/appendix-errata-in-the-sources.md",
+    "locator": "A2",
+    "reason": "recorded answer is a pointer or too thin to score (248 chars)"
+  },
+  {
+    "source": "tartaria-tablets/appendix-errata-in-the-sources.md",
+    "locator": "A3",
+    "reason": "status not settled (partly open)"
+  },
+  {
+    "source": "tartaria-tablets/appendix-errata-in-the-sources.md",
+    "locator": "A4",
+    "reason": "status not settled (not reconciled)"
+  },
+  {
+    "source": "tartaria-tablets/appendix-errata-in-the-sources.md",
+    "locator": "A5",
+    "reason": "recorded answer is a pointer or too thin to score (134 chars)"
+  },
+  {
+    "source": "tartaria-tablets/appendix-errata-in-the-sources.md",
+    "locator": "A6",
+    "reason": "status not settled (partly open)"
+  },
+  {
+    "source": "tartaria-tablets/appendix-errata-in-the-sources.md",
+    "locator": "B2",
+    "reason": "recorded answer is a pointer or too thin to score (212 chars)"
+  },
+  {
+    "source": "tartaria-tablets/appendix-errata-in-the-sources.md",
+    "locator": "B7",
+    "reason": "recorded answer is a pointer or too thin to score (67 chars)"
+  },
+  {
+    "source": "tartaria-tablets/appendix-errata-in-the-sources.md",
+    "locator": "B8",
+    "reason": "recorded answer is a pointer or too thin to score (44 chars)"
+  },
+  {
+    "source": "tartaria-tablets/appendix-errata-in-the-sources.md",
+    "locator": "B9",
+    "reason": "recorded answer is a pointer or too thin to score (175 chars)"
+  },
+  {
+    "source": "tartaria-tablets/appendix-errata-in-the-sources.md",
+    "locator": "B11",
+    "reason": "recorded answer is a pointer or too thin to score (43 chars)"
+  },
+  {
+    "source": "tartaria-tablets/appendix-errata-in-the-sources.md",
+    "locator": "B12",
+    "reason": "recorded answer is a pointer or too thin to score (36 chars)"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "claim 1.0",
+    "reason": "reference answer carries a [VERIFY] mark in the source"
+  },
+  {
+    "source": "linear-a/docs/research/WINE-GROK-REPORT-CHECK-2026-11-04.md",
+    "locator": "claim 4.5",
+    "reason": "reference answer carries a [VERIFY] mark in the source"
+  }
+]

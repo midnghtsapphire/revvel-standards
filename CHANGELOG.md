@@ -6,6 +6,22 @@
 
 - Registered the public action-gateway endpoint in `.mcp.json` (Claude, HTTP transport) and `.codex/config.toml` (Codex, url). Documented `claude mcp login action-gateway` and both client commands. WRs #18288 and #18290. No token in git.
 
+## 2026-11-11 (6) — MarketShipper — oaudrey.com hosts and front page
+
+- Audrey chose oaudrey.com subdomains for affiliate-hub, ai-video-toolkit, and screen-recorder-finder. DNS notes that named Namecheap as the DNS host now say Cloudflare. `products/oaudrey-home/` is the static front page for `oaudrey.com` and `www.oaudrey.com`, with `/health`, `GET /api/team`, `GET /api/hub`, `deploy_on_push: false`, and a CircleCI image gate. No DigitalOcean deploy job was added. Earlier bullets in this file that named the previous product hosts were edited so those host strings do not remain; that wording is in git history.
+## 2026-11-11 (5) — ResearchRodneyAIArchitect — research-gold-v1 and benchmark wiring (WR #18341, PR 2)
+
+- Added `products/rnd-research-fleet/eval/fixtures/research-gold-v1.jsonl`: 23 real research items with a recorded verdict and a pinned source commit. Rows from the private `linear-a` and `tartaria-tablets` repos carry provenance and hashes only; `RESEARCH_GOLD_V1.md` explains how to rebuild their text. This is below the 100 the work request needs, and the shortfall is reported, not padded.
+- `scripts/pot-research/benchmark.js` validates the set and prints `gold_count`, `gold_shortfall` and per-source counts. It still prints `NOT_MEASURED` and `quality_delta: null`. Added `tests/research-gold.test.js`. No new CI job and no GitHub-hosted workflow.
+## 2026-11-11 (6) — QuickWinBuilder — tool history log and visiting-agent rule check
+
+- Added `docs/tool-history/`: README, `TOOLS.csv` (44 tools), one file per tool, and `visiting-llms.md`. Every claim links to a repo file, commit, PR, or issue; where Audrey's verdict is not on record it says `NEEDS AUDREY`. Added the Manus verdict she gave on 2026-11-11 and noted that recovery from her Manus account is in progress. Nothing in `DECISIONS.md`, `docs/TOOL_COST_INDEX.md`, or `TOOLS_CATALOG` was edited.
+- Added the visiting-agent hard rules to `VISITING_AGENTS.md` (section 1b) and a check, `scripts/visiting-agent-scan.js`, driven by `config/visiting-agent-patterns.json` (patterns, allowlist, baseline). It runs in the CircleCI `lint-and-test` job and in `npm test` (`tests/visiting-agent-scan.test.js`). affiliate-hub is allowlisted. Hits already in the repo are baselined for Audrey to review; nothing was removed or edited.
+## 2026-11-11 — BALLS — official fleet mascot family (Auky and Lil Aud-Bod)
+
+- Added `docs/brand/mascots/MASCOTS.md` documenting Auky and Lil Aud-Bod aka BALLS as the fleet mascot duo, plus Auky artwork from WebForge and the BALLS pixel avatar.
+- Added `docs/bots/bot-balls/README.md` (brand-development bot profile). Index pointers appended in `docs/CALL-NAMES.md`, `docs/README.md`, `docs/BOT-ROSTER.json`, `docs/BRAND_ARCHITECTURE.md`, `docs/PORTFOLIO.md`, and `templates/brand/README.md`. Nothing posts without Audrey's explicit yes.
+
 ## 2026-11-11 (3) — MarketShipper — draft App Platform deploy jobs
 
 - `do-app-update.sh` and the three `*-do-deploy` CircleCI jobs live only on this draft. They are not in the product image-gate PRs. A merge can create or update DigitalOcean apps after Audrey sets `DIGITALOCEAN_ACCESS_TOKEN`. This draft is not approved.
@@ -19,7 +35,7 @@
 
 ## 2026-11-11 — MarketShipper — screen-recorder-finder deploy path (WR #18332)
 
-- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `screen-recorder-finder.revvel.co` under `products/screen-recorder-finder/`. CircleCI job `screen-recorder-finder-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/screen-recorder-finder/CHANGELOG.md`.
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `screen-recorder-finder.oaudrey.com` under `products/screen-recorder-finder/`. CircleCI job `screen-recorder-finder-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/screen-recorder-finder/CHANGELOG.md`.
 ## 2026-11-11 (4) — MarketShipper — one static Stripe server for affiliate-hub and ai-video-toolkit
 
 - `packages/static-stripe-server/` is the server, the checkout button, and the image-gate cases. Each product file names its service and keeps the previous copy as line comments. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
@@ -30,7 +46,7 @@
 
 ## 2026-11-11 — MarketShipper — ai-video-toolkit deploy path (WR #18331)
 
-- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `ai-video-toolkit.revvel.co` under `products/ai-video-toolkit/`. CircleCI job `ai-video-toolkit-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/ai-video-toolkit/CHANGELOG.md`.
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `ai-video-toolkit.oaudrey.com` under `products/ai-video-toolkit/`. CircleCI job `ai-video-toolkit-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/ai-video-toolkit/CHANGELOG.md`.
 ## 2026-11-11 (4) — ResearchRodneyAIArchitect — PUCT priors reach the strategy entry point
 
 - `runPot` forwards `priorFor` into the search. Lane runs read `context.potPriorFor`. A test goes through `runStrategy`, not only `search`.
@@ -54,7 +70,7 @@
 
 ## 2026-11-11 — MarketShipper — affiliate-hub deploy path (WR #18330)
 
-- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `affiliate-hub.revvel.co` under `products/affiliate-hub/`. CircleCI job `affiliate-hub-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/affiliate-hub/CHANGELOG.md`.
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `affiliate-hub.oaudrey.com` under `products/affiliate-hub/`. CircleCI job `affiliate-hub-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/affiliate-hub/CHANGELOG.md`.
 
 ## 2026-11-11 — MarketShipper (Grok 4.7, Cursor Cloud) — GOAP agent-as-FTE sales deck and landing
 
@@ -105,6 +121,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## 2026-11-11
+
+- 2026-11-11 — DBArchitect (Grok Bot) — WR #18333 (draft PR, refs only): added `products/revenue-billing/self-host/` (Lago v1.57.0 Docker Compose, every secret required from `.env`, loopback-only ports), `plans/` (Free/Pro/Enterprise as `plans.json` plus an idempotent, dry-run-by-default Lago seeder that reports price drift and never overwrites), `db/` (plain-SQL Postgres mirror of plans, customers, subscriptions and webhook events, RLS on, no anon grants, tested on PostgreSQL 15.19 and 18.6), `WEBHOOK-POSTGRES-SPEC.md`, `HUMAN-STEPS.md`, `LEDGER.md`, and CircleCI jobs `billing-selfhost-lint` and `billing-sql-validate`. Builds on PR #18348. Nothing deployed, no Stripe account, no keys, nothing applied to Supabase; acceptance items still need Audrey (see HUMAN-STEPS.md).
 
 ## 2026-11-07
 
