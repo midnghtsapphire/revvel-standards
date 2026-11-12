@@ -109,6 +109,21 @@
  },
  {
   "type": "bot",
+  "call": "/bot-balls",
+  "aliases": [
+   "Lil Aud-Bod",
+   "BALLS",
+   "formerly lilAudrey"
+  ],
+  "name": "Lil Aud-Bod aka BALLS",
+  "profile_name": "Lil Aud-Bod aka BALLS",
+  "teams": [],
+  "role": "Brand development (🎨 Designer)",
+  "reports_to": "Audrey",
+  "description": "Audrey's mini me and the bot in charge of brand development. Audrey calls it BALLS \"cause your daring, adhd.\" Drafts brand and social ideas only. ABA-ShortsWriter and ABA-PublishOps own short-form scripts and publishing. Auky and BALLS are a duo in social content. Nothing posts without Audrey's explicit yes."
+ },
+ {
+  "type": "bot",
   "call": "/bot-blue-ocean-inventor",
   "aliases": [
    "/bot-blueocean"

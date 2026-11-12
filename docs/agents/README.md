@@ -23,6 +23,7 @@ by what each agent leaves behind and what each one is actually good at.
 | OpenRouter personas (oAudrey, Professor, MindMappr, Coder, RadioChaser) | various | TBD | `<persona>/` |
 | NoseyNoodle | dispatcher: triage, routing, swarms, rule enforcement (does not do the work) | [SYSTEM_PROMPT.md](../prompts/LLM/noseynoodle/SYSTEM_PROMPT.md) | — |
 | Cartographer | read-only audit: catalog/SHIPPED/BOM claims vs what is live (reports to NoseyNoodle) | [SYSTEM_PROMPT.md](../prompts/LLM/cartographer/SYSTEM_PROMPT.md) | — |
+| Grok API Navigator | Grok/xAI API testing, feature demos, SDK integration and diagnostics; `/persona grokapi` | [PROFILE.md](grokapi/PROFILE.md) · [Invocation guide](grokapi/README.md) | [Handoff](grokapi/HANDOFF.md); no new transcript capture |
 
 ## What goes in each profile
 

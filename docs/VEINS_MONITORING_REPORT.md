@@ -20,7 +20,7 @@ artifacts tab to track trends across builds.
 
 ---
 
-## Live snapshot — 2026-11-11
+## Live snapshot — 2026-11-12
 
 ```text
 Overall: 🔴 DOWN  |  Effectiveness index: 0/100
@@ -40,7 +40,7 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
   First proposal commit:  2026-07-02T23:04:13.000Z
   Last proposal commit:   2026-07-22T19:32:41.000Z
   Span: 20 day(s)  |  Avg interval: 68.1 hour(s)
-  Days since last proposal: 112  ⚠️  Engine appears silent (> 30 days).
+  Days since last proposal: 113  ⚠️  Engine appears silent (> 30 days).
 
 ── 3. ARE THEY DOING ANYTHING? ─────────────────────────────────
   Stub rate: 100%  (7 unactioned / 7 total)
@@ -55,11 +55,11 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
   ✅  Fingerprint is current — refreshed 2026-11-10.
 ```
 
-**Bottom line (2026-11-11):**
+**Bottom line (2026-11-12):**
 - VEINS fired 3 times between 2026-07-02 and 2026-07-22, all targeting the same
   flaky workflow (`🎛️ PR State Orchestrator`), generating 7 stub proposals.
 - **Zero proposals have been actioned.** The stub boilerplate is still in every file.
-- The engine has been **silent for 112 days** — it stopped firing around 2026-07-22.
+- The engine has been **silent for 113 days** — it stopped firing around 2026-07-22.
 - The sheaf topology fingerprint (`docs/biome/bnat-fingerprint.json`) is current
   (refreshed 2026-11-10) — BIOME workers report `healthy`, E(x) = 0 (no live
   Laplacian disagreement), but dim H¹ = 3 means the graph has 3 independent cycles
@@ -67,7 +67,7 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
 
 ## Trend history (`docs/veins-history.jsonl`)
 
-Four rows on record:
+Five rows on record:
 
 | snapshot_at | status | effectiveness | stubs | days_silent | sheaf_H¹ |
 |---|---|---|---|---|---|
@@ -75,9 +75,10 @@ Four rows on record:
 | 2026-11-07T09:09:16Z | 🔴 down | 0/100 | 7 | 108 | 3 |
 | 2026-11-10T09:09:22Z | 🔴 down | 0/100 | 7 | 111 | 3 |
 | 2026-11-11T09:09:44Z | 🔴 down | 0/100 | 7 | 112 | 3 |
+| 2026-11-12T09:08:48Z | 🔴 down | 0/100 | 7 | 113 | 3 |
 
 Trend: **status unchanged; engine silent 1 more day since last check.** All key metrics flat
-— stubs unresolved, engine offline, sheaf energy zero throughout.
+— stubs unresolved, engine offline, sheaf energy zero throughout. No change since 2026-11-06.
 
 To add a row on demand:
 ```bash
@@ -239,7 +240,7 @@ node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
 
 | Priority | Item | Status |
 |---|---|---|
-| P1 | VEINS engine has been **silent 112 days** (as of 2026-11-11). Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
+| P1 | VEINS engine has been **silent 113 days** (as of 2026-11-12). Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
 | P1 | **7 unactioned stubs** in `.veins/proposals/` all target `🎛️ PR State Orchestrator`. Either apply a real quarantine patch (edit the stub files, remove boilerplate, add an actual fix) or close them as resolved if the flakiness is no longer observed. | 🔴 Open |
 | P2 | `🎛️ PR State Orchestrator` is the **only component VEINS has ever flagged** (3 runs, 7 proposals, all stubs). The underlying flakiness was never resolved. Check if this workflow is still flaky or if the problem self-healed; either action the stubs or close them. | 🔴 Open |
 | P2 | `bnat-fingerprint.json` refreshed 2026-11-10T09:10:28Z — topology is current. | ✅ Done |
@@ -247,6 +248,6 @@ node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
 
 ### Prior readings (kept per RVS-PRESERVE-001)
 
-Earlier readings (2026-11-05 through 2026-11-11) are merged into the trend table above.
-Key counts: 106 / 107 / 108 / 111 / 112 days silent, fingerprint refreshed
+Earlier readings (2026-11-05 through 2026-11-12) are merged into the trend table above.
+Key counts: 106 / 107 / 108 / 111 / 112 / 113 days silent, fingerprint refreshed
 2026-11-07 and again 2026-11-10. Items P1 and P2 (engine silence, unactioned stubs) remain open.
