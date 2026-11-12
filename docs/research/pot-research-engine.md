@@ -29,7 +29,7 @@ An unknown strategy name throws before any lane runs.
 node scripts/pot-research/benchmark.js
 ```
 
-The harness reads `products/rnd-research-fleet/eval/fixtures/queries.json` when that file is present. On 2026-11-11 that file is a search rubric of 6 prompts with `expected_qualities`. It has no acceptance labels. The work request's dependency is 100 or more labeled research examples. The harness therefore prints `status: NOT_MEASURED` and `quality_delta: null`. It does not score linear fan-out against PoT, and it does not print a lift. Exit 0 means the report was written. It does not mean the +20-30% criterion passed.
+The harness also validates `products/rnd-research-fleet/eval/fixtures/research-gold-v1.jsonl`, a set of real research items with a recorded verdict and provenance (see `products/rnd-research-fleet/eval/fixtures/RESEARCH_GOLD_V1.md`). It reports the count and the shortfall against 100 and scores nothing. The harness reads `products/rnd-research-fleet/eval/fixtures/queries.json` when that file is present. On 2026-11-11 that file is a search rubric of 6 prompts with `expected_qualities`. It has no acceptance labels. The work request's dependency is 100 or more labeled research examples. The harness therefore prints `status: NOT_MEASURED` and `quality_delta: null`. It does not score linear fan-out against PoT, and it does not print a lift. Exit 0 means the report was written. It does not mean the +20-30% criterion passed.
 
 ## GPU compute budget (estimate)
 
