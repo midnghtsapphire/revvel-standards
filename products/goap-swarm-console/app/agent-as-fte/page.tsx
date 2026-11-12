@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Script from "next/script";
 import { useState } from "react";
 import { calculateAgentRoi } from "../../lib/agent-roi";
+import { calendlyEmbedUrl } from "../../lib/calendly-url";
 
 const usd = (amount: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount);
 
@@ -12,6 +14,9 @@ export default function AgentAsFtePage() {
   const [automationPercent, setAutomation] = useState(50);
   const [monthlyPrice, setPrice] = useState(2000);
   const roi = calculateAgentRoi({ hoursPerWeek, hourlyCost, automationPercent, monthlyPrice });
+  // CALENDLY_URL is mapped onto NEXT_PUBLIC_CALENDLY_URL in next.config.js.
+  // Empty or non-calendly.com values leave the embed off. No path is invented.
+  const calendly = calendlyEmbedUrl(process.env.NEXT_PUBLIC_CALENDLY_URL || "");
   // 2026-11-10 Codex, WR #18334: the older console mailto address has no
   // canonical business-contact confirmation. Use the verified owner repository
   // contact surface until an owner-provided Calendly destination is configured.
@@ -28,6 +33,16 @@ export default function AgentAsFtePage() {
       { label: "Agent price per month ($)", value: monthlyPrice, max: 100000, set: setPrice },
     ].map(({ label, value, max, set }) => <label key={label} className="space-y-2"><span className="block">{label}</span><input type="number" min="0" max={max} value={value} onChange={event => set(Math.min(max, Math.max(0, Number(event.target.value) || 0)))} className="w-full rounded border border-slate-600 bg-slate-950 p-3" /></label>)}</div><div aria-live="polite" className="grid gap-5 sm:grid-cols-3"><div><p>Monthly hours recovered</p><strong className="text-3xl">{roi.monthlyHours.toFixed(1)}</strong></div><div><p>Monthly net capacity value</p><strong className="text-3xl">{usd(roi.monthlyNetValue)}</strong></div><div><p>Annual net capacity value</p><strong className="text-3xl">{usd(roi.annualNetValue)}</strong></div></div><p className="text-sm text-slate-400">Formula: hours/week × 52 ÷ 12 × automation fraction × hourly cost − monthly agent price. Review and supervision time must be included in the automation assumption.</p></section>
     <section className="space-y-4"><h2 className="text-3xl font-semibold">A scoped engagement, from $2,000–$5,000 per agent/month</h2><p className="text-slate-300">Final pricing depends on workflow volume, integrations, service levels, and supervision. A pilot defines the baseline, accepted outputs, review checkpoints, and a stop condition before work begins.</p><ol className="list-decimal space-y-3 pl-6"><li>Choose a repeatable workflow and measure current effort.</li><li>Agree on acceptance tests, access boundaries, and reviewer ownership.</li><li>Compare accepted work, total cost, review time, and failure recovery against the baseline.</li><li>Expand only after the measured result supports it.</li></ol></section>
-    <section className="space-y-4"><h2 className="text-3xl font-semibold">Inspect the evidence</h2><p className="text-slate-300">The public console runs a deterministic symbolic planner. It demonstrates planning and allocation; it does not execute production code or establish customer results. Explore it and export a run report before discussing a pilot.</p><p className="text-sm text-slate-400">Calendar booking is unavailable. Use the owner&apos;s GitHub discussion to request a pilot without sharing private business details publicly.</p><a href={contact} className="inline-block rounded-lg bg-cyan-300 px-5 py-3 font-semibold text-slate-950">Discuss a pilot on GitHub</a></section>
+    <section className="space-y-4"><h2 className="text-3xl font-semibold">Inspect the evidence</h2><p className="text-slate-300">The public console runs a deterministic symbolic planner. It demonstrates planning and allocation; it does not execute production code or establish customer results. Explore it and export a run report before discussing a pilot.</p><p className="text-slate-300">Proof pending: checked 2026-11-11, no product in this repository was at a live URL that can be cited as a customer deployment. No name, quote, or result is shown. A case study waits on issue 18330.</p></section>
+    <section className="space-y-4" id="book"><h2 className="text-3xl font-semibold">Request a pilot</h2>
+      {/* 2026-11-10 Codex sentence, kept because the GitHub discussion is still the fallback:
+          "Calendar booking is unavailable. Use the owner's GitHub discussion to request a pilot without sharing private business details publicly."
+          2026-11-11 MarketShipper: the embed renders only when CALENDLY_URL passes calendlyEmbedUrl. */}
+      {calendly ? <>
+        <div className="calendly-inline-widget" data-url={calendly} style={{ minWidth: "320px", height: "700px" }} />
+        <Script src="https://assets.calendly.com/assets/external/widget.js" strategy="lazyOnload" />
+      </> : <p className="text-sm text-slate-400">CALENDLY_URL is not set. The calendar embed appears when that build value is an https link on calendly.com with a scheduling path.</p>}
+      <a href={contact} className="inline-block rounded-lg bg-cyan-300 px-5 py-3 font-semibold text-slate-950">Discuss a pilot on GitHub</a>
+    </section>
   </main>;
 }

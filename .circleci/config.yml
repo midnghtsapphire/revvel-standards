@@ -22,6 +22,11 @@ executors:
   node-executor:
     docker:
       - image: cimg/node:22.11
+  # Next 15's build needs require(esm) (Node >= 22.12); 22.11 dies with
+  # ERR_REQUIRE_ESM in magic-string (CircleCI build 23308, WR #18342).
+  node-next-executor:
+    docker:
+      - image: cimg/node:22.14
 
 jobs:
   lint-and-test:
@@ -181,6 +186,10 @@ jobs:
   # `npm test` only globs tests/**/*.test.js, so these .mjs tests run here
   # explicitly. Added by DBArchitect; no existing job was changed.
   billing-selfhost-lint:
+  # DigitalOcean App Platform updates. Not part of pr-workflow. A merge can
+  # create or update apps once DIGITALOCEAN_ACCESS_TOKEN is set. Audrey must
+  # approve that before this leaves draft. Added 2026-11-11 by MarketShipper.
+  affiliate-hub-do-deploy:
     executor: node-executor
     steps:
       - checkout
@@ -234,6 +243,52 @@ jobs:
       - run:
           name: Apply twice and assert (db/test.sh)
           command: bash products/revenue-billing/db/test.sh
+          name: Update DigitalOcean app affiliate-hub when the token is set
+          no_output_timeout: 15m
+          command: bash .circleci/scripts/do-app-update.sh affiliate-hub
+
+  ai-video-toolkit-do-deploy:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Update DigitalOcean app ai-video-toolkit when the token is set
+          no_output_timeout: 15m
+          command: bash .circleci/scripts/do-app-update.sh ai-video-toolkit
+
+  screen-recorder-finder-do-deploy:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Update DigitalOcean app screen-recorder-finder when the token is set
+          no_output_timeout: 15m
+          command: bash .circleci/scripts/do-app-update.sh screen-recorder-finder
+
+  # WR #18342: AG-UI streaming + session-resume demo kit. Zero dependencies,
+  # so there is nothing to install: node built-ins only. Runs the kit's own
+  # tests (stream event order, second-device resume, page load < 2 s, 7:1
+  # contrast). Also runnable by hand: `cd products/halo-demo-stream && npm test`.
+  demo-kit-test:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: halo-demo-stream tests
+          command: cd products/halo-demo-stream && npm test
+
+  # WR #18342 moved affiliate-hub's catalogue into app/lib/programs.mjs; this
+  # proves the product still builds. Lockfile-pinned install, no scripts.
+  affiliate-hub-build:
+    executor: node-next-executor
+    steps:
+      - checkout
+      - run:
+          name: affiliate-hub npm ci
+          command: cd products/affiliate-hub && npm ci --ignore-scripts
+      - run:
+          name: affiliate-hub next build
+          command: cd products/affiliate-hub && npx next build
 
   # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
   # and that every REVVEL-DISABLED block in changed files has all required
@@ -263,6 +318,67 @@ jobs:
           # unreadable label is not permission. Setting it here again would
           # restore the deadlock, so leave it to the script.
 
+  # Product image gate for screen-recorder-finder. Builds the Dockerfile, runs the server
+  # tests, and requests /health inside the container. Unrelated diffs exit 0
+  # from product-diff.sh. The DigitalOcean job runs only on main and does
+  # nothing when DIGITALOCEAN_ACCESS_TOKEN is unset. A green skip is not a
+  # live site. Added 2026-11-11 by MarketShipper for WR #18332.
+  # 2026-11-11 MarketShipper: merged onto main 3d6ae9a8. That comment described
+  # an earlier draft. This file still has no DigitalOcean create/update job.
+  screen-recorder-finder-image:
+    executor: node-executor
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build screen-recorder-finder image, test it, and request /health
+          no_output_timeout: 20m
+          command: bash .circleci/scripts/product-image-gate.sh screen-recorder-finder
+
+  # Product image gate for ai-video-toolkit. Builds the Dockerfile, runs the server
+  # tests, and requests /health inside the container. Unrelated diffs exit 0
+  # from product-diff.sh. The DigitalOcean job runs only on main and does
+  # nothing when DIGITALOCEAN_ACCESS_TOKEN is unset. A green skip is not a
+  # live site. Added 2026-11-11 by MarketShipper for WR #18331.
+  # 2026-11-11 MarketShipper: merged onto main 419abfa9. That comment described
+  # an earlier draft. This file still has no DigitalOcean create/update job.
+  ai-video-toolkit-image:
+    executor: node-executor
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build ai-video-toolkit image, test it, and request /health
+          no_output_timeout: 20m
+          command: bash .circleci/scripts/product-image-gate.sh ai-video-toolkit
+
+  # Product image gate. Builds the Dockerfile, runs the server tests, and
+  # requests /health inside the container. Unrelated diffs exit 0 from
+  # product-diff.sh. This file does not create or update a DigitalOcean app.
+  # Added 2026-11-11 by MarketShipper for WR #18330.
+  affiliate-hub-image:
+    executor: node-executor
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build affiliate-hub image, test it, and request /health
+          no_output_timeout: 20m
+          command: bash .circleci/scripts/product-image-gate.sh affiliate-hub
+  # WR #18334 — build the GOAP agent-as-FTE PDF and the static landing page,
+  # then require HTTP 200 from a local server. This job does not deploy, send
+  # mail, or contact a prospect. The PDF it stores is the CircleCI artifact.
+  agent-as-fte:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Build sales PDF and landing page, then require HTTP 200
+          command: bash .circleci/scripts/build-agent-fte.sh
+      - store_artifacts:
+          path: /tmp/agent-fte-artifacts
+          destination: agent-as-fte
+
 workflows:
   version: 2
 
@@ -290,6 +406,27 @@ workflows:
             branches:
               ignore: main
       - billing-sql-validate:
+      - agent-as-fte:
+          filters:
+            branches:
+              ignore: main
+      - demo-kit-test:
+          filters:
+            branches:
+              ignore: main
+      - affiliate-hub-build:
+          filters:
+            branches:
+              ignore: main
+      - screen-recorder-finder-image:
+          filters:
+            branches:
+              ignore: main
+      - ai-video-toolkit-image:
+          filters:
+            branches:
+              ignore: main
+      - affiliate-hub-image:
           filters:
             branches:
               ignore: main
@@ -318,6 +455,15 @@ workflows:
             branches:
               only: main
       - billing-sql-validate:
+      - agent-as-fte:
+          filters:
+            branches:
+              only: main
+      - demo-kit-test:
+          filters:
+            branches:
+              only: main
+      - affiliate-hub-build:
           filters:
             branches:
               only: main
@@ -326,6 +472,35 @@ workflows:
       - deploy-railway:
           requires:
             - lint-and-test
+          filters:
+            branches:
+              only: main
+      # App Platform writes. Draft until Audrey approves. These jobs are not
+      # in pr-workflow, so opening the PR does not create an app. They run
+      # only on main, and do-app-update.sh still no-ops without
+      # DIGITALOCEAN_ACCESS_TOKEN. Added 2026-11-11 by MarketShipper.
+      # deploy_on_push: true
+      # Needs Audrey's yes. The product specs on #18366, #18368, and #18369
+      # set deploy_on_push to false so those merges do not auto-deploy.
+      # Do not flip it here until she says yes. Do not mark this draft ready.
+      - affiliate-hub-do-deploy:
+          filters:
+            branches:
+              only: main
+      - ai-video-toolkit-do-deploy:
+          filters:
+            branches:
+              only: main
+      - screen-recorder-finder-do-deploy:
+      - screen-recorder-finder-image:
+          filters:
+            branches:
+              only: main
+      - ai-video-toolkit-image:
+          filters:
+            branches:
+              only: main
+      - affiliate-hub-image:
           filters:
             branches:
               only: main

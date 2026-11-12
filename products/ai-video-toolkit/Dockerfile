@@ -21,3 +21,39 @@
 # HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 CMD wget -q -O /dev/null http://127.0.0.1:8080/health || exit 1
 #
 #
+
+# 2026-11-11 MarketShipper WR #18331: active image, added under the retired
+# block above. The retired block stays commented so that decision remains
+# visible. This image uses a public node base because App Platform and
+# CircleCI build a Dockerfile; the static artifact in
+# templates/cicd/deploy-static.mjs remains for hosts that do not run Docker.
+# Build context is the repository root.
+
+FROM node:22-alpine AS build
+WORKDIR /repo
+COPY products/ai-video-toolkit/package.json products/ai-video-toolkit/package-lock.json ./products/ai-video-toolkit/
+WORKDIR /repo/products/ai-video-toolkit
+# --ignore-scripts: this static export does not need dependency lifecycle
+# scripts, and running them would execute code from the lockfile.
+RUN npm ci --ignore-scripts
+# The pricing button is compiled from packages/static-stripe-server. The
+# runtime stage copies that package to /packages: from /app/server the import
+# ../../../packages collapses to /packages on a Linux root.
+COPY packages/static-stripe-server /repo/packages/static-stripe-server
+COPY products/ai-video-toolkit/ ./
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN npm run build
+
+FROM node:22-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=8080
+ENV STRIPE_MODE=test
+ENV STATIC_ROOT=/app/out
+COPY --from=build --chown=node:node /repo/products/ai-video-toolkit/out ./out
+COPY --from=build --chown=node:node /repo/products/ai-video-toolkit/server ./server
+COPY --from=build --chown=node:node /repo/packages/static-stripe-server /packages/static-stripe-server
+USER node
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 CMD wget -q -O /dev/null http://127.0.0.1:8080/health || exit 1
+CMD ["node", "server/static-stripe-server.mjs"]

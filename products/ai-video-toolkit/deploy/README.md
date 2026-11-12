@@ -78,3 +78,27 @@ and test payment in Stripe before marking WR #18333 complete. DigitalOcean
 credentials may be configured in GitHub secrets but are not readable locally;
 local SSH authentication to the documented droplet currently fails. No live
 deployment, payment fulfillment or billing webhook is established by this build.
+
+## Container path added 2026-11-11 (MarketShipper, WR #18331)
+
+The commented Dockerfile and compose file from 2026-11-10 are still in those
+files. Under them, an active image builds the static export and serves it with
+`server/static-stripe-server.mjs` on port 8080. Checkout reads
+`STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`, and
+`STRIPE_PRICE_ID` at runtime. `STRIPE_MODE` defaults to `test`. Empty secrets
+make `/api/checkout` return 503. `/health` still returns 200.
+
+From the repository root:
+
+```sh
+docker compose -f products/ai-video-toolkit/docker-compose.yml up --build -d
+curl --fail http://127.0.0.1:8080/health
+curl --fail http://127.0.0.1:8080/pricing
+docker compose -f products/ai-video-toolkit/docker-compose.yml down
+```
+
+App Platform spec: `products/ai-video-toolkit/.do/app.yaml`. It names
+`ai-video-toolkit.revvel.co` and a `/health` check. Creating the app needs a
+DigitalOcean token in CircleCI as `DIGITALOCEAN_ACCESS_TOKEN`. That job is
+`.circleci/scripts/do-app-update.sh`. A missing token skips the call. The skip
+is not a live URL.
