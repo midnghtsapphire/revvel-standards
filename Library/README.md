@@ -20,3 +20,9 @@ Original archival material elsewhere in the repository remains intact.
 - [AG-UI demo kit evidence](halo-demo-stream/README.md):
   what was tested for the streaming and session-resume demo kit (WR #18342),
   and what is not verified.
+- [Tool history and decision log, 2026-11-11](../docs/tool-history/README.md):
+  44 tools with linked evidence from `midnghtsapphire` and `freedom-angel-corp`
+  repos. Verdicts Audrey has not given are marked `NEEDS AUDREY`. Manus account
+  recovery is in progress and is not in this repo yet.
+- [Visiting-agent rule check data, 2026-11-11](../config/visiting-agent-patterns.json):
+  patterns, allowlist, and the baseline of hits that were already in the repo.

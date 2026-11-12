@@ -1,3 +1,7 @@
+## 2026-11-11 (6) — QuickWinBuilder — tool history log and visiting-agent rule check
+
+- Added `docs/tool-history/`: README, `TOOLS.csv` (44 tools), one file per tool, and `visiting-llms.md`. Every claim links to a repo file, commit, PR, or issue; where Audrey's verdict is not on record it says `NEEDS AUDREY`. Added the Manus verdict she gave on 2026-11-11 and noted that recovery from her Manus account is in progress. Nothing in `DECISIONS.md`, `docs/TOOL_COST_INDEX.md`, or `TOOLS_CATALOG` was edited.
+- Added the visiting-agent hard rules to `VISITING_AGENTS.md` (section 1b) and a check, `scripts/visiting-agent-scan.js`, driven by `config/visiting-agent-patterns.json` (patterns, allowlist, baseline). It runs in the CircleCI `lint-and-test` job and in `npm test` (`tests/visiting-agent-scan.test.js`). affiliate-hub is allowlisted. Hits already in the repo are baselined for Audrey to review; nothing was removed or edited.
 ## 2026-11-11 — BALLS — official fleet mascot family (Auky and Lil Aud-Bod)
 
 - Added `docs/brand/mascots/MASCOTS.md` documenting Auky and Lil Aud-Bod aka BALLS as the fleet mascot duo, plus Auky artwork from WebForge and the BALLS pixel avatar.
