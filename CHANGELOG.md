@@ -6,6 +6,9 @@
 
 - Registered the public action-gateway endpoint in `.mcp.json` (Claude, HTTP transport) and `.codex/config.toml` (Codex, url). Documented `claude mcp login action-gateway` and both client commands. WRs #18288 and #18290. No token in git.
 
+## 2026-11-11 (3) — MarketShipper — draft App Platform deploy jobs
+
+- `do-app-update.sh` and the three `*-do-deploy` CircleCI jobs live only on this draft. They are not in the product image-gate PRs. A merge can create or update DigitalOcean apps after Audrey sets `DIGITALOCEAN_ACCESS_TOKEN`. This draft is not approved.
 ## 2026-11-11 (5) — MarketShipper — screen-recorder-finder binds the shared Stripe server
 
 - Restacked onto main `3d6ae9a8`. CircleCI keeps every job from main and adds `screen-recorder-finder-image`. The product calls `bindProduct('screen-recorder-finder')` in `packages/static-stripe-server`. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
