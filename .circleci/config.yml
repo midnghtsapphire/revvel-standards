@@ -43,6 +43,14 @@ jobs:
           command: node scripts/check-package-integrity.js
       - node/install-packages:
           pkg-manager: npm
+      # Visiting-agent rule (VISITING_AGENTS.md section 1b): flags tracker,
+      # marketing, affiliate and agent-branding strings in app code. Node
+      # built-ins only. Patterns, allowlist and baseline live in
+      # config/visiting-agent-patterns.json. Also runnable by hand:
+      # `node scripts/visiting-agent-scan.js --report`.
+      - run:
+          name: Visiting-agent rule check
+          command: node scripts/visiting-agent-scan.js
       # Real gate, scoped to changed Markdown so it enforces standards on new
       # work without drowning in the repo's large pre-existing lint backlog.
       - run:
@@ -178,6 +186,67 @@ jobs:
             # instead of burning the full 10-minute no-output window.
             timeout 300 npx --yes @railway/cli up --detach
             echo "Deploy triggered. Check https://railway.app for service status."
+
+  # WR #18333 (Lago billing) — static checks for products/revenue-billing, with no
+  # Docker daemon and no secrets: the compose recipe keeps exact image pins,
+  # blank secrets and loopback-only ports; plans.json is valid; the generated
+  # plan seed SQL is current; the catalog seeder's offline tests pass.
+  # `npm test` only globs tests/**/*.test.js, so these .mjs tests run here
+  # explicitly. Added by DBArchitect; no existing job was changed.
+  billing-selfhost-lint:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Self-host recipe policy (pins, secrets, ports)
+          command: node products/revenue-billing/scripts/check-self-host.mjs
+      - run:
+          name: Compose file is valid YAML
+          # js-yaml pinned so this gate is reproducible (same pin as validate-registries).
+          command: npx --yes js-yaml@4.1.0 products/revenue-billing/self-host/docker-compose.yml > /dev/null && echo "docker-compose.yml ok"
+      - run:
+          name: plans.json is valid and plan seed SQL is current
+          command: |
+            node products/revenue-billing/plans/seed-plans.mjs --validate
+            node products/revenue-billing/scripts/gen-plan-seed.mjs --check
+      - run:
+          name: Syntax-check scripts
+          command: |
+            for f in products/revenue-billing/plans/*.mjs products/revenue-billing/scripts/*.mjs; do node --check "$f"; done
+            bash -n products/revenue-billing/db/apply.sh
+            bash -n products/revenue-billing/db/test.sh
+      - run:
+          name: Catalog seeder tests (offline fake Lago)
+          command: node --test products/revenue-billing/plans/seed-plans.test.mjs products/revenue-billing/lago.test.mjs
+
+  # WR #18333 — apply the billing SQL twice to a throwaway Postgres 15 and run
+  # the assertions (idempotency, constraints, RLS, no anon grants, webhook
+  # dedupe). The secondary container is created fresh per run and holds no data.
+  # Primary and secondary are the same exact tag (postgres 15, as Supabase runs).
+  billing-sql-validate:
+    docker:
+      - image: cimg/postgres:15.19
+      - image: cimg/postgres:15.19
+        environment:
+          POSTGRES_USER: circleci
+          POSTGRES_DB: billing_scratch
+          POSTGRES_HOST_AUTH_METHOD: trust
+    environment:
+      DATABASE_URL: postgresql://circleci@localhost:5432/billing_scratch
+    steps:
+      - checkout
+      - run:
+          name: Wait for Postgres
+          command: |
+            for i in $(seq 1 60); do
+              pg_isready -h localhost -p 5432 -U circleci -d billing_scratch && exit 0
+              sleep 1
+            done
+            echo "Postgres did not become ready" >&2
+            exit 1
+      - run:
+          name: Apply twice and assert (db/test.sh)
+          command: bash products/revenue-billing/db/test.sh
 
   # DigitalOcean App Platform updates. Not part of pr-workflow. A merge can
   # create or update apps once DIGITALOCEAN_ACCESS_TOKEN is set. Audrey must
@@ -345,6 +414,14 @@ workflows:
           filters:
             branches:
               ignore: main
+      - billing-selfhost-lint:
+          filters:
+            branches:
+              ignore: main
+      - billing-sql-validate:
+          filters:
+            branches:
+              ignore: main
       - agent-as-fte:
           filters:
             branches:
@@ -389,6 +466,14 @@ workflows:
           filters:
             branches:
               only: main
+      - billing-selfhost-lint:
+          filters:
+            branches:
+              only: main
+      - billing-sql-validate:
+          filters:
+            branches:
+              only: main
       - agent-as-fte:
           filters:
             branches:
@@ -426,6 +511,9 @@ workflows:
             branches:
               only: main
       - screen-recorder-finder-do-deploy:
+          filters:
+            branches:
+              only: main
       - screen-recorder-finder-image:
           filters:
             branches:

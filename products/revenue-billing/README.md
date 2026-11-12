@@ -137,3 +137,19 @@ Research, exact scope, rollback and acceptance gates are recorded in
 [the webhook MVI](WEBHOOK-MVI-2026-11-10.md). Real hosted Lago, authenticated
 customer binding, an actual Stripe test invoice/payment, verified public ingress
 and subscription fulfillment remain acceptance work for #18333.
+
+## Self-host, plan catalog and Postgres mirror (WR #18333)
+
+Added 2026-11-11 by DBArchitect. Nothing here is deployed or applied.
+
+- [`self-host/`](self-host/README.md): pinned Lago `v1.57.0` Docker Compose recipe, secrets required from `.env`.
+- [`plans/`](plans/plans.json): Free, Pro and Enterprise as data, plus `seed-plans.mjs`, which creates them in Lago idempotently (dry run by default, `--apply` to write, drift reported and never overwritten).
+- [`db/`](db/migrations/0001_billing_lookups.sql): plain SQL mirror of plans, customers, subscriptions and webhook events, with RLS on and no anon grants. Test on a scratch database with `db/test.sh`.
+- [`WEBHOOK-POSTGRES-SPEC.md`](WEBHOOK-POSTGRES-SPEC.md): how webhook events reach Postgres with the same idempotency rules as the receiver.
+- [`HUMAN-STEPS.md`](HUMAN-STEPS.md): the ordered steps only Audrey can do.
+
+```sh
+node products/revenue-billing/plans/seed-plans.mjs --validate
+node --test products/revenue-billing/plans/seed-plans.test.mjs
+DATABASE_URL=postgres://...scratch bash products/revenue-billing/db/test.sh
+```

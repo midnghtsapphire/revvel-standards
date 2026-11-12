@@ -41,3 +41,9 @@ This repo is public. Removed: emails, home and business locations, a business re
 ## Referenced by a profile but not found on the box
 
 PrivacyWarden (privacy team) and PerplexityBridge (kept off). ProductCartographer and BookReviewExpert are named by other profiles; the closest box bots are noted in their teams.
+
+## Added 2026-11-11 (BALLS)
+
+The 2026-11-10 backup counts are unchanged. Additive entry:
+
+- [`/bot-balls`](bots/bot-balls/README.md): Lil Aud-Bod aka BALLS, brand development (🎨 Designer). Mascot family: [brand/mascots/MASCOTS.md](brand/mascots/MASCOTS.md).

@@ -42,3 +42,7 @@ How to use the brand templates for every new Revvel/MIDNGHTSAPPHIRE project.
 | `REVVEL_EMBLEM_STANDARD.md` | Complete Revvel Emblem formula — universal design language |
 | `BRAND_IDENTITY_TEMPLATE.md` | Blank brand identity document — fill in for every new project |
 | `ICON_SIZE_SPEC.md` | Quick reference for all icon sizes, platforms, and export tools |
+
+## Related (added 2026-11-11)
+
+- Fleet mascot family (Auky and Lil Aud-Bod aka BALLS): [`docs/brand/mascots/MASCOTS.md`](../../docs/brand/mascots/MASCOTS.md). Mascots sit alongside the Revvel Emblem; they are not a substitute for it.

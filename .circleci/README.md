@@ -41,3 +41,12 @@ circleci config validate -c .circleci/config.yml
 - Markdown linting is intentionally scoped to files changed from `origin/main`.
 - If merge-base cannot be determined, lint exits non-zero to avoid false green runs.
 - Tests are not swallowed; failures fail the job.
+
+## Billing jobs (WR #18333)
+
+Added 2026-11-11 by DBArchitect. Both run in `pr-workflow` and `main-workflow`.
+
+- `billing-selfhost-lint`: checks `products/revenue-billing/self-host` (exact image pins, blank secrets, loopback-only ports, valid YAML), validates `plans.json`, checks the generated plan seed SQL is current, and runs the offline catalog seeder tests. No Docker daemon needed.
+- `billing-sql-validate`: applies `products/revenue-billing/db` twice to a throwaway Postgres 15 container and runs the assertions in `db/tests/`.
+
+Neither job needs a secret, deploys anything, or uses `setup_remote_docker`.

@@ -20,6 +20,35 @@ no scaffolding language. The [Anti-Scaffolding Enforcer](.github/workflows/anti-
 will block a PR that adds placeholder code. If you can't finish it, say so in the
 PR body — don't fake it.
 
+## 1b. Hard rules, checked by CI (added 2026-11-11 at Audrey's request)
+
+These come from Audrey. They are enforced by a check, not by memory, because
+reminders an agent can forget do not hold up (see
+[`docs/tool-history/`](docs/tool-history/README.md)).
+
+1. **Read all of `revvel-standards` before you work.** Every visiting agent
+   (Manus, Jules, Copilot, Cursor, OpenHands, and any other) reads the standards
+   first, not just this file.
+2. **No tracking, analytics, telemetry, marketing, affiliate links or IDs, or
+   third-party pixels in any app.** The only exception is when Audrey explicitly
+   asks for one in that repo. The exception is written down as a path, a
+   pattern, and a reason in the `allowlist` of
+   [`config/visiting-agent-patterns.json`](config/visiting-agent-patterns.json).
+3. **No agent or tool puts its name, branding, badge, "built with" line, credit,
+   or any self-embedding into an app or file.** Audrey's apps carry her brand
+   only.
+4. **Never delete anything to make the check pass.** If the check flags
+   something that is already in the repo, tell Audrey. Do not remove it and do
+   not edit the data file to hide it.
+
+The check is `node scripts/visiting-agent-scan.js`. It reads the patterns, the
+allowlist, and the baseline from `config/visiting-agent-patterns.json`, and it
+runs in the CircleCI `lint-and-test` job (step "Visiting-agent rule check") and
+in `npm test`. Run it by hand before you open a PR. Existing hits that were in
+the repo on 2026-11-11 are in the `baseline` list for Audrey to review. The
+baseline is not an approval, and a new file or a new pattern in a baselined file
+fails the check.
+
 ## 2. Where you may and may not write
 
 - ✅ **Write inside** the relevant `products/<name>/`, `docs/`, `skills/`, `wr/`,

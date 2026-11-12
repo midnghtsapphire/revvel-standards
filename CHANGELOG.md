@@ -2,6 +2,14 @@
 
 - Added `products/rnd-research-fleet/eval/fixtures/research-gold-v1.jsonl`: 23 real research items with a recorded verdict and a pinned source commit. Rows from the private `linear-a` and `tartaria-tablets` repos carry provenance and hashes only; `RESEARCH_GOLD_V1.md` explains how to rebuild their text. This is below the 100 the work request needs, and the shortfall is reported, not padded.
 - `scripts/pot-research/benchmark.js` validates the set and prints `gold_count`, `gold_shortfall` and per-source counts. It still prints `NOT_MEASURED` and `quality_delta: null`. Added `tests/research-gold.test.js`. No new CI job and no GitHub-hosted workflow.
+## 2026-11-11 (6) — QuickWinBuilder — tool history log and visiting-agent rule check
+
+- Added `docs/tool-history/`: README, `TOOLS.csv` (44 tools), one file per tool, and `visiting-llms.md`. Every claim links to a repo file, commit, PR, or issue; where Audrey's verdict is not on record it says `NEEDS AUDREY`. Added the Manus verdict she gave on 2026-11-11 and noted that recovery from her Manus account is in progress. Nothing in `DECISIONS.md`, `docs/TOOL_COST_INDEX.md`, or `TOOLS_CATALOG` was edited.
+- Added the visiting-agent hard rules to `VISITING_AGENTS.md` (section 1b) and a check, `scripts/visiting-agent-scan.js`, driven by `config/visiting-agent-patterns.json` (patterns, allowlist, baseline). It runs in the CircleCI `lint-and-test` job and in `npm test` (`tests/visiting-agent-scan.test.js`). affiliate-hub is allowlisted. Hits already in the repo are baselined for Audrey to review; nothing was removed or edited.
+## 2026-11-11 — BALLS — official fleet mascot family (Auky and Lil Aud-Bod)
+
+- Added `docs/brand/mascots/MASCOTS.md` documenting Auky and Lil Aud-Bod aka BALLS as the fleet mascot duo, plus Auky artwork from WebForge and the BALLS pixel avatar.
+- Added `docs/bots/bot-balls/README.md` (brand-development bot profile). Index pointers appended in `docs/CALL-NAMES.md`, `docs/README.md`, `docs/BOT-ROSTER.json`, `docs/BRAND_ARCHITECTURE.md`, `docs/PORTFOLIO.md`, and `templates/brand/README.md`. Nothing posts without Audrey's explicit yes.
 
 ## 2026-11-11 (3) — MarketShipper — draft App Platform deploy jobs
 
@@ -102,6 +110,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## 2026-11-11
+
+- 2026-11-11 — DBArchitect (Grok Bot) — WR #18333 (draft PR, refs only): added `products/revenue-billing/self-host/` (Lago v1.57.0 Docker Compose, every secret required from `.env`, loopback-only ports), `plans/` (Free/Pro/Enterprise as `plans.json` plus an idempotent, dry-run-by-default Lago seeder that reports price drift and never overwrites), `db/` (plain-SQL Postgres mirror of plans, customers, subscriptions and webhook events, RLS on, no anon grants, tested on PostgreSQL 15.19 and 18.6), `WEBHOOK-POSTGRES-SPEC.md`, `HUMAN-STEPS.md`, `LEDGER.md`, and CircleCI jobs `billing-selfhost-lint` and `billing-sql-validate`. Builds on PR #18348. Nothing deployed, no Stripe account, no keys, nothing applied to Supabase; acceptance items still need Audrey (see HUMAN-STEPS.md).
 
 ## 2026-11-07
 
