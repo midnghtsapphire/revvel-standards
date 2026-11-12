@@ -1208,3 +1208,14 @@ product hostnames in the deploy notes did not resolve, and the Vercel host
 returned 402. A sales case study can cite only a product whose URL is the
 product. A parked 200 is not that. The deck says proof pending and names issue
 18330 instead of inventing a customer.
+
+## TM-0013 — A YAML literal block must be indented further than its key
+
+2026-11-11, PromptOrchestrator, work request #18338.
+
+Appending prompt text under `instructions: |` at the same indent as the key
+makes the next line a YAML key and the file fails to parse. The block text
+has to sit further right than `instructions`. `scripts/dspy_gepa/versions.py`
+uses six spaces because the key is already at four. The writer also checks
+that the bytes already in the file stay a prefix, so a bad append is caught
+by parsing the result in `tests/dspy_gepa_test.py`.

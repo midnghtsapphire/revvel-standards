@@ -27,6 +27,13 @@ executors:
   node-next-executor:
     docker:
       - image: cimg/node:22.14
+  # WR #18338. The node executors ship Python 3.10. The GEPA lock was resolved
+  # on Python 3.12, and cachetools 8.0.0 refuses to install on 3.10 (CircleCI
+  # build 23634). This image matches that lock. Pinned to 3.12.16, not the
+  # floating 3.12 tag.
+  python-gepa-executor:
+    docker:
+      - image: cimg/python:3.12.16
 
 jobs:
   lint-and-test:
@@ -270,6 +277,13 @@ jobs:
   # turn this whole file into a setup config and break every job if the project's
   # "dynamic config" setting is off. See docs/DROP_FOLDERS.md.
   drop-folder-process:
+  # WR #18336 — graph prompting. Stdlib Python. Rebuilds the standards graph,
+  # checks the committed artifact and the local token measurements, and runs
+  # the routing tests. The accuracy harness check confirms the pending-spend
+  # record and does not call a model.
+  # Manual, from the repo root:
+  #   npm run graph-prompting:test && npm run graph-prompting:check
+  graph-prompting:
     executor: node-executor
     steps:
       - checkout
@@ -348,6 +362,19 @@ jobs:
             # Creates the Direct Upload project on first run; harmless if it exists.
             $WRANGLER pages project create revvel-dashboard --production-branch main || true
             $WRANGLER pages deploy public --project-name revvel-dashboard --branch main
+          name: Graph prompting tests and measurement check
+          command: bash .circleci/scripts/graph-prompting.sh
+  # WR #18338 — DSPy GEPA offline tests. Installs the pinned lock, runs DummyLM
+  # unit tests, and checks that a non-local optimize call is refused. This job
+  # does not call a model and does not read an API key.
+  dspy-gepa-offline:
+    executor: python-gepa-executor
+    steps:
+      - checkout
+      - run:
+          name: Offline DSPy GEPA tests and spend refusal
+          no_output_timeout: 15m
+          command: bash .circleci/scripts/dspy-gepa-offline.sh
 
 workflows:
   version: 2
@@ -364,6 +391,10 @@ workflows:
             branches:
               ignore: main
       - policy-check:
+          filters:
+            branches:
+              ignore: main
+      - graph-prompting:
           filters:
             branches:
               ignore: main
@@ -392,6 +423,7 @@ workflows:
             branches:
               ignore: main
       - dashboard-build:
+      - dspy-gepa-offline:
           filters:
             branches:
               ignore: main
@@ -408,6 +440,10 @@ workflows:
             branches:
               only: main
       - policy-check:
+          filters:
+            branches:
+              only: main
+      - graph-prompting:
           filters:
             branches:
               only: main
@@ -444,6 +480,7 @@ workflows:
             branches:
               only: main
       - dashboard-build:
+      - dspy-gepa-offline:
           filters:
             branches:
               only: main

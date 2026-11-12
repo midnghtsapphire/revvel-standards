@@ -1,0 +1,65 @@
+{
+  "description": "Fixed queries for WR 18336. expect is the document the route must include. expected_terms are inputs for the accuracy harness and are not scored unless that harness is executed.",
+  "queries": [
+    {
+      "id": "ledger",
+      "query": "LEDGER standard play-by-play handoff actor credit note",
+      "expect": "standards/LEDGER_STANDARD.md",
+      "expected_terms": ["LEDGER", "handoff", "Actor"]
+    },
+    {
+      "id": "circleci",
+      "query": "CircleCI integration ORBIT lint-and-test markdown gate",
+      "expect": "standards/CIRCLECI_INTEGRATION_STANDARD.md",
+      "expected_terms": ["CircleCI", "ORBIT", "lint-and-test"]
+    },
+    {
+      "id": "comment-dont-delete",
+      "query": "REVVEL-DISABLED comment out code agents must not delete audit trail",
+      "expect": "standards/COMMENT-DONT-DELETE.md",
+      "expected_terms": ["REVVEL-DISABLED", "comment"]
+    },
+    {
+      "id": "bnat-sheaf",
+      "query": "BNAT knowledge sheaf cohomology imprint H1 obstruction",
+      "expect": "standards/BNAT_SHEAF_STANDARD.md",
+      "expected_terms": ["sheaf", "H1"]
+    },
+    {
+      "id": "delivery",
+      "query": "DELIVERY_MATRIX what ships after merge deliver labels",
+      "expect": "standards/DELIVERY_MATRIX.md",
+      "expected_terms": ["deliver", "merge"]
+    },
+    {
+      "id": "code-comments",
+      "query": "CODE_COMMENTING_STANDARD comment for the next human fallback",
+      "expect": "standards/CODE_COMMENTING_STANDARD.md",
+      "expected_terms": ["comment", "fallback"]
+    },
+    {
+      "id": "security",
+      "query": "SQL injection parameterized queries prompt injection untrusted data",
+      "expect": "standards/SECURITY.md",
+      "expected_terms": ["parameterized", "injection"]
+    },
+    {
+      "id": "green-main",
+      "query": "normalization of deviance failing test on main is a fleet emergency",
+      "expect": "standards/GREEN_MAIN_STANDARD.md",
+      "expected_terms": ["deviance", "emergency"]
+    },
+    {
+      "id": "work-request",
+      "query": "work request issue template output_type infrastructure-upgrade",
+      "expect": ".github/ISSUE_TEMPLATE/work_request.yml",
+      "expected_terms": ["output_type", "work-request"]
+    },
+    {
+      "id": "uprev",
+      "query": "UPREV method six pillars one iteration deep research first",
+      "expect": "UPREV_METHOD.md",
+      "expected_terms": ["UPREV", "pillar"]
+    }
+  ]
+}
