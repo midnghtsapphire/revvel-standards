@@ -1,0 +1,22 @@
+{
+  "claim": "25% accuracy improvement versus full-context loading",
+  "how_to_run": "REVVEL_GRAPH_ACCURACY_APPROVED=1 node scripts/run-python.js scripts/context_graph.py accuracy-harness --execute",
+  "measured": false,
+  "prepared_query_ids": [
+    "ledger",
+    "circleci",
+    "comment-dont-delete",
+    "bnat-sheaf",
+    "delivery",
+    "code-comments",
+    "security",
+    "green-main",
+    "work-request",
+    "uprev"
+  ],
+  "refuses_unless": "REVVEL_GRAPH_ACCURACY_APPROVED=1",
+  "spend": "pending-owner-approved-spend",
+  "status": "pending-owner-approved-spend",
+  "why": "Scoring answer accuracy needs a model completion on the full context and on the routed subgraph. No model call was made. The execute path uses local_llm.complete(..., allow_cloud=False), so it cannot open the paid lane. This run did not execute it.",
+  "wr": 18336
+}

@@ -47,7 +47,9 @@
     "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'",
     "veins:snapshot": "node scripts/veins-snapshot.js",
     "veins:snapshot:json": "node scripts/veins-snapshot.js --json",
-    "pot:benchmark": "node scripts/pot-research/benchmark.js"
+    "pot:benchmark": "node scripts/pot-research/benchmark.js",
+    "graph-prompting:test": "node scripts/run-python.js -m unittest tests/context_graph_test.py tests/graph_prompting_test.py",
+    "graph-prompting:check": "node scripts/run-python.js scripts/context_graph.py build --check && node scripts/run-python.js scripts/context_graph.py measure --check && node scripts/run-python.js scripts/context_graph.py accuracy-harness --check"
   },
   "bin": {
     "dashboard": "./scripts/dashboard-cli.js"

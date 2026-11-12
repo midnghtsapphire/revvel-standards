@@ -1,3 +1,7 @@
+## 2026-11-11 — PromptOrchestrator — graph prompting context selection (WR 18336)
+
+- Extended `scripts/context_graph.py` with a standards context graph (governs, referenced_by, populates), subgraph routing, and an in-process cache. Committed the graph, ten-query token measurements, and a pending accuracy record under `docs/graph-prompting/`. The measured mean cleared 60 percent on the local tokenizer. No model call. CircleCI job `graph-prompting`.
+
 ## 2026-11-11 (4) — ResearchRodneyAIArchitect — PUCT priors reach the strategy entry point
 
 - `runPot` forwards `priorFor` into the search. Lane runs read `context.potPriorFor`. A test goes through `runStrategy`, not only `search`.
