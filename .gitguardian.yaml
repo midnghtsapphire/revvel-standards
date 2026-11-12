@@ -1,0 +1,23 @@
+# GitGuardian / ggshield config (version 2).
+# Docs: https://docs.gitguardian.com/ggshield-docs/configuration
+# Keys are secret.ignored_paths and secret.ignored_matches (there is no
+# top-level paths_ignore). This ignores env-templates that are not secrets.
+# Historical incidents on older commits may still need "mark as false
+# positive" in the GitGuardian dashboard.
+
+version: 2
+
+secret:
+  ignored_paths:
+    - '.env.example'
+    - '**/.env.example'
+    - 'products/revenue-billing/self-host/docker-compose.yml'
+  ignored_matches:
+    - name: Lago compose POSTGRES_PASSWORD env-template (not a secret)
+      match: ${POSTGRES_PASSWORD:?required}
+    - name: Lago compose POSTGRES_PASSWORD env-template sha256
+      match: 7c032153b88b07f1b662c51c3a1276c270727a2811d8340c9c69fc5f29e8f582
+    - name: Lago compose DATABASE_URL env-template (not a secret)
+      match: postgresql://${POSTGRES_USER:-lago}:${POSTGRES_PASSWORD:?required}@db:5432/${POSTGRES_DB:-lago}?search_path=public
+    - name: Lago compose DATABASE_URL env-template sha256
+      match: b944fd229309f2a41a6be4de3c8ba4a35d73911272b2b47c1e865b38bf63a5cf

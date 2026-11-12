@@ -1,0 +1,43 @@
+{
+  "$comment": "Declarative pricing for WR #18333. Amounts are USD cents. `work_requests_included` null means unlimited. Lago bills; it does NOT enforce the Free cap, so the product must enforce it using db/ plan.work_requests_included. Enterprise is priced per agent per month by contract inside contract_price_range_cents: create each contract's subscription with plan_overrides.amount_cents (one subscription per agent).",
+  "version": 1,
+  "currency": "USD",
+  "billable_metrics": [
+    {
+      "code": "work_requests",
+      "name": "Work requests",
+      "aggregation_type": "count_agg",
+      "description": "One event per WR submitted. Event transaction_id is the WR id so retries deduplicate."
+    }
+  ],
+  "plans": [
+    {
+      "code": "free",
+      "name": "Free",
+      "interval": "monthly",
+      "amount_cents": 0,
+      "pay_in_advance": true,
+      "work_requests_included": 5,
+      "metered_charges": ["work_requests"]
+    },
+    {
+      "code": "pro",
+      "name": "Pro",
+      "interval": "monthly",
+      "amount_cents": 9900,
+      "pay_in_advance": true,
+      "work_requests_included": null,
+      "metered_charges": ["work_requests"]
+    },
+    {
+      "code": "enterprise",
+      "name": "Enterprise (per agent, FTE model)",
+      "interval": "monthly",
+      "amount_cents": 200000,
+      "pay_in_advance": true,
+      "work_requests_included": null,
+      "contract_price_range_cents": [200000, 500000],
+      "metered_charges": ["work_requests"]
+    }
+  ]
+}

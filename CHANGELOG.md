@@ -103,6 +103,10 @@ All notable changes to the Revvel Standards repository will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-11-11
+
+- 2026-11-11 — DBArchitect (Grok Bot) — WR #18333 (draft PR, refs only): added `products/revenue-billing/self-host/` (Lago v1.57.0 Docker Compose, every secret required from `.env`, loopback-only ports), `plans/` (Free/Pro/Enterprise as `plans.json` plus an idempotent, dry-run-by-default Lago seeder that reports price drift and never overwrites), `db/` (plain-SQL Postgres mirror of plans, customers, subscriptions and webhook events, RLS on, no anon grants, tested on PostgreSQL 15.19 and 18.6), `WEBHOOK-POSTGRES-SPEC.md`, `HUMAN-STEPS.md`, `LEDGER.md`, and CircleCI jobs `billing-selfhost-lint` and `billing-sql-validate`. Builds on PR #18348. Nothing deployed, no Stripe account, no keys, nothing applied to Supabase; acceptance items still need Audrey (see HUMAN-STEPS.md).
+
 ## 2026-11-07
 
 - 2026-11-07 — Claude Fable 5 — `products/linear-a-lab/`: new incubating product (PRODUCT_INCUBATION_STANDARD). GORILA-GE license-clean Linear A corpus engine (1,711 inscriptions, schema `gorila-ge/1`, built from the public-domain-dedicated lineara.xyz data file — GORILA print corpus and SigLA are not license-clean); deterministic evidence/prosecution layer whose KU-RO arithmetic audit finds 8/22 documents summing exactly and reproduces the known HT 13 (+½) and HT 9a (−¾) discrepancies; test→deconstruct→prosecute→fix loop on LM Studio (stdlib-only client), first live case run on gemma-3-4b. 22 unit tests, offline, all green. BLUEPRINT.md, BLUEOCEAN.md, LEDGER.md, Library/ per standards.
