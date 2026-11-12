@@ -15,6 +15,31 @@ This file was absent at the repository root on 2026-11-11. This entry is the fir
 - **Commits / PRs:** draft PR into `daily/2026-11-11`. The link belongs in the next ledger entry if this one would have to be rewritten to add it.
 - **Open / handoff:** The 25 percent accuracy comparison is pending owner-approved spend. The coder opt-in still passes a 60000 character budget, which can drop the standard a query needs. Default coder behavior is unchanged. Next owner: Audrey Evans for the accuracy spend, TriageChief for merge. Do not merge from this agent.
 - **Credit note:** PromptOrchestrator executed the graph, the router, the measurement, and the tests. Audrey Evans approved the start. TriageChief assigned the WR.
+## 2026-11-11 15:43 UTC — PromptOrchestrator — CircleCI GEPA job uses Python 3.12
+
+- **Actor:** PromptOrchestrator (Cursor Cloud, Grok 4.7)
+- **Requested by:** CircleCI build 23634 on PR #18375
+- **Role:** executed
+- **Files:** `.circleci/config.yml` (added `python-gepa-executor`); `docs/dspy-gepa/README.md` (added the image note); `LEDGER.md` (this entry)
+- **What was done:** Build 23634 installed Python 3.10 from `cimg/node:22.11` and pip refused `cachetools==8.0.0` because that pin requires Python >=3.11. The offline job now uses `cimg/python:3.12.16`, the same major version the lock was resolved on. The node executors are unchanged.
+- **Decisions:** Change the image rather than loosen the lock — because the tests passed on Python 3.12 and a 3.10 re-resolve would be a different dependency set than the one that was tested.
+- **Sources:** CircleCI build 23634 log (`cachetools==8.0.0 Requires-Python >=3.11`); [build 23634](https://circleci.com/gh/midnghtsapphire/revvel-standards/23634)
+- **Commits / PRs:** [PR #18375](https://github.com/midnghtsapphire/revvel-standards/pull/18375)
+- **Open / handoff:** Re-run `dspy-gepa-offline`. The optimizer run is still pending owner-approved spend.
+- **Credit note:** PromptOrchestrator, after the first CircleCI failure.
+
+## 2026-11-11 15:38 UTC — PromptOrchestrator — DSPy GEPA integration (WR #18338)
+
+- **Actor:** PromptOrchestrator (Cursor Cloud, Grok 4.7)
+- **Requested by:** Audrey Evans, via the approved instruction to open draft work for WR #18338 using only spend that was already approved
+- **Role:** executed
+- **Files:** `scripts/dspy_gepa/` (added); `scripts/dspy_gepa/requirements.lock` (added); `config/dspy-gepa.yml` (added); `tests/dspy_gepa_test.py` (added); `wr/memory/dspy-gepa-trainset.json` (added); `.github/agent-prompts.yml` (appended `gepa_prompt_versions` seed copies only); `.circleci/config.yml` and `.circleci/scripts/dspy-gepa-offline.sh` (added the offline job); `scripts/optimize_agent_prompts.py` (comment pointing at the new package); `docs/dspy-gepa/README.md` (added); `CHANGELOG.md` (appended); `wr/memory/decisions.jsonl` (appended); `learnings.md` (appended)
+- **What was done:** Wired DSPy 3.5.0 GEPA to the agent scorecard's five dimensions, built 390 training examples from `wr/issues` (315 train / 24 validation / 51 test), and appended seed versions of `GOAP_AGENT_PROMPT.md` and `AGENT_BUILD_PROMPT.md` without writing those source files. Unit tests compile GEPA with DummyLM. A non-local `optimize` call exits 3 when the spend flags are unset. The real optimizer was not run.
+- **Decisions:** Keep the earlier lexical optimizer in `scripts/optimize_agent_prompts.py` and add `scripts/dspy_gepa/` beside it — because replacing that file would drop the 2026-11-10 experiment. Cap validation at 24 because DSPy's light budget grows with that split. Record the +10 point benchmark as pending owner-approved spend — because a light run is on the order of 1176 LM calls and no new spend was approved.
+- **Sources:** DSPy 3.5.0 `dspy.GEPA.auto_budget` and `AUTO_RUN_SETTINGS` as installed from PyPI on 2026-11-11; [GEPA optimization](https://dspy.ai/current/getting-started/gepa-optimization/); [GEPA in depth](https://dspy.ai/current/diving-deeper/gepa-in-depth/). No `Library/` copy of those pages was already in the repo, so the links and the installed module are the record.
+- **Commits / PRs:** branch `feat/wr-18338-dspy-gepa`. PR link to be added in a later ledger entry after the PR exists, not by rewriting this one.
+- **Open / handoff:** The optimizer run and the +10 point held-out benchmark. Next owner: Audrey Evans, by setting `REVVEL_LLM_ALLOW_CLOUD` and `REVVEL_GEPA_SPEND_APPROVED` to exactly `1` (or by running against a loopback endpoint) and then `python -m dspy_gepa optimize`. CircleCI job `dspy-gepa-offline` must be green. Do not merge from this agent.
+- **Credit note:** PromptOrchestrator executed the integration, the offline tests, and this entry. Audrey Evans approved starting the draft. The optimized prompt text and the scorecard delta are not claimed.
 
 ## 2026-11-11 14:25 UTC — Rules-Steward — merge main, keep both changelog entries
 

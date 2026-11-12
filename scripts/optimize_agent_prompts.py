@@ -4,6 +4,10 @@ Uses an explicitly configured local OpenAI-compatible endpoint. It cannot
 select a paid endpoint; this keeps optimization outside the cloud spend lane.
 Dataset JSON has train/validation/test arrays of {request, required_terms}.
 The lexical metric is an auditable baseline, not an agent quality benchmark.
+
+2026-11-11 PromptOrchestrator, WR #18338: the scorecard metric, the historical
+WR trainset, and the append-only writer for .github/agent-prompts.yml live in
+scripts/dspy_gepa/. This file stays the local lexical experiment.
 """
 from __future__ import annotations
 import argparse

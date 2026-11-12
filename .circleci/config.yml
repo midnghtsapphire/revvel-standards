@@ -27,6 +27,13 @@ executors:
   node-next-executor:
     docker:
       - image: cimg/node:22.14
+  # WR #18338. The node executors ship Python 3.10. The GEPA lock was resolved
+  # on Python 3.12, and cachetools 8.0.0 refuses to install on 3.10 (CircleCI
+  # build 23634). This image matches that lock. Pinned to 3.12.16, not the
+  # floating 3.12 tag.
+  python-gepa-executor:
+    docker:
+      - image: cimg/python:3.12.16
 
 jobs:
   lint-and-test:
@@ -272,6 +279,17 @@ jobs:
       - run:
           name: Graph prompting tests and measurement check
           command: bash .circleci/scripts/graph-prompting.sh
+  # WR #18338 — DSPy GEPA offline tests. Installs the pinned lock, runs DummyLM
+  # unit tests, and checks that a non-local optimize call is refused. This job
+  # does not call a model and does not read an API key.
+  dspy-gepa-offline:
+    executor: python-gepa-executor
+    steps:
+      - checkout
+      - run:
+          name: Offline DSPy GEPA tests and spend refusal
+          no_output_timeout: 15m
+          command: bash .circleci/scripts/dspy-gepa-offline.sh
 
 workflows:
   version: 2
@@ -312,6 +330,10 @@ workflows:
             branches:
               ignore: main
       - affiliate-hub-image:
+          filters:
+            branches:
+              ignore: main
+      - dspy-gepa-offline:
           filters:
             branches:
               ignore: main
@@ -360,6 +382,10 @@ workflows:
             branches:
               only: main
       - affiliate-hub-image:
+          filters:
+            branches:
+              only: main
+      - dspy-gepa-offline:
           filters:
             branches:
               only: main
