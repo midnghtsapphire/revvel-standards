@@ -179,6 +179,36 @@ jobs:
             timeout 300 npx --yes @railway/cli up --detach
             echo "Deploy triggered. Check https://railway.app for service status."
 
+  # DigitalOcean App Platform updates. Not part of pr-workflow. A merge can
+  # create or update apps once DIGITALOCEAN_ACCESS_TOKEN is set. Audrey must
+  # approve that before this leaves draft. Added 2026-11-11 by MarketShipper.
+  affiliate-hub-do-deploy:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Update DigitalOcean app affiliate-hub when the token is set
+          no_output_timeout: 15m
+          command: bash .circleci/scripts/do-app-update.sh affiliate-hub
+
+  ai-video-toolkit-do-deploy:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Update DigitalOcean app ai-video-toolkit when the token is set
+          no_output_timeout: 15m
+          command: bash .circleci/scripts/do-app-update.sh ai-video-toolkit
+
+  screen-recorder-finder-do-deploy:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Update DigitalOcean app screen-recorder-finder when the token is set
+          no_output_timeout: 15m
+          command: bash .circleci/scripts/do-app-update.sh screen-recorder-finder
+
   # WR #18342: AG-UI streaming + session-resume demo kit. Zero dependencies,
   # so there is nothing to install: node built-ins only. Runs the kit's own
   # tests (stream event order, second-device resume, page load < 2 s, 7:1
@@ -396,6 +426,23 @@ workflows:
           filters:
             branches:
               only: main
+      # App Platform writes. Draft until Audrey approves. These jobs are not
+      # in pr-workflow, so opening the PR does not create an app. They run
+      # only on main, and do-app-update.sh still no-ops without
+      # DIGITALOCEAN_ACCESS_TOKEN. Added 2026-11-11 by MarketShipper.
+      # deploy_on_push: true
+      # Needs Audrey's yes. The product specs on #18366, #18368, and #18369
+      # set deploy_on_push to false so those merges do not auto-deploy.
+      # Do not flip it here until she says yes. Do not mark this draft ready.
+      - affiliate-hub-do-deploy:
+          filters:
+            branches:
+              only: main
+      - ai-video-toolkit-do-deploy:
+          filters:
+            branches:
+              only: main
+      - screen-recorder-finder-do-deploy:
       - screen-recorder-finder-image:
           filters:
             branches:

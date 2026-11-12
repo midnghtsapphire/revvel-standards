@@ -2,6 +2,9 @@
 
 - Audrey chose oaudrey.com subdomains for affiliate-hub, ai-video-toolkit, and screen-recorder-finder. DNS notes that named Namecheap as the DNS host now say Cloudflare. `products/oaudrey-home/` is the static front page for `oaudrey.com` and `www.oaudrey.com`, with `/health`, `GET /api/team`, `GET /api/hub`, `deploy_on_push: false`, and a CircleCI image gate. No DigitalOcean deploy job was added. Earlier bullets in this file that named the previous product hosts were edited so those host strings do not remain; that wording is in git history.
 
+## 2026-11-11 (3) — MarketShipper — draft App Platform deploy jobs
+
+- `do-app-update.sh` and the three `*-do-deploy` CircleCI jobs live only on this draft. They are not in the product image-gate PRs. A merge can create or update DigitalOcean apps after Audrey sets `DIGITALOCEAN_ACCESS_TOKEN`. This draft is not approved.
 ## 2026-11-11 (5) — MarketShipper — screen-recorder-finder binds the shared Stripe server
 
 - Restacked onto main `3d6ae9a8`. CircleCI keeps every job from main and adds `screen-recorder-finder-image`. The product calls `bindProduct('screen-recorder-finder')` in `packages/static-stripe-server`. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
