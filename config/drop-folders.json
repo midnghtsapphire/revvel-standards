@@ -1,0 +1,124 @@
+{
+  "_comment": "Routing table for the docs drop folders (WR #18379). Folder -> handler lives here, not in code. Handler ids are implemented in scripts/drop-folder-process.js; tests/drop-folder-process.test.js fails if an id here has no handler or a required folder has no route. Add a folder by adding a row.",
+  "version": 1,
+  "wr": 18379,
+  "conventions": {
+    "research-drafts": "PR #14871 (docs/research-drafts incubator, per-source buckets)",
+    "inbox": "PR #13637 (docs/inbox/TEMPLATE.md intake, engines/runner-orchestrator)"
+  },
+  "required_folders": [
+    "docs/research-drafts/",
+    "docs/notebook/",
+    "docs/chatgpt/",
+    "docs/claudeai/",
+    "docs/claudecode/",
+    "docs/claudecoworker/",
+    "docs/grok/",
+    "docs/inbox/"
+  ],
+  "limits": {
+    "max_bytes": 2000000
+  },
+  "routes": [
+    {
+      "folder": "docs/inbox/",
+      "handler": "inbox-ingest",
+      "match": ["docs/inbox/**/*.md"],
+      "ignore": ["docs/inbox/TEMPLATE*.md", "docs/inbox/README.md"],
+      "needs_deps": true,
+      "min_revenue_usd": 1,
+      "skip_status": ["routed", "archived"],
+      "note": "Dry-run through engines/runner-orchestrator/orchestrate.js. Refuses an intake with no revenue target (engines/CONTRACT.md Rule 4)."
+    },
+    {
+      "folder": "docs/research-drafts/",
+      "handler": "research-draft-compile",
+      "match": ["docs/research-drafts/**/*.md"],
+      "ignore": ["docs/research-drafts/README.md", "docs/research-drafts/_TEMPLATE/**"],
+      "required_files": ["README.md", "NOTEBOOK.md", "sources.md"],
+      "note": "Checks the topic folder is complete and writes a digest. Drafts stay unpromoted; promotion is a human decision."
+    },
+    {
+      "folder": "docs/notebook/",
+      "handler": "source-bucket-route",
+      "source_label": "NotebookLM",
+      "match": ["docs/notebook/**/*.md"],
+      "ignore": ["docs/notebook/README.md"],
+      "target_folder": "docs/research-drafts/"
+    },
+    {
+      "folder": "docs/chatgpt/",
+      "handler": "source-bucket-route",
+      "source_label": "ChatGPT",
+      "match": ["docs/chatgpt/**/*.md"],
+      "ignore": ["docs/chatgpt/README.md"],
+      "target_folder": "docs/research-drafts/"
+    },
+    {
+      "folder": "docs/claudeai/",
+      "handler": "source-bucket-route",
+      "source_label": "Claude.ai",
+      "match": ["docs/claudeai/**/*.md"],
+      "ignore": ["docs/claudeai/README.md"],
+      "target_folder": "docs/research-drafts/"
+    },
+    {
+      "folder": "docs/claudecode/",
+      "handler": "source-bucket-route",
+      "source_label": "Claude Code",
+      "match": ["docs/claudecode/**/*.md"],
+      "ignore": ["docs/claudecode/README.md"],
+      "target_folder": "docs/research-drafts/"
+    },
+    {
+      "folder": "docs/claudecoworker/",
+      "handler": "source-bucket-route",
+      "source_label": "Claude Cowork",
+      "match": ["docs/claudecoworker/**/*.md"],
+      "ignore": ["docs/claudecoworker/README.md"],
+      "target_folder": "docs/research-drafts/"
+    },
+    {
+      "folder": "docs/grok/",
+      "handler": "source-bucket-route",
+      "source_label": "Grok",
+      "match": ["docs/grok/**/*.md"],
+      "ignore": ["docs/grok/README.md"],
+      "target_folder": "docs/research-drafts/"
+    }
+  ],
+  "secret_patterns": [
+    { "id": "github-token", "regex": "gh[pousr]_[A-Za-z0-9]{36,}" },
+    { "id": "github-fine-grained-token", "regex": "github_pat_[A-Za-z0-9_]{50,}" },
+    { "id": "aws-access-key-id", "regex": "AKIA[0-9A-Z]{16}" },
+    { "id": "private-key-block", "regex": "-----BEGIN [A-Z ]*PRIVATE KEY-----" },
+    { "id": "openai-style-key", "regex": "sk-(?:or-|proj-)?[A-Za-z0-9_-]{32,}" },
+    { "id": "slack-token", "regex": "xox[baprs]-[A-Za-z0-9-]{10,}" },
+    { "id": "google-api-key", "regex": "AIza[0-9A-Za-z_-]{35}" },
+    { "id": "stripe-live-key", "regex": "[rs]k_live_[A-Za-z0-9]{20,}" }
+  ],
+  "triggers": {
+    "dashboard": [
+      "docs/_MASTER_INVENTORY.md",
+      "docs/_MASTER_BOM.md",
+      "docs/PROJECTS_TO_SHIP.md",
+      "docs/PROJECT_CATALOG.md",
+      "**/README.md",
+      "scripts/aggregate-project-dashboard.js",
+      "config/drop-folders.json"
+    ]
+  },
+  "dashboard": {
+    "_comment": "Prepared only. Nothing here turns Pages on. The deploy step in CircleCI skips until CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID exist.",
+    "generator": "scripts/aggregate-project-dashboard.js",
+    "publish_dir": "public",
+    "files": ["dashboard.html", "dashboard-data.json"],
+    "index_from": "dashboard.html",
+    "host": "cloudflare-pages-direct-upload",
+    "wrangler_version": "4.160.1",
+    "pages_project": "revvel-dashboard",
+    "production_branch": "main",
+    "custom_domain": "dashboard.oaudrey.com",
+    "superseded_workflow": ".github/workflows/update-project-dashboard.yml"
+  }
+}

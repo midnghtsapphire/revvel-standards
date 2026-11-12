@@ -1,3 +1,9 @@
+## 2026-11-11 — QuickWinBuilder — drop folders process themselves (WR #18379)
+
+- Added `config/drop-folders.json` (folder-to-handler table), `scripts/drop-folder-process.js` and `tests/drop-folder-process.test.js`. A push to any of `docs/research-drafts/`, `docs/notebook/`, `docs/chatgpt/`, `docs/claudeai/`, `docs/claudecode/`, `docs/claudecoworker/`, `docs/grok/` or `docs/inbox/` gets a report, per-topic digests and an inbox ingest plan as CircleCI artifacts. Report-only; a secret match fails the job.
+- Added CircleCI jobs `drop-folder-process` and `dashboard-build` (push-triggered, no cron, path filtering done in the job). The existing jobs are unchanged. The dashboard's Cloudflare Pages deploy is prepared and skips until `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` exist.
+- Annotated `.github/workflows/update-project-dashboard.yml` as superseded history. Nothing in it was removed.
+- Added `docs/DROP_FOLDERS.md`, `docs/DASHBOARD_HOSTING.md`, `Library/drop-folders/`.
 ## 2026-11-11 — PromptOrchestrator — graph prompting context selection (WR 18336)
 
 - Extended `scripts/context_graph.py` with a standards context graph (governs, referenced_by, populates), subgraph routing, and an in-process cache. Committed the graph, ten-query token measurements, and a pending accuracy record under `docs/graph-prompting/`. The measured mean cleared 60 percent on the local tokenizer. No model call. CircleCI job `graph-prompting`.

@@ -1,3 +1,14 @@
+# REVVEL-HISTORY | AGENT: QuickWinBuilder | WR: #18379 | DATE: 2026-11-11 | STATUS: SUPERSEDED
+# SUPERSEDED, KEPT AS HISTORY. NOTHING BELOW WAS REMOVED OR EDITED.
+# Why it is history: GitHub Pages is off (dashboard.html returns 404), GitHub-hosted
+# Actions jobs are billing-locked (they fail in 1 to 5 seconds with 0 steps), and
+# this file uses a marketplace action (peaceiris/actions-gh-pages) and an admin
+# token that pushes to main. Standing rule: CircleCI or self-hosted runners only.
+# Replacement: the `dashboard-build` job in .circleci/config.yml builds the same
+# dashboard.html and dashboard-data.json with scripts/aggregate-project-dashboard.js.
+# Its Cloudflare Pages deploy is prepared and waits for Audrey's yes. See
+# docs/DASHBOARD_HOSTING.md and config/drop-folders.json ("dashboard").
+# This workflow still runs on workflow_dispatch if someone starts it by hand.
 name: Update Project Dashboard
 on:
   # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
