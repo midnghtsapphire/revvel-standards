@@ -1,3 +1,11 @@
+## 2026-11-11 (2) — Cloudy — Codex action-gateway OAuth login command
+
+- Documented `codex mcp login action-gateway` next to `codex mcp add`. Adding the URL does not start OAuth. Source: Codex MCP docs. No token in git.
+
+## 2026-11-11 — Cloudy — DigitalOcean action-gateway for Claude and Codex
+
+- Registered the public action-gateway endpoint in `.mcp.json` (Claude, HTTP transport) and `.codex/config.toml` (Codex, url). Documented `claude mcp login action-gateway` and both client commands. WRs #18288 and #18290. No token in git.
+
 ## 2026-11-11 (6) — MarketShipper — oaudrey.com hosts and front page
 
 - Audrey chose oaudrey.com subdomains for affiliate-hub, ai-video-toolkit, and screen-recorder-finder. DNS notes that named Namecheap as the DNS host now say Cloudflare. `products/oaudrey-home/` is the static front page for `oaudrey.com` and `www.oaudrey.com`, with `/health`, `GET /api/team`, `GET /api/hub`, `deploy_on_push: false`, and a CircleCI image gate. No DigitalOcean deploy job was added. Earlier bullets in this file that named the previous product hosts were edited so those host strings do not remain; that wording is in git history.

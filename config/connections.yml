@@ -327,6 +327,15 @@ connections:
     status: verified
     access: [error-monitoring]
     connects_to: [sentry]
+  - id: mcp-action-gateway
+    name: DigitalOcean action-gateway MCP
+    type: mcp
+    auth: oauth
+    status: verified
+    access: [digitalocean-actions]
+    connects_to: [digitalocean]
+    used_by: [.mcp.json, .codex/config.toml]
+    note: "Public HTTP endpoint shared by Claude (type http in .mcp.json) and Codex (url in .codex/config.toml). WRs 18288 and 18290. No token in git. Claude auth is the operator command claude mcp login action-gateway. Codex OAuth is the operator command codex mcp login action-gateway. Adding the URL does not start that login. Endpoint https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"
 
   # ── Research / data / infra APIs (keys in .env.example) ───────────────────
   - id: lago
