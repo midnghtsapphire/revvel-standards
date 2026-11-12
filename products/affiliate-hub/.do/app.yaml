@@ -21,7 +21,10 @@ alerts:
   - rule: DEPLOYMENT_FAILED
   - rule: DOMAIN_FAILED
 domains:
-  - domain: affiliate-hub.revvel.co
+  # 2026-11-11 MarketShipper WR #18330: primary domain moved to the oaudrey.com
+  # subdomain Audrey chose. The previous host string is in git history.
+  # DNS for this name is Cloudflare. deploy_on_push stays false.
+  - domain: affiliate-hub.oaudrey.com
     type: PRIMARY
     minimum_tls_version: "1.2"
 services:
@@ -52,7 +55,7 @@ services:
         type: GENERAL
       - key: PUBLIC_BASE_URL
         scope: RUN_TIME
-        value: https://affiliate-hub.revvel.co
+        value: https://affiliate-hub.oaudrey.com
         type: GENERAL
       - key: STRIPE_SECRET_KEY
         scope: RUN_TIME

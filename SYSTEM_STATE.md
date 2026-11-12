@@ -57,10 +57,12 @@ Another Codex chat owns Cloudflare Tunnel and the direct Proofy setup.
 |---|---|---|
 | CI/CD | ✅ | GitHub Actions workflows in `.github/workflows/` |
 | oAudrey App Platform app | ⏳ | **Pending human action:** Set `DIGITALOCEAN_API_TOKEN` GitHub secret → trigger `deploy-oaudrey.yml` |
-| oAudrey DNS (`oaudrey.com`) | ⏳ | **Pending human action:** Log into Namecheap (`uprisinghope`) → oaudrey.com → Nameservers → Custom DNS → `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com` |
-| oAudrey DNS (`fieldwork.oaudrey.com`) | ⏳ | **Pending human action:** Same NS change as above + add CNAME in DigitalOcean Networking → Domains |
+| oAudrey DNS (`oaudrey.com`) | ⏳ | **Pending human action:** DNS is on Cloudflare. Add the App Platform records in the Cloudflare zone for `oaudrey.com` and `www.oaudrey.com`. Do not move the zone to DigitalOcean nameservers. |
+| oAudrey DNS (`fieldwork.oaudrey.com`) | ⏳ | **Pending human action:** Same Cloudflare zone. Add the `fieldwork` record there. |
 | Database | ❌ | Not applicable (standards repo — no DB) |
 | SSL | ⏳ | Auto-provisioned by DigitalOcean Let's Encrypt once DNS resolves and app is deployed |
+
+<!-- 2026-11-11 MarketShipper: the oAudrey DNS rows above previously told a person to set Namecheap custom DNS to DigitalOcean nameservers. Audrey said DNS for her domains is on Cloudflare. The pre-change cells are in git history. -->
 
 **Status key:** ✅ Working | ⚠️ Working but degraded | ❌ Not applicable / not needed | ⏳ Pending human action (infrastructure blocker — see `docs/AGENTS.md` Infrastructure Blocker Protocol)
 

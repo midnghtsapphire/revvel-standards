@@ -581,7 +581,7 @@ You have an infrastructure blocker when ANY of these are true:
 
 #### Escalation is not failure — it is correct behavior
 
-For infrastructure blockers, immediate escalation IS the right answer. The Autonomy Mandate's "never stop at blockers" rule applies to code problems where you have the tools to fix it. It does NOT mean spending ten sessions retrying an action that requires a human to log into Namecheap.
+For infrastructure blockers, immediate escalation IS the right answer. The Autonomy Mandate's "never stop at blockers" rule applies to code problems where you have the tools to fix it. It does NOT mean spending ten sessions retrying an action that requires a human to log into Cloudflare (DNS) or the registrar.
 
 ---
 
@@ -1000,8 +1000,10 @@ This creates a knowledge base of problems solved, making the system smarter over
 | Component | Status | Required Action |
 |---|---|---|
 | App Platform app | ⏳ | Set `DIGITALOCEAN_API_TOKEN` → run `deploy-oaudrey.yml` |
-| oaudrey.com DNS | ⏳ | Namecheap (`uprisinghope`): set NS to `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com` |
-| fieldwork.oaudrey.com DNS | ⏳ | Same as above + add CNAME in DO Networking → Domains |
+| oaudrey.com DNS | ⏳ | Cloudflare DNS: add the App Platform records for `oaudrey.com` and `www.oaudrey.com`. Do not move the zone to DigitalOcean nameservers. |
+| fieldwork.oaudrey.com DNS | ⏳ | Same Cloudflare zone. Add the `fieldwork` record there. |
+
+<!-- 2026-11-11 MarketShipper: the two DNS rows above previously said to set Namecheap nameservers to DigitalOcean. Audrey said DNS for her domains is on Cloudflare. The pre-change cells are in git history. -->
 
 > **If the `oaudrey-retro.yml` reports HTTP 000:** This is an **infrastructure blocker** (see Infrastructure Blocker Protocol above). The domains have never been deployed. The fix requires the human actions in the table above — NOT a code change or workflow retry.
 

@@ -42,6 +42,7 @@ reuse. Others are candidates to either finish or refactor toward the shared modu
 | `products/graphify-evaluator` | evaluator/affiliate | Accessibility, Affiliate, Newsletter | ✅ |
 | `products/greenfield-ui-lab` | research lab / idea board | Board columns, day wallet, export | ✅ (WR #16931) |
 | `products/affiliate-hub` | affiliate, lead | — | needs review |
+| `products/oaudrey-home` | static front page | Agent-loop demo, three product links, GOAP deck | needs review |
 | `products/ai-video-toolkit` | video, lead | — | needs review |
 | `products/cli-engine` | subscription, SaaS, CLI/MCP | — | needs review |
 | `products/creator-payout-tracker` | payout, subscription, video | — | needs review |

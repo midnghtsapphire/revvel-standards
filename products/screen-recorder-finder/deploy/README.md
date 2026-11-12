@@ -31,11 +31,11 @@ recipients in the App Platform dashboard. A spec alone is not evidence an alert
 was delivered.
 
 Verify the generated ondigitalocean.app URL first. Add
-`screen-recorder-finder.revvel.co` as a custom domain in App Platform, then copy the DNS
+`screen-recorder-finder.oaudrey.com` as a custom domain in App Platform, then copy the DNS
 records DigitalOcean provides to the existing authoritative DNS provider.
 Changing the entire domain's nameservers is unnecessary and could interrupt
 other services. Wait for TLS issuance and verify both the home page and
-`https://screen-recorder-finder.revvel.co/health` with curl before claiming deployment.
+`https://screen-recorder-finder.oaudrey.com/health` with curl before claiming deployment.
 
 The image has no billing secrets and adds no payment entitlement. Stripe/Lago
 checkout, webhook processing, pricing, production DNS and live account access
@@ -98,7 +98,9 @@ docker compose -f products/screen-recorder-finder/docker-compose.yml down
 ```
 
 App Platform spec: `products/screen-recorder-finder/.do/app.yaml`. It names
-`screen-recorder-finder.revvel.co` and a `/health` check. Creating the app needs a
+`screen-recorder-finder.oaudrey.com` and a `/health` check. Creating the app needs a
 DigitalOcean token in CircleCI as `DIGITALOCEAN_ACCESS_TOKEN`. That job is
 `.circleci/scripts/do-app-update.sh`. A missing token skips the call. The skip
 is not a live URL.
+
+<!-- 2026-11-11 MarketShipper: the hostname in this section was updated the same day. The previous host string is in git history. DNS for this name is Cloudflare. Copy the records App Platform prints into the Cloudflare zone for oaudrey.com. Do not move that zone to DigitalOcean nameservers. -->

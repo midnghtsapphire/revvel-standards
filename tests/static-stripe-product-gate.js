@@ -29,7 +29,9 @@ function activeSource(source) {
 }
 
 function registerStaticStripeProduct({ slug, legacyPeerDeps }) {
-  const domain = `${slug}.revvel.co`;
+  // 2026-11-11 MarketShipper: the live host is the oaudrey.com subdomain.
+  // The previous suffix is in git history.
+  const domain = `${slug}.oaudrey.com`;
   const origin = `https://${domain}`;
 
   async function loadServer() {
@@ -77,7 +79,7 @@ function registerStaticStripeProduct({ slug, legacyPeerDeps }) {
       assert.equal(activeDocker.includes('--legacy-peer-deps'), false);
     }
     const spec = fs.readFileSync(path.join(ROOT, 'products', slug, '.do/app.yaml'), 'utf8');
-    assert.match(spec, new RegExp(`domain: ${slug}\\.revvel\\.co`));
+    assert.match(spec, new RegExp(`domain: ${slug}\\.oaudrey\\.com`));
     assert.match(spec, /http_path: \/health/);
     assert.match(spec, /key: STRIPE_SECRET_KEY/);
     assert.match(spec, /key: STRIPE_PUBLISHABLE_KEY/);
@@ -223,7 +225,7 @@ function registerStaticStripeProduct({ slug, legacyPeerDeps }) {
     }
   });
 
-  test(`${slug} checkout origin is limited to local, revvel.co, and ondigitalocean.app`, async () => {
+  test(`${slug} checkout origin allows local, oaudrey.com, and ondigitalocean.app`, async () => {
     const { publicOrigin } = await loadServer();
     assert.equal(publicOrigin(new URL('http://evil.example/pricing'), {}), null);
     assert.equal(publicOrigin(new URL('http://127.0.0.1:8080/pricing'), {}), 'http://127.0.0.1:8080');

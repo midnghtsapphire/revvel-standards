@@ -31,7 +31,9 @@ The `oAudrey retro — 2026-04-30` issue (and every identical retro issue before
 | Action | Why an Agent Cannot Do It |
 |--------|---------------------------|
 | Set `DIGITALOCEAN_API_TOKEN` GitHub secret | Requires authenticated access to GitHub repo settings → only a human (or an admin PAT) can write secrets |
-| Point `oaudrey.com` nameservers to DigitalOcean in Namecheap (`ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com`) | Requires logging into Namecheap with the `uprisinghope` credentials — an agent has no way to do this autonomously |
+| Point `oaudrey.com` records in Cloudflare DNS at the App Platform ingress | Requires a person to edit the Cloudflare zone — an agent has no way to do this autonomously |
+
+<!-- 2026-11-11 MarketShipper: the DNS row above previously said to point Namecheap nameservers at DigitalOcean. Audrey said DNS for her domains is on Cloudflare. The pre-change row is in git history. -->
 
 No amount of re-running workflows, adding retries, or improving code changes the fact that **the credential and DNS setup must happen once by a human**.
 
@@ -135,7 +137,8 @@ Not all blockers are equal. Before attempting a fix, classify the blocker:
 1. **Identify it clearly.** Check: is this a code problem or a "someone needs to log in somewhere" problem?
 2. **Document the exact human actions required** — specific, numbered, no vagueness:
    - "Set secret `DIGITALOCEAN_API_TOKEN` in GitHub repo settings → Secrets and variables → Actions"
-   - "Log into Namecheap as `uprisinghope` → Domain List → oaudrey.com → Nameservers → Custom DNS → set ns1-3.digitalocean.com"
+   - "In Cloudflare DNS for `oaudrey.com`, add the App Platform records. Do not move the zone to DigitalOcean nameservers."
+   <!-- 2026-11-11 MarketShipper: the step above previously said to log into Namecheap and set DigitalOcean nameservers. Audrey said DNS for her domains is on Cloudflare. The pre-change step is in git history. -->
 3. **Update SYSTEM_STATE.md** with status `⏳ Pending human action` and the exact steps.
 4. **Do NOT re-run the failing workflow or create duplicate issues.** One clear, specific issue with exact steps is worth more than 10 repeat reports.
 5. **Tag the issue** `infrastructure-pending` + `needs-human` so it stands out from code bugs.

@@ -225,7 +225,8 @@ This PR cannot touch that repo. The implementation MVI will open a companion PR 
 - E2E test asserting the new word-mark renders on home + one sub-page
 
 ### 6.3 — Out of repo (ops, only if §3.1 = B — new name)
-- Namecheap DNS for new domain
+- Cloudflare DNS for new domain
+<!-- 2026-11-11 MarketShipper: the line above previously said Namecheap DNS. Audrey said DNS for her domains is on Cloudflare. -->
 - Let's Encrypt cert renewal
 - DigitalOcean droplet path rename or new droplet
 - PM2 process rename

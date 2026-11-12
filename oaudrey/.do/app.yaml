@@ -3,7 +3,10 @@ region: nyc
 
 # oAudrey Hub — static landing site for Freedom Angel Corp
 # Deployed via GitHub Actions (deploy-oaudrey.yml) using doctl.
-# Domain: oaudrey.com (Namecheap DNS → DigitalOcean nameservers)
+# Domain: oaudrey.com (Cloudflare DNS → App Platform ingress)
+# 2026-11-11 MarketShipper: the line above previously said Namecheap DNS to
+# DigitalOcean nameservers. Audrey said DNS for her domains is on Cloudflare.
+# The pre-change sentence is in git history.
 
 static_sites:
   - name: oaudrey-landing
@@ -48,7 +51,10 @@ static_sites:
 
 # Custom domains — declaring these here means `doctl apps create/update` registers
 # them automatically, removing the need for a manual step in the DO dashboard.
-# DNS (Namecheap → DigitalOcean nameservers) must point to the App Platform ingress
+# DNS (Cloudflare) must point to the App Platform ingress
+# 2026-11-11 MarketShipper: the line above previously said Namecheap. Audrey
+# said DNS for her domains is on Cloudflare. Do not move the zone to
+# DigitalOcean nameservers. The pre-change sentence is in git history.
 # before these domains become active. The `.github/workflows/sync-oaudrey-dns.yml`
 # workflow handles that automatically after a successful deploy if registrar
 # credentials are provisioned.
