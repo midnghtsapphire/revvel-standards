@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { stripeCheckoutUrl } from '../lib/checkout';
+import { StripeCheckoutButton } from './stripe-checkout-button';
 
 export const metadata = { title: 'Screen Recorder Finder pricing' };
 
@@ -23,6 +24,7 @@ export default function Pricing() {
           ? <a href={checkout} className="mt-6 inline-block rounded-lg bg-blue-700 px-6 py-3 text-white">Review Pro subscription</a>
           : <p className="mt-6" role="status">Paid subscriptions are currently unavailable. The free directory remains available.</p>}
         <p className="mt-4 text-sm">Do not send payment through email or direct messages.</p>
+        <StripeCheckoutButton />
       </section>
     </div>
   </main>;

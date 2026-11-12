@@ -1,6 +1,60 @@
 ## 2026-11-11 (3) — MarketShipper — draft App Platform deploy jobs
 
 - `do-app-update.sh` and the three `*-do-deploy` CircleCI jobs live only on this draft. They are not in the product image-gate PRs. A merge can create or update DigitalOcean apps after Audrey sets `DIGITALOCEAN_ACCESS_TOKEN`. This draft is not approved.
+## 2026-11-11 (5) — MarketShipper — screen-recorder-finder binds the shared Stripe server
+
+- Restacked onto main `3d6ae9a8`. CircleCI keeps every job from main and adds `screen-recorder-finder-image`. The product calls `bindProduct('screen-recorder-finder')` in `packages/static-stripe-server`. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
+
+## 2026-11-11 (3) — MarketShipper — screen-recorder-finder image gate does not write to App Platform
+
+- Restacked onto main `7aceb6284` (#18364 and #18365 kept). CircleCI keeps `demo-kit-test`, `affiliate-hub-build`, and `screen-recorder-finder-image`. The DigitalOcean create/update job is not on this branch. `npm ci` in the image uses `--ignore-scripts`. Checkout rate limit keys on `do-connecting-ip`, then the first `X-Forwarded-For` hop.
+
+## 2026-11-11 — MarketShipper — screen-recorder-finder deploy path (WR #18332)
+
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `screen-recorder-finder.revvel.co` under `products/screen-recorder-finder/`. CircleCI job `screen-recorder-finder-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/screen-recorder-finder/CHANGELOG.md`.
+## 2026-11-11 (4) — MarketShipper — one static Stripe server for affiliate-hub and ai-video-toolkit
+
+- `packages/static-stripe-server/` is the server, the checkout button, and the image-gate cases. Each product file names its service and keeps the previous copy as line comments. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
+
+## 2026-11-11 (3) — MarketShipper — ai-video-toolkit image gate does not write to App Platform
+
+- Restacked onto main `7aceb6284` (#18364 and #18365 kept). CircleCI keeps `demo-kit-test`, `affiliate-hub-build`, and `ai-video-toolkit-image`. The DigitalOcean create/update job is not on this branch. `npm ci` in the image uses `--ignore-scripts`. Checkout rate limit keys on `do-connecting-ip`, then the first `X-Forwarded-For` hop.
+
+## 2026-11-11 — MarketShipper — ai-video-toolkit deploy path (WR #18331)
+
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `ai-video-toolkit.revvel.co` under `products/ai-video-toolkit/`. CircleCI job `ai-video-toolkit-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/ai-video-toolkit/CHANGELOG.md`.
+## 2026-11-11 (4) — ResearchRodneyAIArchitect — PUCT priors reach the strategy entry point
+
+- `runPot` forwards `priorFor` into the search. Lane runs read `context.potPriorFor`. A test goes through `runStrategy`, not only `search`.
+
+## 2026-11-11 (3) — ResearchRodneyAIArchitect — MCTS uses the seed and PUCT follows the prior
+
+- Expansion and rollouts read the search seed. PUCT picks the next untried action from the prior, including the first move. Without `potReward` the lane order is that seeded sample, not a quality ranking.
+
+## 2026-11-11 (2) — ResearchRodneyAIArchitect — pot lane execution matches the linear fan-out
+
+- `RESEARCH_STRATEGY=pot` runs the chosen lanes with `Promise.all` and reuses the Ralph retry/merge helpers. Without `potReward` the order matches definition order and the trace says so (`rewardConfigured: false`).
+
+## 2026-11-11 — ResearchRodneyAIArchitect — Policy-of-Thoughts CPU engine (WR #18341)
+
+- Added `scripts/pot-research/`: UCT Monte Carlo tree search, a GRPO step on a transient adapter, a frozen base-weight vector, and a deterministic stub policy. The linear lane fan-out in `scripts/research-engine.js` stays the default; `RESEARCH_STRATEGY=pot` opts in.
+- Added `tests/pot-research.test.js`, `docs/research/pot-research-engine.md` (GPU budget marked as an estimate), `scripts/pot-research/LEDGER.md`, and `scripts/pot-research/benchmark.js`. The harness reports the +20-30% criterion as not measured. No quality delta is invented.
+- CircleCI already runs `tests/**/*.test.js`. No new job and no GitHub-hosted workflow.
+## 2026-11-11 (3) — MarketShipper — affiliate-hub image gate does not write to App Platform
+
+- Restacked onto main `7aceb6284` (#18364 and #18365 kept). CircleCI keeps `demo-kit-test`, `affiliate-hub-build`, and `affiliate-hub-image`. The DigitalOcean create/update job is not on this branch. `npm ci` in the image uses `--ignore-scripts`. Checkout rate limit keys on `do-connecting-ip`, then the first `X-Forwarded-For` hop.
+
+## 2026-11-11 — MarketShipper — affiliate-hub deploy path (WR #18330)
+
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `affiliate-hub.revvel.co` under `products/affiliate-hub/`. CircleCI job `affiliate-hub-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/affiliate-hub/CHANGELOG.md`.
+
+## 2026-11-11 — MarketShipper (Grok 4.7, Cursor Cloud) — GOAP agent-as-FTE sales deck and landing
+
+- `products/goap-swarm-console/sales/deck.md`: 13-slide source for work request #18334. Includes the value proposition, the $2,000 to $5,000 per agent per month band, an ROI illustration, and a proof-pending case study. No customer, quote, or result was invented. A same-day URL check found no deployed product to cite (issue #18330 is still open).
+- `products/goap-swarm-console/public/goap-agent-sales-deck.pdf`: rebuilt from that source by `scripts/build_sales_deck.py`.
+- `products/goap-swarm-console/landing/` and `deploy/app.yaml`: static landing page for agent-as-fte.revvel.co. The Calendly embed reads `CALENDLY_URL` and stays off when that value is empty or not an https link on calendly.com with a scheduling path.
+- `.circleci/config.yml`: job `agent-as-fte` builds the PDF and the landing page and requires HTTP 200 on loopback.
+- Prospect contact, closed customers, and Stripe MRR were not done. Ledger: `products/goap-swarm-console/LEDGER.md`.
 
 ## 2026-11-11 (2) — Rules-Steward — evidence checker follows readiness links
 
@@ -9,6 +63,7 @@
 ## 2026-11-11 — Rules-Steward — NIST readiness mapping (WR #18343)
 
 - 2026-11-11 — Rules-Steward (Cursor, Grok 4.7) — `docs/compliance/NIST_READINESS.md`: readiness mapping of repository controls to SP 800-53 Rev. 5 families. Statuses are implemented, partial, or gap. Not a compliance attestation. NISTIR 8605D is not drafted. Appended rescope notes to the 2026-11-10 NIST docs. Root `LEDGER.md` opened with this entry because the file was absent.
+
 ## 2026-11-11 — halo-demo-stream: AG-UI streaming + session-resume demo kit, wired to affiliate-hub (QuickWinBuilder, WR #18342)
 
 - Added `products/halo-demo-stream/`: zero-dependency Node kit. `POST /agui` streams AG-UI standard events over SSE (RUN_STARTED, STATE_SNAPSHOT, TEXT_MESSAGE_START/CONTENT/END, STATE_DELTA as JSON Patch, RUN_FINISHED, RUN_ERROR). File-backed sessions resume by session id on any new client, including after a server restart. Plain HTML demo page, every text colour pair at least 7:1. 15 tests.

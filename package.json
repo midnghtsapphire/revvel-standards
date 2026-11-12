@@ -46,7 +46,8 @@
     "ui-engine": "node scripts/ui-creation-engine.js",
     "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'",
     "veins:snapshot": "node scripts/veins-snapshot.js",
-    "veins:snapshot:json": "node scripts/veins-snapshot.js --json"
+    "veins:snapshot:json": "node scripts/veins-snapshot.js --json",
+    "pot:benchmark": "node scripts/pot-research/benchmark.js"
   },
   "bin": {
     "dashboard": "./scripts/dashboard-cli.js"
