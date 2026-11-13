@@ -3,7 +3,7 @@
 
 Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what each can reach. **Generated from `config/connections.yml`** — edit the YAML, run `npm run connections`, never hand-edit this file.
 
-**53** connections · **48** verified · **5** unverified (confirm before relying on them).
+**54** connections · **49** verified · **5** unverified (confirm before relying on them).
 
 ## Agents & orchestration
 
@@ -15,6 +15,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `copilot` (GitHub Copilot) | ✅ verified | paid | code-gen, pr-review, assignment | github | copilot-setup-steps.yml, auto-error-handler.yml | — |
 | `jules` (Jules (Google)) | ✅ verified | key | code-gen, pr-review, coding-tasks | github | jules-coding-agent.yml, jules-invoke.yml, jules-pr-reviewer.yml | Owner says Jules has access to Roo + Gemini/Opus and may be recursive — sub-connections UNVERIFIED below. |
 | `jules-subconnections` (Jules → Roo / Gemini / Opus (recursive?)) | ⚠️ unverified | unknown | — | roo, gemini, opus | — | Owner: Jules has access to Roo and Gemini/Opus and may run recursively. Confirm which models + whether recursion is enabled. |
+| `opencode` (OpenCode GitHub agent) | ✅ verified | key | code-gen, code-review, repo-edit, pr-open | github, openrouter | .github/workflows/opencode.yml | Added 2026-11-13. Coding agent that runs inside GitHub Actions (Roo-Code cannot — VS Code only). Triggers: /opencode or /oc comments (owner/member/collaborator only), the opencode issue label, manual dispatch. Uses the fleet OpenRouter key with model openrouter/deepseek/deepseek-chat-v3-0324. use_github_token: true — opencode-agent app install optional; PRs come from github-actions[bot]. Docs standards/OPENCODE_AGENT.md. |
 | `openhands` (OpenHands) | ✅ verified | key | code-gen, issue-resolve, pr-create | github, openrouter | agent-fallback.yml, openhands-resolver.yml | Pre-paywall Devin-class agent, free quota. Now instantiated as free fallback (#14541). |
 | `openrouter` (OpenRouter) | ✅ verified | key | code-gen, pr-review, triage, swarms | github, anthropic, perplexity, deepseek | agent-fallback.yml, openrouter-assignee.yml, ai-pr-review-openrouter.yml | Primary coding agent. Fallback chain: OpenRouter -> OpenHands -> manual. |
 | `roo` (Roo (Roo Code?)) | ⚠️ unverified | unknown | code-gen | jules, linear | — | Owner: 'the one that starts with R' that creates/promotes WR/PR via Linear, and that Jules can reach. Confirm identity + how it's invoked. |
@@ -83,4 +84,4 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `stacker-bot` (Stacker (stacked PRs)) | ✅ verified | free | stacked-prs, pr-toc, merge-order-guard | github | stacker-bot[bot], docs/STACKER_BOT_INSTALLATION.md | Free stacked-PR GitHub App (installation 150619571). Bot login stacker-bot[bot]. Pairs with the stacker CLI (brew tap stackedpr/stacker). See docs/STACKER_BOT_INSTALLATION.md and skills/stacker-bot/SKILL.md. Complementary to Graphite (docs/GRAPHITE_INTEGRATION.md); Stacker is the free, already-installed lane for splitting large agent diffs. |
 | `vercel` (Vercel) | ⚠️ unverified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | BLOCKED as of 2026-08-17. All three projects (revvel-standards, standards, marketplace-relister) report "Account is blocked." on every commit, on main as well as PRs. No deploy has succeeded since at least 13:18 UTC that day. Downgraded from verified because the registry must not assert a working integration that demonstrably is not working. Cause is account-level (billing or a usage/abuse flag), not repo config — see <https://vercel.com/knowledge/why-is-my-account-deployment-blocked> Re-verify and restore status: verified only after a deploy actually succeeds. |
 
-*Last generated: 2026-11-12 from `config/connections.yml`.*
+*Last generated: 2026-11-13 from `config/connections.yml`.*

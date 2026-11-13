@@ -25,10 +25,22 @@ you add a label to an issue
                                           │ you paste it into Roo    │
                                           │ locally, Roo codes it    │
                                           └──────────────────────────┘
+        │
+        │ opencode label         ┌──────────────────────────┐
+        └──────────────────────► │ OpenCode agent ON a      │
+                                 │ GitHub runner — no local │
+                                 │ machine. See             │
+                                 │ standards/OPENCODE_AGENT │
+                                 └──────────────────────────┘
 ```
 
 - **`manus` label** → fully automatic. The workflow calls the Manus API with your
   `MANUS_API_KEY`. Manus works in the cloud and opens a PR. You only review and merge.
+- **`opencode` label** → fully automatic AND fully inside GitHub. The sibling
+  workflow `.github/workflows/opencode.yml` runs the OpenCode agent on a GitHub
+  runner using the fleet OpenRouter key, and it opens a PR itself. Full manual:
+  `standards/OPENCODE_AGENT.md`. (This dispatcher does not handle the `opencode`
+  label — that workflow is self-contained.)
 - **`roo` label** → semi-automatic. The workflow writes a ready-to-paste **prompt pack**
   (WR body + fleet rules + an OpenRouter-drafted implementation plan) to
   `wr/roo-queue/WR-<repo>-<N>.md` and comments on the issue with the path.

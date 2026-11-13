@@ -369,6 +369,18 @@ connections:
     used_by: [manus-repo, docker]
     note: "Landed via manus PR #4 (2026-11-12): integrations/notion-connector/ with Docker kit, notion_cli.py, and scheduled workflow. Read-only by design per its docs/governance.md."
 
+  - id: opencode
+    name: OpenCode GitHub agent
+    type: agent
+    auth: key
+    env: OPENROUTER_API_KEY
+    status: verified
+    access: [code-gen, code-review, repo-edit, pr-open]
+    connects_to: [github, openrouter]
+    used_by: [.github/workflows/opencode.yml]
+    note: "Added 2026-11-13. Coding agent that runs inside GitHub Actions (Roo-Code cannot — VS Code only). Triggers: /opencode or /oc comments (owner/member/collaborator only), the opencode issue label, manual dispatch. Uses the fleet OpenRouter key with model openrouter/deepseek/deepseek-chat-v3-0324. use_github_token: true — opencode-agent app install optional; PRs come from github-actions[bot]. Docs standards/OPENCODE_AGENT.md."
+
+
 
   # ── Research / data / infra APIs (keys in .env.example) ───────────────────
   - id: lago

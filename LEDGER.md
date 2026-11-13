@@ -3,6 +3,16 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-13 — Triage session — OpenCode in-GitHub coding agent
+
+- **Actor:** Kimi (triage agent)
+- **Requested by:** Audrey Evans, 2026-11-13 ("i want to use it in github … yes with detailed instructions and the new triggers and agents or bots")
+- **Role:** executed
+- **Files:** `.github/workflows/opencode.yml` (three jobs: comment commands, label trigger, manual dispatch); `standards/OPENCODE_AGENT.md` (full operator manual); `standards/WR_DISPATCHER.md` (route diagram + opencode bullet); `config/connections.yml` (opencode entry) + regenerated `docs/CONNECTIONS_REGISTRY.md` and README block; `LEDGER.md` (this entry)
+- **What was done:** Wired the OpenCode agent to run inside GitHub Actions on the fleet OPENROUTER_API_KEY (model openrouter/deepseek/deepseek-chat-v3-0324). Roo-Code itself cannot run in CI (VS Code-only, no headless mode), so OpenCode fills the "agent codes WRs without my laptop" slot. Triggers: /opencode or /oc comments restricted to OWNER/MEMBER/COLLABORATOR (repo is public — anti-abuse guard), the `opencode` issue label with fleet conventions injected, and workflow_dispatch with a free prompt. use_github_token: true so the opencode-agent GitHub App install is optional; PRs appear from github-actions[bot]. share: false.
+- **Decisions:** DeepSeek as default model for cost; edit the model: line for harder tasks. Three separate jobs rather than one conditional-prompt job because the action's prompt input overrides comment parsing and empty-string behavior is undocumented. Comment trigger deliberately NOT driven by a bot-posted bridge comment — GITHUB_TOKEN comments do not start new workflow runs.
+- **Open / handoff:** Copy the workflow + OPENROUTER_API_KEY secret to other repos to enable it there. If session-share links are ever wanted, flip share to true (public repo default upstream).
+
 ## 2026-11-13 — Triage session — WR dispatcher (label-routed agent execution)
 
 - **Actor:** Kimi (triage agent)
