@@ -90,6 +90,14 @@ walks directory entries by name and reads the entry it finds. An absolute
 path or a `..` segment is refused. `compress --file` must be a relative path
 inside `--root` (the working directory by default).
 
+The paid judge is `python3 scripts/prompt_compression_accuracy.py --execute-paid-judge`.
+It also requires `REVVEL_LLM_ALLOW_CLOUD=1` and `OPENROUTER_API_KEY`. Model
+`google/gemini-2.5-flash-lite`, temperature 0, at most 4 calls. Listed
+OpenRouter price on 2026-11-12 is $0.10 per million input tokens and $0.40 per
+million output tokens, so this fixture is estimated under $0.02. CircleCI job
+`prompt-compression-judge` is the only place that runs it. The key is a
+project environment variable. The job attaches no context.
+
 `scripts/prompt_compression_accuracy.py` prints the token ratio and the
 term-preservation rate. The same-task judge is
 `pending-owner-approved-spend`. `--execute-paid-judge` exits 3 and does not

@@ -180,10 +180,15 @@ def _get_json(url: str, timeout: int, headers: dict = None) -> dict:
 
 
 def _openai_chat(endpoint: str, model: str, prompt: str, headers: dict,
-                 timeout: int) -> tuple:
+                 timeout: int, temperature=None) -> tuple:
+    payload = {"model": model, "messages": [{"role": "user", "content": prompt}]}
+    # Omit temperature unless a caller sets it, so existing lanes keep the
+    # provider default. The accuracy judge passes 0.
+    if temperature is not None:
+        payload["temperature"] = temperature
     out = _post_json(
         f"{endpoint}/chat/completions",
-        {"model": model, "messages": [{"role": "user", "content": prompt}]},
+        payload,
         headers,
         timeout,
     )
@@ -337,7 +342,7 @@ def call_ollama(prompt: str, model: str = "") -> Completion:
     return Completion(text, LANE_OLLAMA, model, 0)
 
 
-def call_openrouter(prompt: str, model: str = "") -> Completion:
+def call_openrouter(prompt: str, model: str = "", temperature=None) -> Completion:
     """Layer 1. Costs money. Refused unless REVVEL_LLM_ALLOW_CLOUD=1."""
     if not cloud_allowed():
         raise CloudBlocked(
@@ -351,7 +356,7 @@ def call_openrouter(prompt: str, model: str = "") -> Completion:
     try:
         text, resolved, tokens = _openai_chat(
             "https://openrouter.ai/api/v1", model, prompt,
-            {"Authorization": f"Bearer {key}"}, _timeout())
+            {"Authorization": f"Bearer {key}"}, _timeout(), temperature)
     except Exception as exc:  # noqa: BLE001
         raise LaneUnavailable(f"openrouter failed: {exc}") from exc
     return Completion(text, LANE_OPENROUTER, resolved, tokens)

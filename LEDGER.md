@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-13 01:50 UTC — PromptOrchestrator — OpenRouter same-task judge
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** Audrey Evans, 2026-11-12 6:41 PM MT, after she approved the spend on 2026-11-11 ("All")
+- **Role:** executed
+- **Files:** `scripts/prompt_compression_accuracy.py` (judge added; the 2026-11-11 refusal is commented in place); `scripts/local_llm.py` (optional temperature on the OpenRouter call); `wr/measurements/llmlingua2-judge-tasks.json` (added); `.circleci/config.yml` (judge job, and the two jobs that had lost their steps); `.circleci/scripts/prompt-compression-judge.sh` (added); `tests/prompt_compression_test.py` (added); `docs/prompt-compression.md` (appended); `CHANGELOG.md` (appended); `wr/memory/decisions.jsonl` (appended); `LEDGER.md` (this entry)
+- **What was done:** The judge asks two questions on a short uncompressed governance excerpt and on the LLMLingua-2 compression of that same excerpt. Cap is 4 calls, temperature 0, model `google/gemini-2.5-flash-lite`. The CircleCI job sets `REVVEL_LLM_ALLOW_CLOUD=1` and refuses to run when `OPENROUTER_API_KEY` is empty, without printing the value. It attaches no context. The job is limited to branch `cursor/wr-18335-openrouter-judge-8337` so other pull requests do not spend.
+- **Decisions:** Do not call OpenRouter from this machine — because Audrey said the judge runs on CircleCI only. Do not skip the job when the key is missing — because a green skip would hide the missing project variable.
+- **Sources:** [OpenRouter Gemini 2.5 Flash Lite pricing](https://openrouter.ai/google/gemini-2.5-flash-lite) checked 2026-11-12. $0.10 / 1M input, $0.40 / 1M output.
+- **Commits / PRs:** branch `cursor/wr-18335-openrouter-judge-8337`. PR link to be added after the pull request exists.
+- **Open / handoff:** If CircleCI does not have `OPENROUTER_API_KEY` as a project environment variable, the job fails and names that variable. Next owner: Audrey Evans for the key, then TriageChief.
+- **Credit note:** Audrey approved the spend and named the key. PromptOrchestrator wired the judge.
+
 ## 2026-11-11 16:10 UTC — PromptOrchestrator — retired --root stays visible
 
 - **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)

@@ -25,6 +25,10 @@
 - Added `scripts/pot-research/`: UCT Monte Carlo tree search, a GRPO step on a transient adapter, a frozen base-weight vector, and a deterministic stub policy. The linear lane fan-out in `scripts/research-engine.js` stays the default; `RESEARCH_STRATEGY=pot` opts in.
 - Added `tests/pot-research.test.js`, `docs/research/pot-research-engine.md` (GPU budget marked as an estimate), `scripts/pot-research/LEDGER.md`, and `scripts/pot-research/benchmark.js`. The harness reports the +20-30% criterion as not measured. No quality delta is invented.
 - CircleCI already runs `tests/**/*.test.js`. No new job and no GitHub-hosted workflow.
+## 2026-11-13 — PromptOrchestrator — OpenRouter same-task judge
+
+- Paid judge for compressed versus uncompressed prompts. Gate: `--execute-paid-judge` and `REVVEL_LLM_ALLOW_CLOUD=1`. Model `google/gemini-2.5-flash-lite`, temperature 0, 4 calls maximum, estimated under $0.02. CircleCI job `prompt-compression-judge`. The 2026-11-11 refusal stays commented in `scripts/prompt_compression_accuracy.py`.
+
 ## 2026-11-11 — PromptOrchestrator — keep the retired --root lines visible
 
 - `scripts/prompt_compression_accuracy.py`: the first-cut `args.measurement` read and the old `--root` option are commented in place. `--root` is still accepted and ignored so an old command is not an unrecognized-argument failure. The walk still uses the working directory. Review on PR #18377.
