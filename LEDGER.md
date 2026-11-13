@@ -3,6 +3,16 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-13 — Triage session — WR dispatcher (label-routed agent execution)
+
+- **Actor:** Kimi (triage agent)
+- **Requested by:** Audrey Evans, 2026-11-13 ("can you make sure it is fully documented in detail as i won't remember this later")
+- **Role:** executed
+- **Files:** `.github/workflows/wr-dispatcher.yml` (label + manual triggers); `scripts/wr_dispatch.mjs` (Manus API dispatch, Roo prompt-pack generation with OpenRouter-drafted plan, idempotency guard); `standards/WR_DISPATCHER.md` (full operator manual: two-key OpenRouter split, daily usage, conventions, troubleshooting); `LEDGER.md` (this entry)
+- **What was done:** Built the label-routed dispatcher. `manus` label -> Manus cloud task via MANUS_API_KEY; `roo` label -> commits wr/roo-queue/WR-<repo>-<N>.md with fleet conventions + OpenRouter-drafted plan. Manual workflow_dispatch fallback. Fleet conventions baked into both prompts (branch naming, append-only, no secrets, never self-merge).
+- **Decisions:** Two OpenRouter keys documented as separate concerns (local Roo key vs fleet secret key) with a recommended low spend cap on the fleet key. OpenRouter drafting model pinned to deepseek-chat (cheap); pack still written if drafting fails. Idempotency via bot-comment check; delete comment to re-dispatch.
+- **Open / handoff:** Dispatcher lives on revvel-standards only; copy workflow+script to other repos to enable labels there. If Manus changes API shape, only wr_dispatch.mjs needs edits.
+
 ## 2026-11-13 — Triage session — Register Manus API, Bitrise CI, and Notion connector
 
 - **Actor:** Kimi (triage agent)

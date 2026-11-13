@@ -1,0 +1,52 @@
+# WR DISPATCHER — routes labeled issues to the right agent backend.
+# Docs: standards/WR_DISPATCHER.md (read this before editing).
+#
+# Triggers:
+#   - label `manus` added to an issue  -> dispatch to Manus cloud agent API
+#   - label `roo` added to an issue    -> write a Roo-Code prompt pack and comment instructions
+#   - manual dispatch                  -> same, for any issue number
+#
+# Secrets used (already in repo settings, values never appear here):
+#   MANUS_API_KEY        — Manus cloud agent API key (owner added 2026-11-12)
+#   OPENROUTER_API_KEY   — fleet OpenRouter key (used only to draft Roo task prompts)
+#   GITHUB_TOKEN         — built-in, for comments and queue files
+name: wr-dispatcher
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to dispatch"
+        required: true
+        type: number
+      route:
+        description: "Force a route (leave empty to auto-detect from labels)"
+        required: false
+        type: choice
+        options: ["", "manus", "roo"]
+
+permissions:
+  issues: write
+  contents: write
+
+jobs:
+  dispatch:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.label.name == 'manus' ||
+      github.event.label.name == 'roo'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dispatch WR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MANUS_API_KEY: ${{ secrets.MANUS_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+          FORCED_ROUTE: ${{ inputs.route }}
+          REPO: ${{ github.repository }}
+        run: node scripts/wr_dispatch.mjs
