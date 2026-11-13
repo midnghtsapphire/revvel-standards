@@ -319,25 +319,32 @@ jobs:
     executor: node-executor
     steps:
       - checkout
+      # 2026-11-13 PromptOrchestrator: the block below was mashed into this job
+      # and used duplicate YAML keys, so CircleCI rejected the config
+      # (run bf7b0c7e). Those steps now live on prompt-compression and
+      # drop-folder-process. Commented out, not deleted.
+      # - run:
+      #     name: LLMLingua-2 compression tests
+      #     command: python3 -m unittest discover -s tests -p prompt_compression_test.py -v
+      #     name: Fetch origin/main for the merge-base diff
+      #     command: git fetch origin main --depth=200 || true
+      # - run:
+      #     name: Install dependencies only when an inbox intake changed
+      #     command: |
+      #       if [ "$(node scripts/drop-folder-process.js --base auto --needs-deps)" = "true" ]; then
+      #         npm ci --ignore-scripts --no-audit --no-fund
+      #       else
+      #         echo "No inbox intake changed; the orchestrator is not needed."
+      #       fi
+      # - run:
+      #     name: Process changed drop-folder files
+      #     command: node scripts/drop-folder-process.js --base auto --out /tmp/drop-folder-artifacts
+      # - store_artifacts:
+      #     path: /tmp/drop-folder-artifacts
+      #     destination: drop-folders
       - run:
-          name: LLMLingua-2 compression tests
-          command: python3 -m unittest discover -s tests -p prompt_compression_test.py -v
-          name: Fetch origin/main for the merge-base diff
-          command: git fetch origin main --depth=200 || true
-      - run:
-          name: Install dependencies only when an inbox intake changed
-          command: |
-            if [ "$(node scripts/drop-folder-process.js --base auto --needs-deps)" = "true" ]; then
-              npm ci --ignore-scripts --no-audit --no-fund
-            else
-              echo "No inbox intake changed; the orchestrator is not needed."
-            fi
-      - run:
-          name: Process changed drop-folder files
-          command: node scripts/drop-folder-process.js --base auto --out /tmp/drop-folder-artifacts
-      - store_artifacts:
-          path: /tmp/drop-folder-artifacts
-          destination: drop-folders
+          name: Graph prompting tests and measurement check
+          command: bash .circleci/scripts/graph-prompting.sh
 
   # WR #18379: the project dashboard from PR #549, built here because GitHub
   # Pages is off and GitHub-hosted Actions are billing-locked. Builds
@@ -396,8 +403,11 @@ jobs:
             # Creates the Direct Upload project on first run; harmless if it exists.
             $WRANGLER pages project create revvel-dashboard --production-branch main || true
             $WRANGLER pages deploy public --project-name revvel-dashboard --branch main
-          name: Graph prompting tests and measurement check
-          command: bash .circleci/scripts/graph-prompting.sh
+          # 2026-11-13 PromptOrchestrator: these two keys were a second name/command
+          # on the deploy step, which made CircleCI reject the file. The graph
+          # command now runs in the graph-prompting job. Commented out, not deleted.
+          # name: Graph prompting tests and measurement check
+          # command: bash .circleci/scripts/graph-prompting.sh
   # WR #18338 — DSPy GEPA offline tests. Installs the pinned lock, runs DummyLM
   # unit tests, and checks that a non-local optimize call is refused. This job
   # does not call a model and does not read an API key.
