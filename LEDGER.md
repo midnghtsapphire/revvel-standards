@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-13 01:55 UTC — PromptOrchestrator — CircleCI null workflow entries
+
+- **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)
+- **Requested by:** CircleCI config error on run f6354e2c
+- **Role:** executed
+- **Files:** `.circleci/config.yml` (workflow entries); `CHANGELOG.md` (appended); `LEDGER.md` (this entry)
+- **What was done:** `prompt-compression:` and `dashboard-build:` in both workflows were mappings with no body. CircleCI rejected them. The colon form is commented and the job name is listed as a string.
+- **Decisions:** Comment the colon form rather than erase it — because the line is the record of what failed.
+- **Sources:** CircleCI run f6354e2c schema error, `prompt-compression: null` and `dashboard-build: null`
+- **Commits / PRs:** [PR #18392](https://github.com/midnghtsapphire/revvel-standards/pull/18392)
+- **Open / handoff:** The judge job still has to start and see whether `OPENROUTER_API_KEY` is set. Next owner: PromptOrchestrator until that check returns.
+- **Credit note:** PromptOrchestrator.
+
 ## 2026-11-13 01:50 UTC — PromptOrchestrator — OpenRouter same-task judge
 
 - **Actor:** PromptOrchestrator (Cursor cloud agent, Grok 4.7)

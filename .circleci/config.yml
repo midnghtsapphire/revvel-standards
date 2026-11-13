@@ -483,7 +483,10 @@ workflows:
           filters:
             branches:
               ignore: main
-      - prompt-compression:
+      # 2026-11-13 PromptOrchestrator: a trailing colon makes a null job entry.
+      # CircleCI run f6354e2c rejected it. The name stays; the colon does not.
+      # - prompt-compression:
+      - prompt-compression
       - prompt-compression-judge:
           filters:
             branches:
@@ -493,7 +496,9 @@ workflows:
           filters:
             branches:
               ignore: main
-      - dashboard-build:
+      # 2026-11-13 PromptOrchestrator: null mapping, same failure as prompt-compression.
+      # - dashboard-build:
+      - dashboard-build
       - dspy-gepa-offline:
           filters:
             branches:
@@ -546,12 +551,16 @@ workflows:
           filters:
             branches:
               only: main
-      - prompt-compression:
+      # 2026-11-13 PromptOrchestrator: null mapping rejected by CircleCI run f6354e2c.
+      # - prompt-compression:
+      - prompt-compression
       - drop-folder-process:
           filters:
             branches:
               only: main
-      - dashboard-build:
+      # 2026-11-13 PromptOrchestrator: null mapping rejected by CircleCI run f6354e2c.
+      # - dashboard-build:
+      - dashboard-build
       - dspy-gepa-offline:
           filters:
             branches:
