@@ -1,0 +1,40 @@
+HULA ARCADE DEV PALETTE KIT - PRO LICENSE
+Copyright (c) 2026 Freedom Angel Corp, doing business as AudreyBuildsAI ("Licensor").
+
+1. WHAT YOU GET
+   When you buy the Pro bundle you receive a non-exclusive, non-transferable,
+   perpetual license to use the files in this bundle (the "Files") on every
+   computer that you personally own or use, for personal and commercial work.
+   You may edit the Files for your own use. What you build or ship while using
+   the themes (your code, screenshots, videos, streams, client work) is yours.
+
+2. WHAT YOU MAY NOT DO
+   - Resell, sublicense, share, upload, or give away the Files, or edited
+     copies of them, as a theme, template, kit, or bundle (free or paid).
+   - Publish the Files to any extension marketplace or file marketplace.
+   - Remove the copyright notice from the Files.
+   Teammates each need their own copy. Ask AudreyBuildsAI about team licenses.
+
+3. THE FREE DARK THEME IS SEPARATE
+   The dark theme "Hula Arcade Night" is also distributed on its own as a free
+   package under the MIT License. That MIT license covers that free package
+   only. The light theme "Aloha Day", the Windows Terminal schemes, the
+   Starship presets, the oh-my-posh themes, and the guide are covered by this
+   Pro License.
+
+4. THIRD-PARTY MATERIAL
+   The Files contain no third-party code. Fonts named in the guide (for
+   example Cascadia Code and Nerd Fonts) are NOT included and have their own
+   licenses. "Visual Studio Code", "Windows Terminal", "Starship", and
+   "oh-my-posh" are names of tools made by other people; this kit is not
+   affiliated with, endorsed by, or sponsored by them or by GitHub or Microsoft.
+
+5. NO WARRANTY
+   THE FILES ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. TO THE EXTENT
+   THE LAW ALLOWS, THE LICENSOR IS NOT LIABLE FOR ANY DAMAGES ARISING FROM USE
+   OF THE FILES. This text is not legal advice.
+
+6. REFUNDS
+   If the kit is not right for you, ask for a refund within 14 days of purchase.
+
+Questions: use the contact option on the AudreyBuildsAI storefront.
