@@ -1,3 +1,5 @@
+## 2026-11-12 — BALLS — added incubating `products/beauty-kit/` with the BALLS Beauty Playbook research (GitHub beautification, other-tool tricks, market prices, 8 product ideas); additions only.
+
 ## 2026-11-11 (2) — Cloudy — Codex action-gateway OAuth login command
 
 - Documented `codex mcp login action-gateway` next to `codex mcp add`. Adding the URL does not start OAuth. Source: Codex MCP docs. No token in git.
