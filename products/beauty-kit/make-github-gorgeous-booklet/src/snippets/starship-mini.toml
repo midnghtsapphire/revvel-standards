@@ -1,0 +1,15 @@
+palette = "hula"
+add_newline = true
+
+[character]
+success_symbol = "[●](bold pellet) [❯](bold lagoon)"
+error_symbol = "[✖](bold hibiscus) [❯](bold hibiscus)"
+
+[directory]
+style = "bold lagoon"
+truncation_length = 3
+
+[palettes.hula]
+pellet = "#FFD23F"
+lagoon = "#19C3B1"
+hibiscus = "#FF7FA8"
