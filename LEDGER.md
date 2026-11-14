@@ -3,6 +3,16 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-14 — Auky — CircleCI Trivy filesystem scan
+
+- **Actor:** Auky (Grok Bot visiting agent; `gh` as midnghtsapphire)
+- **Requested by:** Audrey Evans, 2026-11-14 ("yes i liked trivy when we had it. also all the failing ci jobs in our process need to run now")
+- **Role:** executed (draft PR only; not merged)
+- **Files:** `.circleci/scripts/trivy-fs.sh` (new); `.circleci/config.yml` (added `trivy-fs` job to pr-workflow and main-workflow); `CHANGELOG.md`; `LEDGER.md`; `learnings.md`
+- **What was done:** Reused the prior Trivy config in `.github/workflows/trivy.yml` (fs scan, vuln+misconfig+secret, CRITICAL/HIGH/MEDIUM, ignore-unfixed; that Actions job stays enabled and unmodified). Added a CircleCI job that runs the official free Trivy v0.76.2 binary, writes a table artifact, and fails on unfixed HIGH/CRITICAL (the Actions job used exit-code 0 and SARIF upload).
+- **Decisions:** Do not rewrite the Actions workflow. Do not start ops/self-hosted-ci on the Grok Bot box.
+- **Open / handoff:** Draft PR for owner review. Do not merge.
+
 ## 2026-11-13 — Triage session — OpenCode in-GitHub coding agent
 
 - **Actor:** Kimi (triage agent)

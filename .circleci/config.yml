@@ -421,6 +421,33 @@ jobs:
           path: /tmp/agent-fte-artifacts
           destination: agent-as-fte
 
+
+  # Trivy filesystem scan. Settings come from .github/workflows/trivy.yml
+  # (fs; vuln,misconfig,secret; CRITICAL,HIGH,MEDIUM; ignore-unfixed).
+  # That Actions workflow is unchanged (billing lock; do not rewrite it).
+  # CircleCI uses the official free Trivy binary (v0.76.2) and fails the
+  # job on unfixed HIGH/CRITICAL. See .circleci/scripts/trivy-fs.sh.
+  trivy-fs:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: Install Trivy v0.76.2
+          command: |
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/v0.76.2/contrib/install.sh | sh -s -- -b /tmp/trivy-bin v0.76.2
+      - run:
+          name: Trivy filesystem scan (vuln, misconfig, secret)
+          no_output_timeout: 20m
+          environment:
+            TRIVY_BIN: /tmp/trivy-bin/trivy
+            TRIVY_REPORT: /tmp/trivy-report.txt
+          command: bash .circleci/scripts/trivy-fs.sh
+      - store_artifacts:
+          path: /tmp/trivy-report.txt
+          destination: trivy-fs
+
 workflows:
   version: 2
 
@@ -476,6 +503,10 @@ workflows:
             branches:
               ignore: main
       - oaudrey-home-image:
+          filters:
+            branches:
+              ignore: main
+      - trivy-fs:
           filters:
             branches:
               ignore: main
@@ -564,6 +595,10 @@ workflows:
             branches:
               only: main
       - oaudrey-home-image:
+          filters:
+            branches:
+              only: main
+      - trivy-fs:
           filters:
             branches:
               only: main
