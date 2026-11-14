@@ -278,6 +278,22 @@ jobs:
           no_output_timeout: 15m
           command: bash .circleci/scripts/do-app-update.sh screen-recorder-finder
 
+  # oAudrey Hub (oaudrey.com) static landing site. Its spec lives at
+  # oaudrey/.do/app.yaml, not products/<name>/.do/app.yaml, so DO_APP_SPEC
+  # overrides the default path in do-app-update.sh. This is the bootstrap
+  # deployer while GitHub Actions is billing-locked; deploy-oaudrey.yml
+  # stays the steady-state path. Audrey approved 2026-11-14.
+  oaudrey-hub-do-deploy:
+    executor: node-executor
+    environment:
+      DO_APP_SPEC: oaudrey/.do/app.yaml
+    steps:
+      - checkout
+      - run:
+          name: Update DigitalOcean app oaudrey-hub when the token is set
+          no_output_timeout: 15m
+          command: bash .circleci/scripts/do-app-update.sh oaudrey-hub
+
   # WR #18342: AG-UI streaming + session-resume demo kit. Zero dependencies,
   # so there is nothing to install: node built-ins only. Runs the kit's own
   # tests (stream event order, second-device resume, page load < 2 s, 7:1
@@ -528,6 +544,10 @@ workflows:
             branches:
               only: main
       - screen-recorder-finder-do-deploy:
+          filters:
+            branches:
+              only: main
+      - oaudrey-hub-do-deploy:
           filters:
             branches:
               only: main
