@@ -1,5 +1,5 @@
 <!--
-  Rules live in RULES.md at the repo root. The old long template is kept at legacy/.github/pull_request_template.md.
+  Rules live in AGENTS.md at the repo root. The old long template is kept at legacy/.github/pull_request_template.md.
   Open this PR as a DRAFT and assign midnghtsapphire (C1).
 -->
 
@@ -36,4 +36,4 @@ Closes #<!-- WR issue number -->
 
 - 
 
-Rules: [`RULES.md`](../RULES.md)
+Rules: [`AGENTS.md`](../AGENTS.md)

@@ -1,8 +1,14 @@
 # Cutover plan: METAL / HULL deterministic stack
 
-**14 Nov 2026 (America/Denver). Draft for Audrey. Plan only: this document changes no workflow, runner, permission or deploy.**
+**14 Nov 2026 (America/Denver). Draft for Audrey.**
 Audrey asked (t395u): "Generate new rules and rename that file and we cutover and use the cuda deterministic search et al?"
-Step 0 of that request is [`RULES.md`](../RULES.md) plus the rename into [`legacy/`](../legacy/README.md). Everything below is the rest, written only from what exists today.
+On 14 Nov 2026 she agreed (t402u) that **`AGENTS.md` itself is the full new rulebook**, not a stub and not a separate `RULES.md`. Codex, Cursor, Copilot's coding agent and most other tools already auto-load `AGENTS.md`. `RULES.md` existed only in an earlier revision of this draft PR and never landed on `main`; its content was folded into `AGENTS.md` and `RULES.md` was removed from the PR. Nothing that was on `main` was deleted. The old `AGENTS.md` text is kept, unedited, at `legacy/AGENTS.md`.
+
+**Promotion:** the new `AGENTS.md`, the `legacy/` rename, and the remaining pointer stubs take effect on `main` only when they land together, in the same promotion. Until then, `main` still has the previous `AGENTS.md`, and stubs on this branch would have no matching new rulebook on `main`.
+
+`CLAUDE.md` is the single Claude Code import line `@AGENTS.md`. `.github/copilot-instructions.md` is a generated exact copy of `AGENTS.md` (no symlinks: they break on Windows). `scripts/check_rules_sync.sh` plus a new step in the CircleCI `lint-and-test` job fail if the two differ. **That CircleCI step is a CI-config change and needs Audrey's yes (B5).** Other pointer stubs say in one line that `AGENTS.md` is the rulebook and repeat the core rules inline.
+
+Step 0 of the original request is now this `AGENTS.md` cutover plus the rename into [`legacy/`](../legacy/README.md). Everything below is the rest, written only from what exists today.
 
 ## 1. What actually exists (read-only check, 14 Nov 2026)
 
@@ -23,15 +29,17 @@ Status words: **built** (code runs and has passing tests I ran or a doc shows), 
 | Self-hosted METAL CI (own runners, own Docker images) | `oaudrey` `scripts/CI.md`, `governance/METAL/ci-docker-runners-principles.md` | **spec only**: "when ready"; no runner is set up | no runner, image or workflow exists |
 | Rust/Python hybrid and Aegis-Rust materials, "less-wordy METAL rewrite" | none found in any GitHub repo | **missing from GitHub**; may be local files | needs Audrey to point at them |
 
-**Answer to "the cuda deterministic search":** I found nothing built that matches it. The closest real things are HULL's exact skill lookup (CPU, Rust, small), two CUDA-named Python files that are not search, and GPU-determinism research notes. If she meant something stored outside GitHub, it needs to be pointed out. Until then it is on the BOM (section 4), and G7 in `RULES.md` stops anyone calling anything "deterministic search" without a test.
+**Answer to "the cuda deterministic search":** I found nothing built that matches it. The closest real things are HULL's exact skill lookup (CPU, Rust, small), two CUDA-named Python files that are not search, and GPU-determinism research notes. If she meant something stored outside GitHub, it needs to be pointed out. Until then it is on the BOM (section 4), and G7 in `AGENTS.md` stops anyone calling anything "deterministic search" without a test.
+
+NoseyNoodle and Fleet-Orchestrator (Discussion #18238, 14 Nov 2026) independently confirmed the same picture and added these paths, which I have not re-cloned here: `oaudrey` `governance/METAL/` and `Library/references/hull-naming-2026-11-05.md`; public `revvel-metal-findings` `lanes/01-deterministic-ai/`; `GIT-FLEET` `members/metal/`; `oaudrey-bernstein-deterministic-factory`; and cold-case search prompts in private `Freedom-Angel-Corp/brain-dump` under `imports/2026-11-04-caresse/Desktop-brain-dump/` (named as a path only). They also found no CUDA deterministic-search engine.
 
 ## 2. Phases
 
 Each phase ends only when its receipts land in the same commit (C7). Phases 1 to 5 each need Audrey's yes before they start (A2, B5).
 
-**Phase 0 (this PR).** `RULES.md`, `legacy/` rename, pointer files, a short PR template. No runtime change. Audrey merges.
+**Phase 0 (this PR).** New `AGENTS.md` rulebook (old text in `legacy/AGENTS.md`), `legacy/` rename of the other old rule files, pointer stubs with inline core rules, `CLAUDE.md` as `@AGENTS.md`, a generated copy of `AGENTS.md` at `.github/copilot-instructions.md`, `scripts/check_rules_sync.sh`, a CircleCI `lint-and-test` step that fails if those two files differ (needs Audrey's yes), a short PR template, script/test updates so `context_graph` and `project-router` keep working, and `docs/cutover/reference-inventory.md`. Audrey merges.
 
-**Phase 1: finish the single rulebook.** Move the remaining rule-bearing files that still disagree with `RULES.md` into `legacy/` the same way (rename, pointer left behind): `seed.md`, `UPREV_METHOD.md`, `GOAP*.md`, `COMPLIANCE_RUBRIC.md` (and update `scripts/check-compliance.js`, which scores repos on files that do not exist), and the conflicting domain files in `standards/` (for example `AUTOMATION_FIRST_STACK.md`, `COMMENT-DONT-DELETE.md`, `SEARCH_AND_SOURCING.md`). Add a CircleCI check that every rule file links to a `RULES.md` ID. That is a CI-config change, so it needs her yes (B5). Rotation list: see the PR description (file:line only).
+**Phase 1: finish the single rulebook.** Move the remaining rule-bearing files that still disagree with `AGENTS.md` into `legacy/` the same way (rename, pointer left behind): `seed.md`, `UPREV_METHOD.md`, `GOAP*.md`, `COMPLIANCE_RUBRIC.md` (and update `scripts/check-compliance.js`, which scores repos on files that do not exist), and the conflicting domain files in `standards/` (for example `AUTOMATION_FIRST_STACK.md`, `COMMENT-DONT-DELETE.md`, `SEARCH_AND_SOURCING.md`). About 400 files still cite `AGENTS.md` or `VISITING_AGENTS.md` sections (including CircleCI's comment citing `VISITING_AGENTS.md` section 1b). This PR does not change other CI config or workflows. Section anchors that CircleCI and common docs use are kept resolvable in the `VISITING_AGENTS.md` and `docs/AGENTS.md` stubs, with a mapping table in `legacy/README.md`. Remaining section citations are listed in `docs/cutover/reference-inventory.md` and are a Phase 1 item; updating those cites, or adding a CircleCI check that every rule file links to an `AGENTS.md` ID, is a later CI or docs change and needs her yes (B5). Rotation list: see the PR description (file:line only).
 
 **Phase 2: put HULL on the main line.** In `oaudrey`: promote `daily/2026-11-05` to `main` (her yes), install `structlog`, run both test suites in CircleCI (not hosted Actions, E1). Fix the `HashMap` list order and add a same-input-same-output test (G2, G7). Then make HULL the lookup behind this repo's skill index: generate `skills/REGISTRY.md` and `SKILLS_INDEX.yml` from the filesystem, which fixes the current drift (8 and 10 skills missing). That is the first real "deterministic search".
 
@@ -43,13 +51,13 @@ Each phase ends only when its receipts land in the same commit (C7). Phases 1 to
 
 ## 3. Questions only Audrey can answer
 
-1. **Where does CI and automation run?** `RULES.md` E1 and E2 say GitHub plus CircleCI, never hosted runners, never the bot box (E2 is a DEFAULT). The METAL docs say "own runners, own Actions, own Docker images on Audrey's hardware, no GitHub-hosted anything", and they say no laptop-bound agent compute. These agree only if "GitHub" means repos and PRs, and the runners are hers. Which is it?
+1. **Where does CI and automation run?** `AGENTS.md` E1 and E2 say GitHub plus CircleCI, never hosted runners, never the bot box (E2 is a DEFAULT). The METAL docs say "own runners, own Actions, own Docker images on Audrey's hardware, no GitHub-hosted anything", and they say no laptop-bound agent compute. These agree only if "GitHub" means repos and PRs, and the runners are hers. Which is it?
 2. What is "the CUDA deterministic search"? Point me at the files, or confirm it is not built yet.
 3. No tracking or affiliate code unless she asks (F2 is a DEFAULT). Several older standards make affiliate links mandatory. Retire them?
 4. How does `daily/*` get promoted to `main`? It is not written down, and open PRs still target `main` (C2).
 5. Which single secret store is the approved one (E4)? The old files name five.
 6. Does she want `legacy/` as the name, and a second sweep (phase 1)?
-7. PRs #18404 and #18406 edit files this PR moves. Close them as superseded (their rules are in RULES.md as B7, B10, C4, C5, D3, E2), or merge them first?
+7. PRs #18404 and #18406 edit files this PR moves. Close them as superseded (their rules are in AGENTS.md as B7, B10, C4, C5, D3, E2), or merge them first?
 
 ## 4. BOM: what is missing ("Audrey to get")
 

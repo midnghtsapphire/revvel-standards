@@ -3,6 +3,16 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-14 — TriageChief — AGENTS.md rulebook cutover (WR #18408, draft PR #18409)
+
+- **Actor:** TriageChief
+- **Requested by:** Audrey Evans, 14 Nov 2026 (t395u generate new rules and cut over; t402u AGENTS.md itself is the rulebook, not a stub; whiteboard input on discussion #18238)
+- **Role:** executed
+- **Files:** `AGENTS.md` (new rulebook); `legacy/**` (old rule files, `git mv`, unedited); pointer stubs at `MASTER.md`, `VISITING_AGENTS.md`, `docs/*` rule paths, `agent-pack/AGENTS.md`; `CLAUDE.md` (`@AGENTS.md`); `.github/copilot-instructions.md` (exact copy of `AGENTS.md`); `scripts/check_rules_sync.sh`; `.circleci/config.yml` (`lint-and-test` sync step); `scripts/context_graph.py`, `skills/project-router/detect.py`, `tests/context_graph_test.py`, `tests/verify-the-postcondition-standard.test.js`; `docs/CUTOVER_PLAN.md`; `docs/cutover/reference-inventory.md`; `legacy/README.md`; `.github/pull_request_template.md`; `CHANGELOG.md`; `LEDGER.md` (this entry). `RULES.md` was draft-only in this PR and was removed after its content moved into `AGENTS.md`.
+- **What was done:** Cut the new rulebook over to root `AGENTS.md` so auto-loading tools get the full rules. Folded in NoseyNoodle's six gaps and Fleet-Orchestrator's Linear A rules, marked Audrey to confirm where new. Resolved `legacy/docs/AGENTS.md` vs draft-first in favour of draft-first (C1). Did not change other CI config or workflows, other than the flagged sync step.
+- **Decisions:** No symlinks. Stubs and the new `AGENTS.md` take effect on `main` only in the same promotion. The CircleCI sync step is a CI-config change and waits on Audrey's yes (B5).
+- **Open / handoff:** Draft PR #18409. Remaining section-anchor citations are in `docs/cutover/reference-inventory.md` (Phase 1). Defaults and pending items in `AGENTS.md` wait on Audrey.
+
 ## 2026-11-13 — Triage session — OpenCode in-GitHub coding agent
 
 - **Actor:** Kimi (triage agent)

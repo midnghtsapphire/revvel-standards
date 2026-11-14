@@ -1,3 +1,9 @@
+## 2026-11-14 (4) — TriageChief — AGENTS.md is the new rulebook; old rule files renamed to legacy/
+
+- Root `AGENTS.md` is the full METAL rulebook. The old `AGENTS.md` text is at `legacy/AGENTS.md` (`git mv`, nothing deleted). A draft-only `RULES.md` name from an earlier revision of this PR was folded in and removed; it never landed on `main`.
+- `CLAUDE.md` is the single import line `@AGENTS.md`. `.github/copilot-instructions.md` is an exact copy of `AGENTS.md`. `scripts/check_rules_sync.sh` and a CircleCI `lint-and-test` step fail if they differ (CI change, needs Audrey's yes). No symlinks.
+- Other old rule paths are pointer stubs with the core rules inline. `docs/CUTOVER_PLAN.md` and `docs/cutover/reference-inventory.md` added. Whiteboard feedback from discussion #18238 folded in, marked Audrey to confirm where new.
+
 ## 2026-11-14 (3) — MergeMender — Audrey approved the plain Partner Hub hostname on the oAudrey home page as one allowlist exception for that file
 ## 2026-11-14 (2) — MergeMender — the oAudrey partner card link is the plain hostname again. A character reference that hid that host from the visiting-agent scan was removed
 ## 2026-11-14 — MergeMender — oAudrey home keeps the partner-program card visible. The name and description were reworded, and the footer sentence was reworded, so the visiting-agent scan is clear. The card still opens the same host. Exact original lines are in docs/archive/oaudrey-home-public-index-2026-11-14.md
