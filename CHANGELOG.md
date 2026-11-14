@@ -1,4 +1,7 @@
 ## 2026-11-12 — BALLS — added incubating `products/beauty-kit/` with the BALLS Beauty Playbook research (GitHub beautification, other-tool tricks, market prices, 8 product ideas); additions only.
+## 2026-11-12 — BALLS — Beauty Kit: three AudreyBuildsAI digital products
+
+- Added `products/beauty-kit/`: the Make GitHub Gorgeous booklet (24 pages), the Hula Arcade GitHub Profile README Kit (Pro and Lite) and the Hula Arcade Dev Palette Kit (Pro and free dark theme). Sources, listing assets, final zips and `LISTINGS.md`/`VERIFICATION.md` (227 checks). Additions only. Not listed or published anywhere yet.
 
 ## 2026-11-11 (2) — Cloudy — Codex action-gateway OAuth login command
 
