@@ -1,0 +1,167 @@
+# Canonical: revvel-standards; mirrored in forensic-text-recovery.
+name: "WR: Forensic text recovery"
+description: Recover supported text from one degraded image or video (plaque, stone, metal, document, engraving). One object per WR. Manual, stage by stage.
+title: "WR: Forensic text recovery — "
+labels:
+  - work-request
+  - forensic-text-recovery
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this work request for **one object**. Do not batch.
+
+        **Core rule: recover signal first. Infer language second. Never let a plausible sentence masquerade as visible evidence.**
+
+        **Flow:** inventory → region of interest → enhancement → OCR / model reading → reconstruction → human review. Each stage has a **Proofy: APPROVED** box. Do not start the next stage until the current one is approved.
+
+        The original file is never changed. Derived images are saved next to it and every file is hashed in `manifest.json`.
+
+        The "What is already known" box is **kept separate**. It is never used to enhance an image and never shown to the first (blind) reading. It is only used in a second, labeled context pass.
+
+        Runner: **Actions → Forensic Text Recovery → Run workflow** (GitHub-hosted, free tier; needs the repo secret `OPENROUTER_API_KEY`), or the manual CircleCI pipeline on the existing single runner. Give the workflow this issue's number.
+
+        Canonical template: revvel-standards. Tool and docs: [forensic-text-recovery](https://github.com/midnghtsapphire/forensic-text-recovery).
+
+  - type: input
+    id: object_title
+    attributes:
+      label: Short title for this object
+      description: Plain words only, for example "Memorial plaque, Blue Hole dive site, frame grab".
+    validations:
+      required: true
+
+  - type: textarea
+    id: sources
+    attributes:
+      label: Source images / video links
+      description: "One link per line. Drag original files into this box (GitHub attachments), or paste links, or give a repo path like inputs/plaque.mp4. Prefer the ORIGINAL video or camera file over a screenshot or social-media copy."
+      placeholder: |
+        https://github.com/user-attachments/assets/...
+        inputs/plaque_original.mp4
+    validations:
+      required: true
+
+  - type: dropdown
+    id: object_type
+    attributes:
+      label: Object type
+      description: The physical object only. Not what you think the inscription says.
+      options:
+        - Underwater plaque / memorial
+        - Gravestone / headstone
+        - Monument / dedication stone
+        - Sign
+        - Document / paper
+        - Engraving / embossed surface
+        - Corroded metal
+        - Painted surface
+        - Archaeological object
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: known
+    attributes:
+      label: What is already known (kept separate)
+      description: "Names, dates, location, history, guesses. Optional. This is NOT fed to enhancement and NOT shown to the blind reading. It may be wrong, and the tool treats it that way."
+      placeholder: "Site, year found, family claims, catalog records..."
+
+  - type: textarea
+    id: stage_inventory
+    attributes:
+      label: "Stage 1 — Visual inventory (no reading yet)"
+      description: "Text-bearing surface, corners, perspective, orientation, probable line count, raised vs engraved, corrosion or growth, glare, blur, lighting direction. Run `ftr inventory <file>` for measurements."
+      placeholder: Measurements and notes. No transcription at this stage.
+
+  - type: checkboxes
+    id: stage_inventory_approval
+    attributes:
+      label: Stage 1 approval
+      options:
+        - label: "Proofy: APPROVED — inventory is ready"
+
+  - type: textarea
+    id: stage_roi
+    attributes:
+      label: "Stage 2 — Region of interest"
+      description: "ROI as x,y,w,h in original pixels (padding is added automatically so ascenders, descenders and borders survive), and corners of the text-bearing plane if known. For video, give the start and end seconds."
+      placeholder: "roi 120,80,900,500; video 12.0-18.5 s"
+
+  - type: checkboxes
+    id: stage_roi_approval
+    attributes:
+      label: Stage 2 approval
+      options:
+        - label: "Proofy: APPROVED — regions are ready"
+
+  - type: textarea
+    id: stage_enhancement
+    attributes:
+      label: "Stage 3 — Enhancement (derived images, original untouched)"
+      description: "Settings used: geometry (original / conservative / stronger), fps and kept frames for video, and which derivative groups look consistent. List any ARTIFACT RISK strokes."
+      placeholder: Run link, output folder, notes on what persists across gamma, channels and frames.
+
+  - type: checkboxes
+    id: stage_enhancement_approval
+    attributes:
+      label: Stage 3 approval
+      options:
+        - label: "Proofy: APPROVED — enhancement set is ready"
+
+  - type: textarea
+    id: stage_ocr
+    attributes:
+      label: "Stage 4 — OCR and model reading (blind first)"
+      description: "Model id, number of independent reads (votes), cost shown in the report. Paste the consensus reading and note any disagreement between reads."
+      placeholder: Model, votes, cost, consensus lines.
+
+  - type: checkboxes
+    id: stage_ocr_approval
+    attributes:
+      label: Stage 4 approval
+      options:
+        - label: "Proofy: APPROVED — readings are recorded"
+
+  - type: textarea
+    id: stage_reconstruction
+    attributes:
+      label: "Stage 5 — Reconstruction (context pass and corroboration)"
+      description: "Layer A stays what the pixels support. Context may only change Layer B. Record outside corroboration (records, databases) separately and do not edit the visual reading to match it."
+      placeholder: Alternatives with supporting and contradicting evidence. What remains unknown.
+
+  - type: checkboxes
+    id: stage_reconstruction_approval
+    attributes:
+      label: Stage 5 approval
+      options:
+        - label: "Proofy: APPROVED — reconstruction is ready"
+
+  - type: checkboxes
+    id: required_outputs
+    attributes:
+      label: Required outputs (all must be attached or linked)
+      options:
+        - label: Original file copy with SHA-256 (unchanged)
+        - label: Derived images and contact sheets
+        - label: result.json (observed / probable / inferred / unknown characters, confidence, alternatives)
+        - label: report.md (Layer A visual reading and Layer B hypothesis kept separate)
+        - label: manifest.json with hashes of every file
+        - label: "What remains unknown and next-best evidence to collect"
+
+  - type: checkboxes
+    id: stage_human_review
+    attributes:
+      label: "Stage 6 — Human review (required)"
+      description: A person looks at the derived images and compares them with the reading. Model output is never final on its own. Severely degraded inputs can produce invented text even when it is hedged.
+      options:
+        - label: A human compared the reading with the images and accepts, corrects, or rejects it
+        - label: "Audrey's yes — I accept this reading for use"
+
+  - type: checkboxes
+    id: final_gate
+    attributes:
+      label: Final gate
+      options:
+        - label: "Proofy: FINAL APPROVED — all stages are approved and the outputs are attached"
