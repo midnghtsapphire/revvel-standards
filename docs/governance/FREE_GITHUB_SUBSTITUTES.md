@@ -224,7 +224,18 @@ as a standing service on the Grok Bot box.
   dependency vulnerability scanning against the OSV database
   (complements Dependabot alerts).
 - **[Trivy](https://trivy.dev/)** for container, filesystem, and
-  IaC scanning.
+  IaC scanning. The prior setup in this repo is
+  `.github/workflows/trivy.yml` (`scan-type: fs`, scanners
+  `vuln,misconfig,secret`, severity CRITICAL/HIGH/MEDIUM,
+  `ignore-unfixed`, `exit-code: "0"` plus SARIF). That workflow stays
+  enabled and unmodified. The lane that actually runs under the
+  billing lock is the CircleCI job `trivy-fs` in
+  `.circleci/config.yml`, which calls
+  `.circleci/scripts/trivy-fs.sh` and the official free Trivy
+  binary (pinned to v0.76.2). The script reuses those scan settings,
+  stores a table report as a CircleCI artifact, and fails the job on
+  unfixed HIGH/CRITICAL. Copy the script and job into other repos
+  rather than standing up a second Actions workflow.
 
 CodeQL CLI can also be run locally or in CircleCI for a SARIF report
 you keep in CI artifacts. Uploading results into GitHub's code
