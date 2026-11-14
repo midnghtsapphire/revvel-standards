@@ -1,6 +1,9 @@
 ## 2026-11-12 — BALLS — Slack Glow-Up Plan
 
 - Added `products/beauty-kit/SLACK-glowup-plan.md`: retro-arcade and soft-Hawaiian Slack plan with sidebar theme hex codes, channel sections for eight brands, naming rules, emoji wishlist, workflows, status presets, and Slack Glow-Up Kit product ideas with price comps. Additions only; no private workspace details.
+## 2026-11-12 — BALLS — Beauty Kit: three AudreyBuildsAI digital products
+
+- Added `products/beauty-kit/`: the Make GitHub Gorgeous booklet (24 pages), the Hula Arcade GitHub Profile README Kit (Pro and Lite) and the Hula Arcade Dev Palette Kit (Pro and free dark theme). Sources, listing assets, final zips and `LISTINGS.md`/`VERIFICATION.md` (227 checks). Additions only. Not listed or published anywhere yet.
 
 ## 2026-11-11 (2) — Cloudy — Codex action-gateway OAuth login command
 
