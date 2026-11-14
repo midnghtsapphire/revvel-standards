@@ -1,3 +1,7 @@
+## 2026-11-14 (4) — TriageChief — Grok bots: the shared box is scratch; missing data goes on the BOM
+
+- Added `docs/GROK-BOTS-BOX-IS-SCRATCH.md`, and linked it from `AGENTS.md` and `docs/BOT-COMMON-RULES.md`. The shared box is scratch space (it hit 100% disk on 14 Nov 2026). Private or copyrighted material belongs in a private GitHub repo (`linear-a-sources` or `box-backups`), not only on the box. Missing real data, APIs, inventory, or secrets do not fail the WR or PR and are not requested from Audrey mid-work; they go on the existing BOM "Audrey to get" list ([`docs/Universal-BOM_List/README.md`](docs/Universal-BOM_List/README.md)), and only that part is paused. Synthetic data is allowed only in dev, clearly labeled, and never as evidence; it must not feed Linear A findings, the ledger, or a merge to `main` (see linear-a's `synthetic_guard`). No workflow or CI changes.
+
 ## 2026-11-14 (3) — MergeMender — Audrey approved the plain Partner Hub hostname on the oAudrey home page as one allowlist exception for that file
 ## 2026-11-14 (2) — MergeMender — the oAudrey partner card link is the plain hostname again. A character reference that hid that host from the visiting-agent scan was removed
 ## 2026-11-14 — MergeMender — oAudrey home keeps the partner-program card visible. The name and description were reworded, and the footer sentence was reworded, so the visiting-agent scan is clear. The card still opens the same host. Exact original lines are in docs/archive/oaudrey-home-public-index-2026-11-14.md

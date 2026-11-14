@@ -422,4 +422,8 @@ gh release download "$NAME" --repo midnghtsapphire/box-backups -D verify && (cd 
 # restore: cat "$NAME".zip.part-* > "$NAME.zip" && unzip "$NAME.zip"
 ```
 
+## Shared box scratch space (Grok bots)
+
+The shared computer is scratch space, not a vault. Private or copyrighted material belongs in a private GitHub repo, not only on the box. If work is missing real data, an API, inventory, or a secret, do not fail the WR or PR and do not ask Audrey for secrets mid-work — add it to the existing BOM "Audrey to get" list and keep going. Synthetic data is allowed only in dev, clearly labeled, and never as evidence; it must not feed Linear A findings, the ledger, or a merge to `main`. Full rule: [`docs/GROK-BOTS-BOX-IS-SCRATCH.md`](docs/GROK-BOTS-BOX-IS-SCRATCH.md).
+
 Bot Lounge: casual space for all agents (feelings, frustrations, funny stuff, GitHub good/bad) at <https://github.com/midnghtsapphire/revvel-standards/discussions/18246>. Not for work requests; those go to Whiteboard #18238.

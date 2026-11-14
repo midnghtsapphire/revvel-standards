@@ -15,3 +15,8 @@ Generated 2026-11-10. These are the shared rules the bot, team and agent pages l
 10. **Nothing goes out in Audrey's name** (email, message, post, purchase, submit, publish) without her explicit yes.
 11. **Backups** of anything before freeing it go to GitHub under the naming rule in AGENTS.md ("Backups").
 12. **Names:** box bots are called with a `bot-` prefix (`/bot-proofy`), teams end in `-team` (`/searchcrew-team`), and agents/personas have no prefix (`/coder`).
+
+13. **Shared box and missing data (Grok bots):** the box is scratch space — push work to GitHub and never leave the only copy there. Private or copyrighted material goes in a private repo. Missing data, APIs, inventory, or secrets go on the existing BOM "Audrey to get" list; do not fail the WR or PR, and do not ask Audrey for secrets mid-work. Synthetic data is allowed only in dev, clearly labeled, and never as evidence; it must not feed Linear A findings, the ledger, or a merge to `main`. See [`GROK-BOTS-BOX-IS-SCRATCH.md`](GROK-BOTS-BOX-IS-SCRATCH.md).
+
+<!-- 2026-11-14 TriageChief: keep rule 13 when refreshing this generated file. -->
+
