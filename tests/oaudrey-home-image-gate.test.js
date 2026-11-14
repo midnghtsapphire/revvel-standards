@@ -31,7 +31,9 @@ test('oaudrey-home CircleCI job probes /health and does not deploy', () => {
   assert.match(config, /oaudrey-home-image:/);
   assert.match(config, /product-image-gate\.sh oaudrey-home/);
   assert.equal(config.includes('oaudrey-home-do-deploy'), false);
-  assert.equal(config.includes('do-app-update.sh'), false);
+  // do-app-update.sh now exists for the three product apps (#18372). The
+  // oaudrey-home app is never updated from CI.
+  assert.equal(/do-app-update\.sh oaudrey-home/.test(config), false);
   const dockerfile = fs.readFileSync(path.join(ROOT, 'products/oaudrey-home/Dockerfile'), 'utf8');
   assert.match(dockerfile, /packages\/static-stripe-server/);
   assert.match(dockerfile, /STATIC_ROOT=\/app\/public/);
