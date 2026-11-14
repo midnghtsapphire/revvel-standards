@@ -36,6 +36,15 @@ Curt rules. Don't negotiate them. If a deliverable breaks one, it is **not done.
   The Grid is not done until every Block has shipped and been checkpoint-approved.
   See `docs/AGENTS.md` § Checkpoint-Gated Grids.
 
+## 7. PR deliverables (proposed scope, Audrey to confirm)
+- A qualifying PR (product and app work; see `docs/PR_DELIVERABLES.md` §2) produces one
+  deliverable per category: GitHub Action or Docker package, GitHub App or app, CLI,
+  MCP server, API, skill, tool. Each needs a live test surface per rule #1.
+- It also produces 3 sellable PDFs drawn from that group, or new ones.
+- Missing hosting, a secret or data goes on the BOM "Audrey to get" list and **never fails
+  the WR or PR**. Mark the row "blocked on BOM" in `DELIVERABLES.md` and ship the rest.
+- Docs-only, chore, standards and bot-ops PRs are not qualifying (proposed).
+
 ---
 
 _Enforced by: No-Destroy Guard (#4), Completeness Gate (#2), App Registry (#3),

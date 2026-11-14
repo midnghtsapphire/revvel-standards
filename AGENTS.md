@@ -388,6 +388,10 @@ as fast as an agent): explain *why*, document external-service gotchas at the
 call site, and always state the fallback / "what to check if it fails." See
 `standards/CODE_COMMENTING_STANDARD.md`.
 
+## PR deliverables (proposed, Audrey to confirm)
+
+Audrey's rule (14 Nov 2026): a qualifying PR produces one deliverable per category (GitHub Action or Docker package, GitHub App or app, CLI, MCP server, API, skill, tool) plus 3 sellable PDFs, each with a live test surface. Missing hosting, secrets or data goes on the BOM list and never fails the WR or PR. Scope and details: [`docs/PR_DELIVERABLES.md`](docs/PR_DELIVERABLES.md).
+
 ## Whiteboard (GitHub Discussions)
 
 Every repo uses its **GitHub Discussions** as the agent whiteboard.

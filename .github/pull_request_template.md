@@ -84,6 +84,22 @@ Closes <!-- WR issue number -->
 - [ ] OpenAPI spec — updated (if API change)
 - [ ] PDF / booklet — generated (if user-facing product)
 
+## PR Deliverables (proposed scope, Audrey to confirm)
+
+<!-- See docs/PR_DELIVERABLES.md. Applies to product and app work. Docs-only, chore, standards and bot-ops PRs: tick N/A and say why.
+     A "blocked on BOM" row never fails this PR: list the missing hosting, secret or data on the BOM "Audrey to get" list and ship the rest. -->
+
+- [ ] N/A: not a qualifying PR (reason: )
+- [ ] GitHub Action or Docker package, with a live test surface (or "blocked on BOM" row)
+- [ ] GitHub App or app, with a live test surface (or "blocked on BOM" row)
+- [ ] CLI, with a live test surface (or "blocked on BOM" row)
+- [ ] MCP server, with a live test surface (or "blocked on BOM" row)
+- [ ] API, with a live test surface (or "blocked on BOM" row)
+- [ ] Skill (`SKILL.md`)
+- [ ] Tool, with a live test surface (or "blocked on BOM" row)
+- [ ] 3 sellable PDFs, drawn from the group above or new
+- [ ] `DELIVERABLES.md` lists all ten rows (built, or blocked on BOM with a link to the BOM row)
+
 ## Validation
 
 <!-- How do you know this works? Evidence required. -->
