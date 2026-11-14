@@ -1,0 +1,10 @@
+@gitar-bot please review this PR, address the requested work and applicable review findings, and validate your changes with the repository's existing checks. Follow the linked work request's acceptance criteria and do not auto-merge or publish anything yourself.
+
+Keep your findings, fixes, blockers, and verification results in this PR. When the requested work is genuinely finished, post a separate final PR conversation comment with a short public-safe summary. Do not put code, credentials, private project details, internal Slack messages, or unsupported claims in the public summary. Include these exact machine-readable delimiters, replacing CURRENT_HEAD_SHA with the PR's actual current full 40-character head commit SHA after all your changes:
+
+<!-- AUDREY_DONE sha=CURRENT_HEAD_SHA -->
+<!-- AUDREY_SUMMARY_BEGIN -->
+Plain-language summary of what changed and which validation actually ran. State limitations clearly. This text will be reviewed for publication on the Facebook Page audreybuildsai.
+<!-- AUDREY_SUMMARY_END -->
+
+Do not mark partial, blocked, or unverified work as completed. The bridge, not Gitar, handles audit copies, publication review, and the Facebook API.

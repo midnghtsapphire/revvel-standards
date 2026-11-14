@@ -9,6 +9,9 @@ permissions:
 
 jobs:
   deliver:
+    # 2026-11-14: gitar-bridge is handled locally by audrey-bridge.yml;
+    # every other agent retains the original gateway delivery path.
+    if: github.event.client_payload.agent != 'gitar-bridge'
     runs-on: ubuntu-latest
     timeout-minutes: 5
 

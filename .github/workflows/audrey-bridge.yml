@@ -1,0 +1,97 @@
+name: Audrey Gitar bridge
+
+on:
+  repository_dispatch:
+    types: [agent_requested]
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created, edited, deleted]
+  pull_request_target:
+    types: [opened, synchronize, reopened, closed]
+  check_run:
+    types: [completed]
+  check_suite:
+    types: [completed]
+  workflow_run:
+    workflows: [Audrey review event relay]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Existing PR number to reconcile GitHub-visible Gitar activity
+        required: true
+        type: string
+
+# Installation is disabled until ENABLE_AUDREY_BRIDGE=true. No cron.
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  checks: read
+  actions: write
+
+jobs:
+  control:
+    # 2026-11-14: the existing router owns human commands. Disabled bridge
+    # requests still run provenance checks and emit failed, never completed.
+    if: >-
+      (github.event_name == 'repository_dispatch' && github.event.client_payload.agent == 'gitar-bridge') ||
+      (vars.ENABLE_AUDREY_BRIDGE == 'true' && github.event_name != 'workflow_run' && github.event_name != 'repository_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Always use trusted base default branch, never contributor PR code.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Handle GitHub event or reconcile one PR
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          BRIDGE_GITHUB_TOKEN: ${{ secrets.BRIDGE_GITHUB_TOKEN }}
+          BRIDGE_SIGNING_KEY: ${{ secrets.BRIDGE_SIGNING_KEY }}
+          GITAR_LOGINS: ${{ vars.GITAR_LOGINS || 'gitar-bot[bot],gitar-bot' }}
+          ENABLE_AUDREY_BRIDGE: ${{ vars.ENABLE_AUDREY_BRIDGE || 'false' }}
+          REVVEL_LLM_ALLOW_CLOUD: ${{ vars.REVVEL_LLM_ALLOW_CLOUD }}
+          REVVEL_SWITCH_CODING_AGENTS: ${{ vars.REVVEL_SWITCH_CODING_AGENTS }}
+          AUTO_START: ${{ vars.AUTO_START || 'false' }}
+          WORK_REQUEST_WORKFLOW: ${{ vars.WORK_REQUEST_WORKFLOW || 'wr-pr-creation.yml' }}
+          FACEBOOK_PAGE_ID: ${{ vars.FACEBOOK_PAGE_ID }}
+          QUEUE_FACEBOOK_PUBLICATION: ${{ vars.QUEUE_FACEBOOK_PUBLICATION || 'false' }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          INPUT_PR: ${{ inputs.pr_number }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            python3 scripts/audrey-gitar-bridge/audrey_bridge.py --apply sync --pr "$INPUT_PR"
+          else
+            python3 scripts/audrey-gitar-bridge/audrey_bridge.py --apply event
+          fi
+
+  review-audit:
+    if: >-
+      vars.ENABLE_AUDREY_BRIDGE == 'true' &&
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.event == 'pull_request_review' ||
+       github.event.workflow_run.event == 'pull_request_review_comment')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      # Artifact is JSON DATA only. Never execute files from the relay artifact.
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: audrey-review-event
+          path: review-artifact
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - name: Validate the review against GitHub and record it
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          BRIDGE_GITHUB_TOKEN: ${{ secrets.BRIDGE_GITHUB_TOKEN }}
+          GITAR_LOGINS: ${{ vars.GITAR_LOGINS || 'gitar-bot[bot],gitar-bot' }}
+        run: python3 scripts/audrey-gitar-bridge/audrey_bridge.py --apply relay --event-file review-artifact/event.json
