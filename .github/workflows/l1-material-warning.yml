@@ -1,0 +1,121 @@
+# L1 / third-party material warning (and public-repo block).
+# Free GitHub-hosted action only: ubuntu-latest, GITHUB_TOKEN, official actions.
+# Private repos: warn and comment; the job stays green.
+# Public repos: fail, because a public commit would redistribute the material.
+# Matches file paths only, never file contents.
+name: l1-material-warning
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: l1-material-warning-${{ github.repository }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: L1 material warning
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: List changed paths
+        id: paths
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          if [ -n "${BASE_SHA:-}" ] && [ -n "${HEAD_SHA:-}" ]; then
+            git diff --name-only --diff-filter=ACMR "${BASE_SHA}" "${HEAD_SHA}" > /tmp/changed-paths.txt || true
+          else
+            git diff --name-only --diff-filter=ACMR HEAD~1 HEAD > /tmp/changed-paths.txt || true
+          fi
+          echo "Changed paths:"
+          cat /tmp/changed-paths.txt || true
+
+      - name: Detect L1 or third-party source files
+        id: detect
+        env:
+          CHANGED_FILES: ${{ github.event_name }}
+          REPO_PRIVATE: ${{ github.event.repository.private }}
+        run: |
+          set -euo pipefail
+          export CHANGED_FILES="$(cat /tmp/changed-paths.txt)"
+          export REPO_PRIVATE="${{ github.event.repository.private }}"
+          python3 scripts/detect-l1-material.py
+
+      - name: Warn or block
+        if: steps.detect.outputs.count != '0'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
+        env:
+          MATCHES: ${{ steps.detect.outputs.matches }}
+          REPO_PRIVATE: ${{ steps.detect.outputs.private }}
+        with:
+          script: |
+            const matches = JSON.parse(process.env.MATCHES || '[]');
+            const isPrivate = process.env.REPO_PRIVATE === 'true';
+            const list = matches.map((p) => `- \`${p}\``).join('\n');
+            const heading = isPrivate
+              ? 'L1 / third-party material warning'
+              : 'L1 / third-party material block';
+            const rule = isPrivate
+              ? 'This repository is **private**. Committing this material is allowed and is not redistribution. This check is a warning only and stays green.'
+              : 'This repository is **public**. Committing this material here would redistribute it, so this check fails. Store the files in a private repo instead.';
+            const marker = '<!-- l1-material-warning:sticky -->';
+            const body = [
+              marker,
+              `## ${heading}`,
+              '',
+              'These changed files match the L1 source registry (GORILA, RILA-S1, lineara.xyz, scan PDFs, or other known source names):',
+              '',
+              list,
+              '',
+              rule,
+              '',
+              'See `standards/SEARCH_AND_SOURCING.md` §5A and `AGENTS.md` (Private storage is not redistribution).',
+            ].join('\n');
+
+            core.info(body);
+            if (isPrivate) {
+              core.warning('L1 / third-party source files are present in this private repo. Warning only; the check is green.');
+            }
+
+            const number = context.payload.pull_request && context.payload.pull_request.number;
+            if (number) {
+              const comments = await github.paginate(
+                github.rest.issues.listComments,
+                { owner: context.repo.owner, repo: context.repo.repo, issue_number: number },
+              );
+              const existing = comments.find((c) => c.body && c.body.includes(marker));
+              if (existing) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                  body,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: number,
+                  body,
+                });
+              }
+            }
+
+            if (!isPrivate) {
+              core.setFailed('L1 / third-party source files cannot be committed to a public repository.');
+            }

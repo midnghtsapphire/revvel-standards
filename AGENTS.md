@@ -52,6 +52,17 @@ This rule overrides any conflicting text in this repo, including the `allow-dest
 - Owner-authored instructions override earlier agent-authored notes. Keep older notes visible as history where required, but do not treat them as controlling over a later owner direction.
 - Transfer every requested artifact and work product into the owner-designated GitHub repository as the work proceeds. Do not leave the only copy in a sandbox, local temp folder, or another storage service.
 
+## PRIVATE STORAGE IS NOT REDISTRIBUTION (Audrey Evans, 2026-11-14)
+
+This is an addition next to the owner rules above. Nothing above is deleted.
+
+- Committing L1 material, third-party corpus files, scans, or other held sources into a **private** repository is allowed. That is the owner's storage, not redistribution and not publication.
+- Agents must not refuse those commits, leave the files out, or treat another repo's ledger or clean-room notes as a veto. Warn, then do the work.
+- The warning is the free GitHub Action `.github/workflows/l1-material-warning.yml`. It comments on the pull request or prints a warning, and it must not fail on a private repo.
+- The same files in a **public** repository are still blocked, so they are not redistributed.
+- Audrey's words, 2026-11-14: "we are not redistributing anything", "Any copyright will not be in violation", and "We can make a trigger that if i do it i get warned- are they worried someone else will? Not my problem."
+- See `standards/SEARCH_AND_SOURCING.md` §5A.
+
 ## PRIME DIRECTIVE
 
 **Start at $10k/month → Scale to $10M total by year 3**
