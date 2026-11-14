@@ -19,6 +19,7 @@ from markdownlint — these are frozen snapshots, not maintained Markdown.
 - `reesereviews/` — a one-off search-verification script (`verify_search.py`) and the screenshots it produced
 - `root-batch-3/` — one-off root clutter moved here (Batch 3, 2026-11-14): the three
   `AGENT-DEPLOY-ONEFILE*.md` prompts, `IMPLEMENTATION_SUMMARY*.md`, `REPO_AUDIT.md`
-  (a 2026-05-02 snapshot), a stray agent `PLAN.md` (`agents_tmp/`), and a WR test
-  fixture (`test-wr/`). Pure `git mv`, nothing edited. The full move map is in
+  (a 2026-05-02 snapshot), a stray agent `PLAN.md` (`agents_tmp/`), a WR test
+  fixture (`test-wr/`), and `wr_watcher.py` (already retired by #18313; every line is a
+  `REVVEL-DISABLED`-style comment). Pure `git mv`, nothing edited. The full move map is in
   [`docs/INVENTORY.md`](../INVENTORY.md).
