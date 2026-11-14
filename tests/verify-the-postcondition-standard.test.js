@@ -27,13 +27,17 @@ test('the standard exists and carries its ID', () => {
   assert.match(src, /\*\*Status:\*\* Active/);
 });
 
-test('CLAUDE.md points the agent loop at it', () => {
+test('CLAUDE.md imports AGENTS.md, which points the agent loop at it', () => {
+  // Claude Code loads the rulebook through a single import line. The
+  // postcondition pointers live in AGENTS.md, which that import pulls in.
   // A standard nobody is routed to is the defect it describes.
-  const claude = read('CLAUDE.md');
-  assert.match(claude, /standards\/VERIFY_THE_POSTCONDITION\.md/);
-  assert.match(claude, /RVS-VERIFY-001/);
+  const claude = read('CLAUDE.md').trim();
+  assert.equal(claude, '@AGENTS.md');
+  const agents = read('AGENTS.md');
+  assert.match(agents, /standards\/VERIFY_THE_POSTCONDITION\.md/);
+  assert.match(agents, /RVS-VERIFY-001/);
   assert.match(
-    claude,
+    agents,
     /A marker nobody checks is decoration/,
     'the gotcha list must carry the one-line form, not only the link',
   );
