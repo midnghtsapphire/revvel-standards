@@ -85,6 +85,11 @@
       "lane": "implementation when OpenRouter is down",
       "names": ["codex", "openai-codex"],
       "github_assignee": "codex"
+    },
+    "gitar-bridge": {
+      "display_name": "Audrey Gitar bridge",
+      "lane": "saved-reply handoff and GitHub-visible audit",
+      "names": ["audrey"]
     }
   }
 }

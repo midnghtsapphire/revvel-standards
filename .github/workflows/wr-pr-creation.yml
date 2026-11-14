@@ -8,6 +8,19 @@ on:
         description: "Issue number to create a PR for"
         required: true
         type: string
+      # 2026-11-14: bridge callers request a review-only draft; default false
+      # preserves the original manual caller behavior and existing guards.
+      draft_only:
+        description: "Create a draft WR PR for owner review"
+        required: false
+        type: boolean
+        default: false
+      # 2026-11-14: bridge handoff does not directly invoke a second coding agent.
+      suppress_direct_jules:
+        description: "Skip the direct Jules action for this dispatch"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -935,6 +948,9 @@ jobs:
               body: prBody,
               head: branchName,
               base: 'main',
+              // 2026-11-14: only opt-in bridge/review callers create drafts;
+              // the original non-draft default is unchanged for other callers.
+              draft: context.payload.inputs?.draft_only === true || context.payload.inputs?.draft_only === 'true',
             });
 
             core.info(`Created PR #${pr.number}: ${pr.html_url}`);
@@ -1051,7 +1067,10 @@ jobs:
               }
             }
       - name: Request Jules review
-        if: env.JULES_API_KEY != ''
+        # 2026-11-14: original condition preserved below as history; a bridge
+        # dispatch opts out of this direct invocation, not other routing/guards.
+        # if: env.JULES_API_KEY != ''
+        if: env.JULES_API_KEY != '' && !inputs.suppress_direct_jules
         uses: BeksOmega/jules-action@v1.0.0
         with:
           prompt: |

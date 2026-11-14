@@ -1,0 +1,34 @@
+name: Audrey review event relay
+
+on:
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+  pull_request_review_comment:
+    types: [created, edited, deleted]
+
+permissions:
+  contents: read
+
+jobs:
+  capture-data:
+    if: vars.ENABLE_AUDREY_BRIDGE == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # No checkout, secrets, PR code, or shell interpolation of event content.
+      - name: Save the event as untrusted JSON data
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          Path('review-event').mkdir(exist_ok=True)
+          event = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text())
+          Path('review-event/event.json').write_text(json.dumps({
+              'event_name': os.environ['GITHUB_EVENT_NAME'], 'event': event
+          }) + '\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: audrey-review-event
+          path: review-event/event.json
+          retention-days: 7

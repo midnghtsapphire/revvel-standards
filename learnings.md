@@ -1208,3 +1208,16 @@ product hostnames in the deploy notes did not resolve, and the Vercel host
 returned 402. A sales case study can cite only a product whose URL is the
 product. A parked 200 is not that. The deck says proof pending and names issue
 18330 instead of inventing a customer.
+
+
+## TM-0013 — Saved replies need one router and the real workflow contract
+
+2026-11-14 UTC, Audrey's Gitar/Facebook bridge integration.
+
+The standalone issue dispatcher used `work_request_number` and `requested_by`, but the governance repository's real WR workflow accepts `issue_number`. The repository already owns human comment intake through the command-window router. Add one local adapter, not a second catch-all router or gateway delivery. Re-fetch the comment-derived request ID, actual source repository/issue/author, exact command and current permission before running anything; a dispatch payload is data, not executable instructions.
+
+Bridge-originated WR dispatches request an actual draft PR and suppress the upstream direct Jules call through optional inputs, while preserving original caller behavior and existing viability/coding/spend gates. A WR-document/skeleton dispatch, a delivered status, or a green skipped job is not completed implementation. Keep the implementation-PR/Gitar handoff explicit; token-created events may not wake a downstream workflow.
+
+Publisher approval binds the exact summary, source, head and real numeric Page destination. Require a configured human-review environment, not merely its name or a digest; persistent pending receipts prevent blind repeat POSTs after uncertain outcomes. Slack webhook HTTPS and redirects also matter: a failed notice must not abort or replay already accepted work/publication.
+
+Validator/runtime drift and sparse-checkout omissions are different failures. Validate these workflows with the exact pinned actionlint 1.7.7, preserve the original newer queue as history, and do not weaken the gate. Materialize existing guard files and locked dependencies before calling their absence a repository defect. The remaining unchanged OpenCode paid-credential finding stays visible; passing local bridge tests is not global or connected acceptance.

@@ -555,3 +555,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   exclusion of actual commented bodies; active tails after closing block
   comments remain checked. Preserved the earlier incorrect archive assertion
   and rule as dated history. Forty-seven child regressions pass.
+
+
+## 2026-11-14 UTC — Audrey saved replies, Gitar audit, and Facebook Page drafts
+
+- Added the internal bridge under `scripts/audrey-gitar-bridge/`, with exact authenticated `/audrey run` and `/audrey finish` routing through the existing command window. Registered only the `gitar-bridge`/`audrey` route, excluded its duplicate gateway delivery, and extended existing command-window CI.
+- Added optional draft-only/no-direct-Jules inputs to the canonical `wr-pr-creation.yml`; bridge issue handoffs use its actual `issue_number` contract. Existing callers, agent gates, approvals, labels and implementation routing remain visible and unchanged. A WR-document dispatch is not completed product code.
+- Added trusted-default-branch Gitar observation, validated fork-review relay, signed current-head/real-Page-ID publication drafts, protected exact-payload publishing, persistent uncertain-write protection, and optional HTTPS/redirect-safe Slack notices. No second fleet monitor, fallback chain or CI scaffold.
+- Passed 70 offline Python tests, 11 existing-router tests, six workflows with exact pinned actionlint 1.7.7, and the no-schedules guard. Related guards have one existing unchanged OpenCode paid-credential gating failure; root/production CI is not certified green and no guard/ratchet was weakened.
+- Preserved the original 20-file standalone bundle and source research as dated, hashed archives. Added detailed setup, saved replies, acceptance contract, repository findings and owner handoff; canonical `.env.example` receives names/safe defaults only.
+- Delivery is an additive draft branch/PR for owner review, not a main merge or activation. No work dispatch, Gitar request, Facebook post, Slack message, Page token extraction or secret/variable change occurred. Page/Gitar/required-reviewer/optional Slack connection checks remain explicit. Actor: Manus coordination with delegated code, workflow inspection and Slack transport specialists; Audrey owns the work.
