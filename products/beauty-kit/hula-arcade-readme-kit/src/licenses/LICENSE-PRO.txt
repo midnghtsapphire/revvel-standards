@@ -1,0 +1,41 @@
+HULA ARCADE GITHUB PROFILE README KIT - PRO LICENSE
+Copyright (c) 2026 Freedom Angel Corp, doing business as AudreyBuildsAI ("Licensor").
+
+1. WHAT YOU GET
+   When you buy the Pro kit you receive a non-exclusive, non-transferable,
+   perpetual license to use the files in this kit (the "Files") for your own
+   GitHub profile, your repositories, your organization, your clients' profiles
+   and repositories, and your own websites or documents. Edit them as much as
+   you like. The pages, banners, and images you build from the Files are yours.
+
+2. WHAT YOU MAY NOT DO
+   - Resell, sublicense, share, upload, or give away the Files, or edited
+     copies of them, as a template, kit, theme, sprite pack, or bundle
+     (free or paid), or publish them in a public repository as a downloadable
+     template. (Using the finished images inside your own public profile
+     repository is fine.)
+   - Use the pixel characters (the hula dancer and Auky) as the logo or mascot of
+     a product or company other than your own personal or client profile pages.
+   - Remove the copyright notice from the Files.
+
+3. THE LITE KIT IS SEPARATE
+   The free "Lite" kit (one layout and its banner) is distributed under the MIT
+   License. That MIT license covers the Lite kit only.
+
+4. THIRD-PARTY MATERIAL
+   The Files contain no third-party code or art. The workflows call published
+   GitHub Actions (actions/checkout, Platane/snk, lowlighter/metrics) from their
+   own repositories; those Actions are not included and remain under their own
+   licenses and terms. "GitHub" is a trademark of GitHub, Inc.; this kit is not
+   affiliated with, endorsed by, or sponsored by GitHub or Microsoft.
+
+5. NO WARRANTY
+   THE FILES ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. TO THE EXTENT
+   THE LAW ALLOWS, THE LICENSOR IS NOT LIABLE FOR ANY DAMAGES ARISING FROM USE
+   OF THE FILES, INCLUDING CHANGES TO GITHUB OR TO THIRD-PARTY ACTIONS. This text
+   is not legal advice.
+
+6. REFUNDS
+   If the kit is not right for you, ask for a refund within 14 days of purchase.
+
+Questions: use the contact option on the AudreyBuildsAI storefront.

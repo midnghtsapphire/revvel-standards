@@ -1,0 +1,23 @@
+{
+  "name": "Hula Arcade Night",
+  "background": "#14163A",
+  "foreground": "#FFF4E0",
+  "cursorColor": "#FFD23F",
+  "selectionBackground": "#3A4090",
+  "black": "#2A2F6E",
+  "red": "#FF7FA8",
+  "green": "#8EE59A",
+  "yellow": "#FFD23F",
+  "blue": "#8FB4FF",
+  "purple": "#B8A1FF",
+  "cyan": "#19C3B1",
+  "white": "#FFF4E0",
+  "brightBlack": "#A9A8D6",
+  "brightRed": "#FF9EBC",
+  "brightGreen": "#B4F2BC",
+  "brightYellow": "#FFE27A",
+  "brightBlue": "#B3CCFF",
+  "brightPurple": "#D3C4FF",
+  "brightCyan": "#7FE3D8",
+  "brightWhite": "#FFFFFF"
+}

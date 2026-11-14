@@ -1,0 +1,38 @@
+name: Metrics (optional)
+# Optional extra: lowlighter/metrics (MIT) draws a richer stats SVG. It needs a personal access token stored as the
+# repository secret METRICS_TOKEN (see SETUP-GUIDE). Without that secret this workflow does nothing.
+# It commits assets/generated/metrics.svg to your default branch. Free on public repos.
+on:
+  schedule:
+    - cron: "31 6 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: metrics
+  cancel-in-progress: false
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+    env:
+      HAS_TOKEN: ${{ secrets.METRICS_TOKEN != '' }}
+    steps:
+      - name: Skip when no token is configured
+        if: env.HAS_TOKEN != 'true'
+        run: echo "METRICS_TOKEN is not set. Skipping. See SETUP-GUIDE for how to add it."
+      - name: Generate metrics SVG
+        if: env.HAS_TOKEN == 'true'
+        uses: lowlighter/metrics@65836723097537a54cd8eb90f61839426b4266b6 # v3.34
+        with:
+          token: ${{ secrets.METRICS_TOKEN }}
+          user: ${{ github.repository_owner }}
+          template: classic
+          base: header, activity, community, repositories
+          filename: assets/generated/metrics.svg
+          output_action: commit
+          committer_message: "chore: update metrics svg"
+          config_timezone: UTC
+          config_animations: false
+          plugin_languages: yes
+          plugin_languages_sections: most-used
+          plugin_languages_details: bytes-size, percentage
