@@ -1,0 +1,272 @@
+# Canonical: revvel-standards; mirrored in amazon-books.
+name: "WR: KDP book"
+description: Walk one book from Audrey’s manuscript upload through proof, cover, checks, and a gated KDP upload. Manual — one title at a time.
+title: "WR: KDP book — "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this work request for **one book**. Do not batch titles.
+
+        **Flow:** Audrey uploads the manuscript → proof → cover → interiors → wraps → metadata → checks → **push the button to upload**.
+
+        Each stage has a **Proofy: APPROVED** box. Do not start the next stage until the current one is approved.
+
+        The upload step stays locked until **Proofy: FINAL APPROVED** and **Audrey's yes** are both checked. Nothing goes to KDP before that.
+
+        House reference (canonical): [docs/books/KDP-REFERENCE.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/books/KDP-REFERENCE.md) in revvel-standards. Mirror: [docs/KDP-REFERENCE.md](https://github.com/midnghtsapphire/amazon-books/blob/main/docs/KDP-REFERENCE.md) in amazon-books.
+
+  - type: input
+    id: book_title
+    attributes:
+      label: Book title
+      description: This is the published title. It must match the cover and the KDP Details tab.
+    validations:
+      required: true
+
+  - type: input
+    id: subtitle
+    attributes:
+      label: Subtitle (optional)
+      description: Title plus subtitle must be 200 characters or fewer together.
+
+  - type: input
+    id: author_name
+    attributes:
+      label: Author name
+      description: Use one form and keep it identical on every format and on Author Central.
+      placeholder: Audrey Walter-Evans
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: formats
+    attributes:
+      label: Formats for this WR
+      description: New print books use paperback 8.5×11 and hardcover 8.25×11, glossy premium color. Already-published 6×9 books stay 6×9.
+      options:
+        - label: Kindle eBook
+        - label: Paperback 8.5×11 glossy premium color (new book)
+        - label: Hardcover 8.25×11 glossy premium color, case laminate (new book)
+        - label: Existing 6×9 trim (already published — do not resize)
+        - label: Matching coloring book (follow-on; B&W, cheapest paper)
+        - label: Matching puzzle book (follow-on)
+
+  - type: textarea
+    id: manuscript
+    attributes:
+      label: "Stage 0 — Audrey’s manuscript upload (start here)"
+      description: Link or describe the first manuscript Audrey uploaded. This is the starting file for the WR.
+      placeholder: Path, Drive link, or issue attachment, plus the date it was uploaded.
+    validations:
+      required: true
+
+  - type: textarea
+    id: stage_proof
+    attributes:
+      label: "Stage 1 — Proof and correct the text"
+      description: Correct the book before redesigning the cover. Note spelling, captions, figure numbers, and source fixes.
+      placeholder: What was checked, what changed, and where the corrected file lives.
+
+  - type: checkboxes
+    id: stage_proof_approval
+    attributes:
+      label: Stage 1 approval
+      options:
+        - label: "Proofy: APPROVED — text is ready"
+
+  - type: textarea
+    id: stage_images
+    attributes:
+      label: "Stage 2 — Image list and licensing"
+      description: "Allowed licenses only: PD, CC0, CC BY, or CC BY-SA, with credit lines. No NC, no ND, and no British Museum own images."
+      placeholder: "Plate or figure ID, source, license, credit line, file path."
+
+  - type: checkboxes
+    id: stage_images_approval
+    attributes:
+      label: Stage 2 approval
+      options:
+        - label: "Proofy: APPROVED — image list and licenses are ready"
+
+  - type: dropdown
+    id: cover_tool
+    attributes:
+      label: "Stage 3 — Cover tool (pick one)"
+      description: Choose the single tool used for the cover (and for any images, captions, docs, or text work it did).
+      options:
+        - Grok Imagine
+        - Grok Image
+
+  - type: textarea
+    id: stage_cover
+    attributes:
+      label: "Stage 3 — Cover prompt and generation"
+      description: Cover art has no words, letters, logos, or watermarks. Leave empty sky in the top third for the title. Typography and a friendly audience tag are added later.
+      placeholder: Paste the prompt, the date generated, and a link to the chosen frame.
+
+  - type: checkboxes
+    id: stage_cover_approval
+    attributes:
+      label: Stage 3 approval
+      options:
+        - label: "Proofy: APPROVED — cover art is ready to upscale"
+
+  - type: textarea
+    id: stage_upscale
+    attributes:
+      label: "Stage 4 — Upscale and check"
+      description: "Download or upscale the largest size. Kindle ideal is 1600×2560. Paperback 8.5×11 front at 300 DPI is 2550×3300 (2588×3375 with bleed). Hardcover 8.25×11 front at 300 DPI is 2475×3300; the full wrap comes from the KDP calculator."
+      placeholder: Final pixel size, file path, and any problems (wrong setting, baked-in text, watermark).
+
+  - type: checkboxes
+    id: stage_upscale_approval
+    attributes:
+      label: Stage 4 approval
+      options:
+        - label: "Proofy: APPROVED — art size and quality are ready for layout"
+
+  - type: textarea
+    id: stage_interiors
+    attributes:
+      label: "Stage 5 — Interiors per format"
+      description: Build each selected format. Paperback 8.5×11 premium color is 24–590 pages. Hardcover 8.25×11 is 75–550 pages. ISBN on the copyright page must match that format.
+      placeholder: File paths and page counts for Kindle, paperback, and hardcover.
+
+  - type: checkboxes
+    id: kindle_interior_reqs
+    attributes:
+      label: Kindle interior and front-cover checks
+      options:
+        - label: Manuscript is EPUB, DOCX, or KPF (or another accepted format), unencrypted
+        - label: "Front cover is JPEG or TIFF, RGB, ideally 1600×2560 (at least 1.6:1), under 50 MB"
+        - label: Title, author, and typography match the Details fields
+        - label: DRM choice recorded (yes or no)
+
+  - type: checkboxes
+    id: pb_interior_reqs
+    attributes:
+      label: Paperback 8.5×11 glossy color checks
+      options:
+        - label: "Trim 8.5×11, premium color, glossy cover (unless this is a kept 6×9)"
+        - label: "Bleed 0.125 in on top, bottom, and outside when images reach the edge (file 8.625×11.25)"
+        - label: Gutter and outside margins meet the page-count table
+        - label: Interior PDF is 300 DPI, fonts embedded, ISBN matches KDP
+        - label: Page count is inside the allowed range for this ink and trim
+
+  - type: checkboxes
+    id: hc_interior_reqs
+    attributes:
+      label: Hardcover 8.25×11 glossy color checks
+      options:
+        - label: "Trim 8.25×11, case laminate, premium color, glossy cover (unless this is a kept 6×9)"
+        - label: Interior uses hardcover trim and the hardcover ISBN
+        - label: Page count is 75–550
+        - label: Interior PDF is 300 DPI, fonts embedded
+
+  - type: checkboxes
+    id: stage_interiors_approval
+    attributes:
+      label: Stage 5 approval
+      options:
+        - label: "Proofy: APPROVED — interiors are ready"
+
+  - type: textarea
+    id: stage_wraps
+    attributes:
+      label: "Stage 6 — Full-wrap covers (KDP cover calculator)"
+      description: Use https://kdp.amazon.com/cover-calculator with the final page count, trim, and ink. Do not reuse a paperback wrap for hardcover. Spine text only at 79+ pages. Hardcover wrap is 0.51 in; keep text out of the 0.4 in hinge.
+      placeholder: Calculator inputs (page count, ink, trim), output file paths, and spine width.
+
+  - type: checkboxes
+    id: stage_wraps_approval
+    attributes:
+      label: Stage 6 approval
+      options:
+        - label: "Proofy: APPROVED — wraps are ready"
+
+  - type: textarea
+    id: stage_metadata
+    attributes:
+      label: "Stage 7 — Metadata, description, keywords, and nudges"
+      description: Description says what readers get, why it’s worth the price, and what problem it solves. Add “If you like [comp], you’ll love this” and cross-promo to Audrey’s other books (for example Tartarian tablets → Linear A, Scribes of the Palace, Clues in Clay). No mock blurbs. Seven keywords, each 50 characters or fewer. Do not put other authors in the keyword boxes.
+      placeholder: Paste the description draft, the seven keywords, categories, and the nudge lines.
+
+  - type: checkboxes
+    id: stage_metadata_approval
+    attributes:
+      label: Stage 7 approval
+      options:
+        - label: "Proofy: APPROVED — metadata and description are ready"
+
+  - type: textarea
+    id: stage_kdp_fields
+    attributes:
+      label: "Stage 8 — KDP upload fields (draft only)"
+      description: Fill every field from the template in docs/KDP-REFERENCE.md. Save as Draft in KDP if you are only preparing answers. Do not upload files or press Publish yet.
+      placeholder: "Language, series, edition, categories, rights, marketplace, prices, ISBN, DRM, Select, Expanded Distribution."
+
+  - type: markdown
+    attributes:
+      value: |
+        ### AI disclosure (KDP Content tab)
+
+        - AI-generated content: **Yes**
+        - Tool used: the single tool selected in Stage 3 (Grok Imagine or Grok Image), including any images, captions, docs, or text work it did
+        - Images, when a few covers or plates were generated: **One or a few AI-generated images, minimal or no editing**
+        - Translations: **None**
+
+  - type: checkboxes
+    id: ai_used_for
+    attributes:
+      label: This tool was used for
+      options:
+        - label: Images
+        - label: Captions
+        - label: Docs
+        - label: Text
+
+  - type: checkboxes
+    id: stage_kdp_fields_approval
+    attributes:
+      label: Stage 8 approval
+      options:
+        - label: "Proofy: APPROVED — upload fields are ready, nothing has been sent to KDP"
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Stage 9 — Push the button to upload
+
+        This is the only step that sends files or a publish request to KDP.
+
+        Both boxes below must be checked first. If either box is empty, stop.
+
+  - type: checkboxes
+    id: stage_upload_gate
+    attributes:
+      label: Upload gate (both required before anyone uploads or publishes)
+      options:
+        - label: "Proofy: FINAL APPROVED — all earlier stages are approved and the files may go to KDP"
+        - label: "Audrey's yes — I approve uploading this book to KDP"
+
+  - type: textarea
+    id: stage_upload_notes
+    attributes:
+      label: Upload notes (after the gate is checked)
+      description: Record what was uploaded (draft vs submitted), which formats, and the KDP status. Do not publish live unless Audrey’s yes covers publication, not only a draft upload.
+      placeholder: "e.g. Paperback uploaded as Draft on DATE. Not published."
+
+  - type: textarea
+    id: stage_companions
+    attributes:
+      label: "Stage 10 — Matching coloring book and puzzle book"
+      description: Queue companion listings. Coloring books use black-and-white interiors on the cheapest paper (groundwood when available). Open a new WR for each companion when work starts, or track paths here.
+      placeholder: Planned titles and status.
+
+  - type: checkboxes
+    id: stage_companions_approval
+    attributes:
+      label: Stage 10 approval
+      options:
+        - label: "Proofy: APPROVED — companion books are queued or have their own WRs"
