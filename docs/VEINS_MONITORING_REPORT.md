@@ -23,6 +23,7 @@ artifacts tab to track trends across builds.
 ## Live snapshot — 2026-11-10
 ## Live snapshot — 2026-11-12
 ## Live snapshot — 2026-11-13
+## Live snapshot — 2026-11-14
 
 ```text
 Overall: 🔴 DOWN  |  Effectiveness index: 0/100
@@ -62,9 +63,11 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
 **Bottom line (2026-11-10):**
 **Bottom line (2026-11-12):**
 **Bottom line (2026-11-13):**
+**Bottom line (2026-11-14):**
 - VEINS fired 3 times between 2026-07-02 and 2026-07-22, all targeting the same
   flaky workflow (`🎛️ PR State Orchestrator`), generating 7 stub proposals.
 - **Zero proposals have been actioned.** The stub boilerplate is still in every file.
+- The engine has been **silent for 115 days** — it stopped firing around 2026-07-22.
 - The engine has been **silent for 114 days** — it stopped firing around 2026-07-22.
 - The engine has been **silent for 113 days** — it stopped firing around 2026-07-22.
 - The engine has been **silent for 111 days** — it stopped firing around 2026-07-22.
@@ -78,6 +81,7 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
 Three rows on record:
 Five rows on record:
 Six rows on record:
+Seven rows on record:
 
 | snapshot_at | status | effectiveness | stubs | days_silent | sheaf_H¹ |
 |---|---|---|---|---|---|
@@ -86,10 +90,11 @@ Six rows on record:
 | 2026-11-10T09:09:22Z | 🔴 down | 0/100 | 7 | 111 | 3 |
 | 2026-11-12T09:08:48Z | 🔴 down | 0/100 | 7 | 113 | 3 |
 | 2026-11-13T09:08:45Z | 🔴 down | 0/100 | 7 | 114 | 3 |
+| 2026-11-14T09:08:48Z | 🔴 down | 0/100 | 7 | 115 | 3 |
 
 Trend: **status unchanged; engine silent 1 more day(s) since last check.** All key metrics are flat
 — stubs unresolved, engine offline, sheaf energy zero throughout. The only number
-moving is `days_since_last_commit`, now at 114.
+moving is `days_since_last_commit`, now at 115.
 — stubs unresolved, engine offline, sheaf energy zero throughout. No change since 2026-11-06.
 
 To add a row on demand:
@@ -254,6 +259,7 @@ node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
 |---|---|---|
 | P1 | VEINS engine has been **silent 111 days**. Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
 | P1 | VEINS engine has been **silent 113 days** (as of 2026-11-12). Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
+| P1 | VEINS engine has been **silent 115 days** (as of 2026-11-14). Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
 | P1 | VEINS engine has been **silent 114 days** (as of 2026-11-13). Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
 | P1 | **7 unactioned stubs** in `.veins/proposals/` all target `🎛️ PR State Orchestrator`. Either apply a real quarantine patch (edit the stub files, remove boilerplate, add an actual fix) or close them as resolved if the flakiness is no longer observed. | 🔴 Open |
 | P2 | `🎛️ PR State Orchestrator` is the **only component VEINS has ever flagged** (3 runs, 7 proposals, all stubs). The underlying flakiness was never resolved. Check if this workflow is still flaky or if the problem self-healed; either action the stubs or close them. | 🔴 Open |
@@ -264,6 +270,6 @@ node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
 
 Earlier readings (2026-11-05, 2026-11-06, 2026-11-07) are merged into the trend table above.
 Key counts at each point: 106 / 107 / 108 / 111 days silent, fingerprint refreshed
-Earlier readings (2026-11-05 through 2026-11-13) are merged into the trend table above.
-Key counts: 106 / 107 / 108 / 111 / 112 / 113 / 114 days silent, fingerprint refreshed
+Earlier readings (2026-11-05 through 2026-11-14) are merged into the trend table above.
+Key counts: 106 / 107 / 108 / 111 / 112 / 113 / 114 / 115 days silent, fingerprint refreshed
 2026-11-07 and again 2026-11-10. Items P1 and P2 (engine silence, unactioned stubs) remain open.
