@@ -5,6 +5,7 @@ This is the canonical copy of a GitHub issue template that mirrors the Notion da
 - This copy: [`amazon-resale-inventory.yml`](amazon-resale-inventory.yml)
 - Live form: `.github/ISSUE_TEMPLATE/amazon-resale-inventory.yml` in [reese-reviews](https://github.com/midnghtsapphire/reese-reviews)
 - Rules: [Amazon Rules](https://app.notion.com/p/4182aa319908811288d7cc88a4304b8b)
+- Enabled: `1` turns a rule on and `0` turns it off.
 
 ## What it mirrors
 
