@@ -1,3 +1,15 @@
+## 2026-11-14 — Auky — restore ACTIONS_MIGRATION.md and add free GitHub substitutes
+
+- Recovered `docs/governance/ACTIONS_MIGRATION.md` from PR #18279
+  (squash commit `b741f195027e5e17e849e7cdbbb4e6c04c09962a`). The file
+  was **recovered from git history, not rewritten**; that squash
+  commit is not an ancestor of current `main`. Added a recovery note
+  and a later-context section only. Added
+  `docs/governance/FREE_GITHUB_SUBSTITUTES.md` (Projects, Codespaces,
+  Packages, LFS, Advanced Security) with vendor-doc citations checked
+  2026-11-14. Pointers in `learnings.md`, `LEDGER.md`, `README.md`,
+  and `MASTER.md`. No workflow or CircleCI config changes.
+
 ## 2026-11-12 — BALLS — added incubating `products/beauty-kit/` with the BALLS Beauty Playbook research (GitHub beautification, other-tool tricks, market prices, 8 product ideas); additions only.
 ## 2026-11-12 — BALLS — Beauty Kit: three AudreyBuildsAI digital products
 
@@ -134,6 +146,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 2026-11-07
 
 - 2026-11-07 — Claude Fable 5 — `products/linear-a-lab/`: new incubating product (PRODUCT_INCUBATION_STANDARD). GORILA-GE license-clean Linear A corpus engine (1,711 inscriptions, schema `gorila-ge/1`, built from the public-domain-dedicated lineara.xyz data file — GORILA print corpus and SigLA are not license-clean); deterministic evidence/prosecution layer whose KU-RO arithmetic audit finds 8/22 documents summing exactly and reproduces the known HT 13 (+½) and HT 9a (−¾) discrepancies; test→deconstruct→prosecute→fix loop on LM Studio (stdlib-only client), first live case run on gemma-3-4b. 22 unit tests, offline, all green. BLUEPRINT.md, BLUEOCEAN.md, LEDGER.md, Library/ per standards.
+
+## 2026-11-06
+
+- 2026-11-06 — Grok 4.7 (Cursor Cloud) — `docs/governance/ACTIONS_MIGRATION.md`: hosted Actions reds are an account billing lock (jobs fail with 0 steps and "your account is locked due to a billing issue"), not workflow code. Inventory and runner/webhook migration targets for `pr-lifecycle.yml`, `pr-state-orchestrator.yml`, `pr-check-status.yml`, and `agent-audit-logger.yml`. No CircleCI job added: the four are inline `actions/github-script` and need GitHub event payloads CircleCI does not receive. `.github/workflows/` unchanged. Refs #18268. Audrey decides: disable hosted workflows (not delete). This changelog line was originally added in PR #18279 and was restored on 2026-11-14 when the file was recovered onto current `main`.
 
 ## 2026-11-04
 
