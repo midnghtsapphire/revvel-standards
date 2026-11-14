@@ -6,6 +6,7 @@
 | `label-allowlist.yml` | Fail unknown labels + sticky comment | New (compose with `sync-labels` / `arsc-labels`) |
 | `formal-auto-wr.yml` | Formal → WR artifacts; no merge | New |
 | `agent-scorecard-governance.yml` | Pack privilege scorecard | **Named to avoid** live `agent-scorecard.yml` |
+| `l1-material-warning.yml` | Warn (private) or block (public) when L1 / third-party source files appear | New |
 
 Auth model: see `standards/GITHUB_AUTH_TOKEN_MATRIX.md`.
 Actions write via `GITHUB_TOKEN`. Grok connector is separate (write restored per reconnect; see `standards/GITHUB_AUTH_TOKEN_MATRIX.md`).

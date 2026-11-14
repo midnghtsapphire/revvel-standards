@@ -1,0 +1,35 @@
+{
+  "description": "Path and filename patterns for L1 or third-party source files. The l1-material-warning workflow matches against file paths only, never file contents, so governance docs that mention these names do not trip the check.",
+  "ignore_paths": [
+    "standards/l1-source-registry.json",
+    "standards/SEARCH_AND_SOURCING.md",
+    "docs/governance/SEARCH_AND_SOURCING.md",
+    "docs/DATA_SOURCES.md",
+    "DECISIONS.md",
+    "PRIVATE_DATA_NOTICE.md",
+    "AGENTS.md",
+    ".github/workflows/l1-material-warning.yml",
+    "scripts/detect-l1-material.py"
+  ],
+  "path_substrings": [
+    "GORILA",
+    "RILA-S1",
+    "RILA_S1",
+    "RILA S1",
+    "lineara.xyz",
+    "lineara_xyz",
+    "lineara-xyz",
+    "LinearAInscriptions",
+    "linearb.xyz",
+    "LinearBInscriptions",
+    "mnamon",
+    "SigLA",
+    "sigla_crops",
+    "sigla-private"
+  ],
+  "filename_regexes": [
+    "(?i)GORILA-Vol.*\\.pdf$",
+    "(?i)EtCret.*\\.pdf$",
+    "(?i)RILA.*\\.pdf$"
+  ]
+}
