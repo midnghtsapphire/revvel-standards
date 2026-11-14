@@ -59,7 +59,11 @@ test('oaudrey-home CircleCI job probes /health and does not deploy', () => {
 
 test('front page names the three subdomains, the demo, and the deck', () => {
   const html = fs.readFileSync(path.join(PUBLIC, 'index.html'), 'utf8');
+  // 2026-11-14 MergeMender: the card heading is Partner Hub. The host is
+  // written in the raw page, not behind a character reference.
   assert.match(html, /https:\/\/affiliate-hub\.oaudrey\.com/);
+  assert.match(html, /Partner Hub/);
+  assert.match(html, /partner programs/);
   assert.match(html, /https:\/\/ai-video-toolkit\.oaudrey\.com/);
   assert.match(html, /https:\/\/screen-recorder-finder\.oaudrey\.com/);
   assert.match(html, /href="\/goap-agent-sales-deck\.pdf"/);
