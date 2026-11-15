@@ -239,6 +239,26 @@ jobs:
           name: Catalog seeder tests (offline fake Lago)
           command: node --test products/revenue-billing/plans/seed-plans.test.mjs products/revenue-billing/lago.test.mjs
 
+  # Security gate 4 (docs/security-gates/PLAN.md): a second reader's notes on the
+  # PR diff through an API. NEVER blocks: no key, spend gate closed, or provider
+  # error all print a notice and exit 0. Calls nothing unless the CircleCI project
+  # env has REVVEL_LLM_ALLOW_CLOUD=1 and OPENROUTER_API_KEY (Manus: also set
+  # REVIEW_PROVIDERS=openrouter,manus and MANUS_API_KEY). Added by Proofy.
+  api-code-review:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Unit tests for this gate
+          command: node --test tests/api-code-review.test.js
+      - run:
+          name: API code review of the PR diff (non-blocking)
+          no_output_timeout: 12m
+          command: node scripts/security-gates/api-code-review.js
+      - store_artifacts:
+          path: /tmp/security-gates
+          destination: security-gates
+
   # WR #18333 — apply the billing SQL twice to a throwaway Postgres 15 and run
   # the assertions (idempotency, constraints, RLS, no anon grants, webhook
   # dedupe). The secondary container is created fresh per run and holds no data.
@@ -522,6 +542,10 @@ workflows:
             branches:
               ignore: main
       - billing-selfhost-lint:
+          filters:
+            branches:
+              ignore: main
+      - api-code-review:
           filters:
             branches:
               ignore: main
