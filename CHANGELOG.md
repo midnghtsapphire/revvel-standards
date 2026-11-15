@@ -1,3 +1,15 @@
+## 2026-11-14 — Auky — restore ACTIONS_MIGRATION.md and add free GitHub substitutes
+
+- Recovered `docs/governance/ACTIONS_MIGRATION.md` from PR #18279
+  (squash commit `b741f195027e5e17e849e7cdbbb4e6c04c09962a`). The file
+  was **recovered from git history, not rewritten**; that squash
+  commit is not an ancestor of current `main`. Added a recovery note
+  and a later-context section only. Added
+  `docs/governance/FREE_GITHUB_SUBSTITUTES.md` (Projects, Codespaces,
+  Packages, LFS, Advanced Security) with vendor-doc citations checked
+  2026-11-14. Pointers in `learnings.md`, `LEDGER.md`, `README.md`,
+  and `MASTER.md`. No workflow or CircleCI config changes.
+
 ## 2026-11-12 — BALLS — added incubating `products/beauty-kit/` with the BALLS Beauty Playbook research (GitHub beautification, other-tool tricks, market prices, 8 product ideas); additions only.
 ## 2026-11-12 — BALLS — Beauty Kit: three AudreyBuildsAI digital products
 
@@ -134,6 +146,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 2026-11-07
 
 - 2026-11-07 — Claude Fable 5 — `products/linear-a-lab/`: new incubating product (PRODUCT_INCUBATION_STANDARD). GORILA-GE license-clean Linear A corpus engine (1,711 inscriptions, schema `gorila-ge/1`, built from the public-domain-dedicated lineara.xyz data file — GORILA print corpus and SigLA are not license-clean); deterministic evidence/prosecution layer whose KU-RO arithmetic audit finds 8/22 documents summing exactly and reproduces the known HT 13 (+½) and HT 9a (−¾) discrepancies; test→deconstruct→prosecute→fix loop on LM Studio (stdlib-only client), first live case run on gemma-3-4b. 22 unit tests, offline, all green. BLUEPRINT.md, BLUEOCEAN.md, LEDGER.md, Library/ per standards.
+
+## 2026-11-06
+
+- 2026-11-06 — Grok 4.7 (Cursor Cloud) — `docs/governance/ACTIONS_MIGRATION.md`: hosted Actions reds are an account billing lock (jobs fail with 0 steps and "your account is locked due to a billing issue"), not workflow code. Inventory and runner/webhook migration targets for `pr-lifecycle.yml`, `pr-state-orchestrator.yml`, `pr-check-status.yml`, and `agent-audit-logger.yml`. No CircleCI job added: the four are inline `actions/github-script` and need GitHub event payloads CircleCI does not receive. `.github/workflows/` unchanged. Refs #18268. Audrey decides: disable hosted workflows (not delete). This changelog line was originally added in PR #18279 and was restored on 2026-11-14 when the file was recovered onto current `main`.
 
 ## 2026-11-04
 
@@ -556,3 +572,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   exclusion of actual commented bodies; active tails after closing block
   comments remain checked. Preserved the earlier incorrect archive assertion
   and rule as dated history. Forty-seven child regressions pass.
+
+
+## 2026-11-14 UTC — Audrey saved replies, Gitar audit, and Facebook Page drafts
+
+- Added the internal bridge under `scripts/audrey-gitar-bridge/`, with exact authenticated `/audrey run` and `/audrey finish` routing through the existing command window. Registered only the `gitar-bridge`/`audrey` route, excluded its duplicate gateway delivery, and extended existing command-window CI.
+- Added optional draft-only/no-direct-Jules inputs to the canonical `wr-pr-creation.yml`; bridge issue handoffs use its actual `issue_number` contract. Existing callers, agent gates, approvals, labels and implementation routing remain visible and unchanged. A WR-document dispatch is not completed product code.
+- Added trusted-default-branch Gitar observation, validated fork-review relay, signed current-head/real-Page-ID publication drafts, protected exact-payload publishing, persistent uncertain-write protection, and optional HTTPS/redirect-safe Slack notices. No second fleet monitor, fallback chain or CI scaffold.
+- Passed 70 offline Python tests, 11 existing-router tests, six workflows with exact pinned actionlint 1.7.7, and the no-schedules guard. Related guards have one existing unchanged OpenCode paid-credential gating failure; root/production CI is not certified green and no guard/ratchet was weakened.
+- Preserved the original 20-file standalone bundle and source research as dated, hashed archives. Added detailed setup, saved replies, acceptance contract, repository findings and owner handoff; canonical `.env.example` receives names/safe defaults only.
+- Delivery is an additive draft branch/PR for owner review, not a main merge or activation. No work dispatch, Gitar request, Facebook post, Slack message, Page token extraction or secret/variable change occurred. Page/Gitar/required-reviewer/optional Slack connection checks remain explicit. Actor: Manus coordination with delegated code, workflow inspection and Slack transport specialists; Audrey owns the work.
