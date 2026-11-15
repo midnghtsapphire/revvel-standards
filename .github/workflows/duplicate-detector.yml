@@ -1,5 +1,9 @@
 name: Duplicate WR and PR Detector
 
+concurrency:
+  group: duplicate-detector-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   issues:
     types: [opened, edited]

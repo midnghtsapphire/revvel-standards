@@ -1,10 +1,76 @@
+"""CUDA-aware JIT compute provisioning wrapper.
+
+Detects available NVIDIA GPUs via `nvidia-smi`; falls back to CPU when
+unavailable. Designed for cost-optimized burst workloads.
+"""
+from __future__ import annotations
+
+import json
+import shutil
+import subprocess
+from dataclasses import dataclass, asdict
+"""JIT Compute provisioning wrapper via CUDA interfaces.
+
+Detects GPU via nvidia-smi with graceful CPU fallback.
+Used by the AI Architecture framework to route workloads to the
+cheapest viable hardware tier.
+"""
+# SYNTAX REPAIR 2026-11-15 (same blocker PR): this was a second module header
+# (another interleaved version). Its `from __future__ import annotations` is
+# illegal anywhere but the top of the file; removed, keeping the imports.
+import shutil
+import subprocess
+from dataclasses import dataclass, field
+from typing import List, Optional
+
+
+@dataclass
+class ComputeDevice:
+    kind: str  # "cuda" | "cpu"
+    index: int
+    name: str
+    memory_mb: int
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+class DeviceInfo:
+    name: str
+    kind: str  # "gpu" | "cpu"
+    memory_mb: int = 0
+    index: int = 0
+
+
+@dataclass
+class ProvisioningResult:
+    device: DeviceInfo
+    reason: str
+    fallback: bool = False
+    log: List[str] = field(default_factory=list)
+
+
+def _nvidia_smi_available() -> bool:
+    return shutil.which("nvidia-smi") is not None
+
+
+def detect_devices() -> List[ComputeDevice]:
+    """Return the list of available compute devices.
+
+    Falls back to a single CPU device when no NVIDIA GPU is detected.
+    """
+    if not _nvidia_smi_available():
+        return [ComputeDevice(kind="cpu", index=0, name="cpu", memory_mb=0)]
+
+def query_gpus() -> List[DeviceInfo]:
+    """Return list of visible NVIDIA GPUs, or empty list if none."""
+    if not _nvidia_smi_available():
+        return []
 """JIT Compute Provisioning wrapper via CUDA interfaces (mock-safe).
 
 Provides a thin abstraction over nvidia-smi with CPU fallback so the
 framework runs in any environment (CI, laptop, GPU host).
 """
-from __future__ import annotations
-
+# SYNTAX REPAIR 2026-11-15 (same blocker PR): third interleaved module header;
+# its mid-file `from __future__ import annotations` removed, imports kept.
 import json
 import shutil
 import subprocess
@@ -58,8 +124,125 @@ def detect_gpu() -> Optional[GPUInfo]:
         return GPUInfo(name=name, memory_mb=int(mem), utilization_pct=int(util), available=True)
     except (subprocess.SubprocessError, ValueError, OSError):
         return None
+                "--query-gpu=index,name,memory.total",
+                "--format=csv,noheader,nounits",
+            ],
+            stderr=subprocess.DEVNULL,
+            timeout=5,
+        ).decode()
+    except (subprocess.SubprocessError, OSError):
+        return [ComputeDevice(kind="cpu", index=0, name="cpu", memory_mb=0)]
+
+    # SYNTAX REPAIR 2026-11-15 (Claude session, blocker PR): this file holds
+    # several interleaved versions of the module (ComputeDevice / DeviceInfo /
+    # GPUInfo variants). Five orphaned lines of the DeviceInfo variant's
+    # try/except body sat here mid-function and broke compilation — the
+    # validate-before-push hook refuses EVERY push while any .py fails
+    # py_compile. Only that orphan fragment was removed; the interleaved
+    # versions (duplicate docstrings, dataclasses, __main__ blocks, and this
+    # function's GPUInfo annotation vs ComputeDevice body) still need a real
+    # reconstruction in a follow-up. Removing this note hides why a repair
+    # commit touched the middle of this function.
+    devices: List[ComputeDevice] = []
+    for line in out.strip().splitlines():
+        parts = [p.strip() for p in line.split(",")]
+        if len(parts) < 3:
+            continue
+        try:
+            idx = int(parts[0])
+            mem = int(parts[2])
+        except ValueError:
+            continue
+        devices.append(
+            ComputeDevice(kind="cuda", index=idx, name=parts[1], memory_mb=mem)
+        )
+
+    if not devices:
+        return [ComputeDevice(kind="cpu", index=0, name="cpu", memory_mb=0)]
+    return devices
 
 
+def select_device(min_memory_mb: int = 0) -> ComputeDevice:
+    """Pick the cheapest device that meets min_memory_mb.
+
+    Preference: CPU when min_memory_mb == 0; otherwise smallest GPU that fits.
+    """
+    devices = detect_devices()
+    if min_memory_mb <= 0:
+        # CPU-first for zero-memory workloads (cost optimization).
+        cpu = next((d for d in devices if d.kind == "cpu"), None)
+        if cpu:
+            return cpu
+    gpus = sorted(
+        [d for d in devices if d.kind == "cuda" and d.memory_mb >= min_memory_mb],
+        key=lambda d: d.memory_mb,
+    )
+    if gpus:
+        return gpus[0]
+    # Fallback to CPU
+    return ComputeDevice(kind="cpu", index=0, name="cpu", memory_mb=0)
+
+
+def provision(min_memory_mb: int = 0) -> dict:
+    """JIT provision a device and return a serializable descriptor."""
+    dev = select_device(min_memory_mb=min_memory_mb)
+    return {
+        "provisioned": True,
+        "device": dev.to_dict(),
+        "min_memory_mb": min_memory_mb,
+    }
+
+
+if __name__ == "__main__":
+    print(json.dumps(provision(), indent=2))
+
+
+# SYNTAX REPAIR 2026-11-15 (same blocker PR as the note above): two more
+# orphaned lines of the DeviceInfo variant's loop body sat here, indented
+# inside nothing. Removed; everything below is the DeviceInfo/GPUInfo
+# variants awaiting the same follow-up reconstruction.
+def provision(min_memory_mb: int = 0, prefer: Optional[str] = None) -> ProvisioningResult:
+    """Provision the best-fit device for a workload.
+
+    Args:
+        min_memory_mb: minimum required VRAM.
+        prefer: substring match against device name (e.g. "A100").
+    """
+    log: List[str] = []
+    gpus = query_gpus()
+    log.append(f"detected_gpus={len(gpus)}")
+
+    eligible = [g for g in gpus if g.memory_mb >= min_memory_mb]
+    if prefer:
+        preferred = [g for g in eligible if prefer.lower() in g.name.lower()]
+        if preferred:
+            eligible = preferred
+
+    if eligible:
+        best = max(eligible, key=lambda g: g.memory_mb)
+        return ProvisioningResult(device=best, reason="gpu_match", fallback=False, log=log)
+
+    log.append("falling_back_to_cpu")
+    return ProvisioningResult(
+        device=DeviceInfo(name="cpu", kind="cpu", memory_mb=0),
+        reason="no_eligible_gpu",
+        fallback=True,
+        log=log,
+    )
+
+
+if __name__ == "__main__":
+    result = provision()
+    print(f"device={result.device.name} kind={result.device.kind} fallback={result.fallback}")
+    for line in result.log:
+        print(f"  {line}")
+
+
+# SYNTAX REPAIR 2026-11-15 (same blocker PR): twelve orphaned lines of the
+# GPUInfo variant's detect_gpu() body (its nvidia-smi query and return) sat
+# here, indented inside nothing. Removed as unparseable; note that
+# provision_jit() below still calls detect_gpu(), whose surviving body is the
+# ComputeDevice variant's — the follow-up reconstruction must reconcile them.
 def select_hardware(workload_gb: float, latency_ms: int) -> str:
     """Pick the cheapest hardware tier that fits the workload."""
     if workload_gb <= 1 and latency_ms >= 1000:

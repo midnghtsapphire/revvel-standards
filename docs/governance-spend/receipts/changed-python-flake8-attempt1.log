@@ -1,0 +1,89 @@
+scripts/pot_research_engine.py::E401::5::multiple imports on one line
+import os, math, json, random, datetime, urllib.request
+         ^
+scripts/pot_research_engine.py::E302::13::expected 2 blank lines, found 1
+def _assert_cloud_allowed(call_site: str) -> None:
+^
+scripts/pot_research_engine.py::E302::22::expected 2 blank lines, found 1
+def llm(prompt: str) -> str:
+^
+scripts/pot_research_engine.py::E701::24::multiple statements on one line (colon)
+    if calls["n"] > MAX_CALLS: raise RuntimeError("budget exceeded")
+                             ^
+scripts/pot_research_engine.py::E231::28::missing whitespace after ','
+        return f"[dry-run answer {random.randint(1000,9999)}]"
+                                                     ^
+scripts/pot_research_engine.py::E128::33::continuation line under-indented for visual indent
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+        ^
+scripts/pot_research_engine.py::E302::38::expected 2 blank lines, found 1
+class Node:
+^
+scripts/pot_research_engine.py::E302::44::expected 2 blank lines, found 1
+def uct(node, c=1.41):
+^
+scripts/pot_research_engine.py::E701::45::multiple statements on one line (colon)
+    if node.visits == 0: return float("inf")
+                       ^
+scripts/pot_research_engine.py::E302::48::expected 2 blank lines, found 1
+def mcts(root, iterations=16):
+^
+scripts/pot_research_engine.py::E701::51::multiple statements on one line (colon)
+        while node.children: node = max(node.children, key=uct)          # select
+                           ^
+scripts/pot_research_engine.py::E501::53::line too long (125 > 120 characters)
+            subs = [s.strip("- ") for s in llm(f"Break into 4 sub-questions: {node.question}").splitlines() if s.strip()][:4]
+                                                                                                                        ^
+scripts/pot_research_engine.py::E701::54::multiple statements on one line (colon)
+            for s in subs: node.children.append(Node(s, node))
+                         ^
+scripts/pot_research_engine.py::E701::55::multiple statements on one line (colon)
+            if node.children: node = node.children[0]
+                            ^
+scripts/pot_research_engine.py::E702::59::multiple statements on one line (semicolon)
+            node.visits += 1; node.value += score; node = node.parent
+                            ^
+scripts/pot_research_engine.py::E702::59::multiple statements on one line (semicolon)
+            node.visits += 1; node.value += score; node = node.parent
+                                                 ^
+scripts/pot_research_engine.py::E302::61::expected 2 blank lines, found 1
+def grpo_update(node, group=4):
+^
+scripts/pot_research_engine.py::E701::63::multiple statements on one line (colon)
+    if not node.children: return
+                        ^
+scripts/pot_research_engine.py::E302::71::expected 2 blank lines, found 1
+def run(seed: str):
+^
+scripts/pot_research_engine.py::E306::75::expected 1 blank line before a nested definition, found 0
+    def walk(n, d=0):
+    ^
+scripts/pot_research_engine.py::E701::78::multiple statements on one line (colon)
+            if upd: updates.append({"node": n.question[:60], **upd})
+                  ^
+scripts/pot_research_engine.py::E701::79::multiple statements on one line (colon)
+            for c in n.children: walk(c, d + 1)
+                               ^
+scripts/pot_research_engine.py::E306::83::expected 1 blank line before a nested definition, found 0
+    def ser(n): return {"q": n.question, "visits": n.visits, "value": round(n.value, 3),
+    ^
+scripts/pot_research_engine.py::E704::83::multiple statements on one line (def)
+    def ser(n): return {"q": n.question, "visits": n.visits, "value": round(n.value, 3),
+    ^
+scripts/pot_research_engine.py::E305::89::expected 2 blank lines after class or function definition, found 1
+if __name__ == "__main__":
+^
+tests/test_spend_gate_delivery.py::E402::17::module level import not at top of file
+import pot_research_engine as research
+^
+1     E128 continuation line under-indented for visual indent
+1     E231 missing whitespace after ','
+7     E302 expected 2 blank lines, found 1
+1     E305 expected 2 blank lines after class or function definition, found 1
+2     E306 expected 1 blank line before a nested definition, found 0
+1     E401 multiple imports on one line
+1     E402 module level import not at top of file
+1     E501 line too long (125 > 120 characters)
+8     E701 multiple statements on one line (colon)
+2     E702 multiple statements on one line (semicolon)
+1     E704 multiple statements on one line (def)

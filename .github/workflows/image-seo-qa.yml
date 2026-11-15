@@ -1,6 +1,10 @@
 # PR gate: reject non-SEO image filenames (IMG_, DSC_, Screenshot, image.*)
 name: image-seo-qa
 
+concurrency:
+  group: image-seo-qa-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     paths:

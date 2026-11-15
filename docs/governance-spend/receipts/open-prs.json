@@ -1,0 +1,107 @@
+[
+  {
+    "baseRefName": "main",
+    "headRefName": "fix/security-no-destroy-20261115",
+    "number": 18428,
+    "title": "fix(security): block destructive changes and isolate trusted fleet alerts",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18428"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "fix/security-trivy-malware-20261115",
+    "number": 18427,
+    "title": "fix(security): enforce pinned Trivy and malware PR checks",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18427"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "feat/agent-completion-20261115",
+    "number": 18426,
+    "title": "feat: resume owned agent work with bounded lifecycle completion proof",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18426"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "docs/security-and-agent-follow-through-20261115",
+    "number": 18425,
+    "title": "docs: plan security checks and agent follow-through",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18425"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "fix/actions-concurrency-cost-leak",
+    "number": 18424,
+    "title": "fix(ci): 🔴 BLOCKER — stop paying for superseded workflow runs on every push",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18424"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "fix/windows-posix-test-portability",
+    "number": 18422,
+    "title": "fix(tests): make test suite runnable on Windows, not only POSIX",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18422"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "docs/sar-investigation-process",
+    "number": 18421,
+    "title": "Add SAR investigation process docs and pipeline",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18421"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "fix/sar-review-findings",
+    "number": 18420,
+    "title": "Fix 10 code-review findings in blue-ocean-sar SAR tools",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18420"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "fix/visiting-agent-oaudrey-home",
+    "number": 18419,
+    "title": "fix(ci): 🔴 BLOCKER — visiting-agent scan false-positives fail CircleCI on every PR",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18419"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "fix/secret-naming-convention",
+    "number": 18417,
+    "title": "fix(secrets): enforce <APP>_API_KEY / <APP>_TOKEN naming convention repo-wide",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18417"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "chunk/veins-monitoring-setup",
+    "number": 18416,
+    "title": "chore(veins): monitoring snapshot 2026-11-15 + auto-persist history",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18416"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "docs/inventory-and-organize-2026-11-14",
+    "number": 18413,
+    "title": "docs: inventory the repo + phase 1 organize (19 root moves, nothing deleted)",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18413"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "ci/trivy-fs-circleci-2026-11-14",
+    "number": 18412,
+    "title": "ci: add Trivy filesystem scan on CircleCI",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18412"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "docs/actions-migration-and-free-substitutes-2026-11-14",
+    "number": 18411,
+    "title": "docs: restore ACTIONS_MIGRATION.md and add free GitHub substitutes",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18411"
+  },
+  {
+    "baseRefName": "main",
+    "headRefName": "docs/notion-resale-inventory-template-2026-11-14",
+    "number": 18407,
+    "title": "Proofy: add Notion-mirrored Amazon Resale Inventory GitHub template — Proofy",
+    "url": "https://github.com/midnghtsapphire/revvel-standards/pull/18407"
+  }
+]
