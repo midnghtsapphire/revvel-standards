@@ -3,6 +3,16 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-14 — TriageChief — daily handoff rule, restored rules, handoffs/ folder (WR #18408 follow-up, draft PR)
+
+- **Actor:** TriageChief
+- **Requested by:** Audrey Evans, 14 Nov 2026 (t419u Proofy "starting at 1", t420u "Visiting agents. Not my first rodeo or second or third", t421u "Yes but why wasnt that caught in my standards two years of agent mishaps not being used anymore")
+- **Role:** executed
+- **Files:** `AGENTS.md` (section 0 and section R appended, plus three core-rule bullets); `VISITING_AGENTS.md` (section 0 and three inline bullets appended); `.github/copilot-instructions.md` (exact copy of `AGENTS.md`); `legacy/README.md` (dated correction note appended); `handoffs/TEMPLATE.md`, `handoffs/README.md`, `handoffs/proofy/2026-11-14.md` (added); `docs/cutover/mishap-records-audit-2026-11-14.md` (added); `CHANGELOG.md` (entry added)
+- **What was done:** Audited where agent mishaps and lessons are recorded and whether `AGENTS.md` enforces them at session start (it did not). Appended the session-start handoff rule and restored, with sources, the legacy rules the cutover left out. Seeded Proofy's handoff from its transcript, with uncertain items marked.
+- **Decisions:** Append only. Audrey's own words are quoted verbatim; agent-written rules are marked RECORDED. Rules that contradict her authority or the delete rule are not restored (R15). A check or merge gate for the handoff rule is PENDING her yes (S7, B5).
+- **Open / handoff:** Draft PR for Audrey's review. Conflicts for her: R1 item 7 against E3 and E5; R1 items 20 to 25 against C7; old affiliate mandates against F2 and F3. Not done: other pointer stubs, Proofy's repos, recovery of files deleted in commit `511a13be9`.
+
 ## 2026-11-14 — TriageChief — AGENTS.md rulebook cutover (WR #18408, draft PR #18409)
 
 - **Actor:** TriageChief

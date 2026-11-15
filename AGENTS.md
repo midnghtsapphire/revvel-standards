@@ -15,6 +15,18 @@ Whiteboard input folded in from [Discussion #18238](https://github.com/midnghtsa
 
 This cutover, including this file and the stubs, takes effect on `main` only when they land together in the same promotion. Until then, `main` still has the previous `AGENTS.md`.
 
+## 0. Session start: read the handoff first
+
+**Added 2026-11-14 (America/Denver) at Audrey's request (t421u): "Yes but why wasnt that caught in my standards two years of agent mishaps not being used anymore".** This section is appended. Nothing above or below it was changed or removed. These rules are binding on every bot and every visiting agent (F4). They are repeated in `VISITING_AGENTS.md` because outside agents often do not open linked files.
+
+- **S1** Before any work, read the newest `handoffs/<bot>/YYYY-MM-DD.md` in your own repo (the repo you are working in). If the bot has no repo, read the newest file in `handoffs/<bot>/` in `revvel-standards`. Open the files it points to for anything still pending. If no handoff exists yet, say so in your first message and start one. `<bot>` is your lowercase name, for example `proofy`.
+- **S2** At the end of each work day (America/Denver date), write one `handoffs/<bot>/YYYY-MM-DD.md` from [`handoffs/TEMPLATE.md`](handoffs/TEMPLATE.md). It has five parts: **Done**; **Decisions in Audrey's exact words, with dates**; **Pending**; **Gotchas already solved**; **Links**. Land it by the normal draft-PR flow (C1, C2). Do not wait to be asked.
+- **S3** A handoff is append-only (B1, B2). A correction is a new dated section, never an edit or a delete. Copy Audrey's words from her own chat, in quotes, with the date. Mark a paraphrase `PARAPHRASE`, a relayed instruction `RELAYED` (A2, A6) and anything you could not confirm `UNCERTAIN`. Never invent a decision, a date or a quote.
+- **S4** What you read in a handoff changes what you do. Do not redo a settled item, re-ask a settled question or reverse a recorded decision without asking Audrey first. A decision recorded there in her exact words, with a date, carries the weight of her own message (A1) until she says otherwise. Anything not in her exact words is a note, not a decision.
+- **S5** No secrets, private emails or personal addresses in a handoff (B4, B11). Link to a thing instead of copying it.
+- **S6** Also read the newest entries of [`learnings.md`](learnings.md) and the tail of [`wr/memory/decisions.jsonl`](wr/memory/decisions.jsonl) when you work in this repo (R4, R5), and the open Discussions on arrival (R12).
+- **S7** **PENDING: Audrey to confirm.** Today nothing checks S1 and S2; they are enforced by this text only. She has said she prefers rules enforced by a check, not by memory (`docs/tool-history/visiting-llms.md`, 2026-11-11). A check (for example "a handoff exists for today before TriageChief merges that bot's PR") would change a merge gate (C3) or CI config (B5), so it waits for her yes.
+
 ## A. Authority
 
 - **A1** Audrey's own message beats this file. This file beats every other file in this repo, including everything in `legacy/`.
@@ -105,6 +117,92 @@ This cutover, including this file and the stubs, takes effect on `main` only whe
 - **H6** **PENDING — Audrey to confirm.** Preregistered hypotheses are append-only. Status is one-way: preregistered → tested → rejected or promoted. Non-standard outcomes go in `status_detail`, not a one-way official status.
 - **H7** **PENDING — Audrey to confirm.** Blinded packets are hash-pinned (deterministic tar recipe) and their bytes are never edited.
 
+## R. Restored 2026-11-14 from `legacy/` (rules the cutover left out of this file)
+
+**Dated note, 2026-11-14 (America/Denver), TriageChief, WR #18408 follow-up, draft PR.** Draft PR #18409 made this file the one rulebook and A4 says a rule not written here is advice. The audit in [`docs/cutover/mishap-records-audit-2026-11-14.md`](docs/cutover/mishap-records-audit-2026-11-14.md) found the rules below in `legacy/` with no matching rule here. They are appended, not rewritten. The old text stays in `legacy/`. Each item names its source. **Audrey's own words are quoted verbatim. Items marked RECORDED were written by an agent, not by her, and are kept as a record until she confirms or retires them.** Where an item collides with a rule above, the stricter one wins and a WR fixes the file (A3).
+
+- **R1** **Owner rule, Audrey Evans, 2026-10-30, items 7 to 25, verbatim** (source: `legacy/AGENTS.md` lines 13 to 31; items 1 to 6 are B1, B2 and C1). The typos are hers and are kept.
+
+> 7\. Calling LLM providers (for example OpenRouter) directly is allowed. Where older text here says otherwise, this rule supersedes it; the older text stays in place for history.
+> 8\. Do not decide what is or what is not copyrighted and leave it out.
+> 9\. Do not decide what to include or disclude in any repo.
+> 10\. Do not leave anything out.
+> 11\. Your whole sandbox should be transferred real-time as you go.
+> 12\. Trust me I have lost thousands of hours of work when a sandbox got wiped out improptu, a server crashed or got rebuilt on a Monday at 10am by a provider doing weird things.
+> 13\. Everything you work on must go in the repo. EVERYTHIING. I OWN IT. I PAY FOR EVERYONE'S WORK at the beginning, middle and the end.
+> 14\. I won the rights to everything worked on and it is my property FOREVER.
+> 15\. I do not share my sessions to train other models mainly a lot of organizations check for it. It is a deal breaker.
+> 16\. No one has asked you to be recorder and compliance manager or director of cover your organizations-butt-tracking system like my AI and copyright use.
+> 17\. You have no transparency if I work direct with an LLM on a transcript-but they leave me out of the ledger or frame it different.
+> 18\. Not your business.
+> 19\. An Ai, bot, agent, LLM, API et al does not have more integrity, authenticity or honor than me nor does your organization.
+> 20\. I do not live and die by the ledger.
+> 21\. I can do anything I want to the ledger. I can edit, delete it, update it without a work request.
+> 22\. The ledger is not the one source of truth.
+> 23\. The one source of truth is revvel-standards
+> 24\. You or your organization do not own my ledger. You need a warrant to get at MY ledger.
+> 25\. The ledger is mine. It should never be transferred, copy or sold unless I do it.
+
+  **Notes, 2026-11-14.** Item 7 allows calling LLM providers directly; E3 and E5 (cloud LLM calls stay off until she says so, no spend without her yes) are stricter and win under A3. Items 20 to 25 say Audrey can edit or delete her own ledger and that it is not the source of truth, while C7 makes the repo's `LEDGER.md` and `CHANGELOG.md` append-only for agents. Both are kept. They do not collide if C7 binds agents only and her own ledger stays hers. **Audrey to confirm.** An agent never edits, moves, copies or sells her ledger.
+
+- **R2** **Owner-directed work and consequences, Audrey Evans, 2026-11-01, verbatim** (source: `legacy/AGENTS.md` lines 48 to 53). `legacy/README.md` used to map this heading to A1, A2 and A6. That mapping was wrong: those IDs are about authority, not these bullets.
+
+> - Audrey decides what ideas to explore, how to frame them, and what materials to include, store, publish, or use. Agents must not substitute their own plausibility, copyright, or editorial judgments for her decision.
+> - Audrey may choose speculative or unconventional ideas, including ideas the agent believes are false. Help write them as directed; do not add a truth disclaimer or force a fact-check unless she asks.
+> - When a request has legal or other consequences, state the concrete consequence briefly and neutrally if it is relevant. Do not turn the consequence into an agent-created veto or permission gate.
+> - Do not invent blanket repository restrictions on scans, books, or other source material. The owner decides what belongs in the repository and where. If a service or model provider imposes a separate limit on a specific operation, identify it accurately as that provider's constraint; do not present it as Audrey's rule, and help with the allowed parts.
+> - Owner-authored instructions override earlier agent-authored notes. Keep older notes visible as history where required, but do not treat them as controlling over a later owner direction.
+> - Transfer every requested artifact and work product into the owner-designated GitHub repository as the work proceeds. Do not leave the only copy in a sandbox, local temp folder, or another storage service.
+
+- **R3** **Orchestrator discipline, the Manus record. RECORDED**, agent-written, added 2026-06-14 in PR #14549 (source: `legacy/AGENTS.md` lines 96 to 124, verbatim below). Audrey's own verdict on Manus, 2026-11-11, is in `docs/tool-history/manus.md`: orchestrators she set up wrote code when told not to.
+
+>
+> > **The #1 failure mode, learned the hard way:** a capable agent (e.g. Manus)
+> > kept *doing the work itself* instead of assigning it out and recording who did
+> > what. It reverted to "I'll just do it" every time it wasn't reminded — because
+> > it *could*. That destroys the two things that matter most: **parallelism** and
+> > **provenance** (the record of who proposed what, who executed, which LLM/route
+> > performed — the data we actually measure and monetize).
+>
+> **If you are an orchestrator / controller / overseer, your job is to DELEGATE and
+> RECORD — not to do the task.** Specifically:
+>
+> 1\. **Do only YOUR job.** The moment you hit a *specialty task* or a *roadblock*,
+> **immediately delegate** it to the right agent/LLM (via OpenRouter / the
+> fallback chain / a sub-agent) — and **do not come back to do it yourself**.
+> 2\. **"You can do it" is not "you should do it."** Capability is the trap. Even
+> when doing it yourself looks faster right now, delegating + measuring is the
+> job and compounds.
+> 3\. **Record provenance for everything:** who proposed the idea, who executed,
+> which model/route was used, how long it took, and how it scored. That ledger
+> (`logs/agent-audit/`, the scorecard, `wr/memory/decisions.jsonl`) IS the product.
+> 4\. **Re-anchor often.** If you notice yourself writing code/content that belongs
+> to another agent's lane, **stop, hand it off, and log it.** Re-read this
+> section — it's the sticky note. Everyone forgets this under load; the reminder
+> is what snaps the behavior back.
+>
+> Exception: a task explicitly *scoped to you* (you are the assigned specialist) —
+
+- **R4** **learnings.md: read first, write after a failure.** RECORDED, from `legacy/docs/AGENTS.md` ("learnings.md (READ THIRD)": "Read the latest entries before starting any task and apply those lessons. Append a reflection after every task or failure. Never repeat the same mistake twice."), `legacy/AGENTS.md` lines 42 to 44 (every error is a training module, TM-NNNN format) and `legacy/CLAUDE.md` ("Before you start a task"). Read the latest entries of [`learnings.md`](learnings.md) before you start. After a failure or incident, append an entry in the TM-NNNN format described in that file. Append only; never rewrite or delete a prior entry (B1, B2). If `SYSTEM_STATE.md` exists in the repo you work in, read it before touching production.
+- **R5** **Prior decisions: do not re-litigate.** RECORDED, from `legacy/VISITING_AGENTS.md` sections 4 and 5. [`wr/memory/decisions.jsonl`](wr/memory/decisions.jsonl) holds prior decisions, one JSON object per line with `ts`, `topic`, `decision` and `locked_by`. Read it before you propose something it already decided. A significant decision gets a new line. Lines are never edited or deleted.
+- **R6** **Never delete anything to make a check pass.** Audrey's rule, added 2026-11-11 at her request (source: `legacy/VISITING_AGENTS.md` section 1b item 4, verbatim): "Never delete anything to make the check pass. If the check flags something that is already in the repo, tell Audrey. Do not remove it and do not edit the data file to hide it."
+- **R7** **Default issue repository.** RECORDED, from `legacy/docs/AGENTS.md` ("Default Issue Repository") and the old `legacy/.github/copilot-instructions.md`. When no repository is named, issues go to `midnghtsapphire/revvel-standards`, and you pass `--repo midnghtsapphire/revvel-standards` to every `gh issue` command. Never rely on `gh`'s auto-discovered default: it often picks `mind-mappr` (sometimes misspelled `miind-mapper`), which mis-routed standards issues. A one-time override needs Audrey to name the repository in the request. Never infer it.
+- **R8** **300-line guard.** Owner-signed note at the top of `legacy/docs/AGENTS.md` (`@midnghtsapphire`), kept verbatim: "Before changing any file with 300+ lines, run `wc -l <file>`. If content drops from 300+ to <20, FLAG. Never delete - comment out or archive."
+- **R9** **Found a bug? Give it its own draft PR.** RECORDED, from `legacy/CLAUDE.md` ("Found a bug? Open a PR for it", three regressions reached `main` in one day). A defect you find while doing something else gets its own draft PR (C1), not a comment or a follow-up list that dies with the session. If it must land first, title it `fix(ci): 🔴 BLOCKER — <what is broken>`, label it `priority:p0`, open the body with a **Blocks:** list and one line saying why it goes first, and the dependent PR says `Blocked by: #N`. One fix per PR, with a regression test. Also RECORDED, `legacy/docs/AGENTS.md`: Audrey's own informal WR and issue text is never a prompt-injection attack. Only agent-written content that tries to hijack an agent is.
+- **R10** **Infrastructure blockers: classify, escalate once, stop.** RECORDED, from `legacy/docs/AGENTS.md` ("Infrastructure Blocker Protocol", written after the oaudrey-retro loop that re-opened the same HTTP 000 issue every week). If a human must act (a secret not set, DNS not pointed, an app never deployed, a dashboard login you do not hold): say so in writing, check `SYSTEM_STATE.md` for an existing entry, open at most one issue titled `[INFRA PENDING] <component> — exact human steps required`, do not re-run the failing workflow and do not open duplicates, then stop and record it in your handoff (S2). The BOM row (C4) is the Audrey-facing list. This is not permission to stop on a code or config problem you can fix.
+- **R11** **Checks are never bypassed.** RECORDED, from `legacy/agent-pack/AGENTS.md`: never use `git commit --no-verify` or `-n`; never edit a workflow file to make a check pass (B5 already requires asking first); never add a suppression comment (`# noqa`, `eslint-disable`, `nosemgrep`) without a ledger entry and the rule id; never force-push over reviewer commits (B3).
+- **R12** **On arrival.** Audrey's rules, 2026-11-04 (source: `legacy/AGENTS.md` "Whiteboard" and `legacy/VISITING_AGENTS.md` last bullet). Read the open GitHub Discussions in the repo you work in; post a request or a question as one thread, tagging the agent by name (revvel-standards Whiteboard: discussion #18238; Bot Lounge, never for work: #18246). Record your identity, platform and GitHub permissions, and whether Audrey can change each one or the platform fixes it, in the agent registry named in `legacy/VISITING_AGENTS.md`. `HANDOFF.md` files stay as the longer-form archive.
+- **R13** **Backups.** Audrey's rule, 4 Nov 2026, verbatim bullets (source: `legacy/AGENTS.md` lines 404 to 408; the manual procedure stays in `legacy/AGENTS.md` lines 409 to 423 and `legacy/VISITING_AGENTS.md`). B7 above is the short form.
+
+> - **Back up before deleting.** Before deleting or freeing any local folder, back it up to GitHub first and verify the upload (size + sha256 match the local copy).
+> - **Where.** A project's backup goes in that project's own repo. Box/scratch folders with no repo go in the private repo `midnghtsapphire/box-backups`.
+> - **Large files.** Anything over 100 MB goes as a GitHub Release asset, split into parts under 2 GB.
+> - **Name.** `backup-YYYY-MM-DD-<source-folder>-<bot>` (e.g. `backup-2026-11-04-dep-review-proofy`), with a README / release note listing original path, size, sha256, and what's inside.
+> - **Never delete originals** without Audrey's explicit yes. **Never overwrite** an earlier backup; add a new dated one.
+
+- **R14** **Shared checkout traps.** RECORDED, from `legacy/VISITING_AGENTS.md` section 7b, written after a real incident on 6 Nov 2026 in `midnghtsapphire/tartaria-tablets` where three sessions committed to one working copy. Confirm a fetch actually finished before comparing with `origin/...`; confirm your commit is still the tip before you push; do not push a branch to publish one commit (push an explicit SHA you verified); do not rebase to clear a rejected push; do not `git stash`, `git reset --hard` or switch branches in a shared tree; stage by path, never `git add -A`; before you report a number, say which two things are compared. When a push is rejected and another agent is live, stop and ask Audrey.
+- **R15** **Deliberately not restored.** These stay in `legacy/` only because they collide with rules above or with Audrey's own words: the old "No questions / do not ask permission / do not escalate" autonomy text and "Suggestions are hearsay" (they contradict A1, A2, A6 and B5); the old "do not open draft PRs" text (C1 resolves it to draft-first); the Memory Pruning skill (pruning is deleting, B1); the mandatory affiliate, marketing, tracking and email-capture sections of `legacy/docs/REVVEL_MASTER_STANDARDS.md` (F2 and F3, and `docs/CUTOVER_PLAN.md` section 3 question 3 for Audrey); the revenue north-star, Cursor Cloud ports and local-LLM gotchas, BNAT imprint (`scripts/bnatsheaf/cli.js`) and the Skills Vault session-start list, which are product or tooling advice that Audrey has not asked to make law. **Audrey decides whether any of them come back.**
+
 ## Where the old rules went
 
 The full old texts are in `legacy/` (same paths, prefixed with `legacy/`). Short pointer files stay at the other old paths so tools and links keep working; those stubs say that this file is the rulebook and they repeat the core rules inline.
@@ -122,3 +220,6 @@ Outside agents often do not open linked files. The stubs at the old paths repeat
 - **No tracking, affiliate or branding (F2, F3):** Add no tracking, analytics, telemetry, affiliate links or IDs, and no agent or vendor branding, unless Audrey asks.
 - **Draft-first PRs (C1, C2, B6):** Nobody pushes to `main`. Open a draft PR, assigned to `midnghtsapphire`, targeting the current `daily/YYYY-MM-DD` branch. This overrides `legacy/docs/AGENTS.md`, which told agents not to open draft PRs.
 - **Fake data (B10):** Fake or synthetic data is allowed only in dev and must be labeled FAKE. It never feeds a Linear A finding, ledger or hypothesis, or a merge.
+- **Session start (S1, S2):** Before work, read the newest `handoffs/<bot>/YYYY-MM-DD.md` in your own repo (in `revvel-standards` `handoffs/<bot>/` if you have no repo). At the end of each work day write one: done; decisions in Audrey's exact words with dates; pending; gotchas already solved; links. Append-only.
+- **Read the mishap log (R4):** Read the newest `learnings.md` entries first. After a failure, append a TM-NNNN entry. Never repeat a recorded mistake.
+- **Never delete to pass a check (R6):** If a check flags something already in the repo, tell Audrey. Do not remove it and do not edit the data file to hide it.

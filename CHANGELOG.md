@@ -1,3 +1,7 @@
+## 2026-11-14 (5) — TriageChief — added the "Session start: read the handoff first" rule (S1 to S7), restored rules the cutover left out (R1 to R15), `handoffs/` template and Proofy seed; additions only
+
+- `AGENTS.md` section 0 and section R appended; `VISITING_AGENTS.md` repeats the session-start rule inline; `.github/copilot-instructions.md` is the exact copy. `legacy/README.md` got a dated correction note. New: `handoffs/TEMPLATE.md`, `handoffs/README.md`, `handoffs/proofy/2026-11-14.md`, `docs/cutover/mishap-records-audit-2026-11-14.md`. Nothing deleted or rewritten.
+
 ## 2026-11-14 (4) — TriageChief — AGENTS.md is the new rulebook; old rule files renamed to legacy/
 
 - Root `AGENTS.md` is the full METAL rulebook. The old `AGENTS.md` text is at `legacy/AGENTS.md` (`git mv`, nothing deleted). A draft-only `RULES.md` name from an earlier revision of this PR was folded in and removed; it never landed on `main`.
