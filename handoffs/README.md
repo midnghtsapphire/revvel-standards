@@ -12,3 +12,8 @@ Added 2026-11-14 at Audrey's request (t421u). Nothing in this repo was overwritt
 | Bot | Newest handoff |
 | --- | --- |
 | Proofy | [`proofy/2026-11-14.md`](proofy/2026-11-14.md) (seed, built from Proofy's transcript) |
+| TriageChief | [`triagechief/2026-11-14.md`](triagechief/2026-11-14.md) (written by the TriageChief executor) |
+
+## Enforcement (S7)
+
+`scripts/check_handoff.sh` runs in the CircleCI `lint-and-test` job. A PR from a branch whose prefix is listed in [`bots.conf`](bots.conf) fails when it changes anything outside `handoffs/` and `handoffs/<bot>/` has no file dated today or yesterday (America/Denver). Any other branch only gets a warning. To add a bot, append `<branch-prefix> <bot>` to `bots.conf`. Run it by hand with `bash scripts/check_handoff.sh`. Tests: `tests/check-handoff.test.js`.

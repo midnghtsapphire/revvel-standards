@@ -90,3 +90,7 @@ Why Proofy did not follow it: none of that reached Proofy's context. The cutover
 - `handoffs/TEMPLATE.md`, `handoffs/README.md` and a seed `handoffs/proofy/2026-11-14.md` built from Proofy's transcript, with uncertain items marked.
 - **Not done, needs Audrey (S7):** a check that fails when today's handoff is missing, or a TriageChief merge gate for it. That changes a merge gate or CI config (B5). Until then S1 and S2 rest on text alone, which is the weakness she named on 2026-11-11.
 - **Not done:** pointer stubs other than `VISITING_AGENTS.md` (`docs/AGENTS.md`, `MASTER.md`, `agent-pack/AGENTS.md`, `docs/BOT-COMMON-RULES.md`) do not yet repeat S1; Proofy's own repos still need an `AGENTS.md` link and a `handoffs/proofy/` folder; the deleted memory files from `511a13be9` are not restored.
+
+## Update, 2026-11-14 (evening, America/Denver): S7 is now a check
+
+The "Not done, needs Audrey (S7)" item above is done. The dispatcher reported that Audrey asked for a CI check enforcing daily handoffs (`RELAYED`; her exact words were not passed on). `scripts/check_handoff.sh` is now a step in the CircleCI `lint-and-test` job, with `handoffs/bots.conf` and `tests/check-handoff.test.js`. The text above is kept as written.
