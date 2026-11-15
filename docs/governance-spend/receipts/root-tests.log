@@ -7313,7 +7313,7 @@ not ok 996 - baseline gate exits 0 against the committed baseline (no new debt)
     stdout:
     stderr:flake8 baseline gate FAILED — 250 path::CODE count(s) above baseline.
     New debt is not allowed. Fix the new findings or (only after a real cleanup) lower the baseline.
-    
+
       products/beauty-kit/_shared/art.py::F401: 2 (baseline 0, +2)
       products/beauty-kit/_shared/art.py::F403: 1 (baseline 0, +1)
       products/beauty-kit/_shared/contrast.py::E225: 7 (baseline 0, +7)
@@ -7365,12 +7365,12 @@ not ok 996 - baseline gate exits 0 against the committed baseline (no new debt)
       products/beauty-kit/_shared/verify_all.py::E301: 2 (baseline 0, +2)
       products/beauty-kit/_shared/verify_all.py::E302: 4 (baseline 0, +4)
       ... and 200 more
-    
+
     See docs/PYTHON_FLAKE8_LINT.md for the developer workflow.
-    
-    
+
+
     1 !== 0
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected: 0
@@ -10631,10 +10631,10 @@ not ok 1392 - the repo has no new tracker or branding hits
       products/oaudrey-home/public/index.html:221 [marketing/affiliate] affiliate link, id, or code: <p>A directory for comparing affiliate programs from one page.</p>
       products/oaudrey-home/public/index.html:222 [marketing/affiliate] affiliate link, id, or code: <a class="go" href="https://affiliate-hub.oaudrey.com">affiliate-hub.oaudrey.com</a>
       products/oaudrey-home/public/index.html:265 [marketing/affiliate] affiliate link, id, or code: <p>oAudrey. This page does not run analytics and does not include affiliate code.</p>
-    
+
     Blocked by VISITING_AGENTS.md. Remove it, or ask Audrey to approve it for this repo.
     If she approved it, add a path + pattern + reason to "allowlist" in config/visiting-agent-patterns.json.
-    
+
   code: 'ERR_TEST_FAILURE'
   stack: |-
     genericNodeError (node:internal/errors:983:15)
