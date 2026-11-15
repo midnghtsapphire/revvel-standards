@@ -1,88 +1,52 @@
 <!--
-  PULL REQUEST TEMPLATE — Mirrors WR field-for-field
-  Jules normalizes WR + PR text to canonical voice.
-  This template enforces the mirror so normalization is deterministic.
-
-  RULE: Every field in the WR must have a corresponding section here.
-  RULE: No field may be omitted. N/A must state a reason.
-  RULE: Agents never merge their own PRs. Owner review required.
+  Rules live in AGENTS.md at the repo root. The old long template is kept at legacy/.github/pull_request_template.md.
+  Open this PR as a DRAFT and assign midnghtsapphire (C1).
 -->
 
-## WR Link
-
-Closes <!-- WR issue number -->
-
-## WR Class
-
-<!-- bug | style | docs | product | research | infrastructure | compliance | security -->
-
-## Priority
-
-<!-- P0 | P1 | P2 | P3 -->
-
-## Output Type
-
-<!-- production-app | desktop-tool | sellable-pdf | technical-documentation | client-code-task | project-management-doc | internal-script-automation | cli-product | mcp-product | api-product | invention-flow | research-paper | infrastructure-upgrade | compliance-audit | security-review -->
-
-## Domain
-
-<!-- agent-system | automation | ci-cd | distribution | docs | frontend | infrastructure | intelligence-layer | marketplace | mobile | monitoring | osint | payments | product-pipeline | research | security | standards | other -->
+Closes #<!-- WR issue number -->
 
 ## Summary
 
-<!-- One paragraph: what does this PR do? Outcome-oriented, not process-oriented. -->
+<!-- One paragraph: what this PR does and why. -->
 
-## Issue Context
+## Live test surface (D1, D2)
 
-<!-- What triggered this WR? Link to bug, user request, or strategic goal. -->
+<!-- A page Audrey can click, even for an API, CLI or MCP. Local run, tunnel, preview or hosted all count. If no host exists, give the local run command and add a BOM row. -->
 
-## Background & Motivation
+- Where: 
+- How to run it: 
 
-<!-- Why is this work needed? What's the underlying problem or opportunity? -->
+## BOM: what is paused, not failed (C4)
 
-## Scope
-
-<!-- What's in, what's out, boundaries with other WRs. -->
-
-## Changes
-
-<!-- Bullet list of every file changed and why. Link to specific lines where helpful. -->
+<!-- Missing data, API, secret or host: one row each on the BOM "Audrey to get" list. Write "none" if nothing is missing. -->
 
 - 
 
-## Research Findings (Tiered)
+## Checks (C3)
 
-<!-- Copy from WR. Every claim backed by citation. -->
+- [ ] Opened as a draft, assigned to midnghtsapphire
+- [ ] CircleCI green
+- [ ] No secret in the diff (B4)
+- [ ] Nothing deleted, no force-push (B1, B3)
+- [ ] Fake data, if any, is labeled and dev-only, and none is in Linear A work (B10)
+- [ ] `LEDGER.md` and `CHANGELOG.md` updated in the same commit (C7)
+- [ ] Deliverables checklist (D3): done, or N/A (scope pending Audrey)
 
-### A1 — Proven (>95%)
-- 
+## PR Deliverables (proposed scope, Audrey to confirm)
 
-### A2 — Established (80-95%)
-- 
+<!-- See docs/PR_DELIVERABLES.md. Applies to product and app work. Docs-only, chore, standards and bot-ops PRs: tick N/A and say why.
+     A "blocked on BOM" row never fails this PR: list the missing hosting, secret or data on the BOM "Audrey to get" list and ship the rest. -->
 
-### B2 — Emerging (60-80%)
-- 
-
-### B3 — Speculative (<60%)
-- 
-
-## Approach
-
-<!-- Design decisions, alternatives considered, why this approach. -->
-
-## Artifact Checklist
-
-<!-- Check every artifact this PR produces. Unchecked = not delivered. -->
-
-- [ ] Code — implementation complete, no scaffolding
-- [ ] Tests — unit + integration, all passing
-- [ ] Docs — README, API reference, inline comments updated
-- [ ] Monitoring — metrics, alerts, logs where applicable
-- [ ] Ops — deployment notes, rollback plan, runbook entry
-- [ ] Skills — SKILL.md for agent reuse (if agent-facing)
-- [ ] MCP manifest — updated (if agent-facing)
-- [ ] OpenAPI spec — updated (if API change)
-- [ ] PDF / booklet — generated (if user-facing product)
+- [ ] N/A: not a qualifying PR (reason: )
+- [ ] GitHub Action or Docker package, with a live test surface (or "blocked on BOM" row)
+- [ ] GitHub App or app, with a live test surface (or "blocked on BOM" row)
+- [ ] CLI, with a live test surface (or "blocked on BOM" row)
+- [ ] MCP server, with a live test surface (or "blocked on BOM" row)
+- [ ] API, with a live test surface (or "blocked on BOM" row)
+- [ ] Skill (`SKILL.md`)
+- [ ] Tool, with a live test surface (or "blocked on BOM" row)
+- [ ] 3 sellable PDFs, drawn from the group above or new
+- [ ] `DELIVERABLES.md` lists all ten rows (built, or blocked on BOM with a link to the BOM row)
 
 ## Validation
 
@@ -158,11 +122,8 @@ Closes <!-- WR issue number -->
 ## Deferred Items (if any)
 
 <!-- Explicitly list anything intentionally deferred. Link to follow-up WR. -->
+## Notes for Audrey
 
 - 
 
-## Review Notes for Owner
-
-<!-- Anything the owner should know before reviewing. -->
-
-- 
+Rules: [`AGENTS.md`](../AGENTS.md)

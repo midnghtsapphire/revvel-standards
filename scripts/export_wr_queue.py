@@ -9,7 +9,13 @@ Writes one Markdown file per WR: title, body, repo, labels, plus the fleet
 conventions header Roo must follow (branch naming, LEDGER rules, no secrets).
 Requires GITHUB_READ_TOKEN (or GITHUB_TOKEN) in the environment.
 """
-import argparse, json, os, re, sys, urllib.request
+
+import argparse
+import json
+import os
+import re
+import sys
+import urllib.request
 
 OWNER = "midnghtsapphire"
 API = "https://api.github.com"
@@ -37,25 +43,33 @@ State: {state} | Created: {created}
 {body}
 """
 
+
 def gh(path, params=None):
     qs = ""
     if params:
         from urllib.parse import urlencode
+
         qs = "?" + urlencode(params)
-    req = urllib.request.Request(API + path + qs, headers={
-        "Authorization": f"Bearer {TOKEN}",
-        "Accept": "application/vnd.github+json",
-        "User-Agent": "revvel-wr-exporter",
-    })
+    req = urllib.request.Request(
+        API + path + qs,
+        headers={
+            "Authorization": f"Bearer {TOKEN}",
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "revvel-wr-exporter",
+        },
+    )
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.load(r)
+
 
 def is_wr(issue):
     if "pull_request" in issue:
         return False
     t = issue.get("title", "")
-    return bool(re.search(r"\bWR\b|work request", t, re.I)) or \
-           any(l["name"].lower() in ("wr", "work-request") for l in issue.get("labels", []))
+    return bool(re.search(r"\bWR\b|work request", t, re.I)) or any(
+        lbl["name"].lower() in ("wr", "work-request") for lbl in issue.get("labels", [])
+    )
+
 
 def export(issue):
     repo = issue["repository_url"].split("/")[-1]
@@ -63,15 +77,21 @@ def export(issue):
     os.makedirs(OUT_DIR, exist_ok=True)
     path = os.path.join(OUT_DIR, f"WR-{repo}-{num}.md")
     with open(path, "w") as f:
-        f.write(HEADER.format(
-            repo=repo, num=num, owner=OWNER,
-            title=issue["title"].strip(),
-            url=issue["html_url"],
-            labels=", ".join(l["name"] for l in issue.get("labels", [])) or "none",
-            state=issue["state"], created=issue["created_at"],
-            body=(issue.get("body") or "(empty body)").strip(),
-        ))
+        f.write(
+            HEADER.format(
+                repo=repo,
+                num=num,
+                owner=OWNER,
+                title=issue["title"].strip(),
+                url=issue["html_url"],
+                labels=", ".join(lbl["name"] for lbl in issue.get("labels", [])) or "none",
+                state=issue["state"],
+                created=issue["created_at"],
+                body=(issue.get("body") or "(empty body)").strip(),
+            )
+        )
     return path
+
 
 def main():
     if not TOKEN:
@@ -86,9 +106,7 @@ def main():
     else:
         issues, page = [], 1
         while True:
-            batch = gh("/search/issues", {
-                "q": f"is:issue is:open user:{OWNER}",
-                "per_page": 100, "page": page})
+            batch = gh("/search/issues", {"q": f"is:issue is:open user:{OWNER}", "per_page": 100, "page": page})
             issues += batch.get("items", [])
             if len(issues) >= batch.get("total_count", 0) or page >= 10:
                 break
@@ -98,6 +116,7 @@ def main():
     for i in issues:
         print("wrote", export(i))
     print(f"{len(issues)} WR prompt pack(s) in {OUT_DIR}/")
+
 
 if __name__ == "__main__":
     main()

@@ -37,3 +37,6 @@ docs/notebook/**
 docs/grok/**
 mcp-servers/gemini-notebook-mcp-cli
 docs/case-files/**
+
+# Retired rule files kept verbatim (renamed, never deleted). See legacy/README.md.
+legacy/**

@@ -145,6 +145,15 @@
         "utm-source"
       ],
       "reason": "affiliate-hub is a product Audrey asked for and affiliate code is its purpose (WR #18342, #18330). The demo kit, the shared Stripe server and the deploy list only name or serve that product."
+    },
+    {
+      "paths": [
+        "products/oaudrey-home/public/index.html"
+      ],
+      "patterns": [
+        "affiliate"
+      ],
+      "reason": "Audrey's own Partner Hub product subdomain; owner-approved exception 2026-11-14 (delegated to MergeMender, PR #18401)."
     }
   ],
   "baseline": [

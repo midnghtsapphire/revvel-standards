@@ -148,13 +148,25 @@ const REQUIRED_SURFACES = [
     label: 'AGENTS.md port assignment',
     path: 'AGENTS.md',
     check: (root) => {
-      const p = path.join(root, 'AGENTS.md');
-      if (!fs.existsSync(p)) return { ok: false, detail: 'AGENTS.md missing' };
-      const text = fs.readFileSync(p, 'utf8');
-      const ok = /ghcr-console/i.test(text) && /3012/.test(text);
-      return ok
-        ? { ok: true, detail: 'ghcr-console listed on port 3012 in AGENTS.md' }
-        : { ok: false, detail: 'ghcr-console / port 3012 missing from AGENTS.md' };
+      // The 2026-11-14 rules cutover (PR #18409) made AGENTS.md the rulebook
+      // and moved the old text, including the product port table, unedited to
+      // legacy/AGENTS.md. The port table is still the SSOT for port
+      // assignments, so accept it in either place; still fail closed when the
+      // entry is in neither.
+      const candidates = ['AGENTS.md', 'legacy/AGENTS.md'];
+      let anyFile = false;
+      for (const rel of candidates) {
+        const p = path.join(root, rel);
+        if (!fs.existsSync(p)) continue;
+        anyFile = true;
+        const text = fs.readFileSync(p, 'utf8');
+        if (/ghcr-console/i.test(text) && /3012/.test(text)) {
+          return { ok: true, detail: 'ghcr-console listed on port 3012 in ' + rel };
+        }
+      }
+      return anyFile
+        ? { ok: false, detail: 'ghcr-console / port 3012 missing from AGENTS.md and legacy/AGENTS.md' }
+        : { ok: false, detail: 'AGENTS.md missing' };
     },
   },
   {
