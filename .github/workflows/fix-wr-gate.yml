@@ -1,4 +1,8 @@
 name: Fix-WR Gate
+
+concurrency:
+  group: fix-wr-gate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 on:
   pull_request:
     types: [opened, edited, synchronize, labeled, unlabeled]

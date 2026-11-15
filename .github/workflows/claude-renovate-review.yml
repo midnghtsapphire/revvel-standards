@@ -1,5 +1,9 @@
 name: Claude Renovate Review
 
+concurrency:
+  group: claude-renovate-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 # Reviews Renovate bot PRs using Claude Code for safety assessment.
 # Safe PRs are auto-approved; pr-state-orchestrator then handles
 # label progression and merge enablement.

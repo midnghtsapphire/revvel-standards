@@ -3,6 +3,10 @@
 # drift when run in strict mode. See docs/CONNECTIONS_REGISTRY_STANDARD.md.
 name: Connections Registry
 
+concurrency:
+  group: connections-registry-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 on:
   push:
     branches: [main]

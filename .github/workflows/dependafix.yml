@@ -16,6 +16,10 @@
 
 name: DependaFix AI Remediation
 
+concurrency:
+  group: dependafix-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]

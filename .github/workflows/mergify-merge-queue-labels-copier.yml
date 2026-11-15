@@ -1,4 +1,8 @@
 name: Mergify Merge-Queue Labels Copier
+
+concurrency:
+  group: mergify-merge-queue-labels-copier-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 on:
   pull_request_target:
     types:

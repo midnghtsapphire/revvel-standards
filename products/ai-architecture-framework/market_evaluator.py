@@ -75,15 +75,16 @@ def run(seed: int | None = None, out_dir: str | None = None) -> Dict:
 if __name__ == "__main__":
     seed = int(os.environ.get("MARKET_EVAL_SEED", "0")) or None
     print(json.dumps(run(seed=seed), indent=2))
-"""Market evaluator: schedules 3 product creations per run.
-
-Mocks Stripe/Gumroad integration. Emits a JSON report that downstream
-automation (GitHub Actions) uploads as an artifact.
+# SYNTAX REPAIR 2026-11-15 (blocker PR): two interleaved docstrings for the
+# second module version overlapped here — the first opened and was closed by
+# the second's opening quotes, leaving an unterminated string that broke
+# compilation repo-wide (the validate-before-push hook refuses every push).
+# Kept the fuller docstring; this file still holds two concatenated module
+# versions (two __main__ blocks) awaiting a follow-up reconstruction.
 """Market evaluator: schedules 3 product creations/day with Stripe/Gumroad mocks.
 
 Designed to run headless in GitHub Actions. Emits a JSON report per run.
 """
-from __future__ import annotations
 
 import json
 import os
@@ -100,6 +101,7 @@ CANDIDATE_TOPICS = [
     "JIT GPU cost calculator",
     "Gumroad launch kit",
     "Stripe metered billing recipes",
+]  # SYNTAX REPAIR 2026-11-15: list was truncated mid-literal by the interleave; closed here.
 import random
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone

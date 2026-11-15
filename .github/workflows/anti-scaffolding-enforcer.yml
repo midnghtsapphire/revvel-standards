@@ -15,6 +15,10 @@
 
 name: Anti-Scaffolding Enforcer
 
+concurrency:
+  group: anti-scaffolding-enforcer-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 # ═══════════════════════════════════════════════════════════════════════
 # FALSE POSITIVE EXCLUSIONS (permanent list - update this when new ones found)
 # - placeholder= (HTML form attributes)
