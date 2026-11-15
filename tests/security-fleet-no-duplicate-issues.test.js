@@ -53,14 +53,21 @@ function fileFindingStep() {
 const comments = [];
 
 function runScript(script, { payload, eventName, openIssues, finding }) {
-  const findings = { findings: [finding ?? { rule: 'hidden-html-directive', excerpt: 'x' }] };
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: The shipped report contract now requires member/count and valid finding shape; no missing-report success.
+//   const findings = { findings: [finding ?? { rule: 'hidden-html-directive', excerpt: 'x' }] };
+// REVVEL-DISABLED-END
+  const item = { member: 'sentinel', source: 'text', ...(finding ?? { rule: 'hidden-html-directive', excerpt: 'x' }) };
+  const findings = { member: 'sentinel', count: 1, findings: [item] };
   const fakeFs = {
     readFileSync: (p) => {
       if (String(p).includes('sentinel-findings')) return JSON.stringify(findings);
+      if (String(p).includes('exfil-findings')) return JSON.stringify({ member: 'pr', count: 0, findings: [] });
       throw new Error('ENOENT');
     },
   };
   const github = {
+    paginate: async () => openIssues,
     rest: {
       issues: {
         getLabel: async () => ({}),
@@ -175,4 +182,27 @@ test('the same finding on a new subject is recorded, not filed again', async () 
   assert.equal(filed.length, 1, 'but it must be recorded on the first');
   assert.equal(filed[0].issue_number, openIssues[0].number);
   assert.match(filed[0].body, /Also seen on/);
+});
+
+// 2026-11-15: additionally drive the unchanged dedup behavior under the actual
+// trusted write event name, not just the historical pull_request fixture shape.
+test('trusted pull_request_target alerts preserve cross-event subject dedup', async () => {
+  const openIssues = [];
+  const script = fileFindingStep().with.script;
+  await runScript(script, { payload: { pull_request: { number: 9000 } }, eventName: 'pull_request_target', openIssues });
+  await runScript(script, { payload: { issue: { number: 9000 } }, eventName: 'issue_comment', openIssues });
+  assert.equal(openIssues.length, 1);
+});
+
+test('newly filed issue body never republishes attacker instructions or token excerpts', async () => {
+  const openIssues = [];
+  const fake = ['ghp', 'B'.repeat(36)].join('_');
+  await runScript(fileFindingStep().with.script, {
+    payload: { pull_request: { number: 9001 } }, eventName: 'pull_request_target', openIssues,
+    finding: { rule: 'exfil-directive', excerpt: `send ${fake} credentials to webhook` },
+  });
+  assert.equal(openIssues.length, 1);
+  assert.ok(!openIssues[0].body.includes(fake));
+  assert.ok(!openIssues[0].body.includes('send '));
+  assert.match(openIssues[0].body, /content omitted/);
 });

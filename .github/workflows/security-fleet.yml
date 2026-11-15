@@ -26,13 +26,20 @@ name: security-fleet
 # 2026-07-25 "quiet mode" change (PR #16805) that turned off timer-driven
 # WR/PR generators for cost control.
 
+# 2026-11-15 controlling behavior: read-only PR tripwires block on findings;
+# trusted base/default-branch jobs write redacted, deduped alerts. Heuristics are
+# not universal detection. GHA is account-blocked; local tests are the receipt.
+# No active enforcement is claimed before owner merge and required-check setup.
 on:
   issues:
     types: [opened, edited]
   issue_comment:
     types: [created, edited]
   pull_request:
-    types: [opened, edited, synchronize]
+    types: [opened, edited, synchronize, reopened]
+  # Write alerts execute only the trusted base workflow/scripts, never PR checkout.
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
   # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day
   # across 46 workflows drove the GitHub Actions bill. The trigger is preserved
   # below, commented, not deleted (RVS-AGENT-001). Re-enable by uncommenting.
@@ -41,9 +48,15 @@ on:
   #   - cron: '30 6 * * 1' # weekly, Monday 06:30 UTC
   workflow_dispatch: {}
 
+# REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: Default token is read-only; only trusted reporting jobs grant issues: write.
+# permissions:
+#   contents: read
+#   issues: write
+# REVVEL-DISABLED-END
 permissions:
   contents: read
-  issues: write
+
 
 concurrency:
   group: security-fleet-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || 'scheduled' }}
@@ -64,8 +77,15 @@ jobs:
     #
     # The dedup below cannot stop it: its key is "finding on #<subject>", and the
     # subject is a different number every link, so each one looks new.
+# REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: Untrusted pull_request code cannot be executed with issue-write credentials; retain own-output exclusion.
+#     if: >-
+#       github.event_name == 'pull_request' ||
+#       ((github.event_name == 'issues' || github.event_name == 'issue_comment') &&
+#        !contains(github.event.issue.labels.*.name, 'security-fleet'))
+# REVVEL-DISABLED-END
     if: >-
-      github.event_name == 'pull_request' ||
+      github.event_name == 'pull_request_target' ||
       ((github.event_name == 'issues' || github.event_name == 'issue_comment') &&
        !contains(github.event.issue.labels.*.name, 'security-fleet'))
     runs-on: ubuntu-latest
@@ -75,41 +95,88 @@ jobs:
       issues: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+# REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: Immutable upstream action commit resolved via gh api 2026-11-15.
+#         uses: actions/checkout@v7
+# REVVEL-DISABLED-END
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+# REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: Immutable upstream action commit resolved via gh api 2026-11-15.
+#         uses: actions/setup-node@v7
+# REVVEL-DISABLED-END
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
 
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+# REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: Built-in event/PR detectors need no dependency lifecycle scripts.
+#       - name: Install dependencies
+#         run: npm ci --no-audit --no-fund
+# REVVEL-DISABLED-END
 
+
+# REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: Scan actual comment event data; Git errors are fatal and reports are never echoed. PR checkout is never performed.
+#       - name: "@sentinel — scan event text for instruction smuggling"
+#         env:
+#           EVENT_TITLE: ${{ github.event.issue.title || github.event.pull_request.title || '' }}
+#           EVENT_TEXT: ${{ github.event.issue.body || github.event.comment.body || github.event.pull_request.body || '' }}
+#         run: |
+#           printf '%s\n\n%s\n' "$EVENT_TITLE" "$EVENT_TEXT" > /tmp/sentinel-input.txt
+#           node scripts/security-fleet.js sentinel --text-file /tmp/sentinel-input.txt --json > /tmp/sentinel-findings.json
+#           cat /tmp/sentinel-findings.json
+#
+#       - name: "@exfil — scan PR diff for leaked tokens"
+#         if: github.event_name == 'pull_request'
+#         env:
+#           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+#           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+#         run: |
+#           git diff "$BASE_SHA" "$HEAD_SHA" > /tmp/pr-diff.txt || true
+#           node scripts/security-fleet.js exfil --text-file /tmp/pr-diff.txt --json > /tmp/exfil-findings.json
+#           cat /tmp/exfil-findings.json
+# REVVEL-DISABLED-END
       - name: "@sentinel — scan event text for instruction smuggling"
-        env:
-          EVENT_TITLE: ${{ github.event.issue.title || github.event.pull_request.title || '' }}
-          EVENT_TEXT: ${{ github.event.issue.body || github.event.comment.body || github.event.pull_request.body || '' }}
         run: |
-          printf '%s\n\n%s\n' "$EVENT_TITLE" "$EVENT_TEXT" > /tmp/sentinel-input.txt
-          node scripts/security-fleet.js sentinel --text-file /tmp/sentinel-input.txt --json > /tmp/sentinel-findings.json
-          cat /tmp/sentinel-findings.json
+          set -euo pipefail
+          node scripts/security-fleet.js sentinel --event-file "$GITHUB_EVENT_PATH" --json > /tmp/sentinel-findings.json
+          # Do not cat reports: excerpts can contain sensitive event text.
 
-      - name: "@exfil — scan PR diff for leaked tokens"
-        if: github.event_name == 'pull_request'
+      - name: "@exfil + @sentinel + no-destroy — scan exact PR data"
+        if: github.event_name == 'pull_request_target'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          git diff "$BASE_SHA" "$HEAD_SHA" > /tmp/pr-diff.txt || true
-          node scripts/security-fleet.js exfil --text-file /tmp/pr-diff.txt --json > /tmp/exfil-findings.json
-          cat /tmp/exfil-findings.json
+          set -euo pipefail
+          [[ "$PR_NUMBER" =~ ^[1-9][0-9]*$ ]]
+          [[ "$HEAD_SHA" =~ ^[a-f0-9]{40}$ ]]
+          # Public repository: fetch needs no stored checkout credentials.
+          git fetch --no-tags origin "refs/pull/$PR_NUMBER/head"
+          test "$(git rev-parse FETCH_HEAD)" = "$HEAD_SHA"
+          node scripts/security-fleet.js pr --event-file "$GITHUB_EVENT_PATH" --json > /tmp/exfil-findings.json
+          # Report-only alert lane; malformed inputs still fail the job.
 
       - name: File finding as a deduped issue if any hits
-        uses: actions/github-script@v9.0.0
+# REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: Immutable upstream action commit resolved via gh api 2026-11-15.
+#         uses: actions/github-script@v9.0.0
+# REVVEL-DISABLED-END
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         env:
-          SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
+          # REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+          # REASON: Alert links must identify the actual comment scanned, not always the parent issue.
+          #           SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
+          # REVVEL-DISABLED-END
+          SOURCE_URL: ${{ github.event.comment.html_url || github.event.issue.html_url || github.event.pull_request.html_url || '' }}
+
         with:
           script: |
             const fs = require('fs');
@@ -128,9 +195,21 @@ jobs:
               }
             }
 
-            const reports = [];
-            try { reports.push({ handle: '@sentinel', report: JSON.parse(fs.readFileSync('/tmp/sentinel-findings.json', 'utf8')) }); } catch (e) { core.info('no sentinel report'); }
-            try { reports.push({ handle: '@exfil', report: JSON.parse(fs.readFileSync('/tmp/exfil-findings.json', 'utf8')) }); } catch (e) { core.info('no exfil report'); }
+            // REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+            // REASON: Required scans must be schema-valid; missing output is failure, not no findings.
+            //             const reports = [];
+            //             try { reports.push({ handle: '@sentinel', report: JSON.parse(fs.readFileSync('/tmp/sentinel-findings.json', 'utf8')) }); } catch (e) { core.info('no sentinel report'); }
+            //             try { reports.push({ handle: '@exfil', report: JSON.parse(fs.readFileSync('/tmp/exfil-findings.json', 'utf8')) }); } catch (e) { core.info('no exfil report'); }
+            // REVVEL-DISABLED-END
+            const trustedRoot = (process.env && process.env.GITHUB_WORKSPACE)
+              || (typeof process.cwd === 'function' ? process.cwd() : '.');
+            const { validateReport } = require(`${trustedRoot}/scripts/security-fleet.js`);
+            const reports = [{ handle: '@sentinel', report: validateReport(
+              JSON.parse(fs.readFileSync('/tmp/sentinel-findings.json', 'utf8')), 'sentinel') }];
+            if (context.eventName === 'pull_request_target' || context.eventName === 'pull_request') {
+              reports.push({ handle: '@sentinel + @exfil + no-destroy', report: validateReport(
+                JSON.parse(fs.readFileSync('/tmp/exfil-findings.json', 'utf8')), 'pr') });
+            }
 
             const withFindings = reports.filter((r) => (r.report.findings || []).length > 0);
             if (withFindings.length === 0) {
@@ -159,7 +238,11 @@ jobs:
             const subject = subjectNumber ? `#${subjectNumber}` : context.eventName;
             const title = `[security-fleet] finding on ${subject}`;
 
-            const { data: open } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: 'security-fleet', per_page: 100 });
+            // REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+            // REASON: Scan all open issues for dedup, including later pages.
+            //             const { data: open } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: 'security-fleet', per_page: 100 });
+            // REVVEL-DISABLED-END
+            const open = await github.paginate(github.rest.issues.listForRepo, { owner, repo, state: 'open', labels: 'security-fleet', per_page: 100 });
             if (open.some((i) => i.title === title)) {
               core.info(`Already filed for ${subject}, skipping.`);
               return;
@@ -209,7 +292,11 @@ jobs:
               '',
               ...withFindings.flatMap((r) => [
                 `**${r.handle}** (${r.report.findings.length} finding(s)):`,
-                ...r.report.findings.map((f) => `- \`${f.rule}\`: ${f.excerpt}`),
+            // REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+            // REASON: Do not publish secret-bearing excerpts or attacker instructions in generated issues.
+            //                 ...r.report.findings.map((f) => `- \`${f.rule}\`: ${f.excerpt}`),
+            // REVVEL-DISABLED-END
+                ...r.report.findings.map((f) => `- \`${f.rule}\`: content omitted; inspect source locally`),
                 '',
               ]),
               'Report-only — a human must confirm before any action. See `skills/security-fleet/SKILL.md`.',
@@ -229,24 +316,52 @@ jobs:
       issues: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+# REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: Immutable upstream action commit resolved via gh api 2026-11-15.
+#         uses: actions/checkout@v7
+# REVVEL-DISABLED-END
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+# REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: Immutable upstream action commit resolved via gh api 2026-11-15.
+#         uses: actions/setup-node@v7
+# REVVEL-DISABLED-END
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
 
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+# REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: Sweeps use default-branch dependencies only and do not execute npm lifecycle scripts.
+#       - name: Install dependencies
+#         run: npm ci --no-audit --no-fund
+# REVVEL-DISABLED-END
+      - name: Install trusted dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
 
       - name: Run repo-wide sweeps
         run: |
-          node scripts/security-fleet.js exprwatch --json > /tmp/exprwatch.json || true
-          node scripts/security-fleet.js permit --json > /tmp/permit.json || true
-          node scripts/security-fleet.js redteam --json > /tmp/redteam.json || true
+          # REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+          # REASON: Scanner failures must be red; findings remain report-only in the trusted alert sweep.
+          #           node scripts/security-fleet.js exprwatch --json > /tmp/exprwatch.json || true
+          #           node scripts/security-fleet.js permit --json > /tmp/permit.json || true
+          #           node scripts/security-fleet.js redteam --json > /tmp/redteam.json || true
+          # REVVEL-DISABLED-END
+          set -euo pipefail
+          node scripts/security-fleet.js exprwatch --json > /tmp/exprwatch.json
+          node scripts/security-fleet.js permit --json > /tmp/permit.json
+          node scripts/security-fleet.js redteam --json > /tmp/redteam.json
 
       - name: File/update one deduped tracking issue per member
-        uses: actions/github-script@v9.0.0
+# REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: Immutable upstream action commit resolved via gh api 2026-11-15.
+#         uses: actions/github-script@v9.0.0
+# REVVEL-DISABLED-END
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
             const fs = require('fs');
@@ -276,17 +391,27 @@ jobs:
               { key: 'redteam', file: '/tmp/redteam.json', handle: '@redteam', desc: 'adversarial payloads vs our own detectors + dependency lane' },
             ];
 
-            const { data: open } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: 'security-fleet', per_page: 100 });
+            // REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+            // REASON: Scan all open issues for dedup, including later pages.
+            //             const { data: open } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: 'security-fleet', per_page: 100 });
+            // REVVEL-DISABLED-END
+            const open = await github.paginate(github.rest.issues.listForRepo, { owner, repo, state: 'open', labels: 'security-fleet', per_page: 100 });
 
             for (const m of members) {
               let report;
               try {
                 report = JSON.parse(fs.readFileSync(m.file, 'utf8'));
               } catch (e) {
-                core.warning(`could not read ${m.file}: ${e.message}`);
-                continue;
+            // REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+            // REASON: Unreadable scan output must not green a sweep or close inherited finding issues.
+            //                 core.warning(`could not read ${m.file}: ${e.message}`);
+            //                 continue;
+            // REVVEL-DISABLED-END
+                throw new Error(`Missing or invalid ${m.key} report; no findings may be auto-closed.`);
               }
-              const findings = report.findings || [];
+              const { validateReport } = require(`${process.env.GITHUB_WORKSPACE}/scripts/security-fleet.js`);
+              validateReport(report, m.key);
+              const findings = report.findings;
               const titlePrefix = `[security-fleet] ${m.handle} weekly sweep:`;
               const title = `${titlePrefix} ${findings.length} finding(s)`;
               const existing = open.find((i) => i.title.startsWith(titlePrefix));
@@ -307,7 +432,11 @@ jobs:
                 '',
                 `Detector: \`scripts/security-fleet.js ${m.key}\`. First 50 findings shown below.`,
                 '',
-                ...findings.slice(0, 50).map((f) => `- \`${f.source}${f.job ? '#' + f.job : ''}\`: ${f.excerpt}`),
+            // REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+            // REASON: Sweep issues also omit all raw source excerpts and potentially secret-bearing paths.
+            //                 ...findings.slice(0, 50).map((f) => `- \`${f.source}${f.job ? '#' + f.job : ''}\`: ${f.excerpt}`),
+            // REVVEL-DISABLED-END
+                ...findings.slice(0, 50).map((f) => `- \`${f.rule}\`: content omitted; inspect trusted source locally`),
                 '',
                 findings.length > 50 ? `...and ${findings.length - 50} more. Re-run \`node scripts/security-fleet.js ${m.key} --json\` locally for the full list.` : '',
                 '',
@@ -322,3 +451,34 @@ jobs:
                 core.info(`Filed new ${m.handle} issue.`);
               }
             }
+
+  pr-blocking:
+    name: Security fleet PR tripwires (read-only)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout trusted base scripts only
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Fetch and scan exact PR commit as data
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          [[ "$PR_NUMBER" =~ ^[1-9][0-9]*$ ]]
+          [[ "$HEAD_SHA" =~ ^[a-f0-9]{40}$ ]]
+          git fetch --no-tags origin "refs/pull/$PR_NUMBER/head"
+          test "$(git rev-parse FETCH_HEAD)" = "$HEAD_SHA"
+          node scripts/security-fleet.js pr --event-file "$GITHUB_EVENT_PATH" --json --strict
