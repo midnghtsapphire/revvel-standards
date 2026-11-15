@@ -12,7 +12,7 @@ const { execFileSync, spawnSync } = require('node:child_process');
 
 const ROOT = path.join(__dirname, '..');
 const SCAN = path.join(ROOT, 'scripts', 'visiting-agent-scan.js');
-const { loadConfig, scanFile, classify, inScope } = require(SCAN);
+const { loadConfig, scanFile, classify, inScope, toRepoPath } = require(SCAN);
 
 test('the repo has no new tracker or branding hits', () => {
   const out = execFileSync('node', [SCAN], { cwd: ROOT }).toString();
@@ -72,6 +72,43 @@ test('the scanner exits 1 on a new hit when given a file', () => {
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
+});
+
+// The test above only fails on Windows, because path.relative() is the only
+// thing producing a non-POSIX separator and it does that only there. It passed
+// in CI over a scanner that could not see a file handed to it by hand.
+//
+// An absolute path is the platform-independent control: inScope does
+// `file.split('/')[0]`, which yields '' for /repo/products/... on POSIX and the
+// whole string for C:\...\products\... on Windows. Neither is an include_dir,
+// so before the fix the file left scope, was never opened, and the process
+// exited 0 -- claiming "no new hits" about a file it never read.
+//
+// A literal backslash would NOT be platform-independent: on POSIX a backslash
+// is an ordinary filename character, so 'products\x\index.html' is one
+// nonexistent file rather than a path, and the case would go red there for the
+// wrong reason. The native separator is covered by the unit test below instead.
+test('the scanner exits 1 on a new hit when given an absolute path', () => {
+  const dir = fs.mkdtempSync(path.join(ROOT, 'products', '.vas-test-'));
+  try {
+    const abs = path.join(dir, 'index.html');
+    fs.writeFileSync(abs, "<script>gtag('js', new Date())</script>\n");
+    const r = spawnSync('node', [SCAN, abs], { cwd: ROOT });
+    assert.equal(r.status, 1, 'absolute path must still reach the scanner');
+    // The reported path must be normalized, because the allowlist globs, the
+    // baseline map keys, and --write-baseline all key on this same string.
+    assert.match(r.stderr.toString(), /products\/\.vas-test-[^/\\]+\/index\.html:1/);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('toRepoPath normalizes native separators and absolute paths', () => {
+  // path.join uses the platform separator, so this asserts the same contract on
+  // Windows (backslashes) and POSIX (already forward slashes).
+  assert.equal(toRepoPath(path.join('products', 'app', 'index.html')), 'products/app/index.html');
+  assert.equal(toRepoPath(path.join(ROOT, 'products', 'app', 'index.html')), 'products/app/index.html');
+  assert.equal(toRepoPath('products/app/index.html'), 'products/app/index.html');
 });
 
 test('every allowlist entry states a reason, and the data file never grows silently', () => {

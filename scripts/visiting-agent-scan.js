@@ -65,6 +65,33 @@ function trackedFiles() {
     .toString('utf8').split('\0').filter(Boolean);
 }
 
+// Normalize an incoming path into the repo-relative, forward-slash form that
+// every downstream consumer is written in: inScope's `split('/')[0]`, the
+// allowlist and exclude globs, the baseline map's keys, and the baseline this
+// script writes back out.
+//
+// Without this, a path in any other shape is silently dropped. inScope does
+// `file.split('/')[0]` and compares the result against scope.include_dirs, so
+// on Windows `products\x\index.html` yields the WHOLE string as element 0,
+// matches no include_dir, and the file leaves scope. The scan then finds
+// nothing and the process exits 0 -- reporting "no new hits" for a file it
+// never opened. That is gotcha 6: the exit code reported that the tool
+// finished, not that the postcondition held.
+//
+// The whole-repo path was never affected, because trackedFiles() uses
+// `git ls-files -z`, which always emits forward slashes. Only the explicit-file
+// form broke, and only off a POSIX shell -- which is why the repo's own test
+// for it (tests/visiting-agent-scan.test.js, built on path.relative) failed on
+// Windows and passed in CI.
+//
+// --write-baseline has the same dependency from the other direction: it keys
+// baseline entries on hit.file, so an unnormalized path would write a key that
+// trackedFiles() can never produce again, permanently un-baselining the file.
+function toRepoPath(file) {
+  const rel = path.isAbsolute(file) ? path.relative(ROOT, file) : file;
+  return rel.split(path.sep).join('/');
+}
+
 function scanFile(cfg, file, text) {
   const hits = [];
   const lines = text.split('\n');
@@ -85,7 +112,10 @@ function classify(cfg, hit) {
 
 function scan(cfg, files) {
   const out = { new: [], allowlisted: [], baselined: [] };
-  for (const f of files) {
+  // Normalize once, here, rather than inside inScope: classify(), the baseline
+  // writer, and the console output all key on this same string, so they must
+  // see the normalized form too.
+  for (const f of files.map(toRepoPath)) {
     if (!inScope(cfg, f)) continue;
     let text;
     try { text = fs.readFileSync(path.join(ROOT, f), 'utf8'); } catch (_) { continue; }
@@ -130,4 +160,4 @@ function main(argv) {
 }
 
 if (require.main === module) process.exit(main(process.argv));
-module.exports = { loadConfig, scan, scanFile, classify, inScope, globToRegex };
+module.exports = { loadConfig, scan, scanFile, classify, inScope, globToRegex, toRepoPath };

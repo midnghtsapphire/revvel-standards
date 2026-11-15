@@ -17,6 +17,8 @@
  *   Idempotent: if the issue already has a "Dispatched" comment from this bot, it exits.
  */
 
+import spendGate from "./llm-spend-gate.js";
+
 const {
   GH_TOKEN, MANUS_API_KEY, OPENROUTER_API_KEY,
   ISSUE_NUMBER, FORCED_ROUTE, REPO,
@@ -105,7 +107,11 @@ async function main() {
 
   // route === "roo"
   let plan = "(OpenRouter key not set — write the task plan by hand below.)";
-  if (OPENROUTER_API_KEY) {
+  // Spend gate (#17850): the plan draft is a paid call, so it only runs when
+  // REVVEL_LLM_ALLOW_CLOUD is exactly "1". Otherwise the pack says to write it by hand.
+  // Added 2026-11-15 by Proofy so tests/llm-spend-gate-coverage passes.
+  // if (OPENROUTER_API_KEY) {   // earlier form, kept for history (2026-11-15 Proofy)
+  if (OPENROUTER_API_KEY && spendGate.cloudAllowed()) {
     const r = await fetch(`${OPENROUTER}/chat/completions`, {
       method: "POST",
       headers: {
