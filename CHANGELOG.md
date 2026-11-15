@@ -1,3 +1,7 @@
+## 2026-11-14 (7) — TriageChief — markdownlint fixes in the notebook audit pages and the deterministic-search spec
+
+- Bare notebook URLs wrapped in angle brackets (MD034) in `docs/cutover/notebooks/*.md` and `docs/specs/DETERMINISTIC_SEARCH_SPEC.md`; one heading lost its trailing quote mark (MD026). Wording otherwise unchanged. This was needed for the CircleCI changed-Markdown gate on #18410.
+
 ## 2026-11-14 (6) — TriageChief — S7: a CircleCI step fails a bot PR that has no handoff dated within the last day
 
 - Added `scripts/check_handoff.sh`, `handoffs/bots.conf`, `tests/check-handoff.test.js`, one `lint-and-test` step, and `handoffs/triagechief/2026-11-14.md`. S7 in `AGENTS.md` (and its exact copy) now describes the check instead of waiting for Audrey. See LEDGER.md.

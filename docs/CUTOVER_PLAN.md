@@ -43,9 +43,9 @@ Each phase ends only when its receipts land in the same commit (C7). Phases 1 to
 
 **Phase 2: put HULL on the main line.** In `oaudrey`: promote `daily/2026-11-05` to `main` (her yes), install `structlog`, run both test suites in CircleCI (not hosted Actions, E1). Fix the `HashMap` list order and add a same-input-same-output test (G2, G7). Then make HULL the lookup behind this repo's skill index: generate `skills/REGISTRY.md` and `SKILLS_INDEX.yml` from the filesystem, which fixes the current drift (8 and 10 skills missing). That is the first real "deterministic search".
 
-**Phase 3: define and build deterministic search on CPU first.** Write a short spec: what is searched (skills, WRs, rules, case-file indexes), exact-match plus indexed full-text, a fixed result order, golden tests. Build it in HULL. SearchCrew (pull-only vendor APIs, MySQL FULLTEXT, append-only libraries) starts only after she green-lights it in her own words.
+**Phase 3: define and build deterministic search on CPU first.** Write a short spec: what is searched (skills, WRs, rules, case-file indexes), exact-match plus indexed full-text, a fixed result order, golden tests. Build it in HULL. SearchCrew (pull-only vendor APIs, MySQL FULLTEXT, append-only libraries) starts only after she green-lights it in her own words. The design basis, golden-test bar, and Phase A/B split are now in section 6 and [`docs/specs/DETERMINISTIC_SEARCH_SPEC.md`](specs/DETERMINISTIC_SEARCH_SPEC.md) (Audrey said go, t412u, 14 Nov 2026).
 
-**Phase 4: GPU / CUDA, only if a benchmark says so.** Needs a CPU baseline from phase 3, a GPU host, and Audrey naming what GPU search should do. Candidates from `revvel-metal-findings` are research only, not adopted. Credits or hardware need her yes first (E3).
+**Phase 4: GPU / CUDA, only if a benchmark says so.** Needs a CPU baseline from phase 3, a GPU host, and Audrey naming what GPU search should do. Candidates from `revvel-metal-findings` are research only, not adopted. Credits or hardware need her yes first (E3). Routing, dry-run default, and "GPU results must match the CPU goldens" are in section 6 and the same spec.
 
 **Phase 5: flip.** Agents are called through CLI or MCP only (G1, G3), using the inverted-twin interface contracts in `oaudrey` (`governance/METAL/inverted-twin-cli-mcp.md`). Automation and production leave the bot box (E2) once the CI home is decided (section 3, question 1).
 
@@ -65,7 +65,8 @@ Format follows `docs/Universal-BOM_List/`: what, why, which WR or PR, free or pa
 
 | What | Why | WR / PR | Free or paid | Link |
 | --- | --- | --- | --- | --- |
-| The CUDA deterministic search code or spec | Nothing found on GitHub; phases 3 and 4 wait on it | this WR | n/a | Audrey to point at it |
+| Deterministic search implementation (Phase A, CPU) | Spec now exists; the engine is still unbuilt | later WR / this cutover | free | [`docs/specs/DETERMINISTIC_SEARCH_SPEC.md`](specs/DETERMINISTIC_SEARCH_SPEC.md) |
+| Backup of Audrey's local cv-cuda repo to GitHub | `PROJECT_PLAN.md` and `README.md` in the "cv cuda in fedora" notebook look like a local tree that is not on GitHub | this cutover (BOM) | free | Audrey to point at the path |
 | Aegis-Rust and the Rust/Python hybrid materials | The "less-wordy METAL rewrite" cannot be built from what is in GitHub | this WR | n/a | Audrey to point at them |
 | GPU host (or a decision that it is not needed) | Phase 4 | this WR | paid, unknown | none chosen |
 | Self-hosted runner hardware, or the decision to use CircleCI only | Phase 2 CI; question 3.1 | this WR | free if her own hardware | `oaudrey` `scripts/CI.md` |
@@ -76,3 +77,37 @@ Format follows `docs/Universal-BOM_List/`: what, why, which WR or PR, free or pa
 | A named approved secret store | Five are documented | this WR | unknown | n/a |
 
 Nothing here fails the WR or the PR (C4).
+
+## 5. Deterministic flow builds (from Audrey's Aug 2026 NotebookLM notebook, gap check 2026-11-14)
+
+Source: Audrey's NotebookLM notebook "Revvel Standards: Deterministic AST Governance and Monorepo Architecture Analysis" (notes dated around August 11–13, 2026), checked against the repo on 14 Nov 2026 (America/Denver). Full write-up: [`docs/cutover/notebook-gap-check-2026-11-14.md`](cutover/notebook-gap-check-2026-11-14.md).
+
+Audrey said "great" (t406u, 14 Nov 2026) to adding these CPU-first, free builds to the plan. Each gets its own WR and draft PR later, after PR #18409. This section does not change CI config.
+
+The notebook's dashboard figures (393 RPS, 98.85% test success, $179,500 MRR) are **sample output, not data**. Do not seed them into any health snapshot.
+
+The notebook's symlink / `validate-symlinks.js` check is **superseded** by `scripts/check_rules_sync.sh` (Audrey approved the CircleCI sync check on 14 Nov 2026). No separate symlink check is planned; symlinks break on Windows.
+
+CPU-first, free builds (own WR and draft PR each, later):
+
+1. **Implement Grounding Gates** from the existing pending WR [`wr/pending/14-veins-grounding-gate.md`](../wr/pending/14-veins-grounding-gate.md) (GitHub WR [#15518](https://github.com/midnghtsapphire/revvel-standards/issues/15518), originally filed from that pending file via PR #15497). Compile plus the real test suite must pass before auto-merge or a "PASS / ready to ship" verdict; an LLM opinion may only WARN, never PASS.
+
+2. **A deterministic check that rejects `eslint-disable`, `@ts-ignore`, and empty `catch` blocks.** Stand-in for the never-built `linter-router.js`. CPU-only lint or grep gate, with a short allowlist if needed; no new router framework.
+
+3. **Build the research-to-code kickoff that issue [#15507](https://github.com/midnghtsapphire/revvel-standards/issues/15507) never got.** The issue is closed, but only a WR markdown merged; `wr:code` was never applied and no spec-to-action workflow exists. Label-driven, deterministic kickoff: `research:complete` → actionable coder task list / `wr:code`, plus stuck detection. Prefer templates and repo heuristics over a paid LLM.
+
+## 6. Deterministic search build plan
+
+Audrey said go (t412u, 14 Nov 2026, America/Denver). Full spec: [`docs/specs/DETERMINISTIC_SEARCH_SPEC.md`](specs/DETERMINISTIC_SEARCH_SPEC.md). This section does not change CI config. It refines phases 3 and 4; it does not start the implementation.
+
+**Design basis.** NotebookLM notebook "Pure Deterministic Cognition: A Blueprint for Indexed Meaning Units" ([audit](cutover/notebooks/3c217f5e-2c72-42d0-85d2-56fb9e07e5f8.md)). Meaning units (denota) are built from declared semantic axes, weights and relations, then indexed with audit rules. The pipeline is term/input → axes → score → relations → index → denotum → audit. An LLM may review or suggest, but it is not the engine.
+
+**Caveats, carried forward:** deterministic is not true; indexed is not universal; compression is not complete.
+
+**Phase A (CPU first).** A CPU-only reference implementation with golden tests: same input, same declared rules, and a fixed corpus snapshot must produce a **byte-identical** output and ranking, using a stable sort and declared tie-breaks. A determinism test in CircleCI is added later, under its own WR (CI change, needs her yes). This PR does not add that job.
+
+**Phase B (GPU only behind a benchmark).** After the CPU goldens exist, GPU acceleration may be used only if a benchmark against that baseline shows a real win on a host Audrey has approved. Work is routed by the JIT compute provisioning wrapper (Audrey's three versions, [summary](cutover/notebooks/audrey-pasted-cuda-jit-wrapper-2026-11-14.md); existing [`products/ai-architecture-framework/cuda_mlops_wrapper.py`](../products/ai-architecture-framework/cuda_mlops_wrapper.py)). The wrapper is a hardware picker with CPU fallback, not the search engine, and it is **dry-run by default**. No paid GPU spend without Audrey's yes (E3). GPU results must match the CPU golden outputs.
+
+**Learned rules** from the "cv cuda in fedora" notebook ([audit](cutover/notebooks/e173767c-f730-4a1d-8c52-6633ed0c60a0.md)): allocate the output once and reuse it in loops (the `_into` pattern); warm up and calibrate before claiming latency. In that notebook, "JIT" means kernel-compilation warm-up, not the provisioning wrapper.
+
+**BOM (does not fail this PR):** a GPU host decision, and a GitHub backup of Audrey's local cv-cuda repo once she points at the path. Notebook reports for this plan, including the four CUDA course notebooks and the pasted wrapper summary, are in [`docs/cutover/notebooks/`](cutover/notebooks/README.md). Source PDFs were not copied.
