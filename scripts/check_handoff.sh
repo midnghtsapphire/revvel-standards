@@ -57,7 +57,10 @@ else
     warn "no merge base with origin/$base (shallow clone?); cannot list changed files, so the handoff check cannot run."
     exit 0
   fi
-  CHANGED="$(git -C "$ROOT" diff --name-only "$mb" HEAD)"
+  if ! CHANGED="$(git -C "$ROOT" diff --name-only "$mb" HEAD)"; then
+    warn "git diff against origin/$base failed; cannot list changed files, so the handoff check cannot run."
+    exit 0
+  fi
 fi
 
 other="$(printf '%s\n' "$CHANGED" | grep -v '^$' | grep -v '^handoffs/' || true)"
