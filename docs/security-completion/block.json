@@ -1,0 +1,13 @@
+{
+  "session": "lifecycle-20261115-session1",
+  "next_action": {
+    "action": "Audrey reviews draft PR 18426 and merges only as owner; existing runner operator records one trusted metadata-only run; each external service operator wires its session/auth wrapper and records a receipt. Do not create paid tasks or retry automatically.",
+    "owner": "Audrey / existing runner and external-service integration operators"
+  },
+  "blocker": {
+    "kind": "release",
+    "reason": "Local tested implementation and draft PR exist, but owner review/merge and live lifecycle/service-wrapper receipts are pending; account-wide GitHub Actions trouble is external. Manus API review continuation is inactive because no usable API key is available in parent runtime.",
+    "owner": "Audrey / existing runner and external-service integration operators",
+    "retry_after": null
+  }
+}

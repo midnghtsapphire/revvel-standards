@@ -76,7 +76,7 @@ Services:
 - TRELLO_API_KEY: Trello integration
 - TRELLO_TOKEN: Trello auth token
 - RESEND_API_KEY: Email service
-- DIGITALOCEAN_API_TOKEN: Cloud infrastructure
+- DIGITALOCEAN_TOKEN: Cloud infrastructure
 - VERCEL_TOKEN: Deployment platform
 
 Vault:

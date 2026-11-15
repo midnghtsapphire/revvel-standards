@@ -1,4 +1,8 @@
 name: Trivy
+
+concurrency:
+  group: trivy-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 on:
   pull_request:
     branches:
@@ -15,35 +19,132 @@ on:
   workflow_dispatch: null
 permissions:
   contents: read
-  security-events: write
-  actions: read
+  # 2026-11-15 security scanner workstream: PR scans do not need write tokens.
+  # Legacy permissions retained; redacted reports replace raw SARIF on PRs.
+  # security-events: write
+  # actions: read
 jobs:
+  # 2026-11-15 security scanner workstream, fix/security-trivy-malware-20261115:
+  # Preserve the legacy block in place. It implicitly installed a mutable
+  # scanner, hid unfixed findings and returned zero on detections. Trivy is not
+  # AV. Replacement jobs below execute only reviewed base scripts, no secrets,
+  # and use verified official release bytes. See docs/security-completion/SCANNERS.md.
+  # trivy-fs:
+  #   name: trivy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v7
+  #     - name: Run Trivy filesystem scan
+  #       # a9c7b0f0 no longer exists in the upstream repo — the ref 404s and the
+  #       # job fails at setup. Re-pinned to the current release (#17832).
+  #       uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+  #       with:
+  #         scan-type: fs
+  #         scan-ref: .
+  #         scanners: vuln,misconfig,secret
+  #         format: sarif
+  #         output: trivy.sarif
+  #         severity: CRITICAL,HIGH,MEDIUM
+  #         ignore-unfixed: true
+  #         exit-code: "0"
+  #     - name: Upload SARIF to GitHub Code Scanning
+  #       if: hashFiles('trivy.sarif') != ''
+  #       continue-on-error: true
+  #       uses: github/codeql-action/upload-sarif@v4
+  #       with:
+  #         sarif_file: trivy.sarif
+  #         category: trivy
+  #   timeout-minutes: 30
   trivy-fs:
     name: trivy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-      - name: Run Trivy filesystem scan
-        # a9c7b0f0 no longer exists in the upstream repo — the ref 404s and the
-        # job fails at setup. Re-pinned to the current release (#17832).
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+      - name: Initialize fail-closed receipt
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/scanner-reports/trivy"
+          printf 'trivy: error\nReason: scanner-not-started; check trusted base scripts and hosted runner availability\n' > "$RUNNER_TEMP/scanner-reports/trivy/summary.txt"
+      - name: Checkout trusted base scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          scan-type: fs
-          scan-ref: .
-          scanners: vuln,misconfig,secret
-          format: sarif
-          output: trivy.sarif
-          severity: CRITICAL,HIGH,MEDIUM
-          ignore-unfixed: true
-          exit-code: "0"
-      - name: Upload SARIF to GitHub Code Scanning
-        if: hashFiles('trivy.sarif') != ''
-        continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v4
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: trusted
+          persist-credentials: false
+          submodules: false
+          lfs: false
+      - name: Checkout candidate as data
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          sarif_file: trivy.sarif
-          category: trivy
+          ref: ${{ github.sha }}
+          path: candidate
+          persist-credentials: false
+          submodules: false
+          lfs: false
+      - name: Run pinned Trivy with trusted policy
+        shell: bash
+        run: |
+          python3 -I "$GITHUB_WORKSPACE/trusted/scripts/security/scan.py" trivy \
+            --candidate "$GITHUB_WORKSPACE/candidate" \
+            --tools "$RUNNER_TEMP/trivy-tools" \
+            --reports "$RUNNER_TEMP/scanner-reports/trivy"
+      - name: Collect redacted Trivy receipt
+        if: always()
+        shell: bash
+        run: cat "$RUNNER_TEMP/scanner-reports/trivy/summary.txt" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload redacted Trivy receipt
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: trivy-redacted-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/scanner-reports/trivy/
+          if-no-files-found: error
+          retention-days: 14
+  malware-clamav:
+    name: malware-clamav
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
+    steps:
+      - name: Initialize fail-closed receipt
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/scanner-reports/clamav"
+          printf 'clamav: error\nReason: scanner-not-started; check trusted base scripts and hosted runner availability\n' > "$RUNNER_TEMP/scanner-reports/clamav/summary.txt"
+      - name: Checkout trusted base scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: trusted
+          persist-credentials: false
+          submodules: false
+          lfs: false
+      - name: Checkout candidate as data
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: candidate
+          persist-credentials: false
+          submodules: false
+          lfs: false
+      - name: Run pinned ClamAV and update official definitions
+        shell: bash
+        run: |
+          python3 -I "$GITHUB_WORKSPACE/trusted/scripts/security/scan.py" clamav \
+            --candidate "$GITHUB_WORKSPACE/candidate" \
+            --tools "$RUNNER_TEMP/clamav-tools" \
+            --reports "$RUNNER_TEMP/scanner-reports/clamav"
+      - name: Collect redacted malware receipt
+        if: always()
+        shell: bash
+        run: cat "$RUNNER_TEMP/scanner-reports/clamav/summary.txt" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload redacted malware receipt
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: malware-clamav-redacted-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/scanner-reports/clamav/
+          if-no-files-found: error
+          retention-days: 14
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

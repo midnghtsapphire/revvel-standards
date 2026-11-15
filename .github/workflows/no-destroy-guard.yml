@@ -1,9 +1,15 @@
 name: No-Destroy Guard
 
+concurrency:
+  group: no-destroy-guard-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 # Fails a PR that deletes existing apps/products or strips large amounts of code
 # from protected paths (the failure that wiped two finished apps under a PR that
 # claimed to "add a research WR"). Override an intentional removal with the
 # `allow-destroy` label. See scripts/no-destroy-guard.js.
+# 2026-11-15: the override above is retired history. No label may bypass this check.
+# Global loss/replacement tripwires execute only BASE scripts; HEAD blobs are data.
 
 on:
   pull_request:
@@ -17,14 +23,41 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
+# REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: Unpinned actions and PR checkout would permit security-script self-bypass; checkout BASE only.
+#       - uses: actions/checkout@v7
+#         with:
+#           fetch-depth: 0
+#       - uses: actions/setup-node@v7
+#         with:
+#           node-version: '22'
+#       - name: Block destructive diffs
+#         env:
+#           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+#           ALLOW_DESTROY: ${{ contains(github.event.pull_request.labels.*.name, 'allow-destroy') }}
+#         run: node scripts/no-destroy-guard.js
+# REVVEL-DISABLED-END
+      # Real upstream commit SHAs resolved via gh api on 2026-11-15.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
-      - uses: actions/setup-node@v7
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
+      - name: Fetch PR commit as data only
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          [[ "$PR_NUMBER" =~ ^[1-9][0-9]*$ ]]
+          [[ "$HEAD_SHA" =~ ^[a-f0-9]{40}$ ]]
+          git fetch --no-tags origin "refs/pull/$PR_NUMBER/head"
+          test "$(git rev-parse FETCH_HEAD)" = "$HEAD_SHA"
       - name: Block destructive diffs
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          ALLOW_DESTROY: ${{ contains(github.event.pull_request.labels.*.name, 'allow-destroy') }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: node scripts/no-destroy-guard.js

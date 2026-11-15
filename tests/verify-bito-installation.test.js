@@ -47,9 +47,23 @@ function assert(condition, message) {
 test('verify-bito-installation.sh exists and is executable', () => {
   const scriptPath = path.join(__dirname, '..', 'scripts', 'verify-bito-installation.sh');
   assert(fs.existsSync(scriptPath), 'Script file does not exist');
-  
-  const stats = fs.statSync(scriptPath);
-  assert(stats.mode & fs.constants.S_IXUSR, 'Script is not executable');
+
+  // The POSIX execute bit does not exist on Windows: fs.constants.S_IXUSR is
+  // undefined there, so `stats.mode & S_IXUSR` is NaN and always fails. The
+  // bit that actually matters to CI is the one recorded in git's index
+  // (100755), and that is the same on every platform — so assert on that
+  // where the filesystem cannot represent it, keeping the check a real
+  // control rather than a skip.
+  if (process.platform === 'win32') {
+    const mode = execSync(`git ls-files -s -- "${scriptPath}"`, {
+      encoding: 'utf8',
+      cwd: path.join(__dirname, '..')
+    }).trim().split(' ')[0];
+    assert(mode === '100755', `Script is not marked executable in git (mode ${mode || 'missing'})`);
+  } else {
+    const stats = fs.statSync(scriptPath);
+    assert(stats.mode & fs.constants.S_IXUSR, 'Script is not executable');
+  }
 });
 
 test('verify-bito-installation.sh runs without errors', () => {

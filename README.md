@@ -877,6 +877,8 @@ in [`docs/operating-model.md`](docs/operating-model.md).
 - Invention flow: [`templates/invention-flow-template.md`](templates/invention-flow-template.md)
 - Legacy refresh flow: [`templates/legacy-refresh-checklist.md`](templates/legacy-refresh-checklist.md)
 - GitHub Project schema: [`docs/github-project-schema.md`](docs/github-project-schema.md)
+- Actions billing-lock migration (recovered from PR #18279): [`docs/governance/ACTIONS_MIGRATION.md`](docs/governance/ACTIONS_MIGRATION.md)
+- Free substitutes for paid or limited GitHub features: [`docs/governance/FREE_GITHUB_SUBSTITUTES.md`](docs/governance/FREE_GITHUB_SUBSTITUTES.md)
 - Notion knowledge layer: [`docs/notion-structure.md`](docs/notion-structure.md)
 
 Hard rules: deepresearch never auto-builds; `OUTPUT_TYPE` is the hard
