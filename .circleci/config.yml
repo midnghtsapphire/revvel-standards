@@ -391,6 +391,17 @@ jobs:
           name: affiliate-hub next build
           command: cd products/affiliate-hub && npx next build
 
+  # Security gate 5 (docs/security-gates/PLAN.md): the reuse path. Tests run-all.sh,
+  # bootstrap.sh (pinned-SHA sparse fetch) and print-adopt-snippet.sh. Node
+  # built-ins and git only, no secret. Added by Proofy.
+  security-gates-adopt-test:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Adoption tests (run-all, bootstrap, snippet)
+          command: node --test tests/security-gates-adopt.test.js
+
   # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
   # and that every REVVEL-DISABLED block in changed files has all required
   # metadata fields (AGENT, MODEL, WR, DATE, STATUS).
@@ -570,6 +581,10 @@ workflows:
             branches:
               ignore: main
       - affiliate-hub-build:
+          filters:
+            branches:
+              ignore: main
+      - security-gates-adopt-test:
           filters:
             branches:
               ignore: main
