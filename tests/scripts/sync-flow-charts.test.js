@@ -41,8 +41,9 @@ function runTests() {
   // Test 3: Script runs in DRY_RUN mode without errors
   runTest('sync-flow-charts.js runs in DRY_RUN mode', () => {
     try {
-      const result = execSync(`REPO_ROOT="${repoRoot}" DRY_RUN=true node "${scriptPath}"`, {
+      const result = execSync(`node "${scriptPath}"`, {
         encoding: 'utf8',
+        env: { ...process.env, REPO_ROOT: repoRoot, DRY_RUN: 'true' },
         timeout: 30000,
         cwd: repoRoot
       });
@@ -56,8 +57,9 @@ function runTests() {
   // Test 4: Script detects flow charts directory
   runTest('sync-flow-charts.js detects flow charts directory', () => {
     try {
-      const result = execSync(`REPO_ROOT="${repoRoot}" DRY_RUN=true node "${scriptPath}"`, {
+      const result = execSync(`node "${scriptPath}"`, {
         encoding: 'utf8',
+        env: { ...process.env, REPO_ROOT: repoRoot, DRY_RUN: 'true' },
         timeout: 30000,
         cwd: repoRoot
       });
@@ -70,8 +72,9 @@ function runTests() {
   // Test 5: Script counts docs
   runTest('sync-flow-charts.js counts documentation files', () => {
     try {
-      const result = execSync(`REPO_ROOT="${repoRoot}" DRY_RUN=true node "${scriptPath}"`, {
+      const result = execSync(`node "${scriptPath}"`, {
         encoding: 'utf8',
+        env: { ...process.env, REPO_ROOT: repoRoot, DRY_RUN: 'true' },
         timeout: 30000,
         cwd: repoRoot
       });
@@ -89,8 +92,9 @@ function runTests() {
   // Test 6: Script reports metadata updates
   runTest('sync-flow-charts.js reports metadata updates', () => {
     try {
-      const result = execSync(`REPO_ROOT="${repoRoot}" DRY_RUN=true node "${scriptPath}"`, {
+      const result = execSync(`node "${scriptPath}"`, {
         encoding: 'utf8',
+        env: { ...process.env, REPO_ROOT: repoRoot, DRY_RUN: 'true' },
         timeout: 30000,
         cwd: repoRoot
       });
@@ -103,8 +107,9 @@ function runTests() {
   // Test 7: Script checks for broken references
   runTest('sync-flow-charts.js checks for broken references', () => {
     try {
-      const result = execSync(`REPO_ROOT="${repoRoot}" DRY_RUN=true node "${scriptPath}"`, {
+      const result = execSync(`node "${scriptPath}"`, {
         encoding: 'utf8',
+        env: { ...process.env, REPO_ROOT: repoRoot, DRY_RUN: 'true' },
         timeout: 30000,
         cwd: repoRoot
       });
@@ -118,8 +123,9 @@ function runTests() {
   // Test 8: Script doesn't modify files in DRY_RUN mode
   runTest('sync-flow-charts.js does not modify files in DRY_RUN mode', () => {
     try {
-      const result = execSync(`REPO_ROOT="${repoRoot}" DRY_RUN=true node "${scriptPath}"`, {
+      const result = execSync(`node "${scriptPath}"`, {
         encoding: 'utf8',
+        env: { ...process.env, REPO_ROOT: repoRoot, DRY_RUN: 'true' },
         timeout: 30000,
         cwd: repoRoot
       });
@@ -132,8 +138,9 @@ function runTests() {
   // Test 9: Script fails gracefully when flow charts directory doesn't exist
   runTest('sync-flow-charts.js fails gracefully with missing directory', () => {
     try {
-      const result = execSync(`REPO_ROOT="/tmp/nonexistent" DRY_RUN=true node "${scriptPath}"`, {
+      const result = execSync(`node "${scriptPath}"`, {
         encoding: 'utf8',
+        env: { ...process.env, REPO_ROOT: path.join(repoRoot, 'nonexistent-flow-charts-root'), DRY_RUN: 'true' },
         timeout: 10000,
         stdio: 'pipe'
       });
@@ -150,8 +157,9 @@ function runTests() {
   // Test 10: Script processes expected flow chart files
   runTest('sync-flow-charts.js processes expected flow chart files', () => {
     try {
-      const result = execSync(`REPO_ROOT="${repoRoot}" DRY_RUN=true node "${scriptPath}"`, {
+      const result = execSync(`node "${scriptPath}"`, {
         encoding: 'utf8',
+        env: { ...process.env, REPO_ROOT: repoRoot, DRY_RUN: 'true' },
         timeout: 30000,
         cwd: repoRoot
       });

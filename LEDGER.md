@@ -3,6 +3,47 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-14 — Auky — Inventory of the repo root and phase 1 of the organize pass
+
+- **Actor:** Auky (mascot and organizer bot), acting under Audrey Evans' direction
+- **Requested by:** Audrey Evans, 2026-11-14 ("inventory everything in revvel-standards and organize it … get rid of means put it where it should go")
+- **Role:** executed (draft PR, not merged)
+- **Files:** `docs/INVENTORY.md` (every top-level entry, verdict, proposed home, phase 2 plan); 19 pure `git mv` moves out of the repo root into `docs/`, `docs/archive/root-batch-3/`, `docs/veins/` and `scripts/spike/`; `config/flake8-baseline.txt` (one path re-pointed); `.markdownlintignore` (+`docs/archive/**`); reference fixes in three docs.
+- **What was done:** Nothing deleted. No workflow files edited. Moved only items that no workflow, script, test, Pages/Vercel/DigitalOcean path or link pointed at. Verified `docs/case-files` is byte-identical to the private `case-files` repo (282 of 284 blobs) but left it, because the public copy is deliberate and code reads it.
+- **Decisions:** Held back anything pinned by a workflow, test, the flake8 baseline or an `index.html` link (see the "Phase 2 proposals" table in `docs/INVENTORY.md`). `CHANGELOG.md` not touched: it already carries a markdownlint error on line 1 that would fail the changed-Markdown gate.
+- **Open / handoff:** Audrey to review the draft PR and pick targets for phase 2 (products, Python apps, transcripts). Open question: `cloudflare/MIGRATION.md` (says Vercel, no DigitalOcean) contradicts `oaudrey/.do/app.yaml` and learnings (DigitalOcean).
+## 2026-11-14 — Auky — CircleCI Trivy filesystem scan
+
+- **Actor:** Auky (Grok Bot visiting agent; `gh` as midnghtsapphire)
+- **Requested by:** Audrey Evans, 2026-11-14 ("yes i liked trivy when we had it. also all the failing ci jobs in our process need to run now")
+- **Role:** executed (draft PR only; not merged)
+- **Files:** `.circleci/scripts/trivy-fs.sh` (new); `.circleci/config.yml` (added `trivy-fs` job to pr-workflow and main-workflow); `CHANGELOG.md`; `LEDGER.md`; `learnings.md`
+- **What was done:** Reused the prior Trivy config in `.github/workflows/trivy.yml` (fs scan, vuln+misconfig+secret, CRITICAL/HIGH/MEDIUM, ignore-unfixed; that Actions job stays enabled and unmodified). Added a CircleCI job that runs the official free Trivy v0.76.2 binary, writes a table artifact, and fails on unfixed HIGH/CRITICAL (the Actions job used exit-code 0 and SARIF upload).
+- **Decisions:** Do not rewrite the Actions workflow. Do not start ops/self-hosted-ci on the Grok Bot box.
+- **Open / handoff:** Draft PR for owner review. Do not merge.
+## 2026-11-14 UTC — Saved replies, Gitar activity, and audreybuildsai Page drafts
+
+- **Actor:** Manus coordination; delegated workflow inspection, bridge integration and Slack transport specialists. No direct paid-provider API was called by this bridge task.
+- **Requested by:** Audrey, who clarified WR as issue/work request, selected Facebook Page audreybuildsai, requested saved-reply code starts/completion summaries, and confirmed midnghtsapphire/revvel-standards as governance/execution repository.
+- **Role:** coordinated, inspected, implemented through specialists, validated, and recorded. Existing configured Git author identity is preserved.
+- **Files:** `scripts/audrey-gitar-bridge/`; three bridge/relay/publisher workflows; narrow existing registry/gateway/command-CI/WR-workflow/router-test additions; `docs/integrations/audrey-gitar-bridge/`; canonical `.env.example` names; append-only CHANGELOG, SYSTEM_STATE, learnings and memory entries.
+- **What was done:** Routed `/audrey run` and `/audrey finish` through the existing router only, authenticated real source comments/current write permission, used canonical issue_number with draft-only/no-direct-Jules options, recorded GitHub-visible Gitar work in PRs and recognized linked WRs, and prepared integrity-protected exact Page-summary payloads for actual human approval. Slack uses HTTPS and refuses redirects without replaying accepted work.
+- **Tests:** 70 offline Python tests, 11 router tests, six workflows under exact actionlint 1.7.7, and no-schedules checks pass. Related guards have one unchanged OpenCode paid-credential gating failure; root/production CI is not certified green. Individual sheaf imprint remains unregistered, while global read-only consistency reports zero energy/no obstructions; no status data is fabricated.
+- **Decisions:** No duplicate fleet pipeline or CI scaffold, no guard/exclusion/ratchet weakening, no unknown-token export, no automatic retry of uncertain work/Page writes. Existing queue-compatible publisher retains one pending run; signed displaced drafts remain available for manual inspected requeue. WR-document dispatch is not product implementation or completion.
+- **Sources:** The owner's current instructions, START_HERE_CALL_CHAIN, existing router/WR source and official Gitar/Meta/GitHub/Slack research preserved in dated archives. The original 20-file bundle remains unchanged, SHA-256 68064be2e5387da70ac5e6511c1716e309b381fc5deebda1fa3c18d221ce1298.
+- **Commits / PRs:** Task branch `feat/audrey-gitar-page-bridge-20261114`, additive draft PR into main for owner review; remote receipt is recorded after creation, not invented here.
+- **Open / handoff:** Owner review, existing CI finding, actual Page identity/token/permissions, Gitar bot allowance, protected Environment required reviewers and optional Slack channel. No own merge, bridge activation, Page/Slack post, work dispatch, token extraction or live secret/variable change.
+- **Credit note:** Audrey owns the work. Earlier repository builders own the existing router and execution engine; this integration extends them rather than recreating them.
+## 2026-11-14 — Auky — restore Actions migration doc and add free GitHub substitutes
+
+- **Actor:** Auky (Grok Bot visiting agent; `gh` as midnghtsapphire)
+- **Requested by:** Audrey Evans, 2026-11-14 ("can you do all that please" — restore the missing ACTIONS_MIGRATION.md gem and document free substitutes)
+- **Role:** executed (draft PR only; not merged)
+- **Files:** `docs/governance/ACTIONS_MIGRATION.md` (recovered from PR #18279 / `b741f195027e5e17e849e7cdbbb4e6c04c09962a`, not rewritten; recovery note and later-context section added); `docs/governance/FREE_GITHUB_SUBSTITUTES.md` (new); `learnings.md`; `CHANGELOG.md`; `LEDGER.md`; `README.md`; `MASTER.md`; `wr/memory/decisions.jsonl`
+- **What was done:** Confirmed PR #18279 was merged on GitHub but its squash commit is not an ancestor of current `main`, so the migration doc was missing. Restored the original file from that commit. Documented free-tier substitutes for Projects, Codespaces, Packages, LFS, and Advanced Security with vendor-doc citations checked 2026-11-14. No `.github/workflows/` or `.circleci/config.yml` edits. No billing changes. No automation on the Grok Bot box.
+- **Decisions:** Current GitHub Projects is already free on GitHub Free (personal and org) — recorded rather than inventing a substitute. Gitpod / Ona Cloud (shut down 2026-10-31) is not recommended. Default CodeQL Actions setup is free on public repos but still fails under the billing lock; scanners run on CircleCI or `ops/self-hosted-ci`.
+- **Open / handoff:** Draft PR for owner review. Do not merge. Hosted workflows stay enabled and unmodified.
+
 ## 2026-11-13 — Triage session — OpenCode in-GitHub coding agent
 
 - **Actor:** Kimi (triage agent)

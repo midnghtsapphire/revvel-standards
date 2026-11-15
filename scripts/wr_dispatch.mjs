@@ -20,6 +20,7 @@
 // 2026-11-15, security-spend specialist, stacked spend-gate PR: this .mjs is
 // ESM; import the existing CommonJS gate rather than calling require here.
 import { assertCloudAllowed, cloudAllowed } from "./llm-spend-gate.js";
+import spendGate from "./llm-spend-gate.js";
 
 const {
   GH_TOKEN, MANUS_API_KEY, OPENROUTER_API_KEY,
@@ -118,6 +119,11 @@ async function main() {
   if (OPENROUTER_API_KEY && cloudAllowed()) {
     // First paid-lane statement; a refusal must never become a provider retry.
     assertCloudAllowed("wr_dispatch.roo");
+  // Spend gate (#17850): the plan draft is a paid call, so it only runs when
+  // REVVEL_LLM_ALLOW_CLOUD is exactly "1". Otherwise the pack says to write it by hand.
+  // Added 2026-11-15 by Proofy so tests/llm-spend-gate-coverage passes.
+  // if (OPENROUTER_API_KEY) {   // earlier form, kept for history (2026-11-15 Proofy)
+  if (OPENROUTER_API_KEY && spendGate.cloudAllowed()) {
     const r = await fetch(`${OPENROUTER}/chat/completions`, {
       method: "POST",
       headers: {

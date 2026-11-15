@@ -23,7 +23,7 @@ PASS. See `docs/repaint/CONSISTENCY.md`.
 ## How to run
 
 ```bash
-pip install -r requirements-spike.txt
+pip install -r scripts/spike/requirements-spike.txt
 python scripts/spike/run_spike.py \
     --checkpoint-path /models/ace-step \
     --out-dir artifacts/spike-001 \

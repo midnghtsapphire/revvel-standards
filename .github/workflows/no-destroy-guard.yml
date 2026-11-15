@@ -1,5 +1,9 @@
 name: No-Destroy Guard
 
+concurrency:
+  group: no-destroy-guard-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 # Fails a PR that deletes existing apps/products or strips large amounts of code
 # from protected paths (the failure that wiped two finished apps under a PR that
 # claimed to "add a research WR"). Override an intentional removal with the
