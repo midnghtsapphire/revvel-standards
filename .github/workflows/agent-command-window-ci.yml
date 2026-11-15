@@ -9,6 +9,11 @@ on:
       - .github/workflows/agent-command-window.yml
       - .github/workflows/agent-command-window-ci.yml
       - .github/workflows/agent-request-delivery.yml
+      - scripts/audrey-gitar-bridge/**
+      - .github/workflows/audrey-bridge.yml
+      - .github/workflows/audrey-facebook-publish.yml
+      - .github/workflows/audit-review-events.yml
+      - .github/workflows/wr-pr-creation.yml
   push:
     branches: [main]
     paths:
@@ -18,6 +23,11 @@ on:
       - .github/workflows/agent-command-window.yml
       - .github/workflows/agent-command-window-ci.yml
       - .github/workflows/agent-request-delivery.yml
+      - scripts/audrey-gitar-bridge/**
+      - .github/workflows/audrey-bridge.yml
+      - .github/workflows/audrey-facebook-publish.yml
+      - .github/workflows/audit-review-events.yml
+      - .github/workflows/wr-pr-creation.yml
   workflow_dispatch:
 
 permissions:
@@ -34,3 +44,17 @@ jobs:
 
       - name: Test agent aliases, routing, authorization, and status state
         run: node --test .github/tests/agent-command-router.test.mjs
+
+  # 2026-11-14: additive offline coverage; no credentials or network transport.
+  test-audrey-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out the proposed repository changes for offline tests
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Test request provenance, WR opt-outs, relay and publication safety
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 -m unittest discover -s scripts/audrey-gitar-bridge/tests -v
