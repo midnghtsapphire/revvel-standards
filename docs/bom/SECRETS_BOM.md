@@ -83,7 +83,7 @@ This document lists ALL secrets and API keys required for the video production s
 | `AWS_ACCESS_KEY_ID` | AWS | S3 storage, CDN | console.aws.amazon.com |
 | `AWS_SECRET_ACCESS_KEY` | AWS | S3 storage | console.aws.amazon.com |
 | `CLOUDFLARE_API_KEY` | Cloudflare | CDN, R2 storage | dash.cloudflare.com/profile/api-tokens |
-| `DIGITALOCEAN_API_TOKEN` | DigitalOcean | Droplets, Spaces | cloud.digitalocean.com/account/api |
+| `DIGITALOCEAN_TOKEN` | DigitalOcean | Droplets, Spaces | cloud.digitalocean.com/account/api |
 
 ## Social Media
 

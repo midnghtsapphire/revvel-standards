@@ -37,3 +37,7 @@ docs/notebook/**
 docs/grok/**
 mcp-servers/gemini-notebook-mcp-cli
 docs/case-files/**
+
+# Frozen archive snapshots (docs/archive/README.md says these are excluded;
+# the glob was missing, so moved-in files got linted as if they were live docs)
+docs/archive/**

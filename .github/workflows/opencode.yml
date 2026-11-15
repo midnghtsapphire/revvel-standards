@@ -52,6 +52,8 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
       - name: Run OpenCode
+        # Spend gate (#17850): OpenCode bills OpenRouter inside the action. Added 2026-11-15 by Proofy.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         uses: anomalyco/opencode/github@latest
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -71,6 +73,8 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
       - name: Run OpenCode
+        # Spend gate (#17850): OpenCode bills OpenRouter inside the action. Added 2026-11-15 by Proofy.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         uses: anomalyco/opencode/github@latest
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -103,6 +107,8 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
       - name: Run OpenCode
+        # Spend gate (#17850): OpenCode bills OpenRouter inside the action. Added 2026-11-15 by Proofy.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         uses: anomalyco/opencode/github@latest
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

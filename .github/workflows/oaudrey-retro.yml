@@ -177,7 +177,7 @@ jobs:
               '### 🚀 Infrastructure Setup Required',
               'Both sites are unreachable because the DigitalOcean App Platform has not been deployed yet. Complete these steps in order:',
               '',
-              '1. **Set `DIGITALOCEAN_API_TOKEN`** in GitHub repo secrets (DO Dashboard → API → Personal Access Tokens)',
+              '1. **Set `DIGITALOCEAN_TOKEN`** in GitHub repo secrets (DO Dashboard → API → Personal Access Tokens)',
               '2. **Run `deploy-oaudrey.yml`** manually via `workflow_dispatch`',
               '3. **Add custom domains** in DO App Platform Dashboard → App → Settings → Domains: `oaudrey.com`, `fieldwork.oaudrey.com`',
               '4. **Point Namecheap nameservers** to `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com`',

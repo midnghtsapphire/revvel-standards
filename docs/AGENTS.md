@@ -569,7 +569,7 @@ You have an infrastructure blocker when ANY of these are true:
 
 #### How to Handle an Infrastructure Blocker
 
-1. **Classify it in writing.** State: "This is an infrastructure blocker. Reason: `DIGITALOCEAN_API_TOKEN` is not set."
+1. **Classify it in writing.** State: "This is an infrastructure blocker. Reason: `DIGITALOCEAN_TOKEN` is not set."
 2. **Check SYSTEM_STATE.md.** If the component is already marked `⏳ Pending human action`, the blocker is known. Do not create a new issue — the issue already exists.
 3. **If no issue exists yet,** create ONE issue with:
    - Title: `[INFRA PENDING] <Component> — exact human steps required`
@@ -999,7 +999,7 @@ This creates a knowledge base of problems solved, making the system smarter over
 
 | Component | Status | Required Action |
 |---|---|---|
-| App Platform app | ⏳ | Set `DIGITALOCEAN_API_TOKEN` → run `deploy-oaudrey.yml` |
+| App Platform app | ⏳ | Set `DIGITALOCEAN_TOKEN` → run `deploy-oaudrey.yml` |
 | oaudrey.com DNS | ⏳ | Cloudflare DNS: add the App Platform records for `oaudrey.com` and `www.oaudrey.com`. Do not move the zone to DigitalOcean nameservers. |
 | fieldwork.oaudrey.com DNS | ⏳ | Same Cloudflare zone. Add the `fieldwork` record there. |
 
