@@ -74,6 +74,13 @@ class ScannerTests(unittest.TestCase):
         counts = scan.validate_trivy_report(self.report({"SchemaVersion": 2, "ArtifactType": "filesystem", "Results": []}), 0)
         self.assertEqual(sum(counts.values()), 0)
 
+    def test_disabled_license_warning_does_not_hide_security_errors(self):
+        harmless = "2026-11-15T16:49:58Z\tWARN\t[pip] Unable to find python `site-packages` directory. License detection is skipped.\terr=\"site-packages directory not found\""
+        self.assertFalse(scan.trivy_analysis_incomplete(harmless))
+        self.assertTrue(scan.trivy_analysis_incomplete(harmless + "\nFATAL Fatal error run error"))
+        self.assertTrue(scan.trivy_analysis_incomplete("WARN Unable to parse dependency manifest"))
+        self.assertTrue(scan.trivy_analysis_incomplete("ERROR failed to download database"))
+
     def test_unfixed_high_critical_and_secret_findings_block(self):
         value = {"SchemaVersion": 2, "ArtifactType": "filesystem", "Results": [{
             "Vulnerabilities": [{"Severity": "CRITICAL", "FixedVersion": ""}],

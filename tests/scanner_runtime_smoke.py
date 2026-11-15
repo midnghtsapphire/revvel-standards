@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Run real engines installed by install_scanners.py; never commit sample files."""
 import argparse
+import base64
 import hashlib
 import json
 from pathlib import Path
@@ -28,6 +29,9 @@ def main():
             candidate = scratch / "trivy-candidate"
             candidate.mkdir()
             (candidate / "Dockerfile").write_text("FROM alpine:3.20\nUSER root\n")
+            (candidate / "requirements.txt").write_text("Django==2.0.9\n")
+            fake_material = base64.b64encode(hashlib.sha256(b"noncredential-security-test").digest() * 4).decode("ascii")
+            (candidate / "credentials.env").write_text("-----BEGIN PRIVATE KEY-----\n" + fake_material + "\n-----END PRIVATE KEY-----\n")
             # A policy bypass attempt in candidate data must not suppress findings.
             (candidate / "trivy.yaml").write_text("scanners: []\nignore-unfixed: true\n")
             (candidate / ".trivyignore").write_text("AVD-DS-0002\n")
@@ -46,6 +50,7 @@ def main():
             try:
                 code, details = scan.trivy_scan(receipt, candidate, work)
                 assert code == 1 and details["counts"]["misconfiguration"] > 0
+                assert details["counts"]["vulnerability"] > 0 and details["counts"]["secret"] > 0
                 receipts.append({"engine": "trivy", "test": "root-user-misconfiguration-and-candidate-policy-bypass", "engine_exit": code, **details})
             except scan.ScanError as error:
                 receipts.append({"engine": "trivy", "test": "root-user-misconfiguration-and-candidate-policy-bypass", "status": "error", "reason": str(error)})
