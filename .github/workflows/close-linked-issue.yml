@@ -1,4 +1,8 @@
 name: Close Linked Issue on PR Merge
+
+concurrency:
+  group: close-linked-issue-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 on:
   pull_request:
     types:
