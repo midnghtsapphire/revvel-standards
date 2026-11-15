@@ -2,6 +2,13 @@
 
 - Bare notebook URLs wrapped in angle brackets (MD034) in `docs/cutover/notebooks/*.md` and `docs/specs/DETERMINISTIC_SEARCH_SPEC.md`; one heading lost its trailing quote mark (MD026). Wording otherwise unchanged. This was needed for the CircleCI changed-Markdown gate on #18410.
 
+## 2026-11-14 (6) — TriageChief — S7: a CircleCI step fails a bot PR that has no handoff dated within the last day
+
+- Added `scripts/check_handoff.sh`, `handoffs/bots.conf`, `tests/check-handoff.test.js`, one `lint-and-test` step, and `handoffs/triagechief/2026-11-14.md`. S7 in `AGENTS.md` (and its exact copy) now describes the check instead of waiting for Audrey. See LEDGER.md.
+
+## 2026-11-14 (5) — TriageChief — added the "Session start: read the handoff first" rule (S1 to S7), restored rules the cutover left out (R1 to R15), `handoffs/` template and Proofy seed; additions only
+
+- `AGENTS.md` section 0 and section R appended; `VISITING_AGENTS.md` repeats the session-start rule inline; `.github/copilot-instructions.md` is the exact copy. `legacy/README.md` got a dated correction note. New: `handoffs/TEMPLATE.md`, `handoffs/README.md`, `handoffs/proofy/2026-11-14.md`, `docs/cutover/mishap-records-audit-2026-11-14.md`. Nothing deleted or rewritten.
 ## 2026-11-14 (5) — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
 
 - MergeMe and GHCR wiring auditors find the port table in `AGENTS.md` or `legacy/AGENTS.md` (the cutover moved it). `pot_research_engine.py`, `wr_dispatch.mjs` and `opencode.yml` now consult the LLM spend gate. `products/beauty-kit/` and eleven `scripts/*.py` files are flake8-clean (formatting, unused imports, renamed `l`; behavior unchanged). No baseline, exclusion, test or CircleCI edit. See LEDGER.md.
