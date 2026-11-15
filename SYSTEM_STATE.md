@@ -56,7 +56,7 @@ Another Codex chat owns Cloudflare Tunnel and the direct Proofy setup.
 | Component | Status | Details |
 |---|---|---|
 | CI/CD | ✅ | GitHub Actions workflows in `.github/workflows/` |
-| oAudrey App Platform app | ⏳ | **Pending human action:** Set `DIGITALOCEAN_API_TOKEN` GitHub secret → trigger `deploy-oaudrey.yml` |
+| oAudrey App Platform app | ⏳ | **Pending human action:** Set `DIGITALOCEAN_TOKEN` GitHub secret → trigger `deploy-oaudrey.yml` |
 | oAudrey DNS (`oaudrey.com`) | ⏳ | **Pending human action:** DNS is on Cloudflare. Add the App Platform records in the Cloudflare zone for `oaudrey.com` and `www.oaudrey.com`. Do not move the zone to DigitalOcean nameservers. |
 | oAudrey DNS (`fieldwork.oaudrey.com`) | ⏳ | **Pending human action:** Same Cloudflare zone. Add the `fieldwork` record there. |
 | Database | ❌ | Not applicable (standards repo — no DB) |
