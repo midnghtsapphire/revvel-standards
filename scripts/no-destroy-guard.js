@@ -172,7 +172,7 @@ function readDiff(baseSha, headSha = 'HEAD', { cwd } = {}) {
   const head = resolveCommit(headSha, cwd);
   const baseline = git(['merge-base', base, head], cwd).toString('ascii').trim();
   if (!/^[a-f0-9]{40,64}$/.test(baseline)) throw new Error('No valid merge base');
-  const args = ['diff', '--no-ext-diff', '--no-textconv', '--no-renames'];
+  const args = ['diff', '--no-color', '--no-ext-diff', '--no-textconv', '--no-renames'];
   const nameStatus = nulRecords(git([...args, '--name-status', '-z', baseline, head, '--'], cwd));
   const numstat = nulRecords(git([...args, '--numstat', '-z', baseline, head, '--'], cwd));
   const status = new Map();
