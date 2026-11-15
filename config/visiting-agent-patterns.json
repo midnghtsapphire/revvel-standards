@@ -145,6 +145,16 @@
         "affiliate",
         "utm-source"
       ],
+      "reason": "affiliate-hub is a product Audrey asked for and affiliate code is its purpose (WR #18342, #18330). The demo kit, the shared Stripe server and the deploy list only name or serve that product."
+    },
+    {
+      "paths": [
+        "products/oaudrey-home/public/index.html"
+      ],
+      "patterns": [
+        "affiliate"
+      ],
+      "reason": "2026-11-15 Proofy: oaudrey-home is Audrey's own front page. Lines 220-222 and 265 name and link to her Affiliate Hub product (affiliate-hub.oaudrey.com) and state the page carries no affiliate code. No tracker, id or link code is present. This is the same product the entry above already allows. This entry was red on main (lint-and-test) and needs Audrey's yes; remove it if she says no."
       "reason": "affiliate-hub is a product Audrey asked for and affiliate code is its purpose (WR #18342, #18330). The demo kit, the shared Stripe server and the deploy list only name or serve that product. The oaudrey-home hub page links to affiliate-hub.oaudrey.com as one of its products and states it carries no affiliate code (approved by Audrey 2026-11-15)."
     }
   ],
