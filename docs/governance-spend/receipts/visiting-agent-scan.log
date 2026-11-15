@@ -1,0 +1,8 @@
+visiting-agent-scan: 4 new, 145 baselined, 40 allowlisted
+  products/oaudrey-home/public/index.html:220 [marketing/affiliate] affiliate link, id, or code: <h3>Affiliate Hub</h3>
+  products/oaudrey-home/public/index.html:221 [marketing/affiliate] affiliate link, id, or code: <p>A directory for comparing affiliate programs from one page.</p>
+  products/oaudrey-home/public/index.html:222 [marketing/affiliate] affiliate link, id, or code: <a class="go" href="https://affiliate-hub.oaudrey.com">affiliate-hub.oaudrey.com</a>
+  products/oaudrey-home/public/index.html:265 [marketing/affiliate] affiliate link, id, or code: <p>oAudrey. This page does not run analytics and does not include affiliate code.</p>
+
+Blocked by VISITING_AGENTS.md. Remove it, or ask Audrey to approve it for this repo.
+If she approved it, add a path + pattern + reason to "allowlist" in config/visiting-agent-patterns.json.

@@ -1,0 +1,9 @@
+remote:
+remote: Create a pull request for 'fix/security-spend-gates-20261115' on GitHub by visiting:
+remote:      https://github.com/midnghtsapphire/revvel-standards/pull/new/fix/security-spend-gates-20261115
+remote:
+remote: GitHub found 389 vulnerabilities on midnghtsapphire/revvel-standards's default branch (62 critical, 159 high, 149 moderate, 19 low). To find out more, visit:
+remote:      https://github.com/midnghtsapphire/revvel-standards/security/dependabot
+remote:
+To https://github.com/midnghtsapphire/revvel-standards.git
+ * [new branch]          bddc01f76ca698ce6aec0099b37f9bec560694b1 -> fix/security-spend-gates-20261115

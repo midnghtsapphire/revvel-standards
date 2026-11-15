@@ -1,4 +1,8 @@
 name: 🚀 Ship to Market
+
+concurrency:
+  group: ship-to-market-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 on:
   pull_request:
     types:

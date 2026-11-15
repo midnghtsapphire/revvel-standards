@@ -1,5 +1,9 @@
 name: SEO + A11y Guard
 
+concurrency:
+  group: seo-a11y-guard-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 # Fails any product PR that ships obvious SEO/a11y debt:
 #   - <img>/<Image> missing alt or with empty alt
 #   - junk image filenames (IMG_1234.jpg, screenshot, etc.)

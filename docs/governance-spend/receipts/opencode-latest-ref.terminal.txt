@@ -1,0 +1,10 @@
+[1;37m{[m
+  [1;34m"ref"[m[1;37m:[m [32m"refs/tags/latest"[m[1;37m,[m
+  [1;34m"node_id"[m[1;37m:[m [32m"REF_kwDOOiiGL7ByZWZzL3RhZ3MvbGF0ZXN0"[m[1;37m,[m
+  [1;34m"url"[m[1;37m:[m [32m"https://api.github.com/repos/anomalyco/opencode/git/refs/tags/latest"[m[1;37m,[m
+  [1;34m"object"[m[1;37m:[m [1;37m{[m
+    [1;34m"sha"[m[1;37m:[m [32m"2c14fc5586fe0b88e5c04732d2e846769cc35671"[m[1;37m,[m
+    [1;34m"type"[m[1;37m:[m [32m"tag"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://api.github.com/repos/anomalyco/opencode/git/tags/2c14fc5586fe0b88e5c04732d2e846769cc35671"[m
+  [1;37m}[m
+[1;37m}[m

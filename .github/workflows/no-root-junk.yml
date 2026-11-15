@@ -1,4 +1,8 @@
 name: No Root Junk
+
+concurrency:
+  group: no-root-junk-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 # Catches the #14119-class defect: throwaway development scripts committed to
 # the repo root.
 #
