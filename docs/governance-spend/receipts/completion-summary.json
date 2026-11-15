@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-15",
+  "status": "FINISHED scoped repair; draft/unmerged",
+  "pr": "https://github.com/midnghtsapphire/revvel-standards/pull/18430",
+  "branch": "fix/security-spend-gates-20261115",
+  "base_branch": "fix/security-no-destroy-20261115",
+  "base_sha": "92682e66974218f37c6fbcfee8ebeae42620bb1c",
+  "focused_node_tests": {
+    "tests": 37,
+    "pass": 37,
+    "fail": 0,
+    "python_unittests_actually_executed": 5
+  },
+  "root_node_tests": {
+    "tests": 1615,
+    "pass": 1613,
+    "fail": 2
+  },
+  "remaining_blockers": {
+    "python_baseline_path_code_counts": 250,
+    "visiting_agent_findings": 4,
+    "owner": "coordinator"
+  },
+  "provider_calls": "offline mocks only; zero real provider requests",
+  "raw_receipts": [
+    {
+      "readable": "root-tests.log",
+      "exact_original": "root-tests.original.log.gz",
+      "raw_sha256": "96173dd4501778de06ee2295bdbcb287a1fdcc45a1b67e0eeb37556f11c3aa44",
+      "readable_sha256": "f0ef2e20dd58fc387f5f8f94c41f1c6096d6ba600264e3bbecace4c731acedc1"
+    },
+    {
+      "readable": "root-tests-attempt1.log",
+      "exact_original": "root-tests-attempt1.original.log.gz",
+      "raw_sha256": "b4532f6e4a5de446ebe35d8dd72833983b1dc29cca9ad6b1874fa0bfeedfe78a",
+      "readable_sha256": "b9b927df30f60b1c81dc0d4f5691e4931642f7b095c532c53aaed3cfecba073d"
+    },
+    {
+      "readable": "push-implementation.txt",
+      "exact_original": "push-implementation.original.txt.gz",
+      "raw_sha256": "ec6e733d7cc616e4c46b664aa234d991d8936ce5fad8ee03f9d42ed95d6b347d",
+      "readable_sha256": "09eb19e91faddc255fefa2fec02e8077412bfa6faa433c150fc3f26c76da6050"
+    }
+  ]
+}

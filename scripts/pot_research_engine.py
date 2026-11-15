@@ -8,6 +8,16 @@ MAX_CALLS = 64
 calls = {"n": 0}
 
 
+# 2026-11-15, security-spend specialist, stacked spend-gate PR: mirror the
+# existing gumloop_pdf_pipeline._assert_cloud_allowed helper. A funded key is
+# not authorization; refusal is terminal, never a paid retry or fabricated reply.
+def _assert_cloud_allowed(call_site: str) -> None:
+    if os.environ.get("REVVEL_LLM_ALLOW_CLOUD", "").strip() != "1":
+        raise RuntimeError(
+            f'Refusing to call a paid LLM API from "{call_site}": '
+            'REVVEL_LLM_ALLOW_CLOUD is not set to "1". This is a spend gate, '
+            "not a bug. Use the keyless dry-run for tree validation, or allow "
+            "cloud only for the calling job (see docs/LOCAL_LLM_SETUP.md)."
 def _assert_cloud_allowed(call_site: str) -> None:
     """Spend gate (#17850). Refuse a paid call unless someone deliberately said yes.
 
@@ -29,6 +39,9 @@ def llm(prompt: str) -> str:
     if not key:
         random.seed(hash(prompt) & 0xffffffff)
         return f"[dry-run answer {random.randint(1000,9999)}]"
+    # 2026-11-15: keep the original keyless dry-run above; gate the real paid
+    # lane before Request/urlopen, even if the account has credit. Do not retry.
+    _assert_cloud_allowed("pot_research_engine.llm")
     _assert_cloud_allowed("pot_research_engine")
     req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions",
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
