@@ -58,6 +58,13 @@ jobs:
       - run:
           name: AGENTS.md and copilot-instructions.md must match
           command: bash scripts/check_rules_sync.sh
+      # CI-config change in this PR (AGENTS.md S7) — Audrey approved it on
+      # 2026-11-14. Fails a PR from a known bot branch (handoffs/bots.conf) that
+      # changes bot work without a handoffs/<bot>/YYYY-MM-DD.md dated today or
+      # yesterday (America/Denver). Other branches only get a warning.
+      - run:
+          name: Daily handoff check (AGENTS.md S7)
+          command: bash scripts/check_handoff.sh
       # Real gate, scoped to changed Markdown so it enforces standards on new
       # work without drowning in the repo's large pre-existing lint backlog.
       - run:

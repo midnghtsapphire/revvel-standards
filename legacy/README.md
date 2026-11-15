@@ -74,3 +74,7 @@ CircleCI and other docs cite old section IDs (for example `.circleci/config.yml`
 | Non-Negotiable Rules | the core set in `AGENTS.md` |
 
 `legacy/docs/AGENTS.md` told agents not to open draft PRs (around the scaffolding ban and Checkpoint-Gated Grids). `AGENTS.md` C1 resolves that contradiction to draft-first.
+
+## Correction, 2026-11-14
+
+The "Root `AGENTS.md`" table above maps the old heading "OWNER-DIRECTED WORK AND CONSEQUENCES" to B1, B2 and A1, A2, A6. That mapping was wrong: those IDs are about deletion and authority, not about Audrey deciding what to explore, store and publish. The text is now in `AGENTS.md` as R2, and owner rule items 7 to 25 are R1. The old map row was left as written. See `docs/cutover/mishap-records-audit-2026-11-14.md`.

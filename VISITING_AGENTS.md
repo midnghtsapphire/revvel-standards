@@ -4,6 +4,15 @@
 
 This path is a pointer so tools and links keep working. The full old text is kept, unedited, at [`legacy/VISITING_AGENTS.md`](legacy/VISITING_AGENTS.md). Nothing was deleted. If the old text disagrees with `AGENTS.md`, `AGENTS.md` wins (A1).
 
+## 0. Session start: read the handoff first (added 2026-11-14, Audrey's request t421u)
+
+Appended 2026-11-14. Nothing else in this file was changed. Full text: S1 to S7 in `AGENTS.md`. Every visiting agent follows this.
+
+1. **Before any work,** read the newest `handoffs/<bot>/YYYY-MM-DD.md` in your own repo. If you have no repo, read the newest file in `handoffs/<bot>/` in `revvel-standards`. If none exists, say so in your first message and start one.
+2. **At the end of each work day,** write one `handoffs/<bot>/YYYY-MM-DD.md` from `handoffs/TEMPLATE.md`: **Done**; **Decisions in Audrey's exact words, with dates**; **Pending**; **Gotchas already solved**; **Links**. Land it by the normal draft-PR flow. Append-only: a correction is a new dated section.
+3. **Do not redo, re-ask or reverse** anything the handoff records without asking Audrey first. Copy her words in quotes. Mark anything you could not confirm `UNCERTAIN`. No secrets, private emails or personal addresses.
+4. Also read the newest `learnings.md` entries (R4 in `AGENTS.md`).
+
 ## Core rules (inline)
 
 `AGENTS.md` is the rulebook. Outside agents often do not open linked files, so the hard rules are repeated here. If anything here disagrees with `AGENTS.md`, `AGENTS.md` wins (A1). These stubs take effect on `main` only when the new `AGENTS.md` lands on `main` together with them, in the same promotion (see docs/CUTOVER_PLAN.md).
@@ -16,6 +25,9 @@ This path is a pointer so tools and links keep working. The full old text is kep
 - **No tracking, affiliate or branding (F2, F3):** Add no tracking, analytics, telemetry, affiliate links or IDs, and no agent or vendor branding, unless Audrey asks.
 - **Draft-first PRs (C1, C2, B6):** Nobody pushes to `main`. Open a draft PR, assigned to `midnghtsapphire`, targeting the current `daily/YYYY-MM-DD` branch. This overrides `legacy/docs/AGENTS.md`, which told agents not to open draft PRs.
 - **Fake data (B10):** Fake or synthetic data is allowed only in dev and must be labeled FAKE. It never feeds a Linear A finding, ledger or hypothesis, or a merge.
+- **Session start (S1, S2):** Before work, read the newest `handoffs/<bot>/YYYY-MM-DD.md` in your own repo (in `revvel-standards` `handoffs/<bot>/` if you have no repo). At the end of each work day write one: done; decisions in Audrey's exact words with dates; pending; gotchas already solved; links. Append-only.
+- **Read the mishap log (R4):** Read the newest `learnings.md` entries first. After a failure, append a TM-NNNN entry. Never repeat a recorded mistake.
+- **Never delete to pass a check (R6):** If a check flags something already in the repo, tell Audrey. Do not remove it and do not edit the data file to hide it.
 
 ## Section mapping (old anchors stay resolvable)
 
