@@ -356,6 +356,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Unit tests for this gate
+          command: node --test tests/huge-delete-guard.test.js
+      - run:
           name: Huge-delete guard
           command: node scripts/security-gates/huge-delete-guard.js
       - store_artifacts:
