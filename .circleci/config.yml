@@ -112,6 +112,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Unit tests for this gate
+          command: node --test tests/prompt-injection-scan.test.js
+      - run:
           name: Prompt-injection scan of added text
           command: node scripts/security-gates/prompt-injection-scan.js --llm
       - store_artifacts:
