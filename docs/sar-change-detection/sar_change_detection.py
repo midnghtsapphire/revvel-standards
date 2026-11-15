@@ -117,8 +117,15 @@ def detect_step(
     if not np.all(np.diff(t) > 0):
         raise ValueError("t must be strictly increasing")
 
+    if not 0.0 <= trim < 0.5:
+        raise ValueError(f"trim must be in [0, 0.5), got {trim!r}")
     rss0, _ = _rss(_design(t), y)
     lo, hi = max(int(n * trim), 6), min(int(n * (1 - trim)), n - 6)
+    if lo > hi:
+        raise ValueError(
+            f"trim={trim} with n={n} samples leaves no candidate change points; "
+            "use a smaller trim or more samples"
+        )
     best = (math.inf, -1, None)
     for k in range(lo, hi + 1):
         rss1, coef = _rss(_design(t, (np.arange(n) >= k).astype(float)), y)
