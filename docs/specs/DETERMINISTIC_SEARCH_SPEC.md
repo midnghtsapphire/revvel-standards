@@ -8,7 +8,7 @@ The engine is not built yet. HULL's exact skill lookup, the CUDA-named hardware 
 
 ## 1. Design basis
 
-Design basis: Audrey's NotebookLM notebook **"Pure Deterministic Cognition: A Blueprint for Indexed Meaning Units"** (https://notebook.google.com/notebook/3c217f5e-2c72-42d0-85d2-56fb9e07e5f8). Audit summary: [`docs/cutover/notebooks/3c217f5e-2c72-42d0-85d2-56fb9e07e5f8.md`](../cutover/notebooks/3c217f5e-2c72-42d0-85d2-56fb9e07e5f8.md). Background reading is in "Foundations of Deterministic and Mathematical Modeling" ([`1317e820-3449-4312-a22d-61b2a489678f.md`](../cutover/notebooks/1317e820-3449-4312-a22d-61b2a489678f.md)).
+Design basis: Audrey's NotebookLM notebook **"Pure Deterministic Cognition: A Blueprint for Indexed Meaning Units"** (<https://notebook.google.com/notebook/3c217f5e-2c72-42d0-85d2-56fb9e07e5f8>). Audit summary: [`docs/cutover/notebooks/3c217f5e-2c72-42d0-85d2-56fb9e07e5f8.md`](../cutover/notebooks/3c217f5e-2c72-42d0-85d2-56fb9e07e5f8.md). Background reading is in "Foundations of Deterministic and Mathematical Modeling" ([`1317e820-3449-4312-a22d-61b2a489678f.md`](../cutover/notebooks/1317e820-3449-4312-a22d-61b2a489678f.md)).
 
 Pure Deterministic Cognition (PDC) is a rule-bound method, not a neural model. Fixed input plus fixed, declared rules must produce fixed output. It is not based on neural weights, machine learning, LLMs, stochastic generation, or hidden intuition. An LLM may optionally suggest terms, compare meanings, help render language, or adversarially review, but it is not the engine and it is not the final authority.
 
@@ -77,9 +77,9 @@ All of these detect NVIDIA GPUs with `nvidia-smi`, fall back to CPU, and pick a 
 
 **When to start:** only if a benchmark against the Phase A CPU baseline shows a real win on a named workload, on a GPU host Audrey has approved. Candidates from `revvel-metal-findings` stay research only until that bar is met.
 
-## 5. Learned rules from "cv cuda in fedora"
+## 5. Learned rules from the cv cuda in fedora notebook
 
-Source notebook: https://notebook.google.com/notebook/e173767c-f730-4a1d-8c52-6633ed0c60a0 — audit: [`docs/cutover/notebooks/e173767c-f730-4a1d-8c52-6633ed0c60a0.md`](../cutover/notebooks/e173767c-f730-4a1d-8c52-6633ed0c60a0.md). These rules apply to any GPU path in Phase B (and to any later CV-CUDA work):
+Source notebook: <https://notebook.google.com/notebook/e173767c-f730-4a1d-8c52-6633ed0c60a0> — audit: [`docs/cutover/notebooks/e173767c-f730-4a1d-8c52-6633ed0c60a0.md`](../cutover/notebooks/e173767c-f730-4a1d-8c52-6633ed0c60a0.md). These rules apply to any GPU path in Phase B (and to any later CV-CUDA work):
 
 1. **Allocate the output once and reuse it in loops** (the `_into` pattern: for example `cvcuda.gaussian_into` rather than allocating on every call). Do not repeatedly allocate VRAM or unnecessarily synchronize inside the frame or batch loop.
 2. **Warm up and calibrate before claiming latency.** Run the kernel twice (or more) and distinguish cold (first-compile) from warm runs. In that notebook, "JIT" means kernel-compilation warm-up and cache, not the hardware-provisioning wrapper in section 4. Do not publish a latency number from a cold run, and do not hand-wave it as "the GPU warmed up."

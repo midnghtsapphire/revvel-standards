@@ -1,3 +1,7 @@
+## 2026-11-14 (7) — TriageChief — markdownlint fixes in the notebook audit pages and the deterministic-search spec
+
+- Bare notebook URLs wrapped in angle brackets (MD034) in `docs/cutover/notebooks/*.md` and `docs/specs/DETERMINISTIC_SEARCH_SPEC.md`; one heading lost its trailing quote mark (MD026). Wording otherwise unchanged. This was needed for the CircleCI changed-Markdown gate on #18410.
+
 ## 2026-11-14 (5) — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
 
 - MergeMe and GHCR wiring auditors find the port table in `AGENTS.md` or `legacy/AGENTS.md` (the cutover moved it). `pot_research_engine.py`, `wr_dispatch.mjs` and `opencode.yml` now consult the LLM spend gate. `products/beauty-kit/` and eleven `scripts/*.py` files are flake8-clean (formatting, unused imports, renamed `l`; behavior unchanged). No baseline, exclusion, test or CircleCI edit. See LEDGER.md.
