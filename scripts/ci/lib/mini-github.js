@@ -89,8 +89,12 @@ function makeClient(token) {
       pulls: {
         get: ({ owner, repo, pull_number }) =>
           req('GET', `/repos/${owner}/${repo}/pulls/${pull_number}`),
-        list: ({ owner, repo, state = 'open', per_page = 100 }) =>
-          req('GET', `/repos/${owner}/${repo}/pulls?${q({ state, per_page })}`),
+        // 2026-11-15: preserve original first-page signature below; add page so
+        // lifecycle can exhaust owned open work instead of losing PRs >100.
+        // list: ({ owner, repo, state = 'open', per_page = 100 }) =>
+        //   req('GET', `/repos/${owner}/${repo}/pulls?${q({ state, per_page })}`),
+        list: ({ owner, repo, state = 'open', per_page = 100, page = 1 }) =>
+          req('GET', `/repos/${owner}/${repo}/pulls?${q({ state, per_page, page })}`),
         listReviews: ({ owner, repo, pull_number }) =>
           req('GET', `/repos/${owner}/${repo}/pulls/${pull_number}/reviews`),
       },

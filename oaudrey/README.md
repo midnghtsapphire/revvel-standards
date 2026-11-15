@@ -102,10 +102,10 @@ The oAudrey hub deploys automatically to **DigitalOcean App Platform** on every 
 
 ### Required Secret
 
-Before the automated deploy can run, provision `DIGITALOCEAN_API_TOKEN` in GitHub repo secrets:
+Before the automated deploy can run, provision `DIGITALOCEAN_TOKEN` in GitHub repo secrets:
 
 ```bash
-gh secret set DIGITALOCEAN_API_TOKEN --repo midnghtsapphire/revvel-standards
+gh secret set DIGITALOCEAN_TOKEN --repo midnghtsapphire/revvel-standards
 ```
 
 ### Manual Deploy
@@ -219,7 +219,7 @@ respected.
 - [x] DNS sync workflow (`.github/workflows/sync-oaudrey-dns.yml`)
 - [x] Credential Gatekeeper detects GoDaddy + Porkbun keys
 - [x] Rex assignee lane documented for Agent Factory + no-key Perplexity research
-- [ ] Provision `DIGITALOCEAN_API_TOKEN` secret in repo settings
+- [ ] Provision `DIGITALOCEAN_TOKEN` secret in repo settings
 - [ ] Provision a registrar credential set (Namecheap / GoDaddy / Porkbun) via the Gatekeeper
 - [ ] Verify `oaudrey.com` apex resolves to App Platform
 - [ ] Extend brand system: supporting illustrations, bot characters, product iconography — all original, **no third-party assets reused**.

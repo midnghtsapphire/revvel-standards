@@ -1,4 +1,8 @@
 name: Create Issue Branch
+
+concurrency:
+  group: create-issue-branch-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 on:
   issues:
     types:

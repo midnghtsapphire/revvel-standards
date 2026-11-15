@@ -74,6 +74,9 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 - `WRITE_AS_YOU_GO_STANDARD.md`: agents update the ledger, CHANGELOG, and Library in the same commit as their work.
 - **standards/PRODUCT_INCUBATION_STANDARD.md** — new products incubate in `products/<name>/`, off the public docs site, under oaudrey.com or freedomangelcorps.com; graduate to their own repo only after testing and only if needed.
 - **standards/LEDGER_STANDARD.md** — every project keeps a root `LEDGER.md` play-by-play/handoff record (who, when, files, decisions, sources) used for AI crediting; template included.
+- **standards/SECRET_NAMING_STANDARD.md** — every credential is `<APP>_API_KEY` (API keys) or `<APP>_TOKEN` (tokens); hybrid `_API_TOKEN` names banned; canonical-name table and migration log included.
+- **docs/governance/ACTIONS_MIGRATION.md** — hosted Actions billing lock (2026-11-06): keep Actions enabled, do not rewrite workflows, CircleCI + GitGuardian are the gate; recovered from PR #18279.
+- **docs/governance/FREE_GITHUB_SUBSTITUTES.md** — free-tier mappings for GitHub Projects, Codespaces, Packages, LFS, and Advanced Security, with vendor-doc citations.
 
 ### WR/PR machinery (in .github/ + workflows/)
 - **.github/ISSUE_TEMPLATE/work_request.yml** — canonical WR form/schema (the target Jules normalizes into).

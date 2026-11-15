@@ -239,6 +239,26 @@ jobs:
           name: Catalog seeder tests (offline fake Lago)
           command: node --test products/revenue-billing/plans/seed-plans.test.mjs products/revenue-billing/lago.test.mjs
 
+  # Security gate 4 (docs/security-gates/PLAN.md): a second reader's notes on the
+  # PR diff through an API. NEVER blocks: no key, spend gate closed, or provider
+  # error all print a notice and exit 0. Calls nothing unless the CircleCI project
+  # env has REVVEL_LLM_ALLOW_CLOUD=1 and OPENROUTER_API_KEY (Manus: also set
+  # REVIEW_PROVIDERS=openrouter,manus and MANUS_API_KEY). Added by Proofy.
+  api-code-review:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Unit tests for this gate
+          command: node --test tests/api-code-review.test.js
+      - run:
+          name: API code review of the PR diff (non-blocking)
+          no_output_timeout: 12m
+          command: node scripts/security-gates/api-code-review.js
+      - store_artifacts:
+          path: /tmp/security-gates
+          destination: security-gates
+
   # WR #18333 — apply the billing SQL twice to a throwaway Postgres 15 and run
   # the assertions (idempotency, constraints, RLS, no anon grants, webhook
   # dedupe). The secondary container is created fresh per run and holds no data.
@@ -326,6 +346,38 @@ jobs:
           name: halo-demo-stream tests
           command: cd products/halo-demo-stream && npm test
 
+  # Security gate 2 (docs/security-gates/PLAN.md): Trivy and ClamAV on only the
+  # files a PR adds or changes. Trivy secrets (HIGH/CRITICAL) block; its vuln and
+  # misconfig results are reported, not blocking (old backlog). ClamAV blocks on
+  # any detection and fails the job, rather than passing, if it cannot get
+  # signatures or cannot detect its own EICAR self-test. Free tools only, no
+  # secret needed. Added by Proofy.
+  trivy-scan:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Unit tests for this gate
+          command: node --test tests/malware-gates.test.js
+      - run:
+          name: Trivy on changed files (secrets block; vuln and misconfig report)
+          command: bash scripts/security-gates/trivy-scan.sh
+      - store_artifacts:
+          path: /tmp/security-gates
+          destination: security-gates
+
+  clamav-scan:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: ClamAV on changed files
+          no_output_timeout: 15m
+          command: bash scripts/security-gates/clamav-scan.sh
+      - store_artifacts:
+          path: /tmp/security-gates
+          destination: security-gates
+
   # WR #18342 moved affiliate-hub's catalogue into app/lib/programs.mjs; this
   # proves the product still builds. Lockfile-pinned install, no scripts.
   affiliate-hub-build:
@@ -339,22 +391,41 @@ jobs:
           name: affiliate-hub next build
           command: cd products/affiliate-hub && npx next build
 
+  # Security gate 5 (docs/security-gates/PLAN.md): the reuse path. Tests run-all.sh,
+  # bootstrap.sh (pinned-SHA sparse fetch) and print-adopt-snippet.sh. Node
+  # built-ins and git only, no secret. Added by Proofy.
+  security-gates-adopt-test:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Adoption tests (run-all, bootstrap, snippet)
+          command: node --test tests/security-gates-adopt.test.js
+
   # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
   # and that every REVVEL-DISABLED block in changed files has all required
   # metadata fields (AGENT, MODEL, WR, DATE, STATUS).
   # See standards/COMMENT-DONT-DELETE.md and .circleci/scripts/check-archival-policy.sh.
   policy-check:
     executor: node-executor
+    resource_class: small
+    environment:
+      # Job override prevents any BASH_ENV file from being sourced here. This
+      # does NOT remove project secrets from the outer CircleCI job; see docs.
+      BASH_ENV: /dev/null
     steps:
-      - checkout
-      - run:
-          # Fetch enough history for an accurate merge-base diff.
-          # 200 commits covers virtually all branches in this repo.
-          name: Fetch origin/main for merge-base diff
-          command: git fetch origin main --depth=200
-      - run:
-          name: RVS-AGENT-001 archival policy check
-          command: bash .circleci/scripts/check-archival-policy.sh
+      # REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+      # REASON: Pin reviewed policy/scanner code; full ancestry, candidate data only, no deletion-label bypass.
+      # - checkout
+      # - run:
+      #     # Fetch enough history for an accurate merge-base diff.
+      #     # 200 commits covers virtually all branches in this repo.
+      #     name: Fetch origin/main for merge-base diff
+      #     command: git fetch origin main --depth=200
+      # - run:
+      #     name: RVS-AGENT-001 archival policy check
+      #     command: bash .circleci/scripts/check-archival-policy.sh
+      # REVVEL-DISABLED-END
           # ALLOW_DESTROY is deliberately NOT set here.
           #
           # It used to be hardcoded "false", with a comment saying the
@@ -366,6 +437,105 @@ jobs:
           # The script resolves it now, and fails CLOSED when it cannot: an
           # unreadable label is not permission. Setting it here again would
           # restore the deadlock, so leave it to the script.
+
+      # 2026-11-15: the historical label-resolution commentary above is retained
+      # only as history. Owner rule prohibits deletion and any label bypass.
+      # No context, provider key, checkout/user SSH key or package hook is used.
+      # This config must itself be trusted; env -i cannot constrain edited YAML
+      # or secrets that CircleCI already injected into unrelated legacy jobs.
+      - run:
+          name: Pinned security completion (policies, Trivy, ClamAV)
+          shell: /bin/bash --noprofile --norc -eo pipefail
+          no_output_timeout: 30m
+          command: |
+            /usr/bin/env -i PATH=/usr/local/bin:/usr/bin:/bin HOME=/tmp/revvel-security-home \
+              LC_ALL=C TZ=UTC GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null \
+              /bin/bash --noprofile --norc -s -- "${CIRCLE_SHA1:-}" "${CIRCLE_BRANCH:-}" "${CIRCLE_PULL_REQUEST:-}" \<<'TRUSTED_TRANSPORT'
+            set -euo pipefail
+            umask 077
+            reports=/tmp/security-completion-reports
+            mkdir -p "$HOME" "$reports"
+            blocked() {
+              printf '{"schema":1,"engine":"bootstrap","status":"error","exit_code":2,"reason":"transport-or-reference-failed"}\n' > "$reports/bootstrap.json"
+              printf 'security completion: bootstrap error; inspect Git availability and reviewed pins\n' >&2
+              exit 2
+            }
+            trap blocked ERR
+            head=$1 branch=$2
+            [[ $head =~ ^[a-f0-9]{40}$ ]] || blocked
+            # Full object pins, reviewed as stacked dependency PRs. An owner must
+            # review pin changes; fetching a moving branch never approves code.
+            # REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+            # REASON: Final invoker requires real metadata and normalizes symlink blobs.
+            # shim_source=d952b6afb7472f4d908f1ad637cd79902b8403a0
+            # REVVEL-DISABLED-END
+            shim_source=74a355d9f26008a40e75c94d896c8f64f8a28762
+            # REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+            # REASON: Final committed worker tips include the fleet/archival and scanner runtime fixes.
+            # policy_source=521de54e02a8f07b32ab551dfd3aa3842c1200f4
+            # scanner_source=d5c7797714f07b2058217641e99cf4171df53b19
+            # REVVEL-DISABLED-END
+            policy_source=92682e66974218f37c6fbcfee8ebeae42620bb1c
+            # REVVEL-DISABLED | AGENT: coordinator | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+            # REASON: Final tested requirements-file scan correction and runtime evidence are committed together.
+            # scanner_source=3e2e0cf567e7b5c898c410e41516c3ed43ec67f2
+            # REVVEL-DISABLED-END
+            scanner_source=f207fd3cbb47b88b4882de917454f4e9b6795992
+            transport=$(mktemp -d /tmp/revvel-security-git.XXXXXXXX)
+            git init --quiet "$transport/repository"
+            git -C "$transport/repository" remote add origin https://github.com/midnghtsapphire/revvel-standards.git
+            # Public Git transport only. No tokens, contexts or SSH checkout key.
+            # No depth limit and no candidate working-tree checkout/overwrite.
+            timeout 300 git -C "$transport/repository" fetch --quiet --no-tags origin \
+              "$shim_source" "$policy_source" "$scanner_source" "$head" 2>/dev/null
+            timeout 300 git -C "$transport/repository" fetch --quiet --no-tags origin \
+              refs/heads/main:refs/remotes/origin/main 2>/dev/null
+            if [[ $branch == main ]]; then
+              base=$(git -C "$transport/repository" rev-parse --verify "$head^1")
+              # Main has no PR metadata: scan its actual commit message as the
+              # event metadata, not an invented empty title/body.
+              git -C "$transport/repository" log -1 --format=%B "$head" > "$transport/event-metadata.txt"
+            else
+              base=$(git -C "$transport/repository" rev-parse --verify refs/remotes/origin/main)
+              # A missing URL, HTTP 403/rate limit, malformed response or head
+              # mismatch is fleet error 2, not an empty-body successful scan.
+              # This public read uses no auth, proxy, provider or write context.
+              if ! python3 -I - "$3" "$head" "$transport/event-metadata.txt" \<<'EVENT_METADATA'
+            import json, re, sys, urllib.request
+            from pathlib import Path
+            try:
+                match = re.fullmatch(r'https://github\.com/midnghtsapphire/revvel-standards/pull/([1-9][0-9]*)', sys.argv[1])
+                if not match:
+                    raise ValueError('missing metadata source')
+                url = 'https://api.github.com/repos/midnghtsapphire/revvel-standards/pulls/' + match[1]
+                opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+                request = urllib.request.Request(url, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'revvel-security-ci'})
+                with opener.open(request, timeout=30) as response:
+                    payload = json.loads(response.read(2 * 1024 * 1024))
+                assert payload['head']['sha'] == sys.argv[2] and payload['base']['ref'] == 'main'
+                assert isinstance(payload['title'], str) and (payload['body'] is None or isinstance(payload['body'], str))
+                Path(sys.argv[3]).write_text(payload['title'] + '\n\n' + (payload['body'] or ''))
+            except Exception:
+                print('Actual PR metadata unavailable; fleet must fail closed.', file=sys.stderr)
+                raise SystemExit(2)
+            EVENT_METADATA
+              then printf 'Fleet metadata unavailable; other checks will still run.\n' >&2; fi
+            fi
+            git -C "$transport/repository" show "$shim_source:.circleci/scripts/security-completion.sh" > "$transport/invoker.sh"
+            # Retain the invoker's real 0/1/2 status; ERR must not replace findings
+            # with a transport error. Raw sources/logs are not artifact targets.
+            trap - ERR
+            status=0
+            /bin/bash --noprofile --norc "$transport/invoker.sh" "$transport/repository" \
+              "$head" "$base" "$policy_source" "$scanner_source" "$reports" "$transport/event-metadata.txt" || status=$?
+            [[ $status == 0 || $status == 1 || $status == 2 ]] || status=2
+            exit "$status"
+            TRUSTED_TRANSPORT
+      - store_artifacts:
+          # CircleCI's artifact step runs after a failed run step too; only the
+          # redacted receipt directory is retained, never private scanner logs.
+          path: /tmp/security-completion-reports
+          destination: security-completion
 
   # Product image gate for screen-recorder-finder. Builds the Dockerfile, runs the server
   # tests, and requests /health inside the container. Unrelated diffs exit 0
@@ -441,6 +611,33 @@ jobs:
           path: /tmp/agent-fte-artifacts
           destination: agent-as-fte
 
+
+  # Trivy filesystem scan. Settings come from .github/workflows/trivy.yml
+  # (fs; vuln,misconfig,secret; CRITICAL,HIGH,MEDIUM; ignore-unfixed).
+  # That Actions workflow is unchanged (billing lock; do not rewrite it).
+  # CircleCI uses the official free Trivy binary (v0.76.2) and fails the
+  # job on unfixed HIGH/CRITICAL. See .circleci/scripts/trivy-fs.sh.
+  trivy-fs:
+    docker:
+      - image: cimg/base:2024.11
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: Install Trivy v0.76.2
+          command: |
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/v0.76.2/contrib/install.sh | sh -s -- -b /tmp/trivy-bin v0.76.2
+      - run:
+          name: Trivy filesystem scan (vuln, misconfig, secret)
+          no_output_timeout: 20m
+          environment:
+            TRIVY_BIN: /tmp/trivy-bin/trivy
+            TRIVY_TABLE_OUT: /tmp/trivy-report.txt
+          command: bash .circleci/scripts/trivy-fs.sh
+      - store_artifacts:
+          path: /tmp/trivy-report.txt
+          destination: trivy-fs
+
 workflows:
   version: 2
 
@@ -471,6 +668,10 @@ workflows:
           filters:
             branches:
               ignore: main
+      - api-code-review:
+          filters:
+            branches:
+              ignore: main
       - billing-sql-validate:
           filters:
             branches:
@@ -483,7 +684,19 @@ workflows:
           filters:
             branches:
               ignore: main
+      - trivy-scan:
+          filters:
+            branches:
+              ignore: main
+      - clamav-scan:
+          filters:
+            branches:
+              ignore: main
       - affiliate-hub-build:
+          filters:
+            branches:
+              ignore: main
+      - security-gates-adopt-test:
           filters:
             branches:
               ignore: main
@@ -500,6 +713,10 @@ workflows:
             branches:
               ignore: main
       - oaudrey-home-image:
+          filters:
+            branches:
+              ignore: main
+      - trivy-fs:
           filters:
             branches:
               ignore: main
@@ -588,6 +805,10 @@ workflows:
             branches:
               only: main
       - oaudrey-home-image:
+          filters:
+            branches:
+              only: main
+      - trivy-fs:
           filters:
             branches:
               only: main

@@ -1,0 +1,172 @@
+TAP version 13
+# Subtest: every script that calls a paid LLM provider consults the spend gate
+ok 1 - every script that calls a paid LLM provider consults the spend gate
+  ---
+  duration_ms: 43.298933
+  type: 'test'
+  ...
+# Subtest: the ungated workflow list only shrinks
+ok 2 - the ungated workflow list only shrinks
+  ---
+  duration_ms: 32.27364
+  type: 'test'
+  ...
+# Subtest: the gate opens only on exactly "1"
+ok 3 - the gate opens only on exactly "1"
+  ---
+  duration_ms: 1.710166
+  type: 'test'
+  ...
+# Subtest: the refusal names the gate and the call site
+ok 4 - the refusal names the gate and the call site
+  ---
+  duration_ms: 0.568567
+  type: 'test'
+  ...
+# Subtest: a free probe that starts billing loses its exemption
+ok 5 - a free probe that starts billing loses its exemption
+  ---
+  duration_ms: 1.287956
+  type: 'test'
+  ...
+# Subtest: a workflow handing a paid LLM credential to a third-party action is gated
+ok 6 - a workflow handing a paid LLM credential to a third-party action is gated
+  ---
+  duration_ms: 21.47643
+  type: 'test'
+  ...
+# Subtest: PoT Python spend gate executes five offline unittest regressions
+ok 7 - PoT Python spend gate executes five offline unittest regressions
+  ---
+  duration_ms: 155.696485
+  type: 'test'
+  ...
+# Subtest: Roo closed gate undefined never calls a paid provider or retries
+ok 8 - Roo closed gate undefined never calls a paid provider or retries
+  ---
+  duration_ms: 127.082064
+  type: 'test'
+  ...
+# Subtest: Roo closed gate "0" never calls a paid provider or retries
+ok 9 - Roo closed gate "0" never calls a paid provider or retries
+  ---
+  duration_ms: 123.550773
+  type: 'test'
+  ...
+# Subtest: Roo closed gate "" never calls a paid provider or retries
+ok 10 - Roo closed gate "" never calls a paid provider or retries
+  ---
+  duration_ms: 123.995695
+  type: 'test'
+  ...
+# Subtest: Roo closed gate "true" never calls a paid provider or retries
+ok 11 - Roo closed gate "true" never calls a paid provider or retries
+  ---
+  duration_ms: 125.449979
+  type: 'test'
+  ...
+# Subtest: Roo closed gate "yes" never calls a paid provider or retries
+ok 12 - Roo closed gate "yes" never calls a paid provider or retries
+  ---
+  duration_ms: 125.851792
+  type: 'test'
+  ...
+# Subtest: Roo closed gate "on" never calls a paid provider or retries
+ok 13 - Roo closed gate "on" never calls a paid provider or retries
+  ---
+  duration_ms: 122.409002
+  type: 'test'
+  ...
+# Subtest: Roo missing key with gate 0 keeps its honest manual fallback
+ok 14 - Roo missing key with gate 0 keeps its honest manual fallback
+  ---
+  duration_ms: 129.87892
+  type: 'test'
+  ...
+# Subtest: Roo missing key with gate 1 keeps its honest manual fallback
+ok 15 - Roo missing key with gate 1 keeps its honest manual fallback
+  ---
+  duration_ms: 123.081817
+  type: 'test'
+  ...
+# Subtest: Roo open gate consumes one mock response and no real provider
+ok 16 - Roo open gate consumes one mock response and no real provider
+  ---
+  duration_ms: 131.654014
+  type: 'test'
+  ...
+# Subtest: Roo mock provider refusal writes a manual pack without paid retry
+ok 17 - Roo mock provider refusal writes a manual pack without paid retry
+  ---
+  duration_ms: 144.514242
+  type: 'test'
+  ...
+# Subtest: Manus closed gate undefined is terminal before paid task creation
+ok 18 - Manus closed gate undefined is terminal before paid task creation
+  ---
+  duration_ms: 136.948125
+  type: 'test'
+  ...
+# Subtest: Manus closed gate "0" is terminal before paid task creation
+ok 19 - Manus closed gate "0" is terminal before paid task creation
+  ---
+  duration_ms: 122.127972
+  type: 'test'
+  ...
+# Subtest: Manus closed gate "true" is terminal before paid task creation
+ok 20 - Manus closed gate "true" is terminal before paid task creation
+  ---
+  duration_ms: 129.385053
+  type: 'test'
+  ...
+# Subtest: Manus missing key with gate 0 does not create a paid task
+ok 21 - Manus missing key with gate 0 does not create a paid task
+  ---
+  duration_ms: 130.113869
+  type: 'test'
+  ...
+# Subtest: Manus missing key with gate 1 does not create a paid task
+ok 22 - Manus missing key with gate 1 does not create a paid task
+  ---
+  duration_ms: 128.062028
+  type: 'test'
+  ...
+# Subtest: Manus open gate creates only one mock task
+ok 23 - Manus open gate creates only one mock task
+  ---
+  duration_ms: 130.507213
+  type: 'test'
+  ...
+# Subtest: opencode-comment preserves its trigger AND gates the pinned credential-bearing action
+ok 24 - opencode-comment preserves its trigger AND gates the pinned credential-bearing action
+  ---
+  duration_ms: 10.346873
+  type: 'test'
+  ...
+# Subtest: opencode-label preserves its trigger AND gates the pinned credential-bearing action
+ok 25 - opencode-label preserves its trigger AND gates the pinned credential-bearing action
+  ---
+  duration_ms: 6.475677
+  type: 'test'
+  ...
+# Subtest: opencode-manual preserves its trigger AND gates the pinned credential-bearing action
+ok 26 - opencode-manual preserves its trigger AND gates the pinned credential-bearing action
+  ---
+  duration_ms: 5.798013
+  type: 'test'
+  ...
+# Subtest: OpenCode action pin provenance and original mutable refs remain visible
+ok 27 - OpenCode action pin provenance and original mutable refs remain visible
+  ---
+  duration_ms: 5.980695
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2433.568541

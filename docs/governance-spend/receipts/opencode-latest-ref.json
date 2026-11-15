@@ -1,0 +1,10 @@
+{
+  "ref": "refs/tags/latest",
+  "node_id": "REF_kwDOOiiGL7ByZWZzL3RhZ3MvbGF0ZXN0",
+  "url": "https://api.github.com/repos/anomalyco/opencode/git/refs/tags/latest",
+  "object": {
+    "sha": "2c14fc5586fe0b88e5c04732d2e846769cc35671",
+    "type": "tag",
+    "url": "https://api.github.com/repos/anomalyco/opencode/git/tags/2c14fc5586fe0b88e5c04732d2e846769cc35671"
+  }
+}
