@@ -16,6 +16,15 @@ This file was absent at the repository root on 2026-11-11. This entry is the fir
 - **Commits / PRs:** Task branch `feat/audrey-gitar-page-bridge-20261114`, additive draft PR into main for owner review; remote receipt is recorded after creation, not invented here.
 - **Open / handoff:** Owner review, existing CI finding, actual Page identity/token/permissions, Gitar bot allowance, protected Environment required reviewers and optional Slack channel. No own merge, bridge activation, Page/Slack post, work dispatch, token extraction or live secret/variable change.
 - **Credit note:** Audrey owns the work. Earlier repository builders own the existing router and execution engine; this integration extends them rather than recreating them.
+## 2026-11-14 — Auky — restore Actions migration doc and add free GitHub substitutes
+
+- **Actor:** Auky (Grok Bot visiting agent; `gh` as midnghtsapphire)
+- **Requested by:** Audrey Evans, 2026-11-14 ("can you do all that please" — restore the missing ACTIONS_MIGRATION.md gem and document free substitutes)
+- **Role:** executed (draft PR only; not merged)
+- **Files:** `docs/governance/ACTIONS_MIGRATION.md` (recovered from PR #18279 / `b741f195027e5e17e849e7cdbbb4e6c04c09962a`, not rewritten; recovery note and later-context section added); `docs/governance/FREE_GITHUB_SUBSTITUTES.md` (new); `learnings.md`; `CHANGELOG.md`; `LEDGER.md`; `README.md`; `MASTER.md`; `wr/memory/decisions.jsonl`
+- **What was done:** Confirmed PR #18279 was merged on GitHub but its squash commit is not an ancestor of current `main`, so the migration doc was missing. Restored the original file from that commit. Documented free-tier substitutes for Projects, Codespaces, Packages, LFS, and Advanced Security with vendor-doc citations checked 2026-11-14. No `.github/workflows/` or `.circleci/config.yml` edits. No billing changes. No automation on the Grok Bot box.
+- **Decisions:** Current GitHub Projects is already free on GitHub Free (personal and org) — recorded rather than inventing a substitute. Gitpod / Ona Cloud (shut down 2026-10-31) is not recommended. Default CodeQL Actions setup is free on public repos but still fails under the billing lock; scanners run on CircleCI or `ops/self-hosted-ci`.
+- **Open / handoff:** Draft PR for owner review. Do not merge. Hosted workflows stay enabled and unmodified.
 
 ## 2026-11-13 — Triage session — OpenCode in-GitHub coding agent
 

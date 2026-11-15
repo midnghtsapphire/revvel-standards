@@ -191,15 +191,13 @@ def cmd_demo():
     
     sample_report = "Witness saw vehicle near the culvert and historical mine shaft along Sharp Mountain."
     triage = layer1_nlp_triage(sample_report)
-    print("
-[Layer 1] NLP & Hazard Regex Parsing with Mine Map Aliasing:")
+    print("\n[Layer 1] NLP & Hazard Regex Parsing with Mine Map Aliasing:")
     print(f"  • Extracted Hazards: {triage['terrain_flags']}")
     print(f"  • Auto-Expanded Mine Aliases: {triage['expanded_mine_aliases']}")
     print(f"  • Calculated Priority: {triage['priority']}")
 
     ad = layer4_adipocere_dielectric_model(10.0)
-    print("
-[Layer 4] Adipocere / Saponification Dielectric Inversion (10-Year Horizon):")
+    print("\n[Layer 4] Adipocere / Saponification Dielectric Inversion (10-Year Horizon):")
     print(f"  • Effective Permittivity (e_r): {ad['effective_permittivity']}")
     print(f"  • Saponification Completion: {ad['saponification_pct']}%")
     print(f"  • GPR Propagation Velocity (v): {ad['gpr_velocity_m_ns']} m/ns")
@@ -211,15 +209,13 @@ def cmd_demo():
     ]
     ranked = layer2_county_sweep(sample_tiles, years_buried=10.0, profile_type="STEEP_PITCH_ROOM_PILLAR")
     
-    print("
-[Layer 2 + Layer 4] Integrated County Target Ranking:")
+    print("\n[Layer 2 + Layer 4] Integrated County Target Ranking:")
     print(f"{'Tile':<15} {'Row,Col':<8} {'Easting':<10} {'Northing':<10} {'Gi* Z':<7} {'eps_r':<8} {'GPR v':<8} {'P_grave':<8}")
     print("-" * 80)
     for item in ranked[:5]:
         print(f"{item['tile']:<15} {item['row']},{item['col']:<6} {item['easting']:<10} {item['northing']:<10} {item['gi_star_z']:<7} {item['effective_permittivity']:<8} {item['gpr_velocity']:<8} {item['p_grave']:<8}")
 
-    print("
-[✓] Offline 6-Layer Pipeline & Mine Map Integration Demo Completed!")
+    print("\n[✓] Offline 6-Layer Pipeline & Mine Map Integration Demo Completed!")
 
 def cmd_curve():
     print("[*] Generating Operating Precision-Recall & Adipocere Dielectric Curve Experiment...")
@@ -258,8 +254,7 @@ def cmd_curve():
 
 def cmd_run(config_path):
     cmd_validate(config_path)
-    print("
-[*] Starting Full County Operational Execution...")
+    print("\n[*] Starting Full County Operational Execution...")
     with open(config_path, 'r') as f:
         cfg = json.load(f)
         

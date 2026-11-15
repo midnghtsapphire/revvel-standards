@@ -40,7 +40,6 @@ else
   exit 0
 fi
 
-if printf '%s\n' "$changed" | grep -Eq "^(products/${PRODUCT}/|\\.circleci/|\\.dockerignore$|tests/${PRODUCT}-image-gate\\.test\\.js$|tests/select-do-app\\.test\\.js$)"; then
 if printf '%s\n' "$changed" | grep -Eq "^(products/${PRODUCT}/|\\.circleci/|\\.dockerignore$|tests/${PRODUCT}-image-gate\\.test\\.js$|tests/static-stripe-product-gate\\.js$|tests/select-do-app\\.test\\.js$|packages/static-stripe-server/)"; then
   printf 'run\n'
 else

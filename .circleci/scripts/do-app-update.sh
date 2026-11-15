@@ -28,7 +28,7 @@ if [[ -z "${DIGITALOCEAN_ACCESS_TOKEN:-}" ]]; then
   exit 0
 fi
 
-SPEC="products/${PRODUCT}/.do/app.yaml"
+SPEC="${DO_APP_SPEC:-products/${PRODUCT}/.do/app.yaml}"
 if [[ ! -f "$SPEC" ]]; then
   echo "Missing ${SPEC}" >&2
   exit 1

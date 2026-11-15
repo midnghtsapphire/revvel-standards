@@ -90,9 +90,14 @@ function registerStaticStripeProduct({ slug, legacyPeerDeps }) {
     assert.equal(spec.includes('deploy_on_push: true'), false);
     assert.equal(spec.includes('sk_test_'), false);
     assert.equal(spec.includes('sk_live_'), false);
-    assert.equal(config.includes(`${slug}-do-deploy`), false);
-    assert.equal(config.includes('do-app-update.sh'), false);
-    assert.equal(fs.existsSync(path.join(ROOT, '.circleci/scripts/do-app-update.sh')), false);
+    // #18372 (merged) added main-only DigitalOcean deploy jobs. They must stay
+    // out of pr-workflow and must no-op while DIGITALOCEAN_ACCESS_TOKEN is unset.
+    assert.match(config, new RegExp(`${slug}-do-deploy:`));
+    const prWorkflow = config.slice(config.indexOf('  pr-workflow:'), config.indexOf('  main-workflow:'));
+    assert.equal(prWorkflow.includes('-do-deploy'), false);
+    assert.equal(prWorkflow.includes('do-app-update.sh'), false);
+    const updater = fs.readFileSync(path.join(ROOT, '.circleci/scripts/do-app-update.sh'), 'utf8');
+    assert.match(updater, /DIGITALOCEAN_ACCESS_TOKEN:-/);
   });
 
   test(`${slug} health returns 200 and checkout stays unavailable without keys`, async () => {
