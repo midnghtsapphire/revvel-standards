@@ -1,0 +1,120 @@
+name: lemon8-geelark
+
+# Publishes staged Amazon affiliate campaigns to Lemon8 through a GeeLark cloud
+# phone. Requires repository secrets: GEElARK_APP_ID + GEElARK_API_KEY (or
+# GEElARK_APP_TOKEN) and GEElARK_PHONE_ID. Without GEElARK_PHONE_ID the job
+# exits cleanly after tests, so the schedule can stay enabled before activation.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "publish-latest | stage-and-publish | calibrate | dry-run"
+        required: true
+        default: publish-latest
+        type: choice
+        options:
+          - publish-latest
+          - stage-and-publish
+          - calibrate
+          - dry-run
+      campaign:
+        description: "Optional campaign folder (defaults to newest *-lemon8)"
+        required: false
+        type: string
+  schedule:
+    # 08:00 and 16:00 America/Denver (MST, UTC-7)
+    - cron: "0 15,23 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lemon8-geelark
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: automation/lemon8-geelark
+  GEElARK_APP_ID: ${{ secrets.GEElARK_APP_ID }}
+  GEElARK_API_KEY: ${{ secrets.GEElARK_API_KEY }}
+  GEElARK_APP_TOKEN: ${{ secrets.GEElARK_APP_TOKEN }}
+  GEElARK_PHONE_ID: ${{ secrets.GEElARK_PHONE_ID }}
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r automation/lemon8-geelark/requirements.txt
+
+      - name: Unit tests
+        run: python -m pytest automation/lemon8-geelark/tests -q
+
+      - name: Stage a new deal (best effort)
+        if: github.event_name == 'schedule' || github.event.inputs.mode == 'stage-and-publish'
+        continue-on-error: true
+        run: |
+          pip install playwright pillow
+          python -m playwright install chromium --with-deps
+          python automation/amazon-lemon8/run.py --headless --tag meetaudreyevans-20 --max-price 25 --min-discount 40
+          python automation/lemon8-geelark/stage_from_out.py
+
+      - name: Publish to Lemon8
+        if: env.GEElARK_PHONE_ID != ''
+        run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.campaign }}" ]; then
+            ARGS="--campaign ${{ github.event.inputs.campaign }}"
+          else
+            ARGS="--latest"
+          fi
+          case "${{ github.event.inputs.mode }}" in
+            calibrate) ARGS="$ARGS --calibrate" ;;
+            dry-run)   ARGS="$ARGS --dry-run" ;;
+          esac
+          echo "publish.py $ARGS"
+          python automation/lemon8-geelark/publish.py $ARGS
+
+      - name: Skip notice
+        if: env.GEElARK_PHONE_ID == ''
+        run: echo "GEElARK_PHONE_ID secret is not set. Add GeeLark secrets to activate publishing."
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lemon8-run-${{ github.run_id }}
+          path: |
+            marketing/amazon-affiliate-campaigns/**/runs/**
+            automation/amazon-lemon8/out/**
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Commit run report
+        if: always()
+        run: |
+          git config user.name "Manus Agent"
+          git config user.email "agent@manus.im"
+          git add marketing/amazon-affiliate-campaigns automation/amazon-lemon8/out 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "no report changes to commit"
+            exit 0
+          fi
+          git commit -m "chore(lemon8): GeeLark run report $(date -u +%FT%TZ)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            sleep 5
+          done
+          echo "push failed after retries" >&2
+          exit 1

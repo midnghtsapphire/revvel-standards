@@ -142,6 +142,20 @@ class DualCommsTAKPublisher:
                 if self.use_tls:
                     with self._tls_context().wrap_socket(raw, server_hostname=self.primary_host) as tls:
                         tls.sendall(payload)
+                        # Graceful TLS closure, not just socket close. Under
+                        # TLS 1.3 the client finishes its handshake first and
+                        # sendall() can return while the server is still inside
+                        # its own handshake; closing abortively then emits a
+                        # TCP RST (observed as WinError 10053 server-side) and
+                        # the kernel discards the delivered payload — silent
+                        # data loss while this publisher reports SENT. unwrap()
+                        # sends close_notify and waits for the peer's, bounded
+                        # by the socket timeout; failures here do not un-send
+                        # the payload, so they are not a PRIMARY_FAILED.
+                        try:
+                            tls.unwrap()
+                        except (ssl.SSLError, OSError):
+                            pass
                 else:
                     raw.sendall(payload)
             proto = "TLS" if self.use_tls else "TCP"
