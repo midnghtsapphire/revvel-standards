@@ -130,6 +130,13 @@ class DualCommsTAKPublisher:
             raise ValueError(f"CoT payload root must be <event>, got <{root.tag}>")
         payload = xml_cot_str.encode("utf-8")
 
+        # Build the TLS context BEFORE opening the socket: a missing or garbled
+        # cert/key/CA file is a local configuration error and must raise to the
+        # caller, not be caught below as a PRIMARY_FAILED link failure (which,
+        # with --multicast on, would then broadcast the position in clear as a
+        # bogus "failover").
+        tls_context = self._tls_context() if self.use_tls else None
+
         # Primary Comms Channel: TCP Direct Stream to OpenTAKServer
         # Original (kept for reference): plain TCP only, socket not closed on error.
         # sock_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -140,7 +147,7 @@ class DualCommsTAKPublisher:
         try:
             with socket.create_connection((self.primary_host, self.primary_port), timeout=self.timeout) as raw:
                 if self.use_tls:
-                    with self._tls_context().wrap_socket(raw, server_hostname=self.primary_host) as tls:
+                    with tls_context.wrap_socket(raw, server_hostname=self.primary_host) as tls:
                         tls.sendall(payload)
                 else:
                     raw.sendall(payload)
