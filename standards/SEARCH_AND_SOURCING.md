@@ -84,6 +84,24 @@ The lines that follow, to the closing marker, are the original table:
 | lineara.xyz | No license | Reference-only. Licence-request status UNRESOLVED as of 2026-11-06 - see the note below this table. Do not assume one is in train and do not send one. |
 -->
 
+<!--
+RETIRED 2026-11-14 at the owner's instruction (Audrey Evans). Commented out in
+place, NOT deleted and NOT retyped, per AGENTS.md OWNER RULE 2 and OWNER RULE 4.
+
+WHY THE WHOLE TABLE-AND-NOTE BLOCK IS WRAPPED: the wording that bots were
+using as a veto ("local storage only, not redistribution or publication")
+sits in the MIDDLE of table rows and in the note under the table. An HTML
+comment between table rows ends the table, so the whole block is wrapped to
+keep every original line byte for byte.
+
+WHAT CHANGED: Audrey Evans, 2026-11-14: committing L1 or third-party material
+to a PRIVATE repo is allowed and is not redistribution. Agents must warn, not
+refuse. Public repos stay blocked. Her words: "we are not redistributing
+anything", "Any copyright will not be in violation", and "We can make a
+trigger that if i do it i get warned."
+
+The lines that follow, to the closing marker, are the previous live table and
+note:
 | Source | License status | Rule |
 | --- | --- | --- |
 | GORILA | EFA-owned, no-derivatives | Scans MAY be stored - owner decision, Audrey Evans, 2026-11-02 08:34 MST. The no-derivatives status in the middle column is UNCHANGED: this permits local storage only, not redistribution or publication. |
@@ -99,6 +117,42 @@ The lines that follow, to the closing marker, are the original table:
 > RILA-S1 remain EFA-owned and no-derivatives, so this permits local storage
 > only. It does not authorise redistributing or publishing scans or anything
 > derived from them, and it is not a judgement about what those licences allow.
+-->
+
+| Source | License status | Rule |
+| --- | --- | --- |
+| GORILA | EFA-owned, no-derivatives | Scans and other L1 material MAY be stored and committed in PRIVATE repos. A non-blocking warning fires. Public repos stay blocked. Owner decision, Audrey Evans, 2026-11-14. The 2026-11-02 permission to store scans still stands. Licence status is UNCHANGED and is not a judgement about what those licences allow. |
+| RILA-S1 | EFA-owned, no-derivatives | Scans and other L1 material MAY be stored and committed in PRIVATE repos. A non-blocking warning fires. Public repos stay blocked. Owner decision, Audrey Evans, 2026-11-14. The 2026-11-02 permission to store scans still stands. Licence status is UNCHANGED and is not a judgement about what those licences allow. |
+| SigLA | Non-commercial | Non-commercial use only. Private-repo storage and commits are allowed; a warning fires. Public repos stay blocked. |
+| lineara.xyz | No license | Licence-request status remains UNRESOLVED as of 2026-11-06 - see the note below this table. Do not assume one is in train and do not send one. Reference-only applies to PUBLIC release. Committing derived or held files into a PRIVATE repo is allowed. A non-blocking warning fires. Public repos stay blocked. Owner decision, Audrey Evans, 2026-11-14. |
+
+> **Private storage is not redistribution, owner decision 2026-11-14
+> (Audrey Evans, America/Denver).** The 2026-11-06 note treated "local
+> storage" as something other than a private git commit, and bots used that
+> wording to refuse commits the owner had already allowed. A commit to a
+> private repository the owner controls is storage, not redistribution and not
+> publication. Redistribution means publishing, making a public repo, or
+> otherwise releasing the material. Public repos remain blocked. The
+> non-blocking warning is `.github/workflows/l1-material-warning.yml`, using
+> `standards/l1-source-registry.json`. Audrey's words: "we are not
+> redistributing anything", "Any copyright will not be in violation", and
+> "We can make a trigger that if i do it i get warned." See §5A.
+
+## 5A. Private repos versus public repos (Audrey Evans, 2026-11-14)
+
+- In a **private** repository, committing L1 material, third-party corpus
+  files, scans, or other held source files is **allowed**. Agents must not
+  refuse the commit, leave the files out, or invent a veto. They may warn.
+- The warning is non-blocking: the GitHub Action comments on the pull request
+  and prints a warning, and the check stays green.
+- In a **public** repository, the same files are **blocked**. The Action
+  fails. That is the real redistribution check.
+- "Reference-only" and "do not redistribute" do not mean "do not put it in a
+  private repo." They mean do not publish it or put it in a public repo.
+- Owner decisions override earlier agent-authored notes, including ledger
+  §31.37 and clean-room notes in other repos, when those notes are used to
+  refuse private storage the owner has allowed. See `AGENTS.md` owner rules
+  8, 9, 13 and OWNER-DIRECTED WORK.
 
 <!--
 RETIRED 2026-11-06 at the owner's instruction (Audrey Evans). Commented out in
@@ -130,3 +184,4 @@ here. See the visible note below the table.
 - Audrey's Academia Pro login in the shared browser is for her own research
   reading only.
 - Do not redistribute downloaded PDFs.
+- A private-repo commit of a downloaded PDF is storage, not redistribution (§5A, Audrey Evans, 2026-11-14). Do not put those PDFs in a public repo.
