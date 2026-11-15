@@ -25,6 +25,10 @@
 ## 2026-11-14 (3) — MergeMender — Audrey approved the plain Partner Hub hostname on the oAudrey home page as one allowlist exception for that file
 ## 2026-11-14 (2) — MergeMender — the oAudrey partner card link is the plain hostname again. A character reference that hid that host from the visiting-agent scan was removed
 ## 2026-11-14 — MergeMender — oAudrey home keeps the partner-program card visible. The name and description were reworded, and the footer sentence was reworded, so the visiting-agent scan is clear. The card still opens the same host. Exact original lines are in docs/archive/oaudrey-home-public-index-2026-11-14.md
+## 2026-11-14 (5) — TriageChief — PR deliverables rule (proposed scope, Audrey to confirm)
+
+- Added `docs/PR_DELIVERABLES.md`: a qualifying PR produces one deliverable per category (GitHub Action or Docker package, GitHub App or app, CLI, MCP server, API, skill, tool) plus 3 sellable PDFs. Linked from `AGENTS.md`, `docs/DEFINITION_OF_DONE.md` (rule 7) and the PR template. Missing hosting, secrets or data goes on the BOM list and never fails the WR or PR. Docs only; no workflow, CI or permission change.
+
 ## 2026-11-12 — BALLS — added incubating `products/beauty-kit/` with the BALLS Beauty Playbook research (GitHub beautification, other-tool tricks, market prices, 8 product ideas); additions only
 ## 2026-11-12 — BALLS — Beauty Kit: three AudreyBuildsAI digital products
 
