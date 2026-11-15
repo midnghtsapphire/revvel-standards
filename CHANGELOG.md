@@ -1,6 +1,26 @@
 ## 2026-11-14 (4) — TriageChief — Grok bots: the shared box is scratch; missing data goes on the BOM
 
 - Added `docs/GROK-BOTS-BOX-IS-SCRATCH.md`, and linked it from `AGENTS.md` and `docs/BOT-COMMON-RULES.md`. The shared box is scratch space (it hit 100% disk on 14 Nov 2026). Private or copyrighted material belongs in a private GitHub repo (`linear-a-sources` or `box-backups`), not only on the box. Missing real data, APIs, inventory, or secrets do not fail the WR or PR and are not requested from Audrey mid-work; they go on the existing BOM "Audrey to get" list ([`docs/Universal-BOM_List/README.md`](docs/Universal-BOM_List/README.md)), and only that part is paused. Synthetic data is allowed only in dev, clearly labeled, and never as evidence; it must not feed Linear A findings, the ledger, or a merge to `main` (see linear-a's `synthetic_guard`). No workflow or CI changes.
+## 2026-11-14 (7) — TriageChief — markdownlint fixes in the notebook audit pages and the deterministic-search spec
+
+- Bare notebook URLs wrapped in angle brackets (MD034) in `docs/cutover/notebooks/*.md` and `docs/specs/DETERMINISTIC_SEARCH_SPEC.md`; one heading lost its trailing quote mark (MD026). Wording otherwise unchanged. This was needed for the CircleCI changed-Markdown gate on #18410.
+
+## 2026-11-14 (6) — TriageChief — S7: a CircleCI step fails a bot PR that has no handoff dated within the last day
+
+- Added `scripts/check_handoff.sh`, `handoffs/bots.conf`, `tests/check-handoff.test.js`, one `lint-and-test` step, and `handoffs/triagechief/2026-11-14.md`. S7 in `AGENTS.md` (and its exact copy) now describes the check instead of waiting for Audrey. See LEDGER.md.
+
+## 2026-11-14 (5) — TriageChief — added the "Session start: read the handoff first" rule (S1 to S7), restored rules the cutover left out (R1 to R15), `handoffs/` template and Proofy seed; additions only
+
+- `AGENTS.md` section 0 and section R appended; `VISITING_AGENTS.md` repeats the session-start rule inline; `.github/copilot-instructions.md` is the exact copy. `legacy/README.md` got a dated correction note. New: `handoffs/TEMPLATE.md`, `handoffs/README.md`, `handoffs/proofy/2026-11-14.md`, `docs/cutover/mishap-records-audit-2026-11-14.md`. Nothing deleted or rewritten.
+## 2026-11-14 (5) — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
+
+- MergeMe and GHCR wiring auditors find the port table in `AGENTS.md` or `legacy/AGENTS.md` (the cutover moved it). `pot_research_engine.py`, `wr_dispatch.mjs` and `opencode.yml` now consult the LLM spend gate. `products/beauty-kit/` and eleven `scripts/*.py` files are flake8-clean (formatting, unused imports, renamed `l`; behavior unchanged). No baseline, exclusion, test or CircleCI edit. See LEDGER.md.
+
+## 2026-11-14 (4) — TriageChief — AGENTS.md is the new rulebook; old rule files renamed to legacy/
+
+- Root `AGENTS.md` is the full METAL rulebook. The old `AGENTS.md` text is at `legacy/AGENTS.md` (`git mv`, nothing deleted). A draft-only `RULES.md` name from an earlier revision of this PR was folded in and removed; it never landed on `main`.
+- `CLAUDE.md` is the single import line `@AGENTS.md`. `.github/copilot-instructions.md` is an exact copy of `AGENTS.md`. `scripts/check_rules_sync.sh` and a CircleCI `lint-and-test` step fail if they differ (CI change, needs Audrey's yes). No symlinks.
+- Other old rule paths are pointer stubs with the core rules inline. `docs/CUTOVER_PLAN.md` and `docs/cutover/reference-inventory.md` added. Whiteboard feedback from discussion #18238 folded in, marked Audrey to confirm where new.
 
 ## 2026-11-14 (3) — MergeMender — Audrey approved the plain Partner Hub hostname on the oAudrey home page as one allowlist exception for that file
 ## 2026-11-14 (2) — MergeMender — the oAudrey partner card link is the plain hostname again. A character reference that hid that host from the visiting-agent scan was removed

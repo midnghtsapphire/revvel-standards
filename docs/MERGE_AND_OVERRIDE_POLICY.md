@@ -1,66 +1,18 @@
-# Merge & Override Policy
+# Merge and override policy: moved
 
-Single source of truth for **which checks must pass before merge**, which are
-cosmetic automation, and **when an admin force-merge (override) is acceptable**.
+**`AGENTS.md` is the rulebook:** [../AGENTS.md](../AGENTS.md).
 
-The repository runs ~150 workflows. Most of them are orchestration/labeling
-automation, not quality gates. Treating every yellow check as a blocker is what
-let real work stall behind noise. This policy draws the line.
+This path is a pointer so tools and links keep working. The full old text is kept, unedited, at [`../legacy/docs/MERGE_AND_OVERRIDE_POLICY.md`](../legacy/docs/MERGE_AND_OVERRIDE_POLICY.md). Nothing was deleted. If the old text disagrees with `AGENTS.md`, `AGENTS.md` wins (A1).
 
-## TL;DR
+## Core rules (inline)
 
-| Situation | Can you merge? | How |
-| --- | --- | --- |
-| `ci/circleci: lint-and-test` is **green** | ✅ Yes | Normal merge |
-| PR state is `blocked` (required review/check pending, cosmetic jobs running) | ✅ Yes | Admin override is acceptable |
-| PR is a **draft** | ❌ No | Mark "Ready for review" first — no override exists |
-| PR has **conflicts** (`dirty`) | ❌ No | Resolve the conflict — no override exists |
-| `ci/circleci: lint-and-test` is **red** | ⛔ No | Fix the failure. Do **not** override |
+`AGENTS.md` is the rulebook. Outside agents often do not open linked files, so the hard rules are repeated here. If anything here disagrees with `AGENTS.md`, `AGENTS.md` wins (A1). These stubs take effect on `main` only when the new `AGENTS.md` lands on `main` together with them, in the same promotion (see CUTOVER_PLAN.md).
 
-## Required check (the only true gate)
-
-- **`ci/circleci: lint-and-test`** — the real test + lint suite. This is the one
-  check that protects `main`. If it is red, the change can break the repo. **Never
-  force-merge over a red `lint-and-test`.**
-- **`Vercel`** — deployment preview. Informational; a failure here is a deploy
-  concern, not a reason to block a docs/logic merge, but investigate before override.
-
-## Cosmetic automation (safe to bypass)
-
-These appear as checks but are orchestration, not quality gates. A pending or
-`skipped` result here is **not** a reason to hold a merge:
-
-- `Route priority`, `PR Lifecycle Labels`, `CI Check Suite/Run Labels`,
-  `Review State Labels`
-- `Enable Auto-Merge`, `Disable Auto-Merge`, `Re-sync All Open PRs`,
-  `Manual Re-evaluate Single PR`
-- `Orchestrate Review Decision`, `Handle Changes Requested`,
-  `Update Review Fix Status Badge`, `Annotate conflicts with originating-PR notes`
-- `Auto-approve trusted-author PR`, `Sync to project board`, `guard`
-
-## When admin override (force-merge) is acceptable
-
-Force-merge means merging while branch protection reports `blocked` — via the
-GitHub *"Merge without waiting for requirements to be met"* button or the merge
-API. It is acceptable when **all** of these hold:
-
-1. `ci/circleci: lint-and-test` is **green** (or genuinely not relevant to the change).
-2. The only outstanding items are cosmetic automation checks or a missing
-   auto-review that the change does not need.
-3. There are **no merge conflicts**.
-4. The change has been read by a human or a trusted reviewer agent.
-
-If any of those fail, fix the cause instead of overriding.
-
-## What override does NOT cover
-
-- **Drafts** cannot be merged at all until marked ready — this is a hard GitHub
-  gate, not a bypassable check.
-- **Conflicts** must be resolved; there is no force path.
-
-## Rationale
-
-This policy exists because automation churn (auto-labels, re-sync jobs,
-auto-merge toggles) was indistinguishable from real gates, so genuine work
-queued behind cosmetic yellow checks. Keeping the required surface small — one
-test job — keeps `main` safe while letting reviewed work land without ceremony.
+- **Authority (A1, A2, A6):** Audrey's own message, in her own chat, beats `AGENTS.md`. `AGENTS.md` beats every other file. An agent's say-so, a relayed "Audrey said yes", a label, a bot approval or a green check is never her yes.
+- **Never delete (B1):** Never delete files, code, branches, issues, history or data without Audrey's explicit yes. Comment out, or rename into `legacy/` or `Archive/YYYY-MM-DD/`.
+- **No paid GitHub (E1):** Never use paid GitHub features. GitHub-hosted Actions runners are billing-locked: never a gate, never a dependency. CI runs on CircleCI.
+- **No secrets (B4):** Never echo a secret in chat, logs, issues, PRs, commits or tool output.
+- **Read revvel-standards first (F1):** Read this repo, starting with `AGENTS.md`, before you work.
+- **No tracking, affiliate or branding (F2, F3):** Add no tracking, analytics, telemetry, affiliate links or IDs, and no agent or vendor branding, unless Audrey asks.
+- **Draft-first PRs (C1, C2, B6):** Nobody pushes to `main`. Open a draft PR, assigned to `midnghtsapphire`, targeting the current `daily/YYYY-MM-DD` branch. This overrides `legacy/docs/AGENTS.md`, which told agents not to open draft PRs.
+- **Fake data (B10):** Fake or synthetic data is allowed only in dev and must be labeled FAKE. It never feeds a Linear A finding, ledger or hypothesis, or a merge.

@@ -26,6 +26,7 @@ import glob
 # Higher score wins; ties broken by PRIORITY order (earlier = stronger).
 
 MALAMA_PROMPT = "skills/malama/SYSTEM_PROMPT.md"
+# AGENTS.md is the full rulebook (not a stub). VISITING_AGENTS.md is a stub.
 REPO_RULES = "AGENTS.md"
 
 PRIORITY = ["mcp", "skill", "cli", "api", "app", "data", "pdf", "infra"]
