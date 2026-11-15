@@ -26,21 +26,21 @@ jobs:
         id: check-secret
         run: |
           if [ -z "$DO_TOKEN" ]; then
-            echo "::warning::DIGITALOCEAN_API_TOKEN is not set — skipping deploy."
+            echo "::warning::DIGITALOCEAN_TOKEN is not set — skipping deploy."
             echo "See standards/OAUDREY_DEPLOYMENT_STANDARD.md for provisioning steps."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
         env:
-          DO_TOKEN: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
+          DO_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
       - uses: actions/checkout@v7
         if: steps.check-secret.outputs.skip != 'true'
       - name: Install doctl
         if: steps.check-secret.outputs.skip != 'true'
         uses: digitalocean/action-doctl@v2.5.2
         with:
-          token: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
+          token: ${{ secrets.DIGITALOCEAN_TOKEN }}
       - name: Validate app spec
         if: steps.check-secret.outputs.skip != 'true'
         run: doctl apps spec validate oaudrey/.do/app.yaml
@@ -113,7 +113,7 @@ jobs:
                 '',
                 '### Next steps',
                 '1. Check the workflow run logs above',
-                '2. Verify `DIGITALOCEAN_API_TOKEN` is set in repo secrets',
+                '2. Verify `DIGITALOCEAN_TOKEN` is set in repo secrets',
                 '3. Review `oaudrey/.do/app.yaml` for spec errors',
                 '4. See `standards/OAUDREY_DEPLOYMENT_STANDARD.md` for full troubleshooting guide',
               ].join('\n'),

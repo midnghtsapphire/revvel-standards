@@ -54,7 +54,7 @@ Secrets: GitHub Actions repo secrets → Doppler (revvel-standards project)
 
 | Secret / Credential | Purpose | Where to Get It | Where to Store |
 |---|---|---|---|
-| `DIGITALOCEAN_API_TOKEN` | `doctl` authentication — create/update DO App Platform apps | DO Dashboard → API → Personal Access Tokens | GitHub repo secret + Doppler `DIGITALOCEAN_API_TOKEN` |
+| `DIGITALOCEAN_TOKEN` | `doctl` authentication — create/update DO App Platform apps | DO Dashboard → API → Personal Access Tokens | GitHub repo secret + Doppler `DIGITALOCEAN_TOKEN` |
 | `DOPPLER_TOKEN` | Injects all secrets into GitHub Actions workflows | Doppler Dashboard → Project → Service Tokens | GitHub repo secret `DOPPLER_TOKEN` |
 | Namecheap credentials | Update DNS records (Namecheap API or dashboard) | Namecheap account `uprisinghope` | Vault: `revvel/shared/dns/namecheap` |
 | `NAMECHEAP_API_KEY` | Namecheap API for automated DNS updates | Namecheap → Profile → API Access | GitHub repo secret + Doppler |
@@ -71,7 +71,7 @@ doppler login
 doppler setup    # select revvel-standards → production
 
 # Provision DigitalOcean token
-doppler secrets set DIGITALOCEAN_API_TOKEN --value "YOUR_DO_TOKEN_HERE"
+doppler secrets set DIGITALOCEAN_TOKEN --value "YOUR_DO_TOKEN_HERE"
 
 # Verify
 doppler secrets --only-names | grep DIGITAL
@@ -81,7 +81,7 @@ doppler secrets --only-names | grep DIGITAL
 
 ```bash
 # Using gh CLI
-gh secret set DIGITALOCEAN_API_TOKEN --repo midnghtsapphire/revvel-standards
+gh secret set DIGITALOCEAN_TOKEN --repo midnghtsapphire/revvel-standards
 gh secret set DOPPLER_TOKEN --repo midnghtsapphire/revvel-standards
 
 # Verify (shows names, not values)
@@ -112,7 +112,7 @@ Manual dry-run from any developer machine:
 
 ```bash
 DRY_RUN=1 scripts/gatekeeper-sync.sh \
-  --secrets DIGITALOCEAN_API_TOKEN,NAMECHEAP_API_KEY \
+  --secrets DIGITALOCEAN_TOKEN,NAMECHEAP_API_KEY \
   --repo midnghtsapphire/revvel-standards \
   --json
 ```
@@ -125,7 +125,7 @@ DRY_RUN=1 scripts/gatekeeper-sync.sh \
 
 The `deploy-oaudrey.yml` workflow handles the first deploy automatically when you push to `main`. It:
 
-1. Installs `doctl` and authenticates with `DIGITALOCEAN_API_TOKEN`
+1. Installs `doctl` and authenticates with `DIGITALOCEAN_TOKEN`
 2. Validates `oaudrey/.do/app.yaml`
 3. Creates a new App Platform app (first time) or updates it (subsequent pushes)
 4. Waits for the deployment to reach `ACTIVE` status
@@ -349,7 +349,7 @@ Triggers:
 [ ] oaudrey/index.html — markup valid, all tabs wired
 [ ] oaudrey/404.html — exists and branded
 [ ] oaudrey/.do/app.yaml — spec validated
-[ ] DIGITALOCEAN_API_TOKEN secret is set
+[ ] DIGITALOCEAN_TOKEN secret is set
 [ ] deploy-oaudrey.yml passes (GitHub Actions)
 [ ] oaudrey.com returns HTTP 200
 [ ] fieldwork.oaudrey.com returns HTTP 200
@@ -492,14 +492,14 @@ Ensure the app name in `oaudrey/.do/app.yaml` matches exactly `oaudrey-hub`.
 - Confirm the CNAME / ALIAS record in DigitalOcean DNS points to the app's `ondigitalocean.app` URL
 - Check for SSL provisioning (DO automatically provisions Let's Encrypt — may take ~10 minutes)
 
-### DIGITALOCEAN_API_TOKEN not working
+### DIGITALOCEAN_TOKEN not working
 
 Token requires **read** + **write** scopes on Apps. Create a new token at:  
 DO Dashboard → API → Personal Access Tokens → Generate New Token → check **Read** + **Write**
 
 ### Secrets keep disappearing / needing to be re-added every day
 
-**Symptom:** `DIGITALOCEAN_API_TOKEN` (or other secrets) is present one day and gone the next, causing the retro to report `HTTP 000` repeatedly.
+**Symptom:** `DIGITALOCEAN_TOKEN` (or other secrets) is present one day and gone the next, causing the retro to report `HTTP 000` repeatedly.
 
 **Root cause:** GitHub fine-grained PATs expire. The default expiry is 30 days. When `ADMIN_GITHUB_TOKEN` expires, the Credential Gatekeeper's auto-provision step can no longer write secrets back to the repo — so secrets that would have been auto-synced from Doppler silently remain absent.
 
@@ -521,7 +521,7 @@ gh secret set ADMIN_GITHUB_TOKEN    --repo midnghtsapphire/revvel-standards
 gh workflow run secrets-sentinel.yml --repo midnghtsapphire/revvel-standards
 ```
 
-After the sentinel runs, `DIGITALOCEAN_API_TOKEN` and other secrets will be restored automatically from Doppler. The sentinel will continue to run daily and heal any future lapses.
+After the sentinel runs, `DIGITALOCEAN_TOKEN` and other secrets will be restored automatically from Doppler. The sentinel will continue to run daily and heal any future lapses.
 
 ### Retro health check reports `HTTP 000` for `oaudrey.com` / `fieldwork.oaudrey.com`
 
@@ -552,10 +552,10 @@ would be `4xx`/`5xx`). Triage in this order:
    and inspect its logs.
 
 3. **Required secrets** — if no deploy has ever succeeded, the apex won't
-   resolve. Verify `DIGITALOCEAN_API_TOKEN` is set:
+   resolve. Verify `DIGITALOCEAN_TOKEN` is set:
 
    ```bash
-   gh secret list --repo midnghtsapphire/revvel-standards | grep DIGITALOCEAN_API_TOKEN
+   gh secret list --repo midnghtsapphire/revvel-standards | grep DIGITALOCEAN_TOKEN
    ```
 
 4. **Re-run the retro after fixing** — once DNS resolves and the deploy is
@@ -627,19 +627,19 @@ The weekly retro was updating issue #575 with a new "still open" comment every M
 
 | Item | Finding | Resolution | Status |
 |------|---------|------------|--------|
-| `oaudrey.com` not responding | `HTTP 000` — curl cannot complete TLS handshake; DNS not provisioned or app not deployed | Root cause: `DIGITALOCEAN_API_TOKEN` repeatedly absent from GitHub repo secrets, preventing the deploy workflow from running. See **Secrets Persistence** section below. | ⚠️ Infrastructure pending |
+| `oaudrey.com` not responding | `HTTP 000` — curl cannot complete TLS handshake; DNS not provisioned or app not deployed | Root cause: `DIGITALOCEAN_TOKEN` repeatedly absent from GitHub repo secrets, preventing the deploy workflow from running. See **Secrets Persistence** section below. | ⚠️ Infrastructure pending |
 | `fieldwork.oaudrey.com` not responding | Same root cause as apex | Same as above | ⚠️ Infrastructure pending |
 
 **Root cause analysis — secrets disappearing:**
 
-GitHub fine-grained personal access tokens (PATs) expire. The default expiry is 30 days and the maximum is 1 year. When `ADMIN_GITHUB_TOKEN` (used by the Credential Gatekeeper to write secrets) expires, the auto-provision pipeline silently loses the ability to re-sync secrets from Doppler. Subsequent runs of `credential-gatekeeper.yml` emit `❌ gh secret set failed` rows but the maintainer may not notice, leaving `DIGITALOCEAN_API_TOKEN` absent.
+GitHub fine-grained personal access tokens (PATs) expire. The default expiry is 30 days and the maximum is 1 year. When `ADMIN_GITHUB_TOKEN` (used by the Credential Gatekeeper to write secrets) expires, the auto-provision pipeline silently loses the ability to re-sync secrets from Doppler. Subsequent runs of `credential-gatekeeper.yml` emit `❌ gh secret set failed` rows but the maintainer may not notice, leaving `DIGITALOCEAN_TOKEN` absent.
 
 Additionally, Doppler service tokens are non-expiring by default, but if `DOPPLER_TOKEN` itself was provisioned with a short-lived token type, it too expires — breaking the entire self-healing chain.
 
 **Actions taken (code — this PR):**
 
-- `.github/workflows/secrets-sentinel.yml` — **new** daily sentinel (05:00 UTC, one hour before retro). Audits `DIGITALOCEAN_API_TOKEN`, `DOPPLER_TOKEN`, `ADMIN_GITHUB_TOKEN`, `NAMECHEAP_API_KEY`, and `OPENROUTER_API_KEY`. If any are missing and `DOPPLER_TOKEN` is available, invokes `scripts/gatekeeper-sync.sh` to restore them from Doppler automatically. Opens or updates a `secrets-missing` tracking issue when auto-heal is not possible.
-- `.github/workflows/secrets-health-check.yml` — added `DIGITALOCEAN_API_TOKEN` and `DOPPLER_TOKEN` to the weekly audit (both were absent from the checked set).
+- `.github/workflows/secrets-sentinel.yml` — **new** daily sentinel (05:00 UTC, one hour before retro). Audits `DIGITALOCEAN_TOKEN`, `DOPPLER_TOKEN`, `ADMIN_GITHUB_TOKEN`, `NAMECHEAP_API_KEY`, and `OPENROUTER_API_KEY`. If any are missing and `DOPPLER_TOKEN` is available, invokes `scripts/gatekeeper-sync.sh` to restore them from Doppler automatically. Opens or updates a `secrets-missing` tracking issue when auto-heal is not possible.
+- `.github/workflows/secrets-health-check.yml` — added `DIGITALOCEAN_TOKEN` and `DOPPLER_TOKEN` to the weekly audit (both were absent from the checked set).
 
 **Secrets persistence — bootstrap contract:**
 
@@ -655,7 +655,7 @@ Once both bootstrap secrets are present, the daily sentinel (`secrets-sentinel.y
 **Remaining actions (infrastructure — requires live secrets):**
 
 1. Set `DOPPLER_TOKEN` (service token, non-expiring) and `ADMIN_GITHUB_TOKEN` (`secrets:write`) manually
-2. Trigger `secrets-sentinel.yml` manually to restore `DIGITALOCEAN_API_TOKEN` and other missing secrets
+2. Trigger `secrets-sentinel.yml` manually to restore `DIGITALOCEAN_TOKEN` and other missing secrets
 3. Run `deploy-oaudrey.yml` via `workflow_dispatch` to deploy to DigitalOcean App Platform
 4. In DigitalOcean dashboard: confirm `oaudrey.com` and `fieldwork.oaudrey.com` are custom domains on the app
 5. In Namecheap: confirm nameservers point to `ns1-3.digitalocean.com`
@@ -669,7 +669,7 @@ Once both bootstrap secrets are present, the daily sentinel (`secrets-sentinel.y
 
 | Item | Finding | Resolution | Status |
 |------|---------|------------|--------|
-| `oaudrey.com` not responding | `HTTP 000000` reported — two issues: (1) retro script double-printed `000` via \|\| echo pattern; (2) app not yet deployed to DO App Platform | (1) Fixed in `oaudrey-retro.yml` — health check now uses \|\| true so curl's `-w "%{http_code}"` is the sole source of the status string; (2) Requires `DIGITALOCEAN_API_TOKEN` secret and DNS pointed to DigitalOcean nameservers — see [Troubleshooting: HTTP 000](#retro-health-check-reports-http-000-for-oaudreycom--fieldworkoaudreycom) | ⚠️ Infrastructure pending |
+| `oaudrey.com` not responding | `HTTP 000000` reported — two issues: (1) retro script double-printed `000` via \|\| echo pattern; (2) app not yet deployed to DO App Platform | (1) Fixed in `oaudrey-retro.yml` — health check now uses \|\| true so curl's `-w "%{http_code}"` is the sole source of the status string; (2) Requires `DIGITALOCEAN_TOKEN` secret and DNS pointed to DigitalOcean nameservers — see [Troubleshooting: HTTP 000](#retro-health-check-reports-http-000-for-oaudreycom--fieldworkoaudreycom) | ⚠️ Infrastructure pending |
 | `fieldwork.oaudrey.com` not responding | App not yet deployed; DNS not configured | Same as above + `fieldwork/404.html` was missing from repo (required by `oaudrey/.do/app.yaml` `error_document: 404.html`) — now added | ⚠️ Infrastructure pending |
 
 **Actions taken (code):**
@@ -679,7 +679,7 @@ Once both bootstrap secrets are present, the daily sentinel (`secrets-sentinel.y
 
 **Remaining actions (infrastructure — requires live secrets):**
 
-1. Set `DIGITALOCEAN_API_TOKEN` in GitHub repo secrets
+1. Set `DIGITALOCEAN_TOKEN` in GitHub repo secrets
 2. Run `deploy-oaudrey.yml` manually via `workflow_dispatch`
 3. In DigitalOcean dashboard: add `oaudrey.com` and `fieldwork.oaudrey.com` as custom domains on the app
 4. In Namecheap: point `oaudrey.com` nameservers to `ns1-3.digitalocean.com`

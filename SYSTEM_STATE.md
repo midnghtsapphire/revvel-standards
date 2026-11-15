@@ -11,7 +11,7 @@
 | Component | Status | Details |
 |---|---|---|
 | CI/CD | ✅ | GitHub Actions workflows in `.github/workflows/` |
-| oAudrey App Platform app | ⏳ | **Pending human action:** Set `DIGITALOCEAN_API_TOKEN` GitHub secret → trigger `deploy-oaudrey.yml` |
+| oAudrey App Platform app | ⏳ | **Pending human action:** Set `DIGITALOCEAN_TOKEN` GitHub secret → trigger `deploy-oaudrey.yml` |
 | oAudrey DNS (`oaudrey.com`) | ⏳ | **Pending human action:** Log into Namecheap (`uprisinghope`) → oaudrey.com → Nameservers → Custom DNS → `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com` |
 | oAudrey DNS (`fieldwork.oaudrey.com`) | ⏳ | **Pending human action:** Same NS change as above + add CNAME in DigitalOcean Networking → Domains |
 | Database | ❌ | Not applicable (standards repo — no DB) |
