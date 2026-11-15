@@ -1,0 +1,13 @@
+{
+  "slug": "bodyfinders",
+  "title": "Body Finders",
+  "domain_strategy": "path",
+  "own_domain": null,
+  "hub_path": "/bodyfinders/",
+  "hub_url": "https://oaudrey.com/bodyfinders/",
+  "redirect_from": [],
+  "repo": "midnghtsapphire/bodyfinders",
+  "status": "building",
+  "description": "Body Finders.",
+  "added": "2026-11-10"
+}

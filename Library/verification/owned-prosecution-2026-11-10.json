@@ -1,0 +1,69 @@
+{
+  "hull": {
+    "schema": "metal.local-execution.v1",
+    "run_id": "b6ff55a0-c436-4c88-af61-404a39364c14",
+    "skill": "merge-prosecutor",
+    "started_at": "2026-11-10T12:01:25.87406-07:00",
+    "status": "succeeded",
+    "exit_code": 0,
+    "bridge_provider_calls": 0,
+    "policy_sha256": "b1f19c6973c4dddbb178569fd6ea5d4ba11a748db261779282c69c089990ca31",
+    "manifest_sha256": "2f7da56a70e4104a436e1268cab0956f794cc3a669b924e243e090e1bc1f932d",
+    "input_sha256": "785fd4d7ac9bba18d2de01e886a343cbeac32eee8972438e743fe984974c42f6",
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "products/merge-prosecutor/action/run-prosecutor.mjs",
+      "--local",
+      "--policy",
+      "C:\\Users\\lopez\\Documents\\Codex\\2026-11-10\\mak\\work\\review\\owned-prosecution-20261110\\prosecution-policy.json"
+    ],
+    "cwd": "C:\\Users\\lopez\\Documents\\Codex\\2026-11-10\\mak\\work\\revvel-shipping-continuation",
+    "timeout_seconds": 240,
+    "stdout_path": "C:\\Users\\lopez\\Documents\\Codex\\2026-11-10\\mak\\work\\review\\owned-prosecution-20261110\\hull-receipts\\b6ff55a0-c436-4c88-af61-404a39364c14.stdout.log",
+    "stdout_bytes": 1167,
+    "stdout_sha256": "333c0b8e21a3fb6a349b2851490a3d8e930756381e0b6b71b3ba56f0cb88deae",
+    "stderr_path": "C:\\Users\\lopez\\Documents\\Codex\\2026-11-10\\mak\\work\\review\\owned-prosecution-20261110\\hull-receipts\\b6ff55a0-c436-4c88-af61-404a39364c14.stderr.log",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "duration_seconds": 10.326331,
+    "finished_at": "2026-11-10T12:01:36.200217-07:00",
+    "receipt_path": "C:\\Users\\lopez\\Documents\\Codex\\2026-11-10\\mak\\work\\review\\owned-prosecution-20261110\\hull-receipts\\b6ff55a0-c436-4c88-af61-404a39364c14.receipt.json"
+  },
+  "timezone": "America/Denver",
+  "scope": "local integration, not production/payment acceptance",
+  "scheduler_attempt": "b9605e3d-c1f8-435b-96a1-f7b033f132c8",
+  "date": "2026-11-10",
+  "prosecution": {
+    "schema": "revvel.prosecution.v1",
+    "run_id": "51940dc4-d75a-4615-943d-e633bd83539b",
+    "started_at": "2026-11-10T19:01:25.992Z",
+    "status": "passed",
+    "policy_sha256": "a05b25483353c6cff6c4460fa4370f79c0d5878584119e950ea79c1037735cb4",
+    "findings": [],
+    "advisory": [],
+    "checks": [
+      {
+        "name": "owned-revenue-and-prosecution",
+        "status": "passed",
+        "exit_code": 0,
+        "signal": null,
+        "error": null,
+        "duration_ms": 8650,
+        "output_bytes": 7143,
+        "output_sha256": "11e8abc599487eba796da0e28fa5b361d65a430a15b9e07474455416e8a23b28",
+        "output_path": "C:\\Users\\lopez\\Documents\\Codex\\2026-11-10\\mak\\work\\review\\owned-prosecution-20261110\\prosecutor-receipts\\51940dc4-d75a-4615-943d-e633bd83539b.check-0.log",
+        "output_truncated": false
+      }
+    ],
+    "provider_calls": 0,
+    "github_calls": 0,
+    "input_sha256": "f1280e30270093f593f7b9ef4faaf70b38eebbe6c89c6d5553277cb565bcb064",
+    "head": "1b7527f77059e6e35ff809065d962ba8f895faca;worktree-diff-sha256:5d052d8b17565225c2c0f71943b7b8e856d4e6b6ac68546314cd3d292c5bcd64",
+    "finished_at": "2026-11-10T19:01:36.14Z",
+    "report_path": "C:\\Users\\lopez\\Documents\\Codex\\2026-11-10\\mak\\work\\review\\owned-prosecution-20261110\\prosecutor-receipts\\51940dc4-d75a-4615-943d-e633bd83539b.report.json"
+  },
+  "retained_failed_prosecution": [
+    "f2916e32-90d4-404d-97f4-8ec71d94b25c",
+    "8b4a7d10-4e45-4ba0-b2ac-c79dcfe44a5f"
+  ]
+}

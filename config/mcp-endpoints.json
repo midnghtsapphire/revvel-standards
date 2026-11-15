@@ -1,0 +1,29 @@
+{
+  "endpoints": {
+    "action-gateway": {
+      "provider": "digitalocean",
+      "transport": "http",
+      "url": "https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a",
+      "description": "DigitalOcean Action Gateway \u2014 remote MCP endpoint for agent actions",
+      "registered": "2026-11-10",
+      "clients": {
+        "claude": "claude mcp add --transport http action-gateway \"https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a\" && claude mcp login action-gateway",
+        "codex": "codex mcp add action-gateway --url \"https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a\""
+      }
+    }
+  },
+  "webhooks": {
+    "do-agent-trigger": {
+      "url": "https://api.digitalocean.com/v2/agents/triggers/1f4e9487-932f-41e3-a627-1c97e29509ac/webhook",
+      "repo": "midnghtsapphire/revvel-standards",
+      "events": [
+        "push",
+        "pull_request",
+        "issues"
+      ],
+      "installed": "2026-11-10",
+      "hook_id": 711002709,
+      "secret_note": "Signing secret was pasted in plaintext in WR #18289. ROTATE IT in the DigitalOcean agent console and update the hook via scripts/setup-mcp-endpoints.sh --rotate-hook-secret."
+    }
+  }
+}

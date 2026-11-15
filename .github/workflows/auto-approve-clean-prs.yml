@@ -67,10 +67,18 @@ jobs:
               return { client: adminClient, who: 'admin-pat' };
             }
 
-            // Trusted authors: bots and org owner
+            // Trusted authors: bots and org owner.
+            //
+            // The three Copilot entries below are commented out, not deleted:
+            // .github/copilot-instructions.md:7 states this repo's policy --
+            // automation routes through OpenRouter, NOT the paid Copilot Coding
+            // Agent, and copilot-swe-agent must not be an assignee in any
+            // workflow. Auto-approving PRs authored by it contradicted that.
+            // Kept in place so they are one edit away if the policy changes.
+            // See #18252.
             const TRUSTED_AUTHORS = [
               'midnghtsapphire',
-              'app/copilot-swe-agent',
+              // 'app/copilot-swe-agent',  // commented out, see #18252
               'app/github-actions',
               'devin-ai-integration[bot]',
               'google-labs-jules[bot]',
@@ -78,8 +86,8 @@ jobs:
               'dependabot[bot]',
               'renovate[bot]',
               'app/devin-ai-integration',
-              'copilot',
-              'Copilot',
+              // 'copilot',                // commented out, see #18252
+              // 'Copilot',                // commented out, see #18252
             ];
 
             // Determine which PR(s) to process

@@ -1,0 +1,13 @@
+# REVVEL-DISABLED | AGENT: codex | MODEL: GPT-6 | WR: #18313 / #18353 | DATE: 2026-11-11 | STATUS: REPLACED
+# REASON: Preserve the retired workflow beside its original path without registering a GitHub Actions workflow.
+# **Git-Master:** restored commented-out per Audrey 2026-11-10 (deleted in 4e6a47f; house rule: comment out, never delete) — Git-Master
+# name: probe-selfhosted
+# on:
+#   workflow_dispatch:
+# jobs:
+#   probe:
+#     runs-on: self-hosted
+#     timeout-minutes: 5
+#     steps:
+#       - run: echo "self-hosted runner reachable"
+# REVVEL-DISABLED-END

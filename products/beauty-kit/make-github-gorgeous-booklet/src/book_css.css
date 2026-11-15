@@ -1,0 +1,58 @@
+@page { size: Letter; margin: 0.8in 0.85in 0.9in 0.85in; background: #FFF4E0;
+  @bottom-center { content: "Make GitHub Gorgeous  ·  " counter(page); font-family: 'Nunito', sans-serif; font-size: 9pt; color: #4E5180; }
+}
+@page cover { margin: 0; background: #14163A; @bottom-center { content: none; } }
+@page blank { @bottom-center { content: none; } }
+html { background: #FFF4E0; }
+body { font-family: 'Nunito', 'Trebuchet MS', sans-serif; font-size: 10.6pt; line-height: 1.5; color: #14163A; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+h1, h2, h3 { font-family: 'Pixelify Sans', 'Courier New', monospace; line-height: 1.15; color: #1B1F4B; }
+h2 { font-size: 17pt; color: #B5124F; margin: 16pt 0 5pt; break-after: avoid; }
+h3 { font-size: 12.5pt; margin: 12pt 0 3pt; break-after: avoid; }
+p { margin: 0 0 7pt; } ul, ol { margin: 0 0 8pt 0; padding-left: 18pt; } li { margin-bottom: 2.5pt; }
+a { color: #0A5C8A; text-decoration: underline; word-break: break-word; }
+code { font-family: 'JetBrains Mono', monospace; font-size: 8.8pt; background: #F6E6C8; padding: 0.5pt 3pt; border-radius: 3pt; }
+pre { background: #14163A; color: #FFF4E0; border-left: 6px solid #19C3B1; border-radius: 6pt; padding: 7pt 9pt; font-family: 'JetBrains Mono', monospace; font-size: 7.9pt; line-height: 1.38; white-space: pre-wrap; word-break: break-word; break-inside: avoid; margin: 5pt 0 9pt; }
+pre .c { color: #A9A8D6; }
+table { border-collapse: collapse; width: 100%; margin: 5pt 0 10pt; font-size: 9pt; } tr { break-inside: avoid; } thead { display: table-header-group; }
+th { background: #1B1F4B; color: #FFF4E0; text-align: left; padding: 4pt 6pt; font-weight: 700; }
+td { border-bottom: 1px solid #D6BE92; padding: 3.5pt 6pt; vertical-align: top; }
+.cover { page: cover; width: 8.5in; height: 11in; position: relative; overflow: hidden; background: #14163A; color: #FFF4E0; break-after: page; }
+.cover .brand { position: absolute; left: 0.85in; top: 0.8in; font-family: 'Press Start 2P', monospace; font-size: 10pt; color: #19C3B1; letter-spacing: 1px; }
+.cover h1 { position: absolute; left: 0.85in; top: 1.55in; width: 6.4in; margin: 0; font-size: 50pt; color: #FFD23F; line-height: 1.02; }
+.cover .sub { position: absolute; left: 0.85in; top: 4.35in; width: 5.2in; font-size: 15pt; line-height: 1.35; color: #FFF4E0; }
+.cover .price { position: absolute; left: 0.85in; top: 5.9in; font-family: 'Press Start 2P', monospace; font-size: 9pt; color: #14163A; background: #FFD23F; padding: 7pt 10pt; }
+.cover .art { position: absolute; right: 0.7in; bottom: 1.2in; }
+.cover .sun { position: absolute; right: -1.0in; top: 2.5in; width: 5in; height: 5in; border-radius: 50%; background: #1B1F4B; }
+.cover .waves { position: absolute; left: 0; right: 0; bottom: 0; height: 0.55in; background: #19C3B1; }
+.cover .foot { position: absolute; left: 0.85in; bottom: 0.9in; font-size: 9.5pt; color: #FFF4E0; width: 4in; }
+.chap { break-before: page; }
+.chead { display: flex; align-items: flex-end; gap: 12pt; border-bottom: 5px solid #FFD23F; padding-bottom: 7pt; margin-bottom: 10pt; }
+.chead .n { font-family: 'Press Start 2P', monospace; font-size: 22pt; color: #B5124F; }
+.chead h1 { margin: 0; font-size: 25pt; color: #1B1F4B; }
+.lead { font-size: 12pt; color: #14163A; margin-bottom: 9pt; }
+.callout { background: #FFFFFF; border-left: 6px solid #D81B60; border-radius: 0 7pt 7pt 0; padding: 6pt 10pt; margin: 7pt 0 10pt; break-inside: avoid; }
+.callout b.t { font-family: 'Pixelify Sans', monospace; color: #B5124F; }
+.callout.tip { border-color: #19C3B1; } .callout.tip b.t { color: #0A6B63; }
+.callout.warn { border-color: #FFD23F; background: #FFFBEA; } .callout.warn b.t { color: #7D4A00; }
+.callout p { margin: 0; }
+.steps { counter-reset: s; list-style: none; padding: 0; }
+.steps li { counter-increment: s; position: relative; padding-left: 28pt; margin-bottom: 6pt; min-height: 20pt; }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 20pt; height: 20pt; background: #1B1F4B; color: #FFD23F; font-family: 'Press Start 2P', monospace; font-size: 8pt; text-align: center; line-height: 20pt; border-radius: 4pt; }
+.fig { margin: 8pt 0 10pt; break-inside: avoid; } .fig .cap { font-size: 8.8pt; color: #4E5180; margin-top: 3pt; }
+.mock { background: #FFFFFF; border: 2px solid #1B1F4B; border-radius: 8pt; overflow: hidden; }
+.mock .bar { background: #1B1F4B; color: #FFF4E0; padding: 4pt 9pt; font-size: 8.5pt; display: flex; gap: 5pt; align-items: center; }
+.mock .bar i { width: 7pt; height: 7pt; border-radius: 50%; display: inline-block; background: #FFD23F; } .mock .bar i:nth-child(2) { background: #19C3B1; } .mock .bar i:nth-child(3) { background: #D81B60; }
+.mock .body { padding: 10pt; }
+.cards { display: flex; gap: 8pt; } .tcard { flex: 1; border: 2px solid #D6BE92; border-radius: 6pt; overflow: hidden; font-size: 8.6pt; text-align: center; } .tcard.sel { border-color: #D81B60; }
+.tcard .sw { height: 38pt; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 8pt; }
+.tcard .lb { padding: 3pt; background: #FFF4E0; }
+.flow { display: flex; align-items: stretch; gap: 6pt; margin: 8pt 0; break-inside: avoid; } .flow .b { flex: 1; background: #1B1F4B; color: #FFF4E0; border-radius: 6pt; padding: 7pt; font-size: 9pt; text-align: center; } .flow .b b { color: #FFD23F; font-family: 'Pixelify Sans'; display: block; font-size: 11pt; } .flow .ar { align-self: center; color: #B5124F; font-weight: 900; font-size: 14pt; }
+.sw-row { display: flex; gap: 0; border-radius: 6pt; overflow: hidden; margin: 6pt 0 10pt; border: 1px solid #1B1F4B; break-inside: avoid; } .sw-row div { flex: 1; padding: 10pt 4pt 6pt; font-size: 8pt; text-align: center; font-weight: 700; }
+.two { display: flex; gap: 12pt; align-items: flex-start; } .two > div { flex: 1; }
+.note-sm { font-size: 8.8pt; color: #4E5180; }
+.toc td { border-bottom: 1px dotted #D6BE92; padding: 4pt 4pt; font-size: 11pt; } .toc td.pg { text-align: right; width: 40pt; font-family: 'Pixelify Sans'; color: #B5124F; }
+.toc td.n { width: 36pt; font-family: 'Press Start 2P'; font-size: 8pt; color: #1B1F4B; }
+.pellets { height: 10pt; margin: 6pt 0; background-image: radial-gradient(circle, #D81B60 3pt, transparent 3.5pt); background-size: 18pt 10pt; background-repeat: repeat-x; }
+.nb { break-before: page; }
+
+table.compact { font-size: 8.2pt; margin: 2pt 0 6pt; } table.compact td { padding: 1.6pt 6pt; }

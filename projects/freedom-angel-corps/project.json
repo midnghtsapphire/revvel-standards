@@ -1,0 +1,17 @@
+{
+  "slug": "freedom-angel-corps",
+  "title": "Freedom Angel Corps",
+  "domain_strategy": "own-domain",
+  "own_domain": "freedomangelcorps.com",
+  "hub_path": "/freedom-angel-corps/",
+  "hub_url": null,
+  "redirect_from": [
+    "freedomangelcorp.org"
+  ],
+  "repo": "midnghtsapphire/freedom-angel-corps",
+  "status": "live",
+  "role": "business-gateway",
+  "description": "Registered business + payment gateway. The money face. Original site recovered and republished via hub. freedomangelcorp.org redirects here.",
+  "added": "2026-11-10",
+  "site_source": "products/freedom-angel-corps/index.html (recovered original site)"
+}

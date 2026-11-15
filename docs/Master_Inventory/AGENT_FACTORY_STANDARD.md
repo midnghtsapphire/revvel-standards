@@ -27,6 +27,7 @@ Design a reusable **Agent Factory** that behaves like a skill: the coding agent 
 | `ci`, `pipeline`, `docker`, `deploy` | DevOps agent | Load `/pipeline-fix`, `/image-hardening`; enable hooks on build/test failure. |
 | `docs`, `runbook`, `handoff` | Documentation agent | Trigger `/doc-sync`, `/handoff-pack`; prefer summarization settings. |
 | Failure: tests/build/lint exit non-zero | Recovery agent | Run self-heal hook: collect logs, open incident note, rerun with stricter checklist. |
+| `Grok API`, `xAI API`, `XAI_API_KEY`, `api.x.ai`, `grok-4.7`, `xai-sdk`; Grok/xAI + streaming, JSON Schema, function calling, web/X search, vision, 401 or 429 | [Grok API Navigator](../agents/grokapi/PROFILE.md) | Invoke `/persona grokapi <task>` through the existing persona lane; preserve spend gates. Keywords are dispatch hints, not standalone event triggers; exclude Groq and generic API/auth/token tasks. |
 
 ## Cognitive Scaffolding (per agent)
 - **Frontmatter**: `name`, `role`, `models`, `tools`, `inputs`, `outputs`, `handoff_expectations`.

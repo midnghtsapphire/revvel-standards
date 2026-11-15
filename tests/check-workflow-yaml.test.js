@@ -2,6 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert');
+const path = require('node:path');
 
 const {
   findInvalidWorkflows,
@@ -32,7 +33,9 @@ test('listWorkflowFiles returns only .yml or .yaml files', () => {
 test('listWorkflowFiles returns absolute paths', () => {
   const files = listWorkflowFiles();
   for (const f of files) {
-    assert.ok(f.startsWith('/'), `expected absolute path, got: ${f}`);
+    // 2026-11-10: original POSIX-only check preserved; validate both host forms.
+    // assert.ok(f.startsWith('/'), `expected absolute path, got: ${f}`);
+    assert.ok(path.isAbsolute(f), `expected absolute path, got: ${f}`);
   }
 });
 
@@ -237,6 +240,19 @@ test('windowsOnlyShell flags defaults.run.shell form', () => {
 test('windowsOnlyShell does not flag pwsh mentioned inside a run body', () => {
   const yaml = 'steps:\n  - shell: bash\n    run: echo "pwsh is not installed here"\n';
   assert.strictEqual(windowsOnlyShell(yaml), null);
+});
+
+test('Windows shells require an explicit Windows runner label per job', () => {
+  const workflow = (runner) => `jobs:\n  windows:\n    runs-on: ${runner}\n    steps:\n      - shell: cmd\n        run: node check.js\n`;
+  assert.strictEqual(windowsOnlyShell(workflow('[self-hosted, Windows]')), null);
+  assert.strictEqual(windowsOnlyShell(workflow('windows-latest')), null);
+  assert.ok(windowsOnlyShell(workflow('self-hosted')));
+  assert.ok(windowsOnlyShell(workflow('ubuntu-latest')));
+  const mixed = workflow('[self-hosted, Windows]') +
+    '  linux:\n    runs-on: ubuntu-latest\n    steps:\n      - shell: cmd\n        run: echo fail\n';
+  assert.ok(windowsOnlyShell(mixed), 'one Windows job cannot excuse a Linux shell mismatch');
+  assert.ok(windowsOnlyShell(mixed.replace('  linux:', '  "linux":')),
+    'quoted job names must retain their own runner boundary');
 });
 
 test('no checked-in workflow uses a Windows-only shell', () => {

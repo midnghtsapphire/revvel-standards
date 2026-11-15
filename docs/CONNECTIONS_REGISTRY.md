@@ -3,7 +3,7 @@
 
 Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what each can reach. **Generated from `config/connections.yml`** — edit the YAML, run `npm run connections`, never hand-edit this file.
 
-**46** connections · **42** verified · **4** unverified (confirm before relying on them).
+**54** connections · **49** verified · **5** unverified (confirm before relying on them).
 
 ## Agents & orchestration
 
@@ -15,6 +15,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `copilot` (GitHub Copilot) | ✅ verified | paid | code-gen, pr-review, assignment | github | copilot-setup-steps.yml, auto-error-handler.yml | — |
 | `jules` (Jules (Google)) | ✅ verified | key | code-gen, pr-review, coding-tasks | github | jules-coding-agent.yml, jules-invoke.yml, jules-pr-reviewer.yml | Owner says Jules has access to Roo + Gemini/Opus and may be recursive — sub-connections UNVERIFIED below. |
 | `jules-subconnections` (Jules → Roo / Gemini / Opus (recursive?)) | ⚠️ unverified | unknown | — | roo, gemini, opus | — | Owner: Jules has access to Roo and Gemini/Opus and may run recursively. Confirm which models + whether recursion is enabled. |
+| `opencode` (OpenCode GitHub agent) | ✅ verified | key | code-gen, code-review, repo-edit, pr-open | github, openrouter | .github/workflows/opencode.yml | Added 2026-11-13. Coding agent that runs inside GitHub Actions (Roo-Code cannot — VS Code only). Triggers: /opencode or /oc comments (owner/member/collaborator only), the opencode issue label, manual dispatch. Uses the fleet OpenRouter key with model openrouter/deepseek/deepseek-chat-v3-0324. use_github_token: true — opencode-agent app install optional; PRs come from github-actions[bot]. Docs standards/OPENCODE_AGENT.md. |
 | `openhands` (OpenHands) | ✅ verified | key | code-gen, issue-resolve, pr-create | github, openrouter | agent-fallback.yml, openhands-resolver.yml | Pre-paywall Devin-class agent, free quota. Now instantiated as free fallback (#14541). |
 | `openrouter` (OpenRouter) | ✅ verified | key | code-gen, pr-review, triage, swarms | github, anthropic, perplexity, deepseek | agent-fallback.yml, openrouter-assignee.yml, ai-pr-review-openrouter.yml | Primary coding agent. Fallback chain: OpenRouter -> OpenHands -> manual. |
 | `roo` (Roo (Roo Code?)) | ⚠️ unverified | unknown | code-gen | jules, linear | — | Owner: 'the one that starts with R' that creates/promotes WR/PR via Linear, and that Jules can reach. Confirm identity + how it's invoked. |
@@ -26,6 +27,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `mcp-airtable` (Airtable MCP) | ✅ verified | oauth | bases, tables, records | airtable | — | — |
 | `mcp-canva` (Canva MCP) | ✅ verified | oauth | design, export, brand-templates | canva | — | — |
 | `mcp-clickup` (ClickUp MCP) | ✅ verified | oauth | tasks, docs, time-tracking | clickup | — | — |
+| `mcp-action-gateway` (DigitalOcean action-gateway MCP) | ✅ verified | oauth | digitalocean-actions | digitalocean | .mcp.json, .codex/config.toml | Public HTTP endpoint shared by Claude (type http in .mcp.json) and Codex (url in .codex/config.toml). WRs 18288 and 18290. No token in git. Claude auth is the operator command claude mcp login action-gateway. Codex OAuth is the operator command codex mcp login action-gateway. Adding the URL does not start that login. Endpoint <https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a> |
 | `mcp-figma` (Figma MCP) | ✅ verified | oauth | design-read, design-write, code-connect | figma | — | — |
 | `mcp-github` (GitHub MCP) | ✅ verified | oauth | pr, issues, ci, code-search, releases, merge | github | — | — |
 | `mcp-google` (Google Workspace MCP (Gmail / Calendar / Drive)) | ✅ verified | oauth | email, calendar, files | google | — | — |
@@ -47,11 +49,15 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `composio` (Composio) | ✅ verified | key | tool-integrations | — | — | — |
 | `crewai` (CrewAI) | ✅ verified | key | multi-agent-orchestration, workflow-automation | github | — | — |
 | `firecrawl` (Firecrawl) | ✅ verified | key | web-scrape, crawl | — | — | — |
+| `ghcr` (GitHub Container Registry (ghcr.io)) | ✅ verified | github-token | oci-push, oci-pull, package-visibility | github | ghcr-publish.yml, ghcr-setup-status.yml, products/ghcr-console, ship-to-market.yml | OCI images at ghcr.io. Same-repo push uses job GITHUB_TOKEN + permissions.packages: write (WR #17695). Optional GHCR_READ_TOKEN name documented in docs/SECRETS_MAP.md for private pulls on external hosts. Auditor: scripts/ghcr-setup.js. |
 | `google-maps` (Google Maps) | ✅ verified | key | geocoding, places | — | — | — |
 | `groq` (Groq) | ✅ verified | key | fast-llm-inference | — | — | — |
+| `lago` (Lago (owner-hosted billing authority)) | ✅ verified | key | billing-reconciliation, signed-webhook-inbox, operator-billing-adapter | owner-hosted-lago, stripe-via-lago | products/revenue-billing/lago.mjs, products/revenue-billing/webhook-server.mjs | Verified repository integration and environment contract only; no live Lago host, credentials or payment provider configuration verified. Prefer an existing owner-hosted Lago instance; no paid cloud default or provisioning. Lago remains the sole billing authority; public paid paths disabled pending account binding. Official self-hosted source: <https://github.com/getlago/lago> ; API key guidance (Developers -> API keys): <https://github.com/getlago/lago-cli#configure> . Receiver uses Node 24 private SQLite and pinned JWT or explicitly configured HMAC; keys stay server-side. |
+| `manus` (Manus API) | ✅ verified | key | task-creation, agent-runs | manus-cloud | github-actions | Key added as repo secret MANUS_API_KEY on 2026-11-12 by owner. Manus cloud agent API for dispatching autonomous tasks from workflows. |
 | `namecheap` (Namecheap) | ✅ verified | key | domains, dns | digitalocean | — | — |
 | `neon` (Neon) | ✅ verified | key | serverless-postgres, preview-branches | — | neon-branch.yml | Actions-only secret (plus vars.NEON_PROJECT_ID); creates/deletes per-PR preview branches. Not read by any app or MCP server. |
 | `noimosai` (NoimosAI) | ✅ verified | key | code-review | — | noimosai.yml | — |
+| `notion-connector` (Notion connector (read-only)) | ✅ verified | key | notion-read, docs-sync | notion | manus-repo, docker | Landed via manus PR #4 (2026-11-12): integrations/notion-connector/ with Docker kit, notion_cli.py, and scheduled workflow. Read-only by design per its docs/governance.md. |
 | `openai` (OpenAI) | ✅ verified | paid | llm, embeddings | — | — | — |
 | `perplexity` (Perplexity) | ✅ verified | free | research, grounded-answers | openrouter | scripts/llm.js, perplexity-research-issue.js | No-key-first lane in scripts/llm.js; OpenRouter is the keyed backup. |
 | `resend` (Resend) | ✅ verified | key | transactional-email | — | — | — |
@@ -71,9 +77,11 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | --- | :---: | :---: | --- | --- | --- | --- |
 | `augment` (Augment Code) | ✅ verified | key | code-review | github | augment-check.yml | — |
 | `bito` (Bito AI) | ✅ verified | key | code-review | github | bito-ai.yml | — |
+| `bitrise` (Bitrise CI) | ✅ verified | webhook | ci, mobile-builds | github-webhooks | revvel-standards | Connected 2026-11-12 by owner. GitHub webhook hooks.bitrise.io (hook id 711028295) active on push, pull_request, issue_comment. Mobile CI/CD pipeline; evaluated in docs/CI_APPS_MOBILE_EVAL_2026-04-23.md. |
 | `mergeme` (MergeMe (mergeme.dev)) | ✅ verified | oauth | pr-slack-cards, review-thread-mirroring, mention-routing | github, slack | mergeme-status.yml, products/mergeme-status | Slack PR cards (one updating message per PR). Repo-side wiring audited by scripts/mergeme-wiring.js (WR #16824). GitHub App + Slack OAuth installed at <https://mergeme.dev> / marketplace — no MERGEME_API_KEY in this repo. |
 | `octopus` (Octopus Review) | ✅ verified | paid | pr-review | github | octopus-route.yml, octopus-cli.yml | Owner: found several different error classes in a single review. Currently over monthly AI quota — needs own API keys. |
+| `railway` (Railway) | ⚠️ unverified | key | deploy, hosting, preview-environments | github | ship-to-market.yml, .circleci/config.yml | Deploy target for deliver:api and deliver:mcp labels (ship-to-market.yml) and for the main-branch deploy-railway job in .circleci/config.yml. RAILWAY_TOKEN must be set in BOTH places: GitHub Actions repo secrets (Settings → Secrets → Actions) and CircleCI project environment variables (app.circleci.com → Project Settings → Environment Variables). Get a token at <https://railway.app/account/tokens>. Status unverified — flip to verified once a deploy actually succeeds. |
 | `stacker-bot` (Stacker (stacked PRs)) | ✅ verified | free | stacked-prs, pr-toc, merge-order-guard | github | stacker-bot[bot], docs/STACKER_BOT_INSTALLATION.md | Free stacked-PR GitHub App (installation 150619571). Bot login stacker-bot[bot]. Pairs with the stacker CLI (brew tap stackedpr/stacker). See docs/STACKER_BOT_INSTALLATION.md and skills/stacker-bot/SKILL.md. Complementary to Graphite (docs/GRAPHITE_INTEGRATION.md); Stacker is the free, already-installed lane for splitting large agent diffs. |
 | `vercel` (Vercel) | ⚠️ unverified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | BLOCKED as of 2026-08-17. All three projects (revvel-standards, standards, marketplace-relister) report "Account is blocked." on every commit, on main as well as PRs. No deploy has succeeded since at least 13:18 UTC that day. Downgraded from verified because the registry must not assert a working integration that demonstrably is not working. Cause is account-level (billing or a usage/abuse flag), not repo config — see <https://vercel.com/knowledge/why-is-my-account-deployment-blocked> Re-verify and restore status: verified only after a deploy actually succeeds. |
 
-*Last generated: 2026-08-18 from `config/connections.yml`.*
+*Last generated: 2026-11-13 from `config/connections.yml`.*

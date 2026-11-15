@@ -6,12 +6,10 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "node --test ../../tests/affiliate-hub-image-gate.test.js"
   },
   "dependencies": {
-    "next": "^15.5.25",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8"
     "next": "^15.5.28",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
@@ -21,19 +19,20 @@
     "@revvel/browserslist-config": "file:../../packages/browserslist-config",
     "@revvel/eslint-config": "file:../../packages/eslint-config",
     "@revvel/prettier-config": "file:../../packages/prettier-config",
+    "@tailwindcss/postcss": "^4.3.5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "autoprefixer": "^10.6.1",
+    "autoprefixer": "^10.6.2",
     "eslint": "^9",
-    "eslint-config-next": "16.4.3",
-    "postcss": "8.5.31",
+    "eslint-config-next": "16.4.4",
+    "postcss": "8.5.32",
     "tailwindcss": "^4.3.3",
     "typescript": "^5"
   },
   "prettier": "@revvel/prettier-config",
   "browserslist": ["extends @revvel/browserslist-config"],
   "overrides": {
-    "postcss": "8.5.31"
+    "postcss": "8.5.32"
   }
 }

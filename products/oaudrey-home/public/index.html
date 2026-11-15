@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" data-a11y="standard">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>oAudrey — agents that show their work</title>
+  <meta name="description" content="oAudrey front page for oaudrey.com. A browser demo of an agent loop, a GitHub team board when a read token is set, and links to three product subdomains.">
+  <link rel="canonical" href="https://oaudrey.com/">
+  <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta property="og:title" content="oAudrey — agents that show their work">
+  <meta property="og:description" content="oAudrey front page for oaudrey.com. A browser demo of an agent loop, a GitHub team board when a read token is set, and links to three product subdomains.">
+  <meta property="og:url" content="https://oaudrey.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://oaudrey.com/oaudrey-mascot.svg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="oAudrey — agents that show their work">
+  <meta name="twitter:description" content="oAudrey front page for oaudrey.com. A browser demo of an agent loop, a GitHub team board when a read token is set, and links to three product subdomains.">
+  <meta name="twitter:image" content="https://oaudrey.com/oaudrey-mascot.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "name": "oAudrey",
+        "url": "https://oaudrey.com",
+        "description": "Front page for autonomous-agent work on oaudrey.com."
+      },
+      {
+        "@type": "MusicRecording",
+        "name": "GitCandyland theme",
+        "byArtist": { "@type": "Person", "name": "Audrey Evans" },
+        "url": "https://music.youtube.com/watch?v=12AT-n9gttM"
+      },
+      {
+        "@type": "VideoObject",
+        "name": "Get GitHub Fused Today",
+        "description": "Aloha! Get GitHub Fused Today! Hula with us. A square promo with a hula dancer, the oAudrey logo, and the line Get GitHub Fused Today.",
+        "duration": "PT5S",
+        "uploadDate": "2026-11-11",
+        "contentUrl": "https://oaudrey.com/oaudrey-intro.mp4",
+        "thumbnailUrl": "https://oaudrey.com/oaudrey-intro-poster.jpg"
+      },
+      {
+        "@type": "ItemList",
+        "name": "GitHub MCP servers",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "GitHub MCP server", "url": "https://docs.github.com/en/copilot/how-tos/copilot-in-your-ide/customize-copilot/extend-copilot-with-tools-and-context/set-up-the-github-mcp-server" },
+          { "@type": "ListItem", "position": 2, "name": "CircleCI MCP server", "url": "https://circleci.com/docs/guides/toolkit/circleci-mcp-overview/" },
+          { "@type": "ListItem", "position": 3, "name": "SonarQube Cloud MCP server", "url": "https://docs.sonarsource.com/sonarqube-mcp-server/setup/sonarqube-cloud-hosted" },
+          { "@type": "ListItem", "position": 4, "name": "Cubic MCP server", "url": "https://docs.cubic.dev/ide/mcp-server" },
+          { "@type": "ListItem", "position": 5, "name": "Devin MCP server", "url": "https://docs.devin.ai/work-with-devin/devin-mcp" },
+          { "@type": "ListItem", "position": 6, "name": "GitGuardian MCP server", "url": "https://docs.gitguardian.com/ggmcp-docs/installation" },
+          { "@type": "ListItem", "position": 7, "name": "Cursor Cloud MCP", "url": "https://cursor.com/docs/cloud-agent" }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="mark" href="#main"><img src="oaudrey-logo-192.webp" width="44" height="44" alt="">oAudrey</a>
+    <nav class="nav" aria-label="Page">
+      <a href="#world">World</a>
+      <a href="#team">Team</a>
+      <a href="#mcp">MCP</a>
+      <a href="#loop">Loop</a>
+      <a href="#github">GitHub</a>
+      <a href="#products">Products</a>
+      <a href="#goap">GOAP</a>
+    </nav>
+    <details class="view">
+      <summary>View <span class="hint">Alt+A cycles</span></summary>
+      <fieldset>
+        <legend>Accessibility view</legend>
+        <label><input type="radio" name="a11y" value="standard" checked> Standard</label>
+        <label><input type="radio" name="a11y" value="wcag_aaa"> High contrast</label>
+        <label><input type="radio" name="a11y" value="dyslexia"> Wider type</label>
+        <label><input type="radio" name="a11y" value="adhd"> Focus</label>
+        <label><input type="radio" name="a11y" value="sensory"> Sensory safe</label>
+        <label><input type="radio" name="a11y" value="large_print"> Large print</label>
+        <label><input type="radio" name="a11y" value="eco"> Low power</label>
+      </fieldset>
+    </details>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="loop" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="mascot-slot">
+          <!-- PNG slot: a later file oaudrey-mascot.png can replace this src. The SVG stays in the repo. -->
+          <img src="oaudrey-mascot.svg" width="220" height="220" alt="oAudrey mascot, a white robot with a sapphire gem and long curled eyelashes">
+        </div>
+        <p class="kicker">Demo</p>
+        <h1 id="hero-title">Agents that show their work.</h1>
+        <p class="lede">Audrey's GitHub agent crew, working (and napping) in public.</p>
+        <figure class="intro-card">
+          <video id="oaudrey-intro" width="280" height="280" poster="oaudrey-intro-poster.jpg" controls preload="metadata" playsinline>
+            <source src="oaudrey-intro.mp4" type="video/mp4">
+            <track kind="captions" src="oaudrey-intro.vtt" srclang="en" label="English" default>
+          </video>
+          <figcaption>Aloha! Get GitHub Fused Today! Hula with us.</figcaption>
+        </figure>
+        <div class="toolbar">
+          <button type="button" id="loop-pause" aria-pressed="false">Pause demo</button>
+          <button type="button" id="loop-next">Next step</button>
+        </div>
+        <p id="loop-status" class="status" aria-live="polite">Demo. Step 1 of 4. Plan.</p>
+      </div>
+      <ol class="agents">
+        <li class="agent is-active" data-step="plan" aria-current="step">
+          <span class="index">01</span>
+          <h2>Plan</h2>
+          <p>Name the goal and the file that will prove it.</p>
+        </li>
+        <li class="agent" data-step="act" aria-current="false">
+          <span class="index">02</span>
+          <h2>Act</h2>
+          <p>Write the change on the branch. Leave the old line in history.</p>
+        </li>
+        <li class="agent" data-step="check" aria-current="false">
+          <span class="index">03</span>
+          <h2>Check</h2>
+          <p>Request /health and read the status before calling it done.</p>
+        </li>
+        <li class="agent" data-step="ship" aria-current="false">
+          <span class="index">04</span>
+          <h2>Ship</h2>
+          <p>Open the pull request. Leave deploy on push off.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="band world-band" id="world" aria-labelledby="world-title">
+      <div class="band-head">
+        <p class="kicker" id="world-brand">GitCandyland</p>
+        <h2 id="world-title">The hub on the island</h2>
+        <p id="world-caption">Live feed not connected — everyone's on break</p>
+      </div>
+      <div class="theme-switch" role="group" aria-label="World skin">
+        <button type="button" data-theme-id="candy">GitCandyland</button>
+        <button type="button" data-theme-id="hawaiian">GitAloha</button>
+      </div>
+      <div class="world-scroll">
+      <canvas id="candy-world" width="1404" height="956" aria-label="Maze of process stations. Bots appear when the live feed is connected."></canvas>
+      </div>
+      <aside id="connect-legend">
+        <h3>How it connects</h3>
+        <p>Each chip is App, Action, CLI, MCP, API, or Status. A filled chip is live on this repo. An outline chip is offered in the vendor docs and is not wired here.</p>
+        <div id="connect-rows"></div>
+      </aside>
+      <p id="world-tip" role="status"></p>
+      <p id="hub-closed">Hub closed for the night</p>
+      <div id="hub-boards"></div>
+      <p class="song-credit">GitCandyland theme by Audrey Evans</p>
+      <p class="song-controls">
+        <a id="song-link" href="https://music.youtube.com/watch?v=12AT-n9gttM" rel="noopener noreferrer">Listen to the theme</a>
+        <button type="button" id="song-play" hidden aria-pressed="false">Play theme</button>
+      </p>
+      <audio id="song-audio" preload="none"></audio>
+    </section>
+
+    <section class="band" id="team" aria-labelledby="team-title">
+      <div class="band-head">
+        <p class="kicker">Who's on the team</p>
+        <h2 id="team-title">Who's on the team</h2>
+        <p id="team-score"></p>
+        <p id="team-mood"></p>
+      </div>
+      <div class="cards" id="team-board"></div>
+    </section>
+
+    <section class="band" id="mcp" aria-labelledby="mcp-title">
+      <div class="band-head">
+        <p class="kicker">MCP</p>
+        <h2 id="mcp-title">GitHub MCP servers</h2>
+        <p>GitHub's own official GitHub MCP server is listed first. The other rows are official MCP servers for tools that show up on this repo's checks. Each line is a doc link and a one-line setup snippet.</p>
+      </div>
+      <ul class="mcp-list">
+        <li><a href="https://docs.github.com/en/copilot/how-tos/copilot-in-your-ide/customize-copilot/extend-copilot-with-tools-and-context/set-up-the-github-mcp-server">GitHub MCP server</a><code>https://api.githubcopilot.com/mcp/</code></li>
+        <li><a href="https://circleci.com/docs/guides/toolkit/circleci-mcp-overview/">CircleCI MCP server</a><code>https://mcp.circleci.com/v1/mcp</code></li>
+        <li><a href="https://docs.sonarsource.com/sonarqube-mcp-server/setup/sonarqube-cloud-hosted">SonarQube Cloud MCP server</a><code>https://api.sonarcloud.io/mcp</code></li>
+        <li><a href="https://docs.cubic.dev/ide/mcp-server">Cubic MCP server</a><code>https://www.cubic.dev/api/mcp</code></li>
+        <li><a href="https://docs.devin.ai/work-with-devin/devin-mcp">Devin MCP server</a><code>https://mcp.devin.ai/mcp</code></li>
+        <li><a href="https://docs.gitguardian.com/ggmcp-docs/installation">GitGuardian MCP server</a><code>uvx --from git+https://github.com/GitGuardian/gg-mcp.git developer-mcp-server</code></li>
+        <li><a href="https://cursor.com/docs/cloud-agent">Cursor Cloud MCP</a><code>Built in for Cloud Agents</code></li>
+      </ul>
+    </section>
+
+    <section class="band" id="github" aria-labelledby="github-title">
+      <div class="band-head">
+        <p class="kicker">GitHub integration</p>
+        <h2 id="github-title">Deterministic on one side. Agentic on the other.</h2>
+        <p>The work lands in GitHub: a branch, a check, a pull request. METAL is the close-to-the-machine lane. The agentic lane plans. A person can still read both.</p>
+      </div>
+      <div class="split">
+        <article>
+          <h3>METAL · deterministic</h3>
+          <p>Scripts in the repository. The same input produces the same result. An image gate, a health probe, and a policy check do not need a model call to pass or fail.</p>
+        </article>
+        <article>
+          <h3>Agentic</h3>
+          <p>A planner picks the next action from a goal, preconditions, and a finish a person can check. The choice is visible. It is not a hidden score.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="band" id="products" aria-labelledby="products-title">
+      <div class="band-head">
+        <p class="kicker">Three subdomains</p>
+        <h2 id="products-title">The products on this domain.</h2>
+        <p>Each card is a directory that already lives in this repository. The link is the hostname Audrey chose. A hostname in git is not proof the site is deployed.</p>
+      </div>
+      <div class="cards">
+        <article class="product">
+          <h3>Affiliate Hub</h3>
+          <p>A directory for comparing affiliate programs from one page.</p>
+          <a class="go" href="https://affiliate-hub.oaudrey.com">affiliate-hub.oaudrey.com</a>
+        </article>
+        <article class="product">
+          <h3>AI Video Toolkit</h3>
+          <p>A directory of video-production tools, grouped by the stage of the work.</p>
+          <a class="go" href="https://ai-video-toolkit.oaudrey.com">ai-video-toolkit.oaudrey.com</a>
+        </article>
+        <article class="product">
+          <h3>Screen Recorder Finder</h3>
+          <p>A comparison of Mac screen recorders by use and features.</p>
+          <a class="go" href="https://screen-recorder-finder.oaudrey.com">screen-recorder-finder.oaudrey.com</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="band" id="goap" aria-labelledby="goap-title">
+      <div class="band-head">
+        <p class="kicker">From the GOAP console</p>
+        <h2 id="goap-title">Plan, assign, and keep the deck.</h2>
+        <p>The console in <code>products/goap-swarm-console</code> is a symbolic planner and swarm allocator. It exports the run. The deck is the PDF built from that product. The case study in the deck is marked proof pending. This page adds no customer, quote, or result.</p>
+      </div>
+      <div class="cards three">
+        <article class="product">
+          <h3>Plan</h3>
+          <p>A goal, a world state, and a finish line a person can check.</p>
+        </article>
+        <article class="product">
+          <h3>Assign</h3>
+          <p>Actions go to a role that still has capacity. The split can be exported.</p>
+        </article>
+        <article class="product">
+          <h3>Review</h3>
+          <p>The run stays visible. A person accepts the output.</p>
+        </article>
+      </div>
+      <p class="actions">
+        <a class="go" href="https://github.com/midnghtsapphire/revvel-standards/tree/main/products/goap-swarm-console">Open the console in the repository</a>
+        <a class="go" href="/goap-agent-sales-deck.pdf">Open the sales deck PDF</a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>oAudrey. This page does not run analytics and does not include affiliate code.</p>
+    <p>Trademarks and logos on the team board belong to their owners. The island art is original.</p>
+    <p>TTY: dial <a href="tel:711">711</a> for the telecommunications relay.
+      <small>A direct TTY number is not listed on this page.</small>
+    </p>
+  </footer>
+  <script src="themes.js"></script>
+  <script src="world.js"></script>
+  <script src="site.js"></script>
+</body>
+</html>

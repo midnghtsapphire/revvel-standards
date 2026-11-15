@@ -30,6 +30,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
 const path = require('node:path');
+const { pythonBinOrThrow } = require('../scripts/lib/python-bin.js');
 
 const root = path.resolve(__dirname, '..');
 
@@ -77,7 +78,7 @@ function compileAll(files) {
     'print(json.dumps(bad))',
   ].join('\n');
 
-  const out = execFileSync('python3', ['-c', script, ...files], {
+  const out = execFileSync(pythonBinOrThrow('the Python compile gate'), ['-c', script, ...files], {
     cwd: root,
     encoding: 'utf8',
     maxBuffer: 32 * 1024 * 1024,

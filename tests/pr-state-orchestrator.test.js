@@ -16,11 +16,24 @@ const WORKFLOW_PATH = path.resolve(
 );
 
 function getGithubScriptSteps(workflow) {
+  /* 2026-11-10 Codex: original inline-only helper retained after extraction.
   return Object.entries(workflow.jobs).flatMap(([jobName, job]) =>
     (job.steps || [])
       .filter((step) => step.uses === 'actions/github-script@v9.0.0')
       .map((step) => ({ jobName, step })),
   );
+  */
+  const root = path.resolve(__dirname, '..');
+  const helper = fs.readFileSync(path.join(root, 'scripts/ci/lib/mini-github.js'), 'utf8');
+  return Object.entries(workflow.jobs).map(([jobName, job]) => {
+    const invocation = job.steps.find((step) => typeof step.run === 'string' &&
+      /^node scripts\/ci\/pr-state-orchestrator\.js [\w-]+\s*$/.test(step.run));
+    assert.ok(invocation, `${jobName} must invoke the actual extracted orchestrator`);
+    const source = fs.readFileSync(path.join(root, 'scripts/ci/pr-state-orchestrator.js'), 'utf8');
+    assert.match(source, /makeSafeApi/, 'extracted jobs must use the shared API guard');
+    return { jobName, step: { with: { 'github-token': invocation.env.GH_TOKEN,
+      script: source + '\n' + helper } } };
+  });
 }
 
 test('pr-state-orchestrator uses the default GITHUB_TOKEN for github-script jobs', () => {
@@ -41,9 +54,12 @@ test('pr-state-orchestrator uses the default GITHUB_TOKEN for github-script jobs
 test('re-sync job is present and no longer prefers ADMIN_GITHUB_TOKEN', () => {
   const source = fs.readFileSync(WORKFLOW_PATH, 'utf8');
   const workflow = YAML.parse(source);
-  const resyncStep = workflow.jobs['resync-all-prs']?.steps?.find(
-    (step) => step.uses === 'actions/github-script@v9.0.0',
-  );
+  // 2026-11-10: inspect the extracted invocation, preserving default-token gate.
+  // const resyncStep = workflow.jobs['resync-all-prs']?.steps?.find(
+  //   (step) => step.uses === 'actions/github-script@v9.0.0',
+  // );
+  const resyncStep = getGithubScriptSteps(workflow).find(
+    ({ jobName }) => jobName === 'resync-all-prs')?.step;
 
   assert.match(source, /name:\s+🔄 Re-sync All Open PRs/);
   assert.ok(resyncStep, 'expected the re-sync job to contain a github-script step');
@@ -170,13 +186,16 @@ test('multi-PR loops pace themselves with sleep(150)', () => {
   const workflow = YAML.parse(fs.readFileSync(WORKFLOW_PATH, 'utf8'));
 
   for (const jobName of ['check-suite-handler', 'check-run-handler', 'resync-all-prs']) {
-    const step = workflow.jobs[jobName]?.steps?.find(
-      (s) => s.uses === 'actions/github-script@v9.0.0',
-    );
+    // 2026-11-10: same pacing requirement follows implementation into scripts/.
+    // const step = workflow.jobs[jobName]?.steps?.find(
+    //   (s) => s.uses === 'actions/github-script@v9.0.0',
+    // );
+    const step = getGithubScriptSteps(workflow).find((entry) => entry.jobName === jobName)?.step;
     const script = step?.with?.script || '';
     assert.match(
       script,
-      /async function sleep\(ms\)/,
+      // Original inline declaration: /async function sleep\(ms\)/,
+      /const sleep = \(ms\) => new Promise/,
       `expected ${jobName} to define a sleep helper`,
     );
     assert.match(

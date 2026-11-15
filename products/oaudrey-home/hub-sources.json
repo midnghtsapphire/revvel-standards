@@ -1,0 +1,21 @@
+{
+  "sources": [
+    {
+      "id": "whiteboard-18238",
+      "label": "Whiteboard",
+      "kind": "discussion",
+      "owner": "midnghtsapphire",
+      "repo": "revvel-standards",
+      "number": 18238,
+      "showBodies": false
+    },
+    {
+      "id": "moneycrew-hub",
+      "label": "Crew hub",
+      "kind": "discussions",
+      "owner": "midnghtsapphire",
+      "repo": "moneycrew-hub",
+      "showBodies": false
+    }
+  ]
+}

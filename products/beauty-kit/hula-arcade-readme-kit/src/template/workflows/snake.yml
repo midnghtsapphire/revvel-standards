@@ -1,0 +1,26 @@
+name: Snake
+# Generates snake.svg (light) and snake-dark.svg from your contribution graph using the Platane/snk Action
+# (used as a published Action only; none of its code is copied into this kit) and publishes them to the `output` branch.
+on:
+  schedule:
+    - cron: "43 4 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: publish-output
+  cancel-in-progress: false
+jobs:
+  snake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Generate snake SVGs
+        uses: Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b # v3.5.0
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/snake.svg?color_background=%23FFF4E0&color_snake=%231B1F4B&color_dots=%23EFD9B4,%23FFC9A3,%23FFA07A,%23E8578A,%23B5124F
+            dist/snake-dark.svg?color_background=%2314163A&color_snake=%23FFF4E0&color_dots=%23252A63,%23127E78,%2319C3B1,%23B8A1FF,%23FFD23F
+      - name: Publish to output branch
+        run: bash scripts/publish-output.sh dist

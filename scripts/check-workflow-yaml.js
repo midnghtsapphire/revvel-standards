@@ -112,9 +112,33 @@ const WINDOWS_ONLY_SHELL = /^\s*(?:-\s+)?shell:\s*['"]?(powershell|pwsh|cmd)\b/;
 
 function windowsOnlyShell(text) {
   const lines = text.split('\n');
+  // 2026-11-10: CARESSE invokers are Windows now. Require the runner's explicit
+  // Windows label before accepting a Windows-only shell; generic self-hosted
+  // still fails closed, preserving the original Linux regression protection.
+  let jobs = {};
+  let spans = [];
+  try {
+    const document = tryLoadYamlParser()?.parseDocument(text);
+    jobs = document?.toJS()?.jobs || {};
+    spans = (document?.get('jobs', true)?.items || []).map((pair) => ({
+      name: pair.key.value, range: pair.value.range,
+    }));
+  } catch { /* parse gate reports it; shell handling stays fail-closed */ }
+  const windowsJob = (name) => {
+    const target = jobs[name]?.['runs-on'];
+    const labels = Array.isArray(target) ? target : [target];
+    return labels.some((label) => typeof label === 'string' &&
+      /^(windows|windows-\d+|windows-latest)$/i.test(label));
+  };
+  let offset = 0;
   for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const owner = spans.find(({ range }) => range && offset >= range[0] && offset < range[2]);
+    offset += line.length + 1;
     const m = lines[i].match(WINDOWS_ONLY_SHELL);
     if (m) {
+      if (owner && windowsJob(owner.name)) continue;
+      if (!owner && Object.keys(jobs).length > 0 && Object.keys(jobs).every(windowsJob)) continue;
       return `line ${i + 1}: 'shell: ${m[1]}' is Windows-only — fleet runners are Linux, use 'shell: bash' (fails at runtime with "pwsh: command not found")`;
     }
   }

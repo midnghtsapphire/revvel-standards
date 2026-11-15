@@ -143,6 +143,24 @@ connections:
     connects_to: [github]
     used_by: [augment-check.yml]
 
+  - id: railway
+    name: Railway
+    type: app
+    auth: key
+    env: RAILWAY_TOKEN
+    status: unverified
+    access: [deploy, hosting, preview-environments]
+    connects_to: [github]
+    used_by: [ship-to-market.yml, .circleci/config.yml]
+    note: >-
+      Deploy target for deliver:api and deliver:mcp labels (ship-to-market.yml)
+      and for the main-branch deploy-railway job in .circleci/config.yml.
+      RAILWAY_TOKEN must be set in BOTH places: GitHub Actions repo secrets
+      (Settings → Secrets → Actions) and CircleCI project environment variables
+      (app.circleci.com → Project Settings → Environment Variables).
+      Get a token at https://railway.app/account/tokens.
+      Status unverified — flip to verified once a deploy actually succeeds.
+
   - id: vercel
     name: Vercel
     type: app
@@ -309,8 +327,73 @@ connections:
     status: verified
     access: [error-monitoring]
     connects_to: [sentry]
+  - id: mcp-action-gateway
+    name: DigitalOcean action-gateway MCP
+    type: mcp
+    auth: oauth
+    status: verified
+    access: [digitalocean-actions]
+    connects_to: [digitalocean]
+    used_by: [.mcp.json, .codex/config.toml]
+    note: "Public HTTP endpoint shared by Claude (type http in .mcp.json) and Codex (url in .codex/config.toml). WRs 18288 and 18290. No token in git. Claude auth is the operator command claude mcp login action-gateway. Codex OAuth is the operator command codex mcp login action-gateway. Adding the URL does not start that login. Endpoint https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"
+
+  - id: manus
+    name: Manus API
+    type: api
+    auth: key
+    env: MANUS_API_KEY
+    status: verified
+    access: [task-creation, agent-runs]
+    connects_to: [manus-cloud]
+    used_by: [github-actions]
+    note: "Key added as repo secret MANUS_API_KEY on 2026-11-12 by owner. Manus cloud agent API for dispatching autonomous tasks from workflows."
+
+  - id: bitrise
+    name: Bitrise CI
+    type: app
+    auth: webhook
+    status: verified
+    access: [ci, mobile-builds]
+    connects_to: [github-webhooks]
+    used_by: [revvel-standards]
+    note: "Connected 2026-11-12 by owner. GitHub webhook hooks.bitrise.io (hook id 711028295) active on push, pull_request, issue_comment. Mobile CI/CD pipeline; evaluated in docs/CI_APPS_MOBILE_EVAL_2026-04-23.md."
+
+  - id: notion-connector
+    name: Notion connector (read-only)
+    type: api
+    auth: key
+    env: NOTION_API_KEY
+    status: verified
+    access: [notion-read, docs-sync]
+    connects_to: [notion]
+    used_by: [manus-repo, docker]
+    note: "Landed via manus PR #4 (2026-11-12): integrations/notion-connector/ with Docker kit, notion_cli.py, and scheduled workflow. Read-only by design per its docs/governance.md."
+
+  - id: opencode
+    name: OpenCode GitHub agent
+    type: agent
+    auth: key
+    env: OPENROUTER_API_KEY
+    status: verified
+    access: [code-gen, code-review, repo-edit, pr-open]
+    connects_to: [github, openrouter]
+    used_by: [.github/workflows/opencode.yml]
+    note: "Added 2026-11-13. Coding agent that runs inside GitHub Actions (Roo-Code cannot — VS Code only). Triggers: /opencode or /oc comments (owner/member/collaborator only), the opencode issue label, manual dispatch. Uses the fleet OpenRouter key with model openrouter/deepseek/deepseek-chat-v3-0324. use_github_token: true — opencode-agent app install optional; PRs come from github-actions[bot]. Docs standards/OPENCODE_AGENT.md."
+
+
 
   # ── Research / data / infra APIs (keys in .env.example) ───────────────────
+  - id: lago
+    name: Lago (owner-hosted billing authority)
+    type: api
+    auth: key
+    env: LAGO_API_URL, LAGO_API_KEY, LAGO_ORGANIZATION_ID, LAGO_WEBHOOK_ALGORITHM, LAGO_WEBHOOK_PUBLIC_KEY_FILE, LAGO_WEBHOOK_ISSUER, LAGO_WEBHOOK_HMAC_KEY, LAGO_WEBHOOK_DATABASE, LAGO_WEBHOOK_PORT
+    status: verified
+    access: [billing-reconciliation, signed-webhook-inbox, operator-billing-adapter]
+    connects_to: [owner-hosted-lago, stripe-via-lago]
+    used_by: [products/revenue-billing/lago.mjs, products/revenue-billing/webhook-server.mjs]
+    note: "Verified repository integration and environment contract only; no live Lago host, credentials or payment provider configuration verified. Prefer an existing owner-hosted Lago instance; no paid cloud default or provisioning. Lago remains the sole billing authority; public paid paths disabled pending account binding. Official self-hosted source: https://github.com/getlago/lago ; API key guidance (Developers -> API keys): https://github.com/getlago/lago-cli#configure . Receiver uses Node 24 private SQLite and pinned JWT or explicitly configured HMAC; keys stay server-side."
+
   - id: crewai
     name: CrewAI
     type: api

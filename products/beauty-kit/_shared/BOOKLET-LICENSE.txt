@@ -1,0 +1,14 @@
+MAKE GITHUB GORGEOUS - LICENSE
+Copyright (c) 2026 Freedom Angel Corp, doing business as AudreyBuildsAI. All rights reserved except as stated here.
+
+1. You may read the booklet on any device you own and print it for your own use.
+2. You may use the code snippets in Appendix A (and the files in the snippets folder) in your own projects,
+   personal or commercial, under the MIT License. That permission covers the snippets only.
+3. You may not resell, share, post, or give away the PDF or pages from it. Teammates each need their own copy.
+4. Third-party tools named in the booklet keep their own licenses (see Appendix B).
+5. GitHub is a trademark of GitHub, Inc. Visual Studio Code, Windows Terminal and Windows are trademarks of Microsoft.
+   This booklet is independent and is not affiliated with, endorsed by, or sponsored by them.
+6. The booklet is provided "as is", without warranty. Websites change. This is not legal advice.
+7. Refunds: ask within 14 days of purchase.
+
+Fonts embedded in the PDF (SIL Open Font License 1.1): Pixelify Sans, Press Start 2P, Nunito, JetBrains Mono.

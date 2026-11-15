@@ -1,0 +1,13 @@
+{
+  "slug": "birthday-freebies",
+  "title": "Birthday Freebies",
+  "domain_strategy": "path",
+  "own_domain": null,
+  "hub_path": "/birthday-freebies/",
+  "hub_url": "https://oaudrey.com/birthday-freebies/",
+  "redirect_from": [],
+  "repo": "midnghtsapphire/BirthdayFreebies",
+  "status": "building",
+  "description": "Birthday Freebies.",
+  "added": "2026-11-10"
+}

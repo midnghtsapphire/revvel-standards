@@ -28,9 +28,25 @@ const {
   checkLockfileSync,
   runChecks,
   main,
+  npmInvocation,
 } = require("../scripts/check-package-integrity.js");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
+
+describe("portable npm invocation", () => {
+  it("executes the configured npm JavaScript CLI with Node rather than a Windows command shim", () => {
+    const cli = path.join("installed", "npm-cli.js");
+    assert.deepEqual(npmInvocation("npm", { platform: "win32", env: { npm_execpath: cli },
+      node: "node-for-test", exists: candidate => candidate === cli }), { command: "node-for-test", prefix: [cli] });
+  });
+  it("fails visibly when Windows has no executable npm CLI instead of claiming lockfile success", () => {
+    assert.throws(() => npmInvocation("npm", { platform: "win32", env: {}, exists: () => false }), /Cannot locate npm-cli\.js/);
+  });
+  it("retains explicit executable overrides and Unix executable fallback", () => {
+    assert.deepEqual(npmInvocation("custom-npm", { env: {}, exists: () => false }), { command: "custom-npm", prefix: [] });
+    assert.deepEqual(npmInvocation("npm", { platform: "linux", env: {}, exists: () => false }), { command: "npm", prefix: [] });
+  });
+});
 
 describe("findDuplicateKeys", () => {
   it("flags the exact CircleCI job 11069 c8 duplicate-key shape", () => {

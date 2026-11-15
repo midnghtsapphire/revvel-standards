@@ -24,12 +24,15 @@ first.
 
 ## 2. Current wiring (this repo)
 
-`.circleci/config.yml` runs two jobs on every PR and on `main`:
+`.circleci/config.yml` runs the following jobs on every PR and on `main`:
 
-| Job | What it gates |
-|---|---|
-| `lint-and-test` | Changed-Markdown lint (merge-base scoped, so the legacy backlog doesn't drown new work) + real `node --test` and shell tests |
-| `validate-registries` | Persona registry (`scripts/openrouter-personas.js`) parses and resolves; `skills/SKILLS_INDEX.yml` is valid YAML — a broken edit here silently kills every `/persona` summon |
+| Job | Trigger | What it gates / does |
+|---|---|---|
+| `lint-and-test` | PR + main | Changed-Markdown lint (merge-base scoped) + real `node --test` and shell tests |
+| `validate-registries` | PR + main | Persona registry parses and resolves; `skills/SKILLS_INDEX.yml` is valid YAML |
+| `policy-check` | PR + main | RVS-AGENT-001 archival gate — no silent deletions, REVVEL-DISABLED metadata present |
+| `veins-monitor` | PR + main | Observer-only VEINS snapshot artifact (never fails the pipeline) |
+| `deploy-railway` | **main only**, after `lint-and-test` | Deploys to Railway using `RAILWAY_TOKEN`. Skips with a clear message if the token is absent. Set `RAILWAY_TOKEN` in CircleCI project env vars (app.circleci.com → Project Settings → Environment Variables) and in GitHub Actions secrets for `ship-to-market.yml`. Token source: <https://railway.app/account/tokens> |
 
 ## 3. House rules
 

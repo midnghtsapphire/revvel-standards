@@ -1,0 +1,11 @@
+{
+  "name": "@revvel/static-stripe-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "One Stripe static server for Revvel directory products. Each product passes its service name.",
+  "exports": {
+    ".": "./server.mjs",
+    "./button": "./stripe-checkout-button.jsx"
+  }
+}

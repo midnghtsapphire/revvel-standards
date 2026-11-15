@@ -9,7 +9,7 @@ Per REPO_LIBRARY_STANDARD.md: one line per held item, plus licensing notes.
   explicit public-domain dedication in its header ("The author disclaims
   copyright to this source code", SQLite-style blessing; verified
   2026-11-07). Fetched from
-  https://raw.githubusercontent.com/mwenge/lineara.xyz/master/LinearAInscriptions.js
+  <https://raw.githubusercontent.com/mwenge/lineara.xyz/master/LinearAInscriptions.js>
 
 ## Referenced, not held (and why)
 

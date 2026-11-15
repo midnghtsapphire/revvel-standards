@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { execFileSync } = require("node:child_process");
 const path = require("node:path");
+const { pythonBinOrThrow } = require('../scripts/lib/python-bin.js');
 
 const HARVEST = path.join(__dirname, "..", "tools", "harvest.py");
 
@@ -9,7 +10,7 @@ const HARVEST = path.join(__dirname, "..", "tools", "harvest.py");
 // the boolean surface (WR-4200 "maximize the scripted surface") — no network,
 // deterministic, so it runs in CI without hitting NCBI/Crossref/ctgov.
 test("harvest.py --self-test passes (pure-function contract)", () => {
-  const py = process.env.PYTHON || "python3";
+  const py = pythonBinOrThrow();
   let out;
   try {
     out = execFileSync(py, [HARVEST, "--self-test"], { encoding: "utf8" });
@@ -25,7 +26,7 @@ test("harvest.py --self-test passes (pure-function contract)", () => {
 });
 
 test("harvest.py --dry-run runs offline without writing or fabricating", () => {
-  const py = process.env.PYTHON || "python3";
+  const py = pythonBinOrThrow();
   // A single keyed shard degrades to zero rows and writes nothing in dry-run.
   const out = execFileSync(py, [HARVEST, "--shard", "standards", "--dry-run"], {
     encoding: "utf8",

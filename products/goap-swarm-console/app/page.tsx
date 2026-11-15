@@ -123,6 +123,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
+            <a href="/agent-as-fte" className="rounded-lg border border-cyan-800 px-4 py-2 text-sm text-cyan-200">Agent pilots and ROI</a>
             <StatusPill status={tick.status} />
             <a
               href={checkoutUrl}
@@ -257,7 +258,10 @@ export default function HomePage() {
                   )}
                   {tick.plan.plan.map(
                     (
-                      step: { id: string; name: string; role: string; cost: number },
+                      // 2026-11-10 Codex, WR #18334: original annotation required
+                      // role: string, but the public action catalog permits no role.
+                      // Accept that documented input so the production typecheck runs.
+                      step: { id: string; name: string; role?: string; cost: number },
                       index: number,
                     ) => {
                       const asg = tick.swarm.assignments[index];

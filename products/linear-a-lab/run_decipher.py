@@ -24,8 +24,10 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     sub.add_parser("audit")
-    p = sub.add_parser("evidence"); p.add_argument("word")
-    p = sub.add_parser("top"); p.add_argument("n", type=int, nargs="?", default=20)
+    p = sub.add_parser("evidence")
+    p.add_argument("word")
+    p = sub.add_parser("top")
+    p.add_argument("n", type=int, nargs="?", default=20)
     p = sub.add_parser("case")
     p.add_argument("word")
     p.add_argument("--rounds", type=int, default=3)

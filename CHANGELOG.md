@@ -1,9 +1,135 @@
+## 2026-11-12 — BALLS — added incubating `products/beauty-kit/` with the BALLS Beauty Playbook research (GitHub beautification, other-tool tricks, market prices, 8 product ideas); additions only.
+## 2026-11-12 — BALLS — Beauty Kit: three AudreyBuildsAI digital products
+
+- Added `products/beauty-kit/`: the Make GitHub Gorgeous booklet (24 pages), the Hula Arcade GitHub Profile README Kit (Pro and Lite) and the Hula Arcade Dev Palette Kit (Pro and free dark theme). Sources, listing assets, final zips and `LISTINGS.md`/`VERIFICATION.md` (227 checks). Additions only. Not listed or published anywhere yet.
+
+## 2026-11-11 (2) — Cloudy — Codex action-gateway OAuth login command
+
+- Documented `codex mcp login action-gateway` next to `codex mcp add`. Adding the URL does not start OAuth. Source: Codex MCP docs. No token in git.
+
+## 2026-11-11 — Cloudy — DigitalOcean action-gateway for Claude and Codex
+
+- Registered the public action-gateway endpoint in `.mcp.json` (Claude, HTTP transport) and `.codex/config.toml` (Codex, url). Documented `claude mcp login action-gateway` and both client commands. WRs #18288 and #18290. No token in git.
+
+## 2026-11-11 (6) — MarketShipper — oaudrey.com hosts and front page
+
+- Audrey chose oaudrey.com subdomains for affiliate-hub, ai-video-toolkit, and screen-recorder-finder. DNS notes that named Namecheap as the DNS host now say Cloudflare. `products/oaudrey-home/` is the static front page for `oaudrey.com` and `www.oaudrey.com`, with `/health`, `GET /api/team`, `GET /api/hub`, `deploy_on_push: false`, and a CircleCI image gate. No DigitalOcean deploy job was added. Earlier bullets in this file that named the previous product hosts were edited so those host strings do not remain; that wording is in git history.
+## 2026-11-11 (5) — ResearchRodneyAIArchitect — research-gold-v1 and benchmark wiring (WR #18341, PR 2)
+
+- Added `products/rnd-research-fleet/eval/fixtures/research-gold-v1.jsonl`: 23 real research items with a recorded verdict and a pinned source commit. Rows from the private `linear-a` and `tartaria-tablets` repos carry provenance and hashes only; `RESEARCH_GOLD_V1.md` explains how to rebuild their text. This is below the 100 the work request needs, and the shortfall is reported, not padded.
+- `scripts/pot-research/benchmark.js` validates the set and prints `gold_count`, `gold_shortfall` and per-source counts. It still prints `NOT_MEASURED` and `quality_delta: null`. Added `tests/research-gold.test.js`. No new CI job and no GitHub-hosted workflow.
+## 2026-11-11 (6) — QuickWinBuilder — tool history log and visiting-agent rule check
+
+- Added `docs/tool-history/`: README, `TOOLS.csv` (44 tools), one file per tool, and `visiting-llms.md`. Every claim links to a repo file, commit, PR, or issue; where Audrey's verdict is not on record it says `NEEDS AUDREY`. Added the Manus verdict she gave on 2026-11-11 and noted that recovery from her Manus account is in progress. Nothing in `DECISIONS.md`, `docs/TOOL_COST_INDEX.md`, or `TOOLS_CATALOG` was edited.
+- Added the visiting-agent hard rules to `VISITING_AGENTS.md` (section 1b) and a check, `scripts/visiting-agent-scan.js`, driven by `config/visiting-agent-patterns.json` (patterns, allowlist, baseline). It runs in the CircleCI `lint-and-test` job and in `npm test` (`tests/visiting-agent-scan.test.js`). affiliate-hub is allowlisted. Hits already in the repo are baselined for Audrey to review; nothing was removed or edited.
+## 2026-11-11 — BALLS — official fleet mascot family (Auky and Lil Aud-Bod)
+
+- Added `docs/brand/mascots/MASCOTS.md` documenting Auky and Lil Aud-Bod aka BALLS as the fleet mascot duo, plus Auky artwork from WebForge and the BALLS pixel avatar.
+- Added `docs/bots/bot-balls/README.md` (brand-development bot profile). Index pointers appended in `docs/CALL-NAMES.md`, `docs/README.md`, `docs/BOT-ROSTER.json`, `docs/BRAND_ARCHITECTURE.md`, `docs/PORTFOLIO.md`, and `templates/brand/README.md`. Nothing posts without Audrey's explicit yes.
+
+## 2026-11-11 (3) — MarketShipper — draft App Platform deploy jobs
+
+- `do-app-update.sh` and the three `*-do-deploy` CircleCI jobs live only on this draft. They are not in the product image-gate PRs. A merge can create or update DigitalOcean apps after Audrey sets `DIGITALOCEAN_ACCESS_TOKEN`. This draft is not approved.
+## 2026-11-11 (5) — MarketShipper — screen-recorder-finder binds the shared Stripe server
+
+- Restacked onto main `3d6ae9a8`. CircleCI keeps every job from main and adds `screen-recorder-finder-image`. The product calls `bindProduct('screen-recorder-finder')` in `packages/static-stripe-server`. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
+
+## 2026-11-11 (3) — MarketShipper — screen-recorder-finder image gate does not write to App Platform
+
+- Restacked onto main `7aceb6284` (#18364 and #18365 kept). CircleCI keeps `demo-kit-test`, `affiliate-hub-build`, and `screen-recorder-finder-image`. The DigitalOcean create/update job is not on this branch. `npm ci` in the image uses `--ignore-scripts`. Checkout rate limit keys on `do-connecting-ip`, then the first `X-Forwarded-For` hop.
+
+## 2026-11-11 — MarketShipper — screen-recorder-finder deploy path (WR #18332)
+
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `screen-recorder-finder.oaudrey.com` under `products/screen-recorder-finder/`. CircleCI job `screen-recorder-finder-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/screen-recorder-finder/CHANGELOG.md`.
+## 2026-11-11 (4) — MarketShipper — one static Stripe server for affiliate-hub and ai-video-toolkit
+
+- `packages/static-stripe-server/` is the server, the checkout button, and the image-gate cases. Each product file names its service and keeps the previous copy as line comments. `deploy_on_push` stays false. No DigitalOcean deploy job was added.
+
+## 2026-11-11 (3) — MarketShipper — ai-video-toolkit image gate does not write to App Platform
+
+- Restacked onto main `7aceb6284` (#18364 and #18365 kept). CircleCI keeps `demo-kit-test`, `affiliate-hub-build`, and `ai-video-toolkit-image`. The DigitalOcean create/update job is not on this branch. `npm ci` in the image uses `--ignore-scripts`. Checkout rate limit keys on `do-connecting-ip`, then the first `X-Forwarded-For` hop.
+
+## 2026-11-11 — MarketShipper — ai-video-toolkit deploy path (WR #18331)
+
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `ai-video-toolkit.oaudrey.com` under `products/ai-video-toolkit/`. CircleCI job `ai-video-toolkit-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/ai-video-toolkit/CHANGELOG.md`.
+## 2026-11-11 (4) — ResearchRodneyAIArchitect — PUCT priors reach the strategy entry point
+
+- `runPot` forwards `priorFor` into the search. Lane runs read `context.potPriorFor`. A test goes through `runStrategy`, not only `search`.
+
+## 2026-11-11 (3) — ResearchRodneyAIArchitect — MCTS uses the seed and PUCT follows the prior
+
+- Expansion and rollouts read the search seed. PUCT picks the next untried action from the prior, including the first move. Without `potReward` the lane order is that seeded sample, not a quality ranking.
+
+## 2026-11-11 (2) — ResearchRodneyAIArchitect — pot lane execution matches the linear fan-out
+
+- `RESEARCH_STRATEGY=pot` runs the chosen lanes with `Promise.all` and reuses the Ralph retry/merge helpers. Without `potReward` the order matches definition order and the trace says so (`rewardConfigured: false`).
+
+## 2026-11-11 — ResearchRodneyAIArchitect — Policy-of-Thoughts CPU engine (WR #18341)
+
+- Added `scripts/pot-research/`: UCT Monte Carlo tree search, a GRPO step on a transient adapter, a frozen base-weight vector, and a deterministic stub policy. The linear lane fan-out in `scripts/research-engine.js` stays the default; `RESEARCH_STRATEGY=pot` opts in.
+- Added `tests/pot-research.test.js`, `docs/research/pot-research-engine.md` (GPU budget marked as an estimate), `scripts/pot-research/LEDGER.md`, and `scripts/pot-research/benchmark.js`. The harness reports the +20-30% criterion as not measured. No quality delta is invented.
+- CircleCI already runs `tests/**/*.test.js`. No new job and no GitHub-hosted workflow.
+## 2026-11-11 (3) — MarketShipper — affiliate-hub image gate does not write to App Platform
+
+- Restacked onto main `7aceb6284` (#18364 and #18365 kept). CircleCI keeps `demo-kit-test`, `affiliate-hub-build`, and `affiliate-hub-image`. The DigitalOcean create/update job is not on this branch. `npm ci` in the image uses `--ignore-scripts`. Checkout rate limit keys on `do-connecting-ip`, then the first `X-Forwarded-For` hop.
+
+## 2026-11-11 — MarketShipper — affiliate-hub deploy path (WR #18330)
+
+- Added an active Dockerfile, compose service, `/health`, pricing-page Stripe checkout, and DigitalOcean spec for `affiliate-hub.oaudrey.com` under `products/affiliate-hub/`. CircleCI job `affiliate-hub-image` builds the image and requests `/health`. No live URL and no real charge. Details: `products/affiliate-hub/CHANGELOG.md`.
+
+## 2026-11-11 — MarketShipper (Grok 4.7, Cursor Cloud) — GOAP agent-as-FTE sales deck and landing
+
+- `products/goap-swarm-console/sales/deck.md`: 13-slide source for work request #18334. Includes the value proposition, the $2,000 to $5,000 per agent per month band, an ROI illustration, and a proof-pending case study. No customer, quote, or result was invented. A same-day URL check found no deployed product to cite (issue #18330 is still open).
+- `products/goap-swarm-console/public/goap-agent-sales-deck.pdf`: rebuilt from that source by `scripts/build_sales_deck.py`.
+- `products/goap-swarm-console/landing/` and `deploy/app.yaml`: static landing page for agent-as-fte.revvel.co. The Calendly embed reads `CALENDLY_URL` and stays off when that value is empty or not an https link on calendly.com with a scheduling path.
+- `.circleci/config.yml`: job `agent-as-fte` builds the PDF and the landing page and requires HTTP 200 on loopback.
+- Prospect contact, closed customers, and Stripe MRR were not done. Ledger: `products/goap-swarm-console/LEDGER.md`.
+
+## 2026-11-11 (2) — Rules-Steward — evidence checker follows readiness links
+
+- 2026-11-11 — Rules-Steward (Cursor, Grok 4.7) — `scripts/compliance-evidence.js`: relative markdown links in the compliance docs are checked for file presence, beside the existing backtick-path scan. Bugbot on PR #18365. `tests/compliance-evidence.test.js` covers a relative link, a skipped web link, and a missing file.
+
+## 2026-11-11 — Rules-Steward — NIST readiness mapping (WR #18343)
+
+- 2026-11-11 — Rules-Steward (Cursor, Grok 4.7) — `docs/compliance/NIST_READINESS.md`: readiness mapping of repository controls to SP 800-53 Rev. 5 families. Statuses are implemented, partial, or gap. Not a compliance attestation. NISTIR 8605D is not drafted. Appended rescope notes to the 2026-11-10 NIST docs. Root `LEDGER.md` opened with this entry because the file was absent.
+
+## 2026-11-11 — halo-demo-stream: AG-UI streaming + session-resume demo kit, wired to affiliate-hub (QuickWinBuilder, WR #18342)
+
+- Added `products/halo-demo-stream/`: zero-dependency Node kit. `POST /agui` streams AG-UI standard events over SSE (RUN_STARTED, STATE_SNAPSHOT, TEXT_MESSAGE_START/CONTENT/END, STATE_DELTA as JSON Patch, RUN_FINISHED, RUN_ERROR). File-backed sessions resume by session id on any new client, including after a server restart. Plain HTML demo page, every text colour pair at least 7:1. 15 tests.
+- Moved the affiliate-hub program catalogue and filter/sort logic out of `products/affiliate-hub/app/page.tsx` into `app/lib/programs.mjs` (+ `.d.mts`), so the page and the demo kit run the same code. `next build` passes. No behaviour change.
+- CircleCI: new `demo-kit-test` job (kit tests) and `affiliate-hub-build` job (`npm ci` + `next build`), in both workflows. No GitHub Actions.
+- Not done: ai-video-toolkit and screen-recorder-finder adapters, any deploy, cross-device test on live URLs (blocked on #18330 to #18332).
+
+## 2026-11-10 (3) — Bot, team and agent backup, nested under docs/ (Proofy)
+
+- Added `docs/bots/bot-<name>/README.md` (98 bots, call `/bot-<name>`), `docs/teams/<team>-team/README.md` (15 teams plus a pointer for the existing `/dragnet-team`), and `docs/agents/<name>/README.md` (pointers for 9 existing OpenRouter personas such as `/coder`, no prefix). Added `docs/CALL-NAMES.md`, `docs/README.md`, `docs/BOT-COMMON-RULES.md`, `docs/BOT-ROSTER.json`.
+- Additions only; no existing file edited except an appended pointer in `docs/agents/README.md`. Existing persona/fleet definitions are linked, not copied.
+- Private details redacted (public repo): emails, locations, a registry id, a family member's name, account-recovery specifics. Two Sense system prompts are kept in the private backup. No secrets or memory contents.
+
+## 2026-11-10 (2) — scripts-as-CI wave 2: PR Lifecycle + PR Check Status + shared client
+
+- `scripts/ci/lib/mini-github.js` — shared zero-dep client; listForRef/listComments now paginate fully (MEASURED: 235 check runs on main).
+- `scripts/ci/pr-lifecycle.js`, `scripts/ci/pr-check-status.js` — extracted from YAML; replay-tested (PR #18324 green suite correctly resolved to aggregate failing; label write verified).
+- Orchestrator refactored onto shared lib (regression: 19-PR resync OK).
+- All three workflows: thin shims, `runs-on: self-hosted`, `shell: cmd`, **checkout pinned to `main`** so untrusted event-SHA code never runs on CARESSE with a write token.
+
+## 2026-11-10 — PR State Orchestrator: scripts-as-CI extraction (METAL)
+
+- `scripts/ci/pr-state-orchestrator.js` — ALL orchestrator logic extracted from YAML into one versioned, zero-dependency node script (MEASURED: local resync of 19 open PRs OK).
+- `.github/workflows/pr-state-orchestrator.yml` — jobs are now thin invokers; `runs-on: self-hosted` (CARESSE), immune to GitHub-hosted billing lock (CITED: probe run 42686663155).
+- Keeps schedule-trigger fix from earlier today (6-hourly auto resync — was gated on `schedule` with no trigger).
+- Principles: oaudrey `governance/METAL/ci-docker-runners-principles.md` #1, #3, #8.
+
 # Changelog
 
 All notable changes to the Revvel Standards repository will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## 2026-11-11
+
+- 2026-11-11 — DBArchitect (Grok Bot) — WR #18333 (draft PR, refs only): added `products/revenue-billing/self-host/` (Lago v1.57.0 Docker Compose, every secret required from `.env`, loopback-only ports), `plans/` (Free/Pro/Enterprise as `plans.json` plus an idempotent, dry-run-by-default Lago seeder that reports price drift and never overwrites), `db/` (plain-SQL Postgres mirror of plans, customers, subscriptions and webhook events, RLS on, no anon grants, tested on PostgreSQL 15.19 and 18.6), `WEBHOOK-POSTGRES-SPEC.md`, `HUMAN-STEPS.md`, `LEDGER.md`, and CircleCI jobs `billing-selfhost-lint` and `billing-sql-validate`. Builds on PR #18348. Nothing deployed, no Stripe account, no keys, nothing applied to Supabase; acceptance items still need Audrey (see HUMAN-STEPS.md).
 
 ## 2026-11-07
 
@@ -343,3 +469,90 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 2026-10-30 — GitHubOrchestrator — recorded HUSK (elisymlabs/husk) integration requirements as proposed, pending Audrey's confirmation of repo identity; no code changes.
 - 2026-11-04 — Proofy — added 'Backups' section (back up to GitHub under backup-YYYY-MM-DD-<folder>-<bot>, verify size+sha256, never delete originals without Audrey's yes) to AGENTS.md and VISITING_AGENTS.md
 - 2026-11-04 (MST) — Proofy — recorded on behalf of Claude Code (out of usage): two comments in revvel-standards Discussion #18238 (a misplaced pointer to the tartaria-tablets whiteboard, `19400617`, and Claude Code's correction under it, `19400657`) were DELETED by Claude Code on Audrey Evans's explicit instruction ("Delete it"). Both were Claude Code's own comments, posted minutes earlier by mistake; nothing else was touched. tartaria-tablets commit `2de436c`'s statement that they were "left in place" is superseded by this line (full entry in tartaria-tablets CHANGELOG.md).
+
+## 2026-11-10 — Owned delivery and cross-repository integration
+
+- Added working pricing and health exports for affiliate-hub, ai-video-toolkit,
+  and screen-recorder-finder; fixed the affiliate Tailwind build and shared
+  ESLint consumer resolution. Standalone public-artifact packaging runs locally
+  on Node/Bun without repository webhooks or GitHub-hosted execution.
+- Added GOAP sales/ROI pages and a verified twelve-slide PDF, plus evidence-based
+  compliance readiness documentation. Billing and research acceptance remain
+  open until real transactions, benchmarks, and operating evidence exist.
+- Repaired the current scripts-as-CI checks, hub-registry compatibility, portable
+  npm integrity checks, and template contract. Superseded code is preserved as
+  dated comments, including the simulated root watcher at its original path.
+- Cross-repository review, per-issue acceptance matrix, HULL merge/execution
+  receipts, and pending hosting apply are recorded under wr/summaries/. HULL
+  execution merged in oaudrey PR #13. No live deployment is claimed here.
+
+## 2026-11-10 — Shipping continuation after Cloudflare handoff
+
+- Codex revenue specialist added the signed Lago HTTP receiver, durable SQLite
+  inbox, authoritative invoice/subscription reconciliation, persisted retry
+  backoff, degraded health and actual crash/replay tests. Public paid checkout
+  remains disabled until authenticated identity and live billing are verified.
+- Codex intelligence specialist connected the existing optional LangGraph
+  lifecycle to actual HULL policy execution, durable receipt references and
+  explicit recovery/review commands; no second command executor was introduced.
+- Codex prosecution specialist extended the existing prosecutor with local
+  operator policy, real bounded subprocess checks, retained per-run receipts,
+  stable repair IDs and advisory reviewer snippets. Fixed the root test wrapper
+  that previously inherited NODE_TEST_CONTEXT and silently missed child tests.
+- All 96 standards files were read across the assigned specialists before new
+  implementation. This closes the standards-directory reading gap; it does not
+  claim full semantic reading of the entire 824 MB archived corpus.
+- Existing GIT-FLEET scheduling is extended in its own repository; no Cloudflare,
+  Proofy, paid model, subscription, production access or DNS configuration changed.
+  Live deployment and original issue acceptance remain explicitly open.
+
+- Codex integration review retained the initial failed prosecution and passed
+  63-test HULL receipt. Corrected full-diff work bounds, strict JSON evidence
+  classification with duplicate-key rejection, executable template/regex
+  handling, complete skill discovery, and bounded multi-batch billing drain.
+  Added regression cases; no comparison budget, legacy allowance or merge gate
+  was relaxed. Continued source-head validation is recorded with PR #18348.
+
+- Codex operational verification: installed the separate owned local-checks
+  Windows task, observed two zero-exit executions, retained the final 78-test
+  HULL/prosecution receipt in GIT-FLEET PR #2, and recorded actual CircleCI
+  job 23006 success on the implementation source head. Product hosting remains
+  staged; no deployment, transaction, benchmark or customer result invented.
+
+- Codex final handoff: recorded confirmed implementation merges #18348 and
+  GIT-FLEET #2, exact reviewed/merged tree agreement, the installed local task,
+  successful required CircleCI job 23013 and retained final execution receipts.
+  Preserved an unstaged continuation-note appendix in a separate documentation
+  follow-up; original product/research/customer acceptance remains open.
+
+- Codex documentation completeness: added all nine Lago receiver environment
+  names to canonical .env.example, including explicit issuer/key/database
+  guidance. No credential values, live environment settings, listeners or
+  subscriptions were created or changed.
+
+- Codex follow-up gate repairs: registered Lago in the existing connections
+  source and canonical generated views, preserving README content outside its
+  generated marker. Corrected the timeout test's Linux postcondition to verify
+  absent or actually terminated zombie/dead state, never accept a live PID.
+  Retained the failing CI evidence and old assertion; no production timeout,
+  comparison budget, drift check or legacy allowance was weakened.
+
+- Codex prosecution integration: the larger 227 KB source packet now passes
+  within the unchanged comparison budget. A UTF-16 character-count lower bound
+  rejects mathematically impossible matches before edit-distance work; the
+  actual multiline billing-assertion false positive has regression coverage.
+  Independent review checked 35,962 cases against the exact legacy distance.
+  Final HULL/prosecution run passed 81 tests, zero findings/provider calls.
+
+- Codex, PR #18348 review follow-up: reproduced Cursor comment
+  discussion_r4529468829 against current main. Ordinary comments and JSDoc no
+  longer hide adjacent executable duplicates; partial comment state resets at
+  unknown diff boundaries. Only anchored, explicit retirement headers retain
+  the archive boundary. Added real regressions and preserved the old rules as
+  dated comments; no paid Cursor autofix or provider call used.
+
+- Codex final comment correction: a retirement header alone cannot exempt
+  active code. Removed all comment/header segment barriers while retaining
+  exclusion of actual commented bodies; active tails after closing block
+  comments remain checked. Preserved the earlier incorrect archive assertion
+  and rule as dated history. Forty-seven child regressions pass.

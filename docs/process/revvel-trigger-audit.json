@@ -1,0 +1,6743 @@
+{
+  "scope": "Default-branch operational snapshot; static analysis only",
+  "workflow_count": 238,
+  "event_counts": {
+    "pull_request": 61,
+    "push": 41,
+    "workflow_dispatch": 192,
+    "pull_request_target": 10,
+    "pull_request_review": 6,
+    "issue_comment": 12,
+    "issues": 41,
+    "repository_dispatch": 5,
+    "release": 2,
+    "workflow_call": 3,
+    "schedule": 1,
+    "check_suite": 5,
+    "workflow_run": 4,
+    "pull_request_review_comment": 2,
+    "check_run": 1
+  },
+  "comment_listeners": {
+    "agent-approval-check.yml": {
+      "path": ".github/workflows/agent-approval-check.yml",
+      "name": "Agent Approval Check",
+      "events": [
+        "pull_request_target:opened,synchronize,reopened,ready_for_review",
+        "pull_request_review:submitted,dismissed",
+        "issue_comment:created,edited",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-audit-logger.yml": {
+      "path": ".github/workflows/agent-audit-logger.yml",
+      "name": "Agent Audit Logger",
+      "events": [
+        "issues:opened,closed",
+        "pull_request_review:submitted",
+        "issue_comment:created",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "action"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-command-window.yml": {
+      "path": ".github/workflows/agent-command-window.yml",
+      "name": "Agent Command Window",
+      "events": [
+        "issue_comment:created",
+        "repository_dispatch:agent_status"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [
+        "agent_status"
+      ],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "brain-dump-intake.yml": {
+      "path": ".github/workflows/brain-dump-intake.yml",
+      "name": "Brain Dump Intake — Parse Unstructured Ideas into WRs",
+      "events": [
+        "workflow_dispatch",
+        "issue_comment:created"
+      ],
+      "dispatch_inputs": [
+        "brain_dump",
+        "dry_run"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "create-issue-branch.yml": {
+      "path": ".github/workflows/create-issue-branch.yml",
+      "name": "Create Issue Branch",
+      "events": [
+        "issues:opened,assigned",
+        "issue_comment:created",
+        "pull_request:opened,closed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "devin-code-review.yml": {
+      "path": ".github/workflows/devin-code-review.yml",
+      "name": "Devin Code Review",
+      "events": [
+        "issue_comment:created",
+        "pull_request:opened,synchronize,reopened,ready_for_review,labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number",
+        "prompt_text"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "fleet-dispatch.yml": {
+      "path": ".github/workflows/fleet-dispatch.yml",
+      "name": "Fleet Dispatch",
+      "events": [
+        "issue_comment:created",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "args",
+        "fleet",
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "openrouter-agent.yml": {
+      "path": ".github/workflows/openrouter-agent.yml",
+      "name": "OpenRouter Agent",
+      "events": [
+        "issue_comment:created",
+        "issues:opened",
+        "pull_request_review_comment:created"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "persona-comment-trigger.yml": {
+      "path": ".github/workflows/persona-comment-trigger.yml",
+      "name": "Persona Comment Trigger",
+      "events": [
+        "issue_comment:created"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_PERSONAS"
+      ],
+      "job_if_false": false
+    },
+    "pr-review-status.yml": {
+      "path": ".github/workflows/pr-review-status.yml",
+      "name": "PR Review Status Automation",
+      "events": [
+        "pull_request:opened,reopened,ready_for_review",
+        "pull_request_review:submitted,edited,dismissed",
+        "pull_request_review_comment:created"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "security-fleet.yml": {
+      "path": ".github/workflows/security-fleet.yml",
+      "name": "security-fleet",
+      "events": [
+        "issues:opened,edited",
+        "issue_comment:created,edited",
+        "pull_request:opened,edited,synchronize",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ui-creation-engine.yml": {
+      "path": ".github/workflows/ui-creation-engine.yml",
+      "name": "UI Creation Engine",
+      "events": [
+        "issues:labeled",
+        "issue_comment:created",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "business",
+        "industry",
+        "issue_number",
+        "location",
+        "platform",
+        "services"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "wr-autotitle.yml": {
+      "path": ".github/workflows/wr-autotitle.yml",
+      "name": "WR Autotitle",
+      "events": [
+        "issues:opened,edited",
+        "issue_comment:created",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "force",
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    }
+  },
+  "label_or_issue_listeners": {
+    "agent-approval-check.yml": {
+      "path": ".github/workflows/agent-approval-check.yml",
+      "name": "Agent Approval Check",
+      "events": [
+        "pull_request_target:opened,synchronize,reopened,ready_for_review",
+        "pull_request_review:submitted,dismissed",
+        "issue_comment:created,edited",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-audit-logger.yml": {
+      "path": ".github/workflows/agent-audit-logger.yml",
+      "name": "Agent Audit Logger",
+      "events": [
+        "issues:opened,closed",
+        "pull_request_review:submitted",
+        "issue_comment:created",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "action"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-dispatcher.yml": {
+      "path": ".github/workflows/agent-dispatcher.yml",
+      "name": "Agent Dispatcher",
+      "events": [
+        "issues:labeled,opened",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "agent",
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "agent-fingerprint-gate.yml": {
+      "path": ".github/workflows/agent-fingerprint-gate.yml",
+      "name": "Agent Fingerprint Gate",
+      "events": [
+        "pull_request:opened,synchronize,reopened,edited"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ai-pr-review-openrouter.yml": {
+      "path": ".github/workflows/ai-pr-review-openrouter.yml",
+      "name": "AI PR Review (OpenRouter)",
+      "events": [
+        "pull_request:opened,synchronize,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "amplitude-events.yml": {
+      "path": ".github/workflows/amplitude-events.yml",
+      "name": "Amplitude — Repo Event Telemetry",
+      "events": [
+        "issues:opened,closed,reopened",
+        "pull_request:opened,closed,reopened,ready_for_review",
+        "release:published",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "event_type"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "anti-scaffolding-enforcer.yml": {
+      "path": ".github/workflows/anti-scaffolding-enforcer.yml",
+      "name": "Anti-Scaffolding Enforcer",
+      "events": [
+        "pull_request:opened,edited,synchronize,reopened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "arsc-labels.yml": {
+      "path": ".github/workflows/arsc-labels.yml",
+      "name": "ARSC Labels",
+      "events": [
+        "workflow_dispatch",
+        "issues:opened"
+      ],
+      "dispatch_inputs": [
+        "labels",
+        "object-id",
+        "operation"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "augment-check.yml": {
+      "path": ".github/workflows/augment-check.yml",
+      "name": "Augment Code App Check",
+      "events": [
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "budget-aware-agent.yml": {
+      "path": ".github/workflows/budget-aware-agent.yml",
+      "name": "Budget-Aware Agent Router",
+      "events": [
+        "workflow_dispatch",
+        "issues:labeled"
+      ],
+      "dispatch_inputs": [
+        "budget_priority",
+        "required_agents",
+        "task"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "claude-renovate-review.yml": {
+      "path": ".github/workflows/claude-renovate-review.yml",
+      "name": "Claude Renovate Review",
+      "events": [
+        "pull_request:opened,edited"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "close-linked-issue.yml": {
+      "path": ".github/workflows/close-linked-issue.yml",
+      "name": "Close Linked Issue on PR Merge",
+      "events": [
+        "pull_request:closed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "conflict-helper.yml": {
+      "path": ".github/workflows/conflict-helper.yml",
+      "name": "Merge Conflict Helper",
+      "events": [
+        "pull_request:opened,synchronize,reopened,labeled"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "create-issue-branch.yml": {
+      "path": ".github/workflows/create-issue-branch.yml",
+      "name": "Create Issue Branch",
+      "events": [
+        "issues:opened,assigned",
+        "issue_comment:created",
+        "pull_request:opened,closed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "deep-search-research.yml": {
+      "path": ".github/workflows/deep-search-research.yml",
+      "name": "Deep Search Research",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "profile",
+        "research_query"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_RESEARCH"
+      ],
+      "job_if_false": false
+    },
+    "default-project-v2-fields-pat.yml": {
+      "path": ".github/workflows/default-project-v2-fields-pat.yml",
+      "name": "Set default Project v2 fields for new issues using PAT",
+      "events": [
+        "issues:opened",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "dependafix.yml": {
+      "path": ".github/workflows/dependafix.yml",
+      "name": "DependaFix AI Remediation",
+      "events": [
+        "pull_request:opened,synchronize,reopened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "devin-code-review.yml": {
+      "path": ".github/workflows/devin-code-review.yml",
+      "name": "Devin Code Review",
+      "events": [
+        "issue_comment:created",
+        "pull_request:opened,synchronize,reopened,ready_for_review,labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number",
+        "prompt_text"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "docs-freshness-check.yml": {
+      "path": ".github/workflows/docs-freshness-check.yml",
+      "name": "Docs Freshness Check",
+      "events": [
+        "pull_request:opened,synchronize,reopened,edited"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "dragnet-team-assignment.yml": {
+      "path": ".github/workflows/dragnet-team-assignment.yml",
+      "name": "DRAGNET Team Assignment",
+      "events": [
+        "issues:opened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_PERSONAS"
+      ],
+      "job_if_false": false
+    },
+    "duplicate-detector.yml": {
+      "path": ".github/workflows/duplicate-detector.yml",
+      "name": "Duplicate WR and PR Detector",
+      "events": [
+        "issues:opened,edited",
+        "pull_request_target:opened,edited"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "fix-wr-gate.yml": {
+      "path": ".github/workflows/fix-wr-gate.yml",
+      "name": "Fix-WR Gate",
+      "events": [
+        "pull_request:opened,edited,synchronize,labeled,unlabeled"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "followup-checkbox-router.yml": {
+      "path": ".github/workflows/followup-checkbox-router.yml",
+      "name": "Follow-up Checkbox Router",
+      "events": [
+        "pull_request:edited",
+        "issues:edited"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "goap-assignment-router.yml": {
+      "path": ".github/workflows/goap-assignment-router.yml",
+      "name": "GOAP Assignment Router",
+      "events": [
+        "issues:opened,reopened,edited",
+        "pull_request_target:opened,reopened,edited,ready_for_review"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "host.yml": {
+      "path": ".github/workflows/host.yml",
+      "name": "Host — decompose WR into agent-contract",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "issue-auto-triage.yml": {
+      "path": ".github/workflows/issue-auto-triage.yml",
+      "name": "Auto-Triage Issues",
+      "events": [
+        "issues:opened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "issue-lifecycle.yml": {
+      "path": ".github/workflows/issue-lifecycle.yml",
+      "name": "Issue Lifecycle Automation",
+      "events": [
+        "issues:opened",
+        "pull_request:opened,closed,reopened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "issue-state-machine.yml": {
+      "path": ".github/workflows/issue-state-machine.yml",
+      "name": "Issue State Machine",
+      "events": [
+        "issues:labeled,opened,closed,reopened",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "target_state"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "jules-invoke.yml": {
+      "path": ".github/workflows/jules-invoke.yml",
+      "name": "Jules Invoke",
+      "events": [
+        "workflow_dispatch",
+        "issues:opened,reopened,closed"
+      ],
+      "dispatch_inputs": [
+        "include_commit_log",
+        "include_last_commit",
+        "prompt",
+        "starting_branch"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "jules-pr-comment.yml": {
+      "path": ".github/workflows/jules-pr-comment.yml",
+      "name": "Jules PR Comment",
+      "events": [
+        "pull_request:opened",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "label-allowlist.yml": {
+      "path": ".github/workflows/label-allowlist.yml",
+      "name": "label-allowlist",
+      "events": [
+        "issues:labeled",
+        "pull_request:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "labels"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "merge-prosecutor.yml": {
+      "path": ".github/workflows/merge-prosecutor.yml",
+      "name": "Merge Prosecutor",
+      "events": [
+        "pull_request:opened,synchronize,reopened,ready_for_review"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "mergify-merge-queue-labels-copier.yml": {
+      "path": ".github/workflows/mergify-merge-queue-labels-copier.yml",
+      "name": "Mergify Merge-Queue Labels Copier",
+      "events": [
+        "pull_request_target:opened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "neon-branch.yml": {
+      "path": ".github/workflows/neon-branch.yml",
+      "name": "Neon Preview Branch",
+      "events": [
+        "pull_request:opened,reopened,synchronize,closed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_INFRA"
+      ],
+      "job_if_false": false
+    },
+    "no-destroy-guard.yml": {
+      "path": ".github/workflows/no-destroy-guard.yml",
+      "name": "No-Destroy Guard",
+      "events": [
+        "pull_request:opened,synchronize,reopened,labeled,unlabeled"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "no-root-junk.yml": {
+      "path": ".github/workflows/no-root-junk.yml",
+      "name": "No Root Junk",
+      "events": [
+        "pull_request:opened,synchronize,reopened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "noimosai.yml": {
+      "path": ".github/workflows/noimosai.yml",
+      "name": "NoimosAI — Autonomous Marketing",
+      "events": [
+        "workflow_dispatch",
+        "issues:opened,reopened"
+      ],
+      "dispatch_inputs": [
+        "project",
+        "prompt",
+        "task_type"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "oaudrey-git-greetings.yml": {
+      "path": ".github/workflows/oaudrey-git-greetings.yml",
+      "name": "oAudrey Git Greetings",
+      "events": [
+        "issues:opened",
+        "pull_request:opened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "openhands-resolver.yml": {
+      "path": ".github/workflows/openhands-resolver.yml",
+      "name": "OpenHands Resolver",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "openrouter-agent.yml": {
+      "path": ".github/workflows/openrouter-agent.yml",
+      "name": "OpenRouter Agent",
+      "events": [
+        "issue_comment:created",
+        "issues:opened",
+        "pull_request_review_comment:created"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "openrouter-assignee.yml": {
+      "path": ".github/workflows/openrouter-assignee.yml",
+      "name": "OpenRouter Assignee — First Line of Sight",
+      "events": [
+        "issues:opened,reopened",
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "openrouter-auto-route.yml": {
+      "path": ".github/workflows/openrouter-auto-route.yml",
+      "name": "OpenRouter Auto-Route",
+      "events": [
+        "issues:opened,reopened,edited,labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "openrouter-coder.yml": {
+      "path": ".github/workflows/openrouter-coder.yml",
+      "name": "OpenRouter Coder",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "prompt"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "openrouter-triage.yml": {
+      "path": ".github/workflows/openrouter-triage.yml",
+      "name": "OpenRouter Triage",
+      "events": [
+        "issues:opened,reopened",
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "prompt"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "pdf-work-request-router.yml": {
+      "path": ".github/workflows/pdf-work-request-router.yml",
+      "name": "PDF work request router",
+      "events": [
+        "issues:opened,edited,labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "perplexity-research-agent.yml": {
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "name": "Perplexity Research Agent",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "prompt",
+        "skip_labels"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_RESEARCH"
+      ],
+      "job_if_false": false
+    },
+    "pr-governance-checks.yml": {
+      "path": ".github/workflows/pr-governance-checks.yml",
+      "name": "pr-governance-checks",
+      "events": [
+        "pull_request:opened,synchronize,reopened,ready_for_review,labeled,unlabeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "pr-lifecycle.yml": {
+      "path": ".github/workflows/pr-lifecycle.yml",
+      "name": "PR Lifecycle",
+      "events": [
+        "pull_request:opened,synchronize,reopened,ready_for_review,converted_to_draft,closed",
+        "pull_request_target:opened,synchronize,reopened,ready_for_review,converted_to_draft,closed",
+        "check_suite:completed",
+        "workflow_run:completed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "pr-review-request-handler.yml": {
+      "path": ".github/workflows/pr-review-request-handler.yml",
+      "name": "PR Review Request Handler",
+      "events": [
+        "pull_request_review:submitted",
+        "pull_request:labeled"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "pr-review-status.yml": {
+      "path": ".github/workflows/pr-review-status.yml",
+      "name": "PR Review Status Automation",
+      "events": [
+        "pull_request:opened,reopened,ready_for_review",
+        "pull_request_review:submitted,edited,dismissed",
+        "pull_request_review_comment:created"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "pr-state-orchestrator.yml": {
+      "path": ".github/workflows/pr-state-orchestrator.yml",
+      "name": "🎛️ PR State Orchestrator",
+      "events": [
+        "pull_request:opened,reopened,ready_for_review,converted_to_draft,synchronize,closed,labeled",
+        "pull_request_review:submitted",
+        "check_suite:completed",
+        "check_run:completed",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "priority-router.yml": {
+      "path": ".github/workflows/priority-router.yml",
+      "name": "Priority Router — Issues & PRs",
+      "events": [
+        "pull_request_target:opened,reopened,edited,labeled,unlabeled,ready_for_review,closed",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "use_openrouter"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "project-board-sync.yml": {
+      "path": ".github/workflows/project-board-sync.yml",
+      "name": "Project Board Sync",
+      "events": [
+        "issues:opened,labeled,unlabeled,closed,reopened",
+        "pull_request:opened,labeled,unlabeled,closed,reopened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "proposal-prosecution.yml": {
+      "path": ".github/workflows/proposal-prosecution.yml",
+      "name": "Proposal Prosecution",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ready-for-review.yml": {
+      "path": ".github/workflows/ready-for-review.yml",
+      "name": "Ready for Review Automation",
+      "events": [
+        "pull_request_target:opened,synchronize,reopened,ready_for_review,closed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "research-engine.yml": {
+      "path": ".github/workflows/research-engine.yml",
+      "name": "Research Engine Orchestrator",
+      "events": [
+        "issues:opened,reopened",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "pr_number",
+        "research_depth",
+        "research_query"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_RESEARCH"
+      ],
+      "job_if_false": false
+    },
+    "sandbox-guardrail.yml": {
+      "path": ".github/workflows/sandbox-guardrail.yml",
+      "name": "Sandbox Guardrail",
+      "events": [
+        "pull_request:opened,ready_for_review"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "security-fleet.yml": {
+      "path": ".github/workflows/security-fleet.yml",
+      "name": "security-fleet",
+      "events": [
+        "issues:opened,edited",
+        "issue_comment:created,edited",
+        "pull_request:opened,edited,synchronize",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "seo-a11y-guard.yml": {
+      "path": ".github/workflows/seo-a11y-guard.yml",
+      "name": "SEO + A11y Guard",
+      "events": [
+        "pull_request:opened,synchronize,reopened,labeled,unlabeled"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "set-default-project-v2-fields.yml": {
+      "path": ".github/workflows/set-default-project-v2-fields.yml",
+      "name": "Set default Project v2 fields for new issues",
+      "events": [
+        "issues:opened",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ship-quality.yml": {
+      "path": ".github/workflows/ship-quality.yml",
+      "name": "Intelligent Code Quality Scanner",
+      "events": [
+        "pull_request:opened,edited,synchronize,reopened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "ship-to-market.yml": {
+      "path": ".github/workflows/ship-to-market.yml",
+      "name": "🚀 Ship to Market",
+      "events": [
+        "pull_request:closed",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "channel"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "spec-approval-gate.yml": {
+      "path": ".github/workflows/spec-approval-gate.yml",
+      "name": "Spec Approval Gate",
+      "events": [
+        "issues:labeled"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "swe-agent.yml": {
+      "path": ".github/workflows/swe-agent.yml",
+      "name": "SWE-Agent",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "ui-creation-engine.yml": {
+      "path": ".github/workflows/ui-creation-engine.yml",
+      "name": "UI Creation Engine",
+      "events": [
+        "issues:labeled",
+        "issue_comment:created",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "business",
+        "industry",
+        "issue_number",
+        "location",
+        "platform",
+        "services"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "veins-intake-dedup.yml": {
+      "path": ".github/workflows/veins-intake-dedup.yml",
+      "name": "VEINS Intake Dedup",
+      "events": [
+        "issues:opened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "weekly-research.yml": {
+      "path": ".github/workflows/weekly-research.yml",
+      "name": "Weekly Research (WR) Automation",
+      "events": [
+        "issues:opened,reopened,labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_RESEARCH"
+      ],
+      "job_if_false": false
+    },
+    "wr-auto-classify.yml": {
+      "path": ".github/workflows/wr-auto-classify.yml",
+      "name": "WR Auto-Classify Project v2 Fields",
+      "events": [
+        "issues:opened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "wr-autotitle.yml": {
+      "path": ".github/workflows/wr-autotitle.yml",
+      "name": "WR Autotitle",
+      "events": [
+        "issues:opened,edited",
+        "issue_comment:created",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "force",
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "wr-field-filler.yml": {
+      "path": ".github/workflows/wr-field-filler.yml",
+      "name": "WR Field Filler — no blanks ever ship",
+      "events": [
+        "issues:opened,edited,labeled",
+        "workflow_run:completed",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "xai-code-review.yml": {
+      "path": ".github/workflows/xai-code-review.yml",
+      "name": "xAI Code Review",
+      "events": [
+        "pull_request:opened,synchronize,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "xai-review-oleg-fork.yml": {
+      "path": ".github/workflows/xai-review-oleg-fork.yml",
+      "name": "XAI Review (oleg fork)",
+      "events": [
+        "pull_request:opened,synchronize,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pull-request-number",
+        "review-command"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    }
+  },
+  "workflows": {
+    "actions-lint.yml": {
+      "path": ".github/workflows/actions-lint.yml",
+      "name": "Actions Lint",
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-approval-check.yml": {
+      "path": ".github/workflows/agent-approval-check.yml",
+      "name": "Agent Approval Check",
+      "events": [
+        "pull_request_target:opened,synchronize,reopened,ready_for_review",
+        "pull_request_review:submitted,dismissed",
+        "issue_comment:created,edited",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-audit-logger.yml": {
+      "path": ".github/workflows/agent-audit-logger.yml",
+      "name": "Agent Audit Logger",
+      "events": [
+        "issues:opened,closed",
+        "pull_request_review:submitted",
+        "issue_comment:created",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "action"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-command-window-ci.yml": {
+      "path": ".github/workflows/agent-command-window-ci.yml",
+      "name": "Agent Command Window CI",
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-command-window.yml": {
+      "path": ".github/workflows/agent-command-window.yml",
+      "name": "Agent Command Window",
+      "events": [
+        "issue_comment:created",
+        "repository_dispatch:agent_status"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [
+        "agent_status"
+      ],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-dispatcher.yml": {
+      "path": ".github/workflows/agent-dispatcher.yml",
+      "name": "Agent Dispatcher",
+      "events": [
+        "issues:labeled,opened",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "agent",
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "agent-fallback.yml": {
+      "path": ".github/workflows/agent-fallback.yml",
+      "name": "Agent Fallback Handler",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "prefer_agent",
+        "task_description"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "agent-fingerprint-gate.yml": {
+      "path": ".github/workflows/agent-fingerprint-gate.yml",
+      "name": "Agent Fingerprint Gate",
+      "events": [
+        "pull_request:opened,synchronize,reopened,edited"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-monitor.yml": {
+      "path": ".github/workflows/agent-monitor.yml",
+      "name": "Agent Monitor",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-request-delivery.yml": {
+      "path": ".github/workflows/agent-request-delivery.yml",
+      "name": "Agent Request Delivery",
+      "events": [
+        "repository_dispatch:agent_requested"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [
+        "agent_requested"
+      ],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-scorecard-governance.yml": {
+      "path": ".github/workflows/agent-scorecard-governance.yml",
+      "name": "agent-scorecard-governance",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "agent-scorecard.yml": {
+      "path": ".github/workflows/agent-scorecard.yml",
+      "name": "Agent Scorecard",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "cross_model",
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ai-architecture-market-evaluator.yml": {
+      "path": ".github/workflows/ai-architecture-market-evaluator.yml",
+      "name": "AI Architecture — Daily Market Evaluator",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ai-ci-failure-helper.yml": {
+      "path": ".github/workflows/ai-ci-failure-helper.yml",
+      "name": "AI CI Failure Helper",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "workflow_run_id"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "ai-pr-review-openrouter.yml": {
+      "path": ".github/workflows/ai-pr-review-openrouter.yml",
+      "name": "AI PR Review (OpenRouter)",
+      "events": [
+        "pull_request:opened,synchronize,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "ai-weekly-changelog.yml": {
+      "path": ".github/workflows/ai-weekly-changelog.yml",
+      "name": "AI Weekly Changelog",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "days_back",
+        "dry_run",
+        "extended",
+        "force",
+        "language",
+        "model"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "amplitude-events.yml": {
+      "path": ".github/workflows/amplitude-events.yml",
+      "name": "Amplitude — Repo Event Telemetry",
+      "events": [
+        "issues:opened,closed,reopened",
+        "pull_request:opened,closed,reopened,ready_for_review",
+        "release:published",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "event_type"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "amplitude-to-notion.yml": {
+      "path": ".github/workflows/amplitude-to-notion.yml",
+      "name": "Amplitude → Notion Agent",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "anti-scaffolding-enforcer.yml": {
+      "path": ".github/workflows/anti-scaffolding-enforcer.yml",
+      "name": "Anti-Scaffolding Enforcer",
+      "events": [
+        "pull_request:opened,edited,synchronize,reopened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "api-monitor.yml": {
+      "path": ".github/workflows/api-monitor.yml",
+      "name": "API Monitor",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "api-rate-limit-handler.yml": {
+      "path": ".github/workflows/api-rate-limit-handler.yml",
+      "name": "API Rate Limit Handler",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "agent_used",
+        "error_message",
+        "failed_workflow"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "apisec-scan.yml": {
+      "path": ".github/workflows/apisec-scan.yml",
+      "name": "APIsec Security Scan (archived — see REVVEL-DISABLED header)",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": true
+    },
+    "app-artifact-audit.yml": {
+      "path": ".github/workflows/app-artifact-audit.yml",
+      "name": "App Artifact Audit",
+      "events": [
+        "workflow_dispatch",
+        "push"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "apply-revvel-command-project-fields.yml": {
+      "path": ".github/workflows/apply-revvel-command-project-fields.yml",
+      "name": "apply-revvel-command-project-fields",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "mode",
+        "project_number",
+        "project_title"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "arsc-labels.yml": {
+      "path": ".github/workflows/arsc-labels.yml",
+      "name": "ARSC Labels",
+      "events": [
+        "workflow_dispatch",
+        "issues:opened"
+      ],
+      "dispatch_inputs": [
+        "labels",
+        "object-id",
+        "operation"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "auditor-controller.yml": {
+      "path": ".github/workflows/auditor-controller.yml",
+      "name": "Auditor Controller",
+      "events": [
+        "workflow_dispatch",
+        "pull_request"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "augment-check.yml": {
+      "path": ".github/workflows/augment-check.yml",
+      "name": "Augment Code App Check",
+      "events": [
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "auto-approve-clean-prs.yml": {
+      "path": ".github/workflows/auto-approve-clean-prs.yml",
+      "name": "Auto-Approve Clean PRs",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "auto-bootstrap.yml": {
+      "path": ".github/workflows/auto-bootstrap.yml",
+      "name": "Auto Bootstrap",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "repo"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "auto-branch-update.yml": {
+      "path": ".github/workflows/auto-branch-update.yml",
+      "name": "Auto-Update PR Branch from Main",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "auto-deploy-to-stores.yml": {
+      "path": ".github/workflows/auto-deploy-to-stores.yml",
+      "name": "📱 Auto Deploy to Stores",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "android_track",
+        "ios_environment",
+        "issue_number",
+        "platform"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "macos-latest",
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "auto-error-handler.yml": {
+      "path": ".github/workflows/auto-error-handler.yml",
+      "name": "Auto-Error Handler & Self-Healing",
+      "events": [
+        "workflow_dispatch",
+        "workflow_call"
+      ],
+      "dispatch_inputs": [
+        "attempted_fixes",
+        "error_context",
+        "error_message",
+        "error_type",
+        "workflow_run_id"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "auto-merge.yml": {
+      "path": ".github/workflows/auto-merge.yml",
+      "name": "Auto-Merge on Approval",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "auto-reset-stuck-issues.yml": {
+      "path": ".github/workflows/auto-reset-stuck-issues.yml",
+      "name": "🔄 Auto-Reset Stuck Issues",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "automate-gumroad-artifacts.yml": {
+      "path": ".github/workflows/automate-gumroad-artifacts.yml",
+      "name": "scheduled-market-evaluator",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "bernstein-orchestrator.yml": {
+      "path": ".github/workflows/bernstein-orchestrator.yml",
+      "name": "Bernstein Orchestrator",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "budget",
+        "cli",
+        "plan",
+        "task"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "biome-homeostat.yml": {
+      "path": ".github/workflows/biome-homeostat.yml",
+      "name": "BIOME Homeostat",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "biome-inspector.yml": {
+      "path": ".github/workflows/biome-inspector.yml",
+      "name": "BIOME Inspector",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "biome-medic.yml": {
+      "path": ".github/workflows/biome-medic.yml",
+      "name": "BIOME Medic",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "allow_reruns"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "biome-sentinel.yml": {
+      "path": ".github/workflows/biome-sentinel.yml",
+      "name": "BIOME Sentinel",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "biome-sheaf.yml": {
+      "path": ".github/workflows/biome-sheaf.yml",
+      "name": "BIOME Sheaf",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "bito-ai.yml": {
+      "path": ".github/workflows/bito-ai.yml",
+      "name": "BITO AI — Code Review",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "blue-ocean-sar-live.yml": {
+      "path": ".github/workflows/blue-ocean-sar-live.yml",
+      "name": "Blue Ocean SAR live run",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "after",
+        "before",
+        "cams_country",
+        "case_id",
+        "lat",
+        "lon",
+        "lpb_category",
+        "lpb_hours",
+        "radius_m",
+        "usgs_sites"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "blue-ocean-sar-source-health.yml": {
+      "path": ".github/workflows/blue-ocean-sar-source-health.yml",
+      "name": "Blue Ocean SAR source health",
+      "events": [
+        "schedule",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "bootstrap-pr-labels.yml": {
+      "path": ".github/workflows/bootstrap-pr-labels.yml",
+      "name": "Bootstrap PR Labels",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "brain-dump-intake.yml": {
+      "path": ".github/workflows/brain-dump-intake.yml",
+      "name": "Brain Dump Intake — Parse Unstructured Ideas into WRs",
+      "events": [
+        "workflow_dispatch",
+        "issue_comment:created"
+      ],
+      "dispatch_inputs": [
+        "brain_dump",
+        "dry_run"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "budget-aware-agent.yml": {
+      "path": ".github/workflows/budget-aware-agent.yml",
+      "name": "Budget-Aware Agent Router",
+      "events": [
+        "workflow_dispatch",
+        "issues:labeled"
+      ],
+      "dispatch_inputs": [
+        "budget_priority",
+        "required_agents",
+        "task"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "bulk-close-failure-spam.yml": {
+      "path": ".github/workflows/bulk-close-failure-spam.yml",
+      "name": "Bulk Close Failure Spam",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "max_to_close"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "chaosmender.yml": {
+      "path": ".github/workflows/chaosmender.yml",
+      "name": "ChaosMender",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "file_issues"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ci-error-prevention.yml": {
+      "path": ".github/workflows/ci-error-prevention.yml",
+      "name": "CI Error Prevention Tests",
+      "events": [
+        "push",
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "claude-renovate-review.yml": {
+      "path": ".github/workflows/claude-renovate-review.yml",
+      "name": "Claude Renovate Review",
+      "events": [
+        "pull_request:opened,edited"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "close-linked-issue.yml": {
+      "path": ".github/workflows/close-linked-issue.yml",
+      "name": "Close Linked Issue on PR Merge",
+      "events": [
+        "pull_request:closed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "codeql.yml": {
+      "path": ".github/workflows/codeql.yml",
+      "name": "CodeQL",
+      "events": [
+        "push",
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "commit-queue-monitor.yml": {
+      "path": ".github/workflows/commit-queue-monitor.yml",
+      "name": "Commit Queue Monitor",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "compliance-check.yml": {
+      "path": ".github/workflows/compliance-check.yml",
+      "name": "Compliance Check",
+      "events": [
+        "workflow_dispatch",
+        "push"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "compliance-watcher.yml": {
+      "path": ".github/workflows/compliance-watcher.yml",
+      "name": "compliance-watcher",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "conflict-helper.yml": {
+      "path": ".github/workflows/conflict-helper.yml",
+      "name": "Merge Conflict Helper",
+      "events": [
+        "pull_request:opened,synchronize,reopened,labeled"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "connections-registry.yml": {
+      "path": ".github/workflows/connections-registry.yml",
+      "name": "Connections Registry",
+      "events": [
+        "push",
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "content-automation.yml": {
+      "path": ".github/workflows/content-automation.yml",
+      "name": "Content Automation",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "format",
+        "target_audience",
+        "topic",
+        "urgency"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "copilot-setup-steps.yml": {
+      "path": ".github/workflows/copilot-setup-steps.yml",
+      "name": "Copilot Setup Steps",
+      "events": [
+        "workflow_dispatch",
+        "push",
+        "pull_request"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "create-issue-branch.yml": {
+      "path": ".github/workflows/create-issue-branch.yml",
+      "name": "Create Issue Branch",
+      "events": [
+        "issues:opened,assigned",
+        "issue_comment:created",
+        "pull_request:opened,closed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "cypress-lead-engine.yml": {
+      "path": ".github/workflows/cypress-lead-engine.yml",
+      "name": "Cypress E2E — life-insurance-lead-engine",
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "daily-diagnostic-audit.yml": {
+      "path": ".github/workflows/daily-diagnostic-audit.yml",
+      "name": "Daily Diagnostic Audit",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "daily-news-briefing.yml": {
+      "path": ".github/workflows/daily-news-briefing.yml",
+      "name": "Daily News Briefing",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "daily-wr-summary.yml": {
+      "path": ".github/workflows/daily-wr-summary.yml",
+      "name": "Daily WR & PR Summary",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "date_override"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "deep-search-research.yml": {
+      "path": ".github/workflows/deep-search-research.yml",
+      "name": "Deep Search Research",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "profile",
+        "research_query"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_RESEARCH"
+      ],
+      "job_if_false": false
+    },
+    "default-project-v2-fields-pat.yml": {
+      "path": ".github/workflows/default-project-v2-fields-pat.yml",
+      "name": "Set default Project v2 fields for new issues using PAT",
+      "events": [
+        "issues:opened",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "dependafix.yml": {
+      "path": ".github/workflows/dependafix.yml",
+      "name": "DependaFix AI Remediation",
+      "events": [
+        "pull_request:opened,synchronize,reopened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "dependency-update-checker.yml": {
+      "path": ".github/workflows/dependency-update-checker.yml",
+      "name": "Dependency & Version Update Checker",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "deploy-oaudrey.yml": {
+      "path": ".github/workflows/deploy-oaudrey.yml",
+      "name": "Deploy oAudrey Hub → DigitalOcean App Platform",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "force_redeploy"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "deployment-health-check.yml": {
+      "path": ".github/workflows/deployment-health-check.yml",
+      "name": "Deployment Health Check",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "url"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "devin-code-review.yml": {
+      "path": ".github/workflows/devin-code-review.yml",
+      "name": "Devin Code Review",
+      "events": [
+        "issue_comment:created",
+        "pull_request:opened,synchronize,reopened,ready_for_review,labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number",
+        "prompt_text"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "devinci-debug.yml": {
+      "path": ".github/workflows/devinci-debug.yml",
+      "name": "DevInCi Debug Environment",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "client_id",
+        "client_secret",
+        "interface",
+        "ttl_minutes",
+        "tunnel_host",
+        "tunnel_name",
+        "tunnel_port"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_INFRA"
+      ],
+      "job_if_false": false
+    },
+    "docs-freshness-check.yml": {
+      "path": ".github/workflows/docs-freshness-check.yml",
+      "name": "Docs Freshness Check",
+      "events": [
+        "pull_request:opened,synchronize,reopened,edited"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "dprint-check.yml": {
+      "path": ".github/workflows/dprint-check.yml",
+      "name": "dprint check",
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "dragnet-ci-autofix.yml": {
+      "path": ".github/workflows/dragnet-ci-autofix.yml",
+      "name": "Dragnet CI Autofix",
+      "events": [
+        "check_suite:completed",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "dragnet-team-assignment.yml": {
+      "path": ".github/workflows/dragnet-team-assignment.yml",
+      "name": "DRAGNET Team Assignment",
+      "events": [
+        "issues:opened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_PERSONAS"
+      ],
+      "job_if_false": false
+    },
+    "duplicate-detector.yml": {
+      "path": ".github/workflows/duplicate-detector.yml",
+      "name": "Duplicate WR and PR Detector",
+      "events": [
+        "issues:opened,edited",
+        "pull_request_target:opened,edited"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "durability-mirror.yml": {
+      "path": ".github/workflows/durability-mirror.yml",
+      "name": "durability-mirror",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "easy-env-vars.yml": {
+      "path": ".github/workflows/easy-env-vars.yml",
+      "name": "Easy Env Vars",
+      "events": [
+        "workflow_dispatch",
+        "workflow_call"
+      ],
+      "dispatch_inputs": [
+        "env_block",
+        "seed_env"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "eco-github-extensions.yml": {
+      "path": ".github/workflows/eco-github-extensions.yml",
+      "name": "Eco Github Extensions",
+      "events": [
+        "pull_request"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "eeat-trust-cron.yml": {
+      "path": ".github/workflows/eeat-trust-cron.yml",
+      "name": "eeat-trust-cron",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "email-error-intake.yml": {
+      "path": ".github/workflows/email-error-intake.yml",
+      "name": "Email Error Intake",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "max_issues"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "fix-wr-gate.yml": {
+      "path": ".github/workflows/fix-wr-gate.yml",
+      "name": "Fix-WR Gate",
+      "events": [
+        "pull_request:opened,edited,synchronize,labeled,unlabeled"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "fleet-controller.yml": {
+      "path": ".github/workflows/fleet-controller.yml",
+      "name": "Fleet Controller",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "preempt"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "fleet-dispatch.yml": {
+      "path": ".github/workflows/fleet-dispatch.yml",
+      "name": "Fleet Dispatch",
+      "events": [
+        "issue_comment:created",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "args",
+        "fleet",
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "fleet-maintenance.yml": {
+      "path": ".github/workflows/fleet-maintenance.yml",
+      "name": "Fleet Maintenance Sweep",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "max_repos"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "flow-chart-sync.yml": {
+      "path": ".github/workflows/flow-chart-sync.yml",
+      "name": "Flow Chart Sync",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "followup-checkbox-router.yml": {
+      "path": ".github/workflows/followup-checkbox-router.yml",
+      "name": "Follow-up Checkbox Router",
+      "events": [
+        "pull_request:edited",
+        "issues:edited"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "fork-audit-bot.yml": {
+      "path": ".github/workflows/fork-audit-bot.yml",
+      "name": "Fork-Audit Bot",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "config_path",
+        "dry_run"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "formal-auto-wr.yml": {
+      "path": ".github/workflows/formal-auto-wr.yml",
+      "name": "formal-auto-wr",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "free-llm-router.yml": {
+      "path": ".github/workflows/free-llm-router.yml",
+      "name": "LLM Router",
+      "events": [
+        "workflow_dispatch",
+        "workflow_call"
+      ],
+      "dispatch_inputs": [
+        "prompt"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "ghcr-publish.yml": {
+      "path": ".github/workflows/ghcr-publish.yml",
+      "name": "GHCR publish",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "tag_suffix"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ghcr-setup-status.yml": {
+      "path": ".github/workflows/ghcr-setup-status.yml",
+      "name": "GHCR setup status",
+      "events": [
+        "workflow_dispatch",
+        "push"
+      ],
+      "dispatch_inputs": [
+        "fail_if_unwired",
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "goap-assignment-router.yml": {
+      "path": ".github/workflows/goap-assignment-router.yml",
+      "name": "GOAP Assignment Router",
+      "events": [
+        "issues:opened,reopened,edited",
+        "pull_request_target:opened,reopened,edited,ready_for_review"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "gosqlx-lint.yml": {
+      "path": ".github/workflows/gosqlx-lint.yml",
+      "name": "GoSQLX Lint",
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "green-website.yml": {
+      "path": ".github/workflows/green-website.yml",
+      "name": "Website green-o-meter",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "url"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "gumloop-pdf-pipeline.yml": {
+      "path": ".github/workflows/gumloop-pdf-pipeline.yml",
+      "name": "Gumloop PDF Pipeline",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "keywords",
+        "niche",
+        "output_name"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "gumroad-covers.yml": {
+      "path": ".github/workflows/gumroad-covers.yml",
+      "name": "Gumroad Covers",
+      "events": [
+        "workflow_dispatch",
+        "push"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "host.yml": {
+      "path": ".github/workflows/host.yml",
+      "name": "Host — decompose WR into agent-contract",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "hourly-growth-prioritizer.yml": {
+      "path": ".github/workflows/hourly-growth-prioritizer.yml",
+      "name": "Hourly Star Growth & Prioritization Engine",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "image-seo-pipeline.yml": {
+      "path": ".github/workflows/image-seo-pipeline.yml",
+      "name": "image-seo-pipeline",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "kind",
+        "primary_keyword",
+        "topic"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "image-seo-qa.yml": {
+      "path": ".github/workflows/image-seo-qa.yml",
+      "name": "image-seo-qa",
+      "events": [
+        "pull_request"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "issue-auto-triage.yml": {
+      "path": ".github/workflows/issue-auto-triage.yml",
+      "name": "Auto-Triage Issues",
+      "events": [
+        "issues:opened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "issue-lifecycle.yml": {
+      "path": ".github/workflows/issue-lifecycle.yml",
+      "name": "Issue Lifecycle Automation",
+      "events": [
+        "issues:opened",
+        "pull_request:opened,closed,reopened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "issue-state-machine.yml": {
+      "path": ".github/workflows/issue-state-machine.yml",
+      "name": "Issue State Machine",
+      "events": [
+        "issues:labeled,opened,closed,reopened",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "target_state"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "jules-coding-agent.yml": {
+      "path": ".github/workflows/jules-coding-agent.yml",
+      "name": "Jules Coding Agent (disabled)",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": true
+    },
+    "jules-feedback.yml": {
+      "path": ".github/workflows/jules-feedback.yml",
+      "name": "Send Feedback to Jules",
+      "events": [
+        "pull_request_review:submitted"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "jules-invoke.yml": {
+      "path": ".github/workflows/jules-invoke.yml",
+      "name": "Jules Invoke",
+      "events": [
+        "workflow_dispatch",
+        "issues:opened,reopened,closed"
+      ],
+      "dispatch_inputs": [
+        "include_commit_log",
+        "include_last_commit",
+        "prompt",
+        "starting_branch"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "jules-pr-comment.yml": {
+      "path": ".github/workflows/jules-pr-comment.yml",
+      "name": "Jules PR Comment",
+      "events": [
+        "pull_request:opened",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "jules-pr-reviewer.yml": {
+      "path": ".github/workflows/jules-pr-reviewer.yml",
+      "name": "Jules PR Reviewer",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "label-allowlist.yml": {
+      "path": ".github/workflows/label-allowlist.yml",
+      "name": "label-allowlist",
+      "events": [
+        "issues:labeled",
+        "pull_request:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "labels"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "lane-canary.yml": {
+      "path": ".github/workflows/lane-canary.yml",
+      "name": "lane-canary",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "lint-md.yml": {
+      "path": ".github/workflows/lint-md.yml",
+      "name": "Lint Markdown (markdownlint-cli)",
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "mabl.yml": {
+      "path": ".github/workflows/mabl.yml",
+      "name": "mabl Automated Tests",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "app-url",
+        "continue-on-failure",
+        "plan-labels"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "markdown-image-alt-text-checker.yml": {
+      "path": ".github/workflows/markdown-image-alt-text-checker.yml",
+      "name": "Markdown Image Alt-text Checker",
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_INFRA"
+      ],
+      "job_if_false": false
+    },
+    "markdown-lint-auto-heal.yml": {
+      "path": ".github/workflows/markdown-lint-auto-heal.yml",
+      "name": "Markdown Lint Advisory",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "market-evaluator.yml": {
+      "path": ".github/workflows/market-evaluator.yml",
+      "name": "market-evaluator",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "merge-prosecutor.yml": {
+      "path": ".github/workflows/merge-prosecutor.yml",
+      "name": "Merge Prosecutor",
+      "events": [
+        "pull_request:opened,synchronize,reopened,ready_for_review"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "mergeme-status.yml": {
+      "path": ".github/workflows/mergeme-status.yml",
+      "name": "MergeMe.dev wiring status",
+      "events": [
+        "workflow_dispatch",
+        "push"
+      ],
+      "dispatch_inputs": [
+        "fail_if_unwired",
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "mergify-merge-queue-labels-copier.yml": {
+      "path": ".github/workflows/mergify-merge-queue-labels-copier.yml",
+      "name": "Mergify Merge-Queue Labels Copier",
+      "events": [
+        "pull_request_target:opened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "migration-cron.yml": {
+      "path": ".github/workflows/migration-cron.yml",
+      "name": "migration-cron",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "mirror-malama.yml": {
+      "path": ".github/workflows/mirror-malama.yml",
+      "name": "Mirror Mālama Engine",
+      "events": [
+        "workflow_dispatch",
+        "push"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "morty-post-mortems.yml": {
+      "path": ".github/workflows/morty-post-mortems.yml",
+      "name": "Morty Post Mortems",
+      "events": [
+        "push",
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "naukri-resume.yml": {
+      "path": ".github/workflows/naukri-resume.yml",
+      "name": "Update Naukri Resume",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "self-hosted"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "needs-action-router.yml": {
+      "path": ".github/workflows/needs-action-router.yml",
+      "name": "Needs Action Router — Auto-Assign to OpenRouter",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "neon-branch.yml": {
+      "path": ".github/workflows/neon-branch.yml",
+      "name": "Neon Preview Branch",
+      "events": [
+        "pull_request:opened,reopened,synchronize,closed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_INFRA"
+      ],
+      "job_if_false": false
+    },
+    "neuralegion.yml": {
+      "path": ".github/workflows/neuralegion.yml",
+      "name": "NeuraLegion DAST (archived — see REVVEL-DISABLED header)",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": true
+    },
+    "news-with-cache.yml": {
+      "path": ".github/workflows/news-with-cache.yml",
+      "name": "News with Cache",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "no-destroy-guard.yml": {
+      "path": ".github/workflows/no-destroy-guard.yml",
+      "name": "No-Destroy Guard",
+      "events": [
+        "pull_request:opened,synchronize,reopened,labeled,unlabeled"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "no-root-junk.yml": {
+      "path": ".github/workflows/no-root-junk.yml",
+      "name": "No Root Junk",
+      "events": [
+        "pull_request:opened,synchronize,reopened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "noimosai.yml": {
+      "path": ".github/workflows/noimosai.yml",
+      "name": "NoimosAI — Autonomous Marketing",
+      "events": [
+        "workflow_dispatch",
+        "issues:opened,reopened"
+      ],
+      "dispatch_inputs": [
+        "project",
+        "prompt",
+        "task_type"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "oaudrey-git-greetings.yml": {
+      "path": ".github/workflows/oaudrey-git-greetings.yml",
+      "name": "oAudrey Git Greetings",
+      "events": [
+        "issues:opened",
+        "pull_request:opened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "oaudrey-retro.yml": {
+      "path": ".github/workflows/oaudrey-retro.yml",
+      "name": "oAudrey — Post-Deploy Retro & Gap Analysis",
+      "events": [
+        "workflow_run:completed",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "skip_health_check"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "octopus-cli.yml": {
+      "path": ".github/workflows/octopus-cli.yml",
+      "name": "Octopus CLI",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "command",
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "octopus-review-fallback.yml": {
+      "path": ".github/workflows/octopus-review-fallback.yml",
+      "name": "Octopus Review Fallback",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "octopus-route.yml": {
+      "path": ".github/workflows/octopus-route.yml",
+      "name": "Octopus Issue Router",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "backfill",
+        "max_issues",
+        "rate_limit_minutes"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "openhands-resolver.yml": {
+      "path": ".github/workflows/openhands-resolver.yml",
+      "name": "OpenHands Resolver",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "openrouter-agent.yml": {
+      "path": ".github/workflows/openrouter-agent.yml",
+      "name": "OpenRouter Agent",
+      "events": [
+        "issue_comment:created",
+        "issues:opened",
+        "pull_request_review_comment:created"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "openrouter-assignee.yml": {
+      "path": ".github/workflows/openrouter-assignee.yml",
+      "name": "OpenRouter Assignee — First Line of Sight",
+      "events": [
+        "issues:opened,reopened",
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "openrouter-auto-route.yml": {
+      "path": ".github/workflows/openrouter-auto-route.yml",
+      "name": "OpenRouter Auto-Route",
+      "events": [
+        "issues:opened,reopened,edited,labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "openrouter-coder.yml": {
+      "path": ".github/workflows/openrouter-coder.yml",
+      "name": "OpenRouter Coder",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "prompt"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "openrouter-instantiation-check.yml": {
+      "path": ".github/workflows/openrouter-instantiation-check.yml",
+      "name": "OpenRouter Instantiation Check",
+      "events": [
+        "workflow_dispatch",
+        "push"
+      ],
+      "dispatch_inputs": [
+        "force_escalate"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "openrouter-key-reset.yml": {
+      "path": ".github/workflows/openrouter-key-reset.yml",
+      "name": "OpenRouter Key Reset — Reprocess Failures",
+      "events": [
+        "workflow_dispatch",
+        "repository_dispatch:openrouter-key-updated"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "max_items"
+      ],
+      "repository_dispatch_types": [
+        "openrouter-key-updated"
+      ],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "openrouter-triage.yml": {
+      "path": ".github/workflows/openrouter-triage.yml",
+      "name": "OpenRouter Triage",
+      "events": [
+        "issues:opened,reopened",
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "prompt"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "ossar.yml": {
+      "path": ".github/workflows/ossar.yml",
+      "name": "OSSAR",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "windows-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "panda-ops.yml": {
+      "path": ".github/workflows/panda-ops.yml",
+      "name": "PandaOps AI PR Review",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "patch-agent.yml": {
+      "path": ".github/workflows/patch-agent.yml",
+      "name": "Patch Agent (disabled)",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": true
+    },
+    "pdf-work-request-router.yml": {
+      "path": ".github/workflows/pdf-work-request-router.yml",
+      "name": "PDF work request router",
+      "events": [
+        "issues:opened,edited,labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "perplexity-research-agent.yml": {
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "name": "Perplexity Research Agent",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "prompt",
+        "skip_labels"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_RESEARCH"
+      ],
+      "job_if_false": false
+    },
+    "persona-comment-trigger.yml": {
+      "path": ".github/workflows/persona-comment-trigger.yml",
+      "name": "Persona Comment Trigger",
+      "events": [
+        "issue_comment:created"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_PERSONAS"
+      ],
+      "job_if_false": false
+    },
+    "pr-auto-review.yml": {
+      "path": ".github/workflows/pr-auto-review.yml",
+      "name": "PR Auto Review via OpenRouter",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "pr-check-status.yml": {
+      "path": ".github/workflows/pr-check-status.yml",
+      "name": "PR Check Status Automation",
+      "events": [
+        "check_suite:completed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "pr-governance-checks.yml": {
+      "path": ".github/workflows/pr-governance-checks.yml",
+      "name": "pr-governance-checks",
+      "events": [
+        "pull_request:opened,synchronize,reopened,ready_for_review,labeled,unlabeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "pr-lifecycle.yml": {
+      "path": ".github/workflows/pr-lifecycle.yml",
+      "name": "PR Lifecycle",
+      "events": [
+        "pull_request:opened,synchronize,reopened,ready_for_review,converted_to_draft,closed",
+        "pull_request_target:opened,synchronize,reopened,ready_for_review,converted_to_draft,closed",
+        "check_suite:completed",
+        "workflow_run:completed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "pr-review-request-handler.yml": {
+      "path": ".github/workflows/pr-review-request-handler.yml",
+      "name": "PR Review Request Handler",
+      "events": [
+        "pull_request_review:submitted",
+        "pull_request:labeled"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "pr-review-status.yml": {
+      "path": ".github/workflows/pr-review-status.yml",
+      "name": "PR Review Status Automation",
+      "events": [
+        "pull_request:opened,reopened,ready_for_review",
+        "pull_request_review:submitted,edited,dismissed",
+        "pull_request_review_comment:created"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "pr-state-orchestrator.yml": {
+      "path": ".github/workflows/pr-state-orchestrator.yml",
+      "name": "🎛️ PR State Orchestrator",
+      "events": [
+        "pull_request:opened,reopened,ready_for_review,converted_to_draft,synchronize,closed,labeled",
+        "pull_request_review:submitted",
+        "check_suite:completed",
+        "check_run:completed",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pr_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "print-project-v2-ids-pat.yml": {
+      "path": ".github/workflows/print-project-v2-ids-pat.yml",
+      "name": "Print Project v2 field and option IDs using PAT",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "owner",
+        "owner_type",
+        "project_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "print-project-v2-ids.yml": {
+      "path": ".github/workflows/print-project-v2-ids.yml",
+      "name": "Print Project v2 field and option IDs",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "owner",
+        "owner_type",
+        "project_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "prioritize-stars.yml": {
+      "path": ".github/workflows/prioritize-stars.yml",
+      "name": "Prioritize Starred Repositories",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "priority-router.yml": {
+      "path": ".github/workflows/priority-router.yml",
+      "name": "Priority Router — Issues & PRs",
+      "events": [
+        "pull_request_target:opened,reopened,edited,labeled,unlabeled,ready_for_review,closed",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "use_openrouter"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "project-board-sync.yml": {
+      "path": ".github/workflows/project-board-sync.yml",
+      "name": "Project Board Sync",
+      "events": [
+        "issues:opened,labeled,unlabeled,closed,reopened",
+        "pull_request:opened,labeled,unlabeled,closed,reopened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "proof-of-life.yml": {
+      "path": ".github/workflows/proof-of-life.yml",
+      "name": "Proof of Life — app-review revvel-standards-run",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "assignee",
+        "dry_run",
+        "role",
+        "target_issue"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "proposal-prosecution.yml": {
+      "path": ".github/workflows/proposal-prosecution.yml",
+      "name": "Proposal Prosecution",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "publish-site.yml": {
+      "path": ".github/workflows/publish-site.yml",
+      "name": "Publish site",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dir",
+        "force"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "python-flake8.yml": {
+      "path": ".github/workflows/python-flake8.yml",
+      "name": "Python flake8 Lint",
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ralph-loop.yml": {
+      "path": ".github/workflows/ralph-loop.yml",
+      "name": "Ralph Loop — Self-Healing CI",
+      "events": [
+        "check_suite:completed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "readme-landing.yml": {
+      "path": ".github/workflows/readme-landing.yml",
+      "name": "readme-landing",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "template"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ready-for-review.yml": {
+      "path": ".github/workflows/ready-for-review.yml",
+      "name": "Ready for Review Automation",
+      "events": [
+        "pull_request_target:opened,synchronize,reopened,ready_for_review,closed"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "recovery-engine.yml": {
+      "path": ".github/workflows/recovery-engine.yml",
+      "name": "PR & Issue Recovery Engine",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "max_inspected"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "recurse-ml.yml": {
+      "path": ".github/workflows/recurse-ml.yml",
+      "name": "RecurseML — Autonomous Code Review",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "target_branch"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "release-banner-social.yml": {
+      "path": ".github/workflows/release-banner-social.yml",
+      "name": "release-banner-social",
+      "events": [
+        "release:released",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "tag"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "renovate-config-validator.yml": {
+      "path": ".github/workflows/renovate-config-validator.yml",
+      "name": "Renovate Config Validator",
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "repo-organizer.yml": {
+      "path": ".github/workflows/repo-organizer.yml",
+      "name": "Repo Organizer",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "repo-self-healer.yml": {
+      "path": ".github/workflows/repo-self-healer.yml",
+      "name": "Repo Self-Healer",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "research-engine.yml": {
+      "path": ".github/workflows/research-engine.yml",
+      "name": "Research Engine Orchestrator",
+      "events": [
+        "issues:opened,reopened",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number",
+        "pr_number",
+        "research_depth",
+        "research_query"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_RESEARCH"
+      ],
+      "job_if_false": false
+    },
+    "research-module.yml": {
+      "path": ".github/workflows/research-module.yml",
+      "name": "AI Research Module",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "create_issue",
+        "output_file",
+        "question"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_RESEARCH"
+      ],
+      "job_if_false": false
+    },
+    "reset-self-heal-issue.yml": {
+      "path": ".github/workflows/reset-self-heal-issue.yml",
+      "name": "🔄 Reset Self-Heal Issue",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "revvel-engine-spine.yml": {
+      "path": ".github/workflows/revvel-engine-spine.yml",
+      "name": "🦴 Revvel Engine Spine",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "intake_path",
+        "output_type",
+        "revenue",
+        "slug"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "run-human-testing-api.yml": {
+      "path": ".github/workflows/run-human-testing-api.yml",
+      "name": "Human Testing API",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "app_name",
+        "create_issue",
+        "output_file",
+        "target_url",
+        "test_scenarios"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "runtime-gateway-triage.yml": {
+      "path": ".github/workflows/runtime-gateway-triage.yml",
+      "name": "Runtime Gateway Triage",
+      "events": [
+        "repository_dispatch:sentry,runtime-5xx",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "event_json"
+      ],
+      "repository_dispatch_types": [
+        "runtime-5xx",
+        "sentry"
+      ],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "saml-sso-registration.yml": {
+      "path": ".github/workflows/saml-sso-registration.yml",
+      "name": "SAML SSO Registration Check (disabled)",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": true
+    },
+    "sandbox-guardrail.yml": {
+      "path": ".github/workflows/sandbox-guardrail.yml",
+      "name": "Sandbox Guardrail",
+      "events": [
+        "pull_request:opened,ready_for_review"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "security-fleet.yml": {
+      "path": ".github/workflows/security-fleet.yml",
+      "name": "security-fleet",
+      "events": [
+        "issues:opened,edited",
+        "issue_comment:created,edited",
+        "pull_request:opened,edited,synchronize",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "self-heal-pr.yml": {
+      "path": ".github/workflows/self-heal-pr.yml",
+      "name": "Self-Heal PR",
+      "events": [
+        "workflow_dispatch",
+        "repository_dispatch:self-heal-fix"
+      ],
+      "dispatch_inputs": [
+        "branch_suffix",
+        "fix_description",
+        "fix_type",
+        "issue_number",
+        "patch_content"
+      ],
+      "repository_dispatch_types": [
+        "self-heal-fix"
+      ],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "self-healing.yml": {
+      "path": ".github/workflows/self-healing.yml",
+      "name": "Self-Healing Agent",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "semgrep.yml": {
+      "path": ".github/workflows/semgrep.yml",
+      "name": "Semgrep SAST",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "seo-a11y-guard.yml": {
+      "path": ".github/workflows/seo-a11y-guard.yml",
+      "name": "SEO + A11y Guard",
+      "events": [
+        "pull_request:opened,synchronize,reopened,labeled,unlabeled"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "set-default-project-v2-fields.yml": {
+      "path": ".github/workflows/set-default-project-v2-fields.yml",
+      "name": "Set default Project v2 fields for new issues",
+      "events": [
+        "issues:opened",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ship-quality.yml": {
+      "path": ".github/workflows/ship-quality.yml",
+      "name": "Intelligent Code Quality Scanner",
+      "events": [
+        "pull_request:opened,edited,synchronize,reopened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "ship-status-audit.yml": {
+      "path": ".github/workflows/ship-status-audit.yml",
+      "name": "Ship Status Audit",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ship-to-market.yml": {
+      "path": ".github/workflows/ship-to-market.yml",
+      "name": "🚀 Ship to Market",
+      "events": [
+        "pull_request:closed",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "channel"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "social-media-automation.yml": {
+      "path": ".github/workflows/social-media-automation.yml",
+      "name": "Social Media Automation",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "spec-approval-gate.yml": {
+      "path": ".github/workflows/spec-approval-gate.yml",
+      "name": "Spec Approval Gate",
+      "events": [
+        "issues:labeled"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "stale-branch-cleanup.yml": {
+      "path": ".github/workflows/stale-branch-cleanup.yml",
+      "name": "Stale Branch Cleanup",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "stale-docs-check.yml": {
+      "path": ".github/workflows/stale-docs-check.yml",
+      "name": "Stale Docs Check",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "static.yml": {
+      "path": ".github/workflows/static.yml",
+      "name": "Deploy static content to Pages",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "stuck-check-watchdog.yml": {
+      "path": ".github/workflows/stuck-check-watchdog.yml",
+      "name": "Stuck Check Watchdog",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "stuck-label-automation.yml": {
+      "path": ".github/workflows/stuck-label-automation.yml",
+      "name": "Stuck Label Detection & Auto-Progression",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "stuck-label-watchdog.yml": {
+      "path": ".github/workflows/stuck-label-watchdog.yml",
+      "name": "Stuck Label Watchdog",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "stuck-pr-sweep.yml": {
+      "path": ".github/workflows/stuck-pr-sweep.yml",
+      "name": "Stuck PR Sweeper",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "max_dirty",
+        "max_inspected"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "stuck-wr-detector.yml": {
+      "path": ".github/workflows/stuck-wr-detector.yml",
+      "name": "Stuck WR Detector & Auto-Healer",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "max_age_hours"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "subscription-tracker.yml": {
+      "path": ".github/workflows/subscription-tracker.yml",
+      "name": "Subscription & Trial Tracker",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "warn_within_days"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "super-linter.yml": {
+      "path": ".github/workflows/super-linter.yml",
+      "name": "Super-Linter",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "swe-agent.yml": {
+      "path": ".github/workflows/swe-agent.yml",
+      "name": "SWE-Agent",
+      "events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "sync-labels.yml": {
+      "path": ".github/workflows/sync-labels.yml",
+      "name": "Sync Standard Labels",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "sync-oaudrey-dns.yml": {
+      "path": ".github/workflows/sync-oaudrey-dns.yml",
+      "name": "Sync oAudrey DNS records",
+      "events": [
+        "workflow_dispatch",
+        "workflow_run:completed"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "provider"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "synopsys-action.yml": {
+      "path": ".github/workflows/synopsys-action.yml",
+      "name": "Synopsys Security Testing",
+      "events": [
+        "push",
+        "pull_request"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "template-sync-check.yml": {
+      "path": ".github/workflows/template-sync-check.yml",
+      "name": "Template Sync Check",
+      "events": [
+        "pull_request",
+        "push"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "test-bito-integration.yml": {
+      "path": ".github/workflows/test-bito-integration.yml",
+      "name": "Test BITO AI Integration",
+      "events": [
+        "push",
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "third-party-action-audit.yml": {
+      "path": ".github/workflows/third-party-action-audit.yml",
+      "name": "Third-Party Action Freshness Audit",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "staleness_months"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "triage-cron.yml": {
+      "path": ".github/workflows/triage-cron.yml",
+      "name": "triage-cron",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "trivy.yml": {
+      "path": ".github/workflows/trivy.yml",
+      "name": "Trivy",
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "trusted-bot-auto-approve.yml": {
+      "path": ".github/workflows/trusted-bot-auto-approve.yml",
+      "name": "Trusted Bot Auto-Approve",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ui-audit-logger.yml": {
+      "path": ".github/workflows/ui-audit-logger.yml",
+      "name": "Greenfield UI Agent Audit & Health Logger",
+      "events": [
+        "push",
+        "pull_request"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "ui-creation-engine.yml": {
+      "path": ".github/workflows/ui-creation-engine.yml",
+      "name": "UI Creation Engine",
+      "events": [
+        "issues:labeled",
+        "issue_comment:created",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "business",
+        "industry",
+        "issue_number",
+        "location",
+        "platform",
+        "services"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "update-agent-creator-data.yml": {
+      "path": ".github/workflows/update-agent-creator-data.yml",
+      "name": "Update Agent Creator Data",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_PERSONAS"
+      ],
+      "job_if_false": false
+    },
+    "update-project-dashboard.yml": {
+      "path": ".github/workflows/update-project-dashboard.yml",
+      "name": "Update Project Dashboard",
+      "events": [
+        "workflow_dispatch",
+        "push"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "veins-intake-dedup.yml": {
+      "path": ".github/workflows/veins-intake-dedup.yml",
+      "name": "VEINS Intake Dedup",
+      "events": [
+        "issues:opened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "veins-monitor.yml": {
+      "path": ".github/workflows/veins-monitor.yml",
+      "name": "VEINS Monitor — Vital Engine INtelligence Surveillance",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "dry_run",
+        "max_age_days"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "verify-security-fix.yml": {
+      "path": ".github/workflows/verify-security-fix.yml",
+      "name": "Verify Security Fix",
+      "events": [
+        "pull_request"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "vine-to-marketplace.yml": {
+      "path": ".github/workflows/vine-to-marketplace.yml",
+      "name": "Vine → Marketplace Automation",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "action",
+        "date_before",
+        "date_since"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "watchtower.yml": {
+      "path": ".github/workflows/watchtower.yml",
+      "name": "WR-4600 Watchtower",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "all",
+        "shard"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "website-publish.yml": {
+      "path": ".github/workflows/website-publish.yml",
+      "name": "Website Publish (Hub Registry)",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "weekly-research.yml": {
+      "path": ".github/workflows/weekly-research.yml",
+      "name": "Weekly Research (WR) Automation",
+      "events": [
+        "issues:opened,reopened,labeled",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_RESEARCH"
+      ],
+      "job_if_false": false
+    },
+    "workflow-action-ref-audit.yml": {
+      "path": ".github/workflows/workflow-action-ref-audit.yml",
+      "name": "Workflow Action-Ref Auditor",
+      "events": [
+        "push",
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "workflow-health-dashboard.yml": {
+      "path": ".github/workflows/workflow-health-dashboard.yml",
+      "name": "Workflow Health Dashboard",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "workflow-monitor.yml": {
+      "path": ".github/workflows/workflow-monitor.yml",
+      "name": "Workflow Monitor (Real-Time)",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "workflow_run_id"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "wr-auto-classify.yml": {
+      "path": ".github/workflows/wr-auto-classify.yml",
+      "name": "WR Auto-Classify Project v2 Fields",
+      "events": [
+        "issues:opened"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "wr-autotitle.yml": {
+      "path": ".github/workflows/wr-autotitle.yml",
+      "name": "WR Autotitle",
+      "events": [
+        "issues:opened,edited",
+        "issue_comment:created",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "force",
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "wr-field-filler.yml": {
+      "path": ".github/workflows/wr-field-filler.yml",
+      "name": "WR Field Filler — no blanks ever ship",
+      "events": [
+        "issues:opened,edited,labeled",
+        "workflow_run:completed",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "wr-lint.yml": {
+      "path": ".github/workflows/wr-lint.yml",
+      "name": "WR Lint",
+      "events": [
+        "pull_request",
+        "push"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    },
+    "wr-pr-creation.yml": {
+      "path": ".github/workflows/wr-pr-creation.yml",
+      "name": "WR PR Creation",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "issue_number"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_CODING_AGENTS"
+      ],
+      "job_if_false": false
+    },
+    "wr-rewrite.yml": {
+      "path": ".github/workflows/wr-rewrite.yml",
+      "name": "wr-rewrite-sweep",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "max_docs"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "self-hosted"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_ROUTERS"
+      ],
+      "job_if_false": false
+    },
+    "xai-code-review.yml": {
+      "path": ".github/workflows/xai-code-review.yml",
+      "name": "xAI Code Review",
+      "events": [
+        "pull_request:opened,synchronize,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "xai-review-oleg-fork.yml": {
+      "path": ".github/workflows/xai-review-oleg-fork.yml",
+      "name": "XAI Review (oleg fork)",
+      "events": [
+        "pull_request:opened,synchronize,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [
+        "pull-request-number",
+        "review-command"
+      ],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": true,
+      "lane_switches": [
+        "REVVEL_SWITCH_REVIEW"
+      ],
+      "job_if_false": false
+    },
+    "zizmor.yml": {
+      "path": ".github/workflows/zizmor.yml",
+      "name": "Zizmor (Actions security)",
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "dispatch_inputs": [],
+      "repository_dispatch_types": [],
+      "runners": [
+        "ubuntu-latest"
+      ],
+      "reusable_calls": [],
+      "spend_gate": false,
+      "lane_switches": [],
+      "job_if_false": false
+    }
+  },
+  "calls": [
+    {
+      "kind": "gh workflow run",
+      "source": ".github/workflows/agent-dispatcher.yml",
+      "line": 159,
+      "target": "perplexity-research-agent.yml",
+      "text": "gh workflow run perplexity-research-agent.yml -f issue_number=$ISSUE_NUMBER -f prompt=\"$PROMPT\"",
+      "status": "target found",
+      "target_events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "issue_number",
+        "prompt",
+        "skip_labels"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "gh workflow run",
+      "source": ".github/workflows/agent-dispatcher.yml",
+      "line": 163,
+      "target": "jules-coding-agent.yml",
+      "text": "gh workflow run jules-coding-agent.yml -f issue_number=$ISSUE_NUMBER -f prompt=\"$PROMPT\"",
+      "status": "target found; target has job if:false",
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [],
+      "target_job_if_false": true
+    },
+    {
+      "kind": "gh workflow run",
+      "source": ".github/workflows/agent-dispatcher.yml",
+      "line": 167,
+      "target": "openrouter-coder.yml",
+      "text": "gh workflow run openrouter-coder.yml -f issue_number=$ISSUE_NUMBER -f prompt=\"$PROMPT\"",
+      "status": "target found",
+      "target_events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "issue_number",
+        "prompt"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "gh workflow run",
+      "source": ".github/workflows/agent-dispatcher.yml",
+      "line": 171,
+      "target": "openrouter-triage.yml",
+      "text": "gh workflow run openrouter-triage.yml -f issue_number=$ISSUE_NUMBER -f prompt=\"$PROMPT\"",
+      "status": "target found",
+      "target_events": [
+        "issues:opened,reopened",
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "issue_number",
+        "prompt"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "repository_dispatch",
+      "source": ".github/workflows/agent-request-delivery.yml",
+      "line": 43,
+      "target": "agent_status",
+      "text": "event_type: \"agent_status\",",
+      "listeners": [
+        "agent-command-window.yml"
+      ],
+      "status": "matched"
+    },
+    {
+      "kind": "gh workflow run",
+      "source": ".github/workflows/api-rate-limit-handler.yml",
+      "line": 85,
+      "target": "openrouter-coder.yml",
+      "text": "gh workflow run openrouter-coder.yml \\",
+      "status": "target found",
+      "target_events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "issue_number",
+        "prompt"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "Octokit createWorkflowDispatch",
+      "source": ".github/workflows/auto-deploy-to-stores.yml",
+      "line": 241,
+      "target": "research-engine.yml",
+      "text": "workflow_id: 'research-engine.yml',",
+      "status": "target found",
+      "target_events": [
+        "issues:opened,reopened",
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "issue_number",
+        "pr_number",
+        "research_depth",
+        "research_query"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "Octokit createWorkflowDispatch",
+      "source": ".github/workflows/auto-reset-stuck-issues.yml",
+      "line": 119,
+      "target": "openrouter-assignee.yml",
+      "text": "workflow_id: 'openrouter-assignee.yml',",
+      "status": "target found",
+      "target_events": [
+        "issues:opened,reopened",
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "dry_run",
+        "issue_number"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "Octokit createWorkflowDispatch",
+      "source": ".github/workflows/auto-reset-stuck-issues.yml",
+      "line": 133,
+      "target": "openrouter-triage.yml",
+      "text": "workflow_id: 'openrouter-triage.yml',",
+      "status": "target found",
+      "target_events": [
+        "issues:opened,reopened",
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "issue_number",
+        "prompt"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "gh workflow run",
+      "source": ".github/workflows/conflict-helper.yml",
+      "line": 243,
+      "target": "jules-coding-agent.yml",
+      "text": "gh workflow run jules-coding-agent.yml -f pr_number=\"$PR_NUMBER\" 2>/dev/null \\",
+      "status": "target found; target has job if:false",
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [],
+      "target_job_if_false": true
+    },
+    {
+      "kind": "gh workflow run",
+      "source": ".github/workflows/eeat-trust-cron.yml",
+      "line": 554,
+      "target": "eeat-trust-cron.yml",
+      "text": "echo \"gh workflow run eeat-trust-cron.yml\"",
+      "status": "target found",
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "dry_run"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "repository_dispatch",
+      "source": ".github/workflows/pdf-work-request-router.yml",
+      "line": 320,
+      "target": "pdf_work_request",
+      "text": "event_type: 'pdf_work_request',",
+      "listeners": [],
+      "status": "no static listener"
+    },
+    {
+      "kind": "gh workflow run",
+      "source": ".github/workflows/reset-self-heal-issue.yml",
+      "line": 132,
+      "target": "openrouter-assignee.yml",
+      "text": "if gh workflow run openrouter-assignee.yml \\",
+      "status": "target found",
+      "target_events": [
+        "issues:opened,reopened",
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "dry_run",
+        "issue_number"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "gh workflow run",
+      "source": ".github/workflows/reset-self-heal-issue.yml",
+      "line": 143,
+      "target": "openrouter-triage.yml",
+      "text": "if gh workflow run openrouter-triage.yml \\",
+      "status": "target found",
+      "target_events": [
+        "issues:opened,reopened",
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "issue_number",
+        "prompt"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "Octokit createWorkflowDispatch",
+      "source": ".github/workflows/ship-to-market.yml",
+      "line": 578,
+      "target": "auto-deploy-to-stores.yml",
+      "text": "workflow_id: 'auto-deploy-to-stores.yml',",
+      "status": "target found",
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "android_track",
+        "ios_environment",
+        "issue_number",
+        "platform"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "Octokit createWorkflowDispatch",
+      "source": ".github/workflows/stuck-label-automation.yml",
+      "line": 343,
+      "target": "openrouter-triage.yml",
+      "text": "workflow_id: 'openrouter-triage.yml',",
+      "status": "target found",
+      "target_events": [
+        "issues:opened,reopened",
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "issue_number",
+        "prompt"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "Octokit createWorkflowDispatch",
+      "source": ".github/workflows/stuck-wr-detector.yml",
+      "line": 303,
+      "target": "wr-pr-creation.yml",
+      "text": "workflow_id: 'wr-pr-creation.yml',",
+      "status": "target found",
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "issue_number"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "Octokit createWorkflowDispatch",
+      "source": ".github/workflows/stuck-wr-detector.yml",
+      "line": 320,
+      "target": "wr-pr-creation.yml",
+      "text": "workflow_id: 'wr-pr-creation.yml',",
+      "status": "target found",
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "issue_number"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "gh workflow run",
+      "source": ".github/workflows/veins-monitor.yml",
+      "line": 258,
+      "target": "wr-pr-creation.yml",
+      "text": "`   gh workflow run wr-pr-creation.yml --field issue_number=${issue.number} --repo ${owner}/${repo}`,",
+      "status": "target found",
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "issue_number"
+      ],
+      "target_job_if_false": false
+    },
+    {
+      "kind": "gh workflow run",
+      "source": ".github/workflows/veins-monitor.yml",
+      "line": 311,
+      "target": "openrouter-triage.yml",
+      "text": "`   gh workflow run openrouter-triage.yml --field issue_number=${issue.number} --repo ${owner}/${repo}`,",
+      "status": "target found",
+      "target_events": [
+        "issues:opened,reopened",
+        "pull_request_target:opened,reopened,ready_for_review",
+        "workflow_dispatch"
+      ],
+      "target_dispatch_inputs": [
+        "issue_number",
+        "prompt"
+      ],
+      "target_job_if_false": false
+    }
+  ],
+  "fleet_checks": [
+    {
+      "fleet": "security-fleet",
+      "aliases": [
+        "security",
+        "redteam-fleet"
+      ],
+      "route": "dispatch",
+      "target": "security-fleet.yml",
+      "target_found": true,
+      "target_events": [
+        "issues:opened,edited",
+        "issue_comment:created,edited",
+        "pull_request:opened,edited,synchronize",
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [],
+      "declared_inputs": [],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": false
+    },
+    {
+      "fleet": "biome",
+      "aliases": [
+        "biome-crew",
+        "crew"
+      ],
+      "route": "dispatch",
+      "target": "biome-sentinel.yml",
+      "target_found": true,
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [],
+      "declared_inputs": [],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": false
+    },
+    {
+      "fleet": "biome",
+      "aliases": [
+        "biome-crew",
+        "crew"
+      ],
+      "route": "dispatch",
+      "target": "biome-medic.yml",
+      "target_found": true,
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [],
+      "declared_inputs": [
+        "allow_reruns"
+      ],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": false
+    },
+    {
+      "fleet": "biome",
+      "aliases": [
+        "biome-crew",
+        "crew"
+      ],
+      "route": "dispatch",
+      "target": "biome-homeostat.yml",
+      "target_found": true,
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [],
+      "declared_inputs": [],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": false
+    },
+    {
+      "fleet": "biome",
+      "aliases": [
+        "biome-crew",
+        "crew"
+      ],
+      "route": "dispatch",
+      "target": "biome-sheaf.yml",
+      "target_found": true,
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [],
+      "declared_inputs": [],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": false
+    },
+    {
+      "fleet": "biome",
+      "aliases": [
+        "biome-crew",
+        "crew"
+      ],
+      "route": "dispatch",
+      "target": "biome-inspector.yml",
+      "target_found": true,
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [],
+      "declared_inputs": [],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": false
+    },
+    {
+      "fleet": "dragnet-team",
+      "aliases": [
+        "dragnet-fleet"
+      ],
+      "route": "dispatch",
+      "target": "deep-search-research.yml",
+      "target_found": true,
+      "target_events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [
+        "issue_number",
+        "profile",
+        "research_query"
+      ],
+      "declared_inputs": [
+        "issue_number",
+        "profile",
+        "research_query"
+      ],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": true
+    },
+    {
+      "fleet": "research",
+      "aliases": [
+        "rnd",
+        "rnd-research",
+        "research-fleet"
+      ],
+      "route": "dispatch",
+      "target": "research-engine.yml",
+      "target_found": true,
+      "target_events": [
+        "issues:opened,reopened",
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [
+        "issue_number",
+        "research_depth",
+        "research_query"
+      ],
+      "declared_inputs": [
+        "issue_number",
+        "pr_number",
+        "research_depth",
+        "research_query"
+      ],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": true
+    },
+    {
+      "fleet": "bernstein",
+      "aliases": [
+        "octopus-orchestra",
+        "claude-octopus"
+      ],
+      "route": "dispatch",
+      "target": "bernstein-orchestrator.yml",
+      "target_found": true,
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [
+        "budget",
+        "task"
+      ],
+      "declared_inputs": [
+        "budget",
+        "cli",
+        "plan",
+        "task"
+      ],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": true
+    },
+    {
+      "fleet": "octopus",
+      "aliases": [
+        "octo-review"
+      ],
+      "route": "dispatch",
+      "target": "octopus-review-fallback.yml",
+      "target_found": true,
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [
+        "pr_number"
+      ],
+      "declared_inputs": [
+        "pr_number"
+      ],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": true
+    },
+    {
+      "fleet": "coding-agents",
+      "aliases": [
+        "openhands",
+        "swe",
+        "coder-fleet"
+      ],
+      "route": "dispatch",
+      "target": "openhands-resolver.yml",
+      "target_found": true,
+      "target_events": [
+        "issues:labeled",
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [
+        "issue_number"
+      ],
+      "declared_inputs": [
+        "issue_number"
+      ],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": true
+    },
+    {
+      "fleet": "fleet-controller",
+      "aliases": [
+        "fleet-ops",
+        "controller"
+      ],
+      "route": "dispatch",
+      "target": "fleet-controller.yml",
+      "target_found": true,
+      "target_events": [
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [
+        "preempt"
+      ],
+      "declared_inputs": [
+        "preempt"
+      ],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": false
+    },
+    {
+      "fleet": "agent-creator-refresh",
+      "aliases": [
+        "agentic-workflow-fleet",
+        "workflow-fleet"
+      ],
+      "route": "dispatch",
+      "target": "update-agent-creator-data.yml",
+      "target_found": true,
+      "target_events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "supplied_inputs": [],
+      "declared_inputs": [],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": true
+    },
+    {
+      "fleet": "personas",
+      "aliases": [
+        "oaudrey",
+        "openrouter",
+        "mindmappr",
+        "professor",
+        "dragnet",
+        "coder",
+        "orbit",
+        "octo",
+        "mender"
+      ],
+      "route": "persona",
+      "target": "persona-comment-trigger.yml",
+      "target_found": true,
+      "target_events": [
+        "issue_comment:created"
+      ],
+      "supplied_inputs": [],
+      "declared_inputs": [],
+      "undeclared_supplied_inputs": [],
+      "missing_required_inputs": [],
+      "cloud": true
+    }
+  ]
+}

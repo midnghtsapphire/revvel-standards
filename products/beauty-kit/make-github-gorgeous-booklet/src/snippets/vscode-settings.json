@@ -1,0 +1,13 @@
+{
+  "workbench.colorTheme": "Default Dark Modern",
+  "workbench.iconTheme": "vs-seti",
+  "window.autoDetectColorScheme": true,
+  "workbench.preferredDarkColorTheme": "Default Dark Modern",
+  "workbench.preferredLightColorTheme": "Default Light Modern",
+  "editor.fontFamily": "'Cascadia Code', 'Fira Code', monospace",
+  "editor.fontLigatures": true,
+  "workbench.colorCustomizations": {
+    "statusBar.background": "#D81B60",
+    "statusBar.foreground": "#FFF4E0"
+  }
+}

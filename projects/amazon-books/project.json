@@ -1,0 +1,13 @@
+{
+  "slug": "amazon-books",
+  "title": "Amazon Books",
+  "domain_strategy": "path",
+  "own_domain": null,
+  "hub_path": "/amazon-books/",
+  "hub_url": "https://oaudrey.com/amazon-books/",
+  "redirect_from": [],
+  "repo": "midnghtsapphire/amazon-books",
+  "status": "building",
+  "description": "KDP book catalog hub.",
+  "added": "2026-11-10"
+}

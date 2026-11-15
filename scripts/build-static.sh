@@ -1,45 +1,39 @@
 #!/usr/bin/env bash
-# Assemble a static-site output directory for Vercel.
-#
-# Copies only the intended static assets from the repo root into public/, so the
-# repository's source, workflows, and config files are NOT published to the web.
-# Kept as a script (not an inline vercel.json buildCommand) because Vercel caps
-# buildCommand at 256 characters.
-set -euo pipefail
+# Build the whole revvel-standards site in one pass.
+# Sources:
+#   docs/<slug>/      -> /docs/<slug>/        (your slug pages - copied as-is)
+#   projects/<slug>/  -> project registry entries (cards on the hub index)
+#   projects/<slug>/docs/ -> ALSO copied to /projects/<slug>/ (if present)
+# Output: public/  (Vercel outputDirectory)
+set -e
+cd "$(dirname "$0")/.."
+OUT=public
+rm -rf "$OUT"
+mkdir -p "$OUT"
 
-rm -rf public
-mkdir -p public
+echo "[*] Copying docs/ -> public/docs/"
+cp -r docs "$OUT/docs" 2>/dev/null || true
 
-# Top-level static files.
-find . -maxdepth 1 -type f \( \
-  -name '*.html' -o -name '*.css' -o -name '*.js' -o -name '*.mjs' \
-  -o -name '*.cjs' -o -name '*.svg' -o -name '*.png' -o -name '*.jpg' \
-  -o -name '*.jpeg' -o -name '*.gif' -o -name '*.webp' -o -name '*.ico' \
-  -o -name '*.txt' -o -name '*.xml' -o -name '*.webmanifest' \
-\) -exec cp {} public/ \;
-
-# Common static asset directories, if present.
-for dir in assets static css js img images fonts; do
-  if [ -d "$dir" ]; then
-    cp -R "$dir" public/
-  fi
-done
-
-# Publish the docs site so each app is reachable at /docs/<app>/ (its generated
-# index.html test page). Markdown is copied alongside for direct linking.
-#
-# Exclude Next.js apps under docs/ (e.g. marketplace-relister) — those deploy as
-# their own Vercel project, not as static files on the hub.
-if [ -d docs ]; then
-  mkdir -p public/docs
-  # Portable copy excluding the family Next app source tree
-  if command -v rsync >/dev/null 2>&1; then
-    rsync -a --exclude 'marketplace-relister' docs/ public/docs/
-  else
-    # Fallback without rsync (Git Bash / busy CI): copy then remove excluded tree
-    cp -R docs/. public/docs/
-    rm -rf public/docs/marketplace-relister
-  fi
+echo "[*] Copying projects/*/docs -> public/projects/<slug>/"
+mkdir -p "$OUT/projects"
+if [ -d projects ]; then
+  for d in projects/*/; do
+    slug=$(basename "$d")
+    [ "$slug" = "_self" ] && continue
+    if [ -d "$d/docs" ]; then
+      mkdir -p "$OUT/projects/$slug"
+      cp -r "$d/docs/." "$OUT/projects/$slug/" 2>/dev/null || true
+    fi
+    # always carry the project.json so the site can read registry data
+    [ -f "$d/project.json" ] && cp "$d/project.json" "$OUT/projects/$slug/" 2>/dev/null || true
+  done
 fi
 
-echo "Static site assembled in public/"
+echo "[*] Regenerating hub-registry.json"
+node scripts/build-hub-registry.js || echo "[!] registry build skipped (node missing?)"
+
+echo "[*] Generating site index"
+node scripts/build-site-index.js
+
+# root convenience: / -> hub index (already at public/index.html via script)
+echo "[+] Build complete: $(find "$OUT" -type f | wc -l) files in $OUT/"

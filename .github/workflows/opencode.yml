@@ -1,0 +1,110 @@
+# OPENCODE AGENT — runs the OpenCode coding agent inside GitHub Actions.
+# Docs: standards/OPENCODE_AGENT.md (read before editing).
+#
+# Three triggers, all inside GitHub — no local machine involved:
+#   1. Comment /opencode or /oc on any issue or PR (owner/collaborator only)
+#   2. Label `opencode` added to an issue -> implements the WR with fleet conventions
+#   3. Actions tab -> Run workflow with a free prompt
+#
+# Auth: use_github_token: true -> runs on the workflow's GITHUB_TOKEN, so the
+# opencode-agent GitHub App install is OPTIONAL. PRs/comments appear from
+# github-actions[bot].
+# Secrets: OPENROUTER_API_KEY (already on this repo — the fleet key).
+name: opencode
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "Task for OpenCode (works from the repo, no issue context)"
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  # 1) Comment commands: /opencode ... or /oc ...
+  #    Association guard: public repo, so only owner/member/collaborator
+  #    comments can spend the OpenRouter fleet key.
+  opencode-comment:
+    if: >-
+      (github.event_name == 'issue_comment' || github.event_name == 'pull_request_review_comment') &&
+      (contains(github.event.comment.body, '/opencode') || contains(github.event.comment.body, '/oc')) &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Run OpenCode
+        uses: anomalyco/opencode/github@latest
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: openrouter/deepseek/deepseek-chat-v3-0324
+          use_github_token: true
+          share: false
+
+  # 2) Label trigger: label `opencode` on an issue implements the WR.
+  opencode-label:
+    if: github.event_name == 'issues' && github.event.label.name == 'opencode'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Run OpenCode
+        uses: anomalyco/opencode/github@latest
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: openrouter/deepseek/deepseek-chat-v3-0324
+          use_github_token: true
+          share: false
+          prompt: |
+            Implement this Work Request (issue #${{ github.event.issue.number }}: "${{ github.event.issue.title }}").
+
+            Fleet conventions (binding):
+            - Branch: opencode/wr-${{ github.event.issue.number }}-<slug>; one PR whose body contains "Closes #${{ github.event.issue.number }}".
+            - Append-only files (LEDGER.md, CHANGELOG.md, wr/memory/decisions.jsonl): append, never rewrite.
+            - New behavior ships with tests where the repo has a test suite.
+            - No secrets in git. Endpoints and URLs are fine; tokens are not.
+            - If acceptance criteria are ambiguous, comment on the issue and stop. Do not guess.
+            - Do not merge your own PR.
+
+            WR body:
+            ${{ github.event.issue.body }}
+
+  # 3) Manual trigger with a free prompt.
+  opencode-manual:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Run OpenCode
+        uses: anomalyco/opencode/github@latest
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: openrouter/deepseek/deepseek-chat-v3-0324
+          use_github_token: true
+          share: false
+          prompt: ${{ inputs.prompt }}

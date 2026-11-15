@@ -1,0 +1,584 @@
+{
+  "scope": "standards directory only; archived corpus semantic reading remains incomplete",
+  "count": 96,
+  "source_commit": "b12e6025d8bd9cf8d70bd8227aa13e4e89d48661",
+  "date": "2026-11-10",
+  "files": [
+    {
+      "path": "standards/AGENT_BOARD_STANDARD.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "fb1fec4e64ec95939f4a7d359c4046e1cf48b2a599a5aea747af4df8303259b3"
+    },
+    {
+      "path": "standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "214014981c34c98ce05173b32c515b7923e025d67e8730d99a189ea46381cdf2"
+    },
+    {
+      "path": "standards/AGENT_SCAFFOLDING_BAN.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "a3161810c404bff36160425a7258a42e4531896b68d3f75b10ca137227d8f9a6"
+    },
+    {
+      "path": "standards/AGENT_STACK_SETUP.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "75c19758371c125f1df4ef055d0d9dab34df71a932f4ee2f3f34f2a7f30e52c8"
+    },
+    {
+      "path": "standards/AGENTS_STAR_OPTIMIZER.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "8f9f92338b2db705923425153601904b6d5f83f8642203dd738c3c24e92993ef"
+    },
+    {
+      "path": "standards/AI_TAX_INTEGRATION.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "39a47f1ba71e1fd3c8beb0eddd6ecd05b5bf210e06b48eea9285a0f06a90f8bb"
+    },
+    {
+      "path": "standards/AMPLITUDE_INTEGRATION_STANDARD.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "7e0b071cbed25b715a69c34d740e4a1b95c25dd44ee154d15913cc65e69049a5"
+    },
+    {
+      "path": "standards/AMPLITUDE_NOTION_AGENT_STANDARD.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "6df0b8da1adf9035e2bf2a2c6e2afd35140313fa9bb9f96827364d5aaa0b5933"
+    },
+    {
+      "path": "standards/API_GATEWAY.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "d02d60ed1039147f624dbc797fdb01b7314e8571a7d29bd1032664b92d599538"
+    },
+    {
+      "path": "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "fb45f1408c78b8461e85e07a0b9d7ab947639c41a838803833b93935f49fe0f5"
+    },
+    {
+      "path": "standards/audit-trail-check.yml",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "04ac754d7b8f96e57a9b90a111170730b077d068ef756d67fc04637f78ffb3ee"
+    },
+    {
+      "path": "standards/AUTO_BOOTSTRAP_STANDARD.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "62af4c89c213aaa2da39da832812fe30f3f68cf619455e61ee91c12b266b442c"
+    },
+    {
+      "path": "standards/AUTOMATED_PRODUCT_PIPELINE.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "e96645ae7e5554f4966cae17746f3cc2888647270012fcdc2b68cca524a2dd16"
+    },
+    {
+      "path": "standards/AUTOMATION_FIRST_STACK.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "d7dbc0ed4f1df7d972b0f9302c06d76192f3c48a469029d2bba4a3247df7adf4"
+    },
+    {
+      "path": "standards/BADGES_AND_STATUS.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "0ec9797a12349b40f05723f98769a224ee808d1ed677a2fe34ea752ee0ac6fd2"
+    },
+    {
+      "path": "standards/BITO_AI_INTEGRATION_STANDARD.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "d19d139c3627eb8528a7467ac87a088d3fefa3198dafa255491a08f3f2193a22"
+    },
+    {
+      "path": "standards/BNAT_SHEAF_STANDARD.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "462a61423b253e486e2ea8a78e3d075f0f70c2d1f69cddadcdd60c2217a914e7"
+    },
+    {
+      "path": "standards/BUSINESS_AUDIT_SYSTEM.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "d16a63806594be2d3acef991d4697c6bc595e579fd470af2977dd212e98cbd0c"
+    },
+    {
+      "path": "standards/CIRCLECI_INTEGRATION_STANDARD.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "e5a8fcf1779548260cb20c7e8786e91ffa3ecb8f8a7939e637040c4e8328d6d0"
+    },
+    {
+      "path": "standards/CLI_MCP_AUTOMATION.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "210b83f5a01264dcd2cc3f2edf96de922c1644d70febc50f0a5f1d4d1a21c10f"
+    },
+    {
+      "path": "standards/CODE_COMMENTING_STANDARD.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "105fce907fac71796c0546b462e38c1aff71c5e0a8c27ab6ab9b5e7c697d17fd"
+    },
+    {
+      "path": "standards/COMMENT-DONT-DELETE.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "b351c04fbd731f40cbe3be910f45f68e262d4f7e6f711c00ca9dc32f3261c81e"
+    },
+    {
+      "path": "standards/CONTENT_AUTOMATION_STANDARD.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "8507a3a36194c44e54a6680d1ca0705350e104120ea0008e66ccf22797b43207"
+    },
+    {
+      "path": "standards/CONTROLLER_CHARTER.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "4e5cd1018b1570bb71812253013c4e615f64bd410447cd74a8284776f8fbe4f2"
+    },
+    {
+      "path": "standards/CREDENTIAL_AUDIT_SYSTEM.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "bf86831916a7e6a3944c3462fee0045067754426b04fa6b13a571e3fc4e4a6e8"
+    },
+    {
+      "path": "standards/CRON_REQUIREMENTS.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "2613c4dc72a6aa3a76b02d6ba9442f8339644fe9db982866da32c7bc9e065cb9"
+    },
+    {
+      "path": "standards/CRON_SYSTEM.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "90e7466868df180713544634d03d965c1911b662231659232fb613c8b00ca182"
+    },
+    {
+      "path": "standards/DECISION_SCORING_ENGINE_STANDARD.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "ca16fe26f26f9dd756b64b7cc79e15ebcb596f065661a7745c10b86bd99c32f7"
+    },
+    {
+      "path": "standards/DELIVERY_MATRIX.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "a896baac8698929ed45eb2fb432d5fce61cbaf5e456c0fc15fe495bc233b38a8"
+    },
+    {
+      "path": "standards/DOCKER.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "6698fdb69f06141b03d1040d9dfd90c9e3ecf5243e36752b34e2543526aca2f3"
+    },
+    {
+      "path": "standards/DRAGNET_FRAMEWORK.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "1bfd9d4a37024f40a3c8fb6126ec318575b8ac28ff20300b8f1383c75f6a3104"
+    },
+    {
+      "path": "standards/DROPLET_SSH_ACCESS.md",
+      "reader": "codex-revenue",
+      "status": "semantic-read-confirmed",
+      "sha256": "b797847d1c1a7c24cd9956a175ae2db2b1679abe221a8c31906d28ca000b065f"
+    },
+    {
+      "path": "standards/ERROR_REPORTING_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "cb91c97ee960ba09b7af0c2801084cde3212e42983a14a7f36401cdf644f4eea"
+    },
+    {
+      "path": "standards/FORMAL_VERIFY_AUTO_WR.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "02316e1880d88b9d29ea6250b6b5c1fefe0f90b08ea979d358ebfcb845d17d30"
+    },
+    {
+      "path": "standards/GATEKEEPER.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "72590633d861575f8bdfdbabe5d12ce4f7fe3111681dd4c36cef38179b7106bb"
+    },
+    {
+      "path": "standards/GENZ_INT_OSINT.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "39ba8def35dc82e708f6b268279aa153ed96cd83f1e94788b3888ae4781e0ab1"
+    },
+    {
+      "path": "standards/GITHUB_AUTH_TOKEN_MATRIX.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "598357cc19c1e9206d0e9da4472747863c9d235ae59c45ba5a65200b75696c37"
+    },
+    {
+      "path": "standards/GITHUB_MODELS_AND_ADVANCED.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "5fae3de016a2c35d00be8b857253587f03d82458fd8eab341bd78dac37427dc1"
+    },
+    {
+      "path": "standards/GITHUB_PROJECT_FIELDS.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "bea5aef22b9a55550043706985607c419b6d7a8c237e8320b9265165c4074c77"
+    },
+    {
+      "path": "standards/GOAP_SWARM_RULES.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "b8522aa715d63f037cbf2961032aca3589b4ef89b5cfa3a3e4f594421aaf739d"
+    },
+    {
+      "path": "standards/GREEN_MAIN_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "67f7ade2a1a6ef7cfb9993d91c74bf7aae88de248b51d7bdb8a520e137d5ac42"
+    },
+    {
+      "path": "standards/GREEN_WEBSITE_REPORTING_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "9e3af67307dae8698513492dfce0b5558e5cfc3082cb17d42de357a781e8b6e3"
+    },
+    {
+      "path": "standards/IMAGE_CREATION_SEO_AUTOMATION.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "8aeae756047d22a7024f6d0385427b9da95bd1978c0f59593dfba156220bd2c4"
+    },
+    {
+      "path": "standards/INDIRECT_PROMPT_INJECTION_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "a8c9cbc6412856c3d8b2daa55acc3b8a1b20d27d98f5ab5f5219a4993efec342"
+    },
+    {
+      "path": "standards/INTEGRATION_MEASUREMENT_TEMPLATE.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "0b4d049a1bab36931ce0679bd09f059d0f108b2edfc9378ea82a74e44e0b1cce"
+    },
+    {
+      "path": "standards/INTEGRATIONS.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "3b752135fae2ef4c91845bdb3e0dbbcefcc4eabd1ff42d70d318df3d8f78b3c0"
+    },
+    {
+      "path": "standards/LEDGER_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "a4fbd20f3f2a4431e34947553c4d562cbc867aeb4c799ffcc9447782e3aed91a"
+    },
+    {
+      "path": "standards/LOVABLE_INTEGRATION_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "54535500bae38b43a8ea8034e42f3cedcb7757fe35cbbd7f9752577c43e6b223"
+    },
+    {
+      "path": "standards/MALAMA_SELF_HEALING_AGENT_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "d073157126c8c7b70f92e667233f3fbe0202da7f04d8c7d5e14173bc237fee41"
+    },
+    {
+      "path": "standards/MEASUREMENT_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "d5e6f50cc87ffd2ed8cace1cac527b5dce7dac386cd4b829ebcc675466212cd9"
+    },
+    {
+      "path": "standards/MOBILE_TESTING.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "be9ff924a26543c17c690b7cf349928f3067fd2e2e636776bdcd56957b31e2b5"
+    },
+    {
+      "path": "standards/MONITORING.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "911a3ff57302858d95a75ac5b4dd53f175eab68b618a8d1f5cea278282af4eea"
+    },
+    {
+      "path": "standards/MULTI_ENTITY_TAX_OPTIMIZATION.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "2cf480c13abf019e351355728f578df379880979f7bca688fb24c0377796f188"
+    },
+    {
+      "path": "standards/MVI_CONTRACT_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "cd4535310eacc2555b145db68de7f5f525e6e8bd545cca334d0a9494917ac9cd"
+    },
+    {
+      "path": "standards/NOIMOSAI_INTEGRATION_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "d91621482e88eaaab39a72d1a50e960cbdf5cd8e9aeb17cc19b2254d48dd5716"
+    },
+    {
+      "path": "standards/NOTION_INTEGRATION_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "4fbde5477cdd69832e2e7e987dc83073896fe3d1be509024f31437eeadf6c37e"
+    },
+    {
+      "path": "standards/OAUDREY_DEPLOYMENT_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "852410a4a05dc418c579d3c743b774adef7b521223e362c1b90e134361f23c7e"
+    },
+    {
+      "path": "standards/OPERATIONAL_CONTROL_DOCUMENTATION_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "0741dceef0d1edfe8e8df3c13bcf42425f69600348140441a01348dd0703c7b2"
+    },
+    {
+      "path": "standards/PEDAL_TO_THE_METAL_ENTERPRISE.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "a1a74f9ad1f85193ec434deb4f18e2f4712cc556d0449241a3d75246924e1e5b"
+    },
+    {
+      "path": "standards/PRESERVE_GOALS_AND_HISTORY.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "7c0d99cb000af8dfdb36f7eb2f266f2ac3f80c9e4307dadcaa503a9bf7d8a4cf"
+    },
+    {
+      "path": "standards/PRICING.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "af2a9e0f4894f6b0ee81d0251975ec96dba7bce3b3f0605cf0d61d90a398e105"
+    },
+    {
+      "path": "standards/PROACTIVE_PREFLIGHT.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "4b045908c3f4dce1447e28507b4160241ba8dd1ad6a354b71842a7965fa15a41"
+    },
+    {
+      "path": "standards/PRODUCT_INCUBATION_STANDARD.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "f62362c347144d28452439af1851cb6fe7223907b6d0d2bd12fa7c91ac2dd452"
+    },
+    {
+      "path": "standards/PROJECT_MANAGEMENT.md",
+      "reader": "codex-intelligence",
+      "status": "semantic-read-confirmed",
+      "sha256": "647a0bf11fc6db988941be4f2866d2cc4140518cb5e2133b44a8788cdded3ffa"
+    },
+    {
+      "path": "standards/PUTER_PERPLEXITY_INTEGRATION_STANDARD.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "9ddf411788969908bfcb8a7d53a4670ccb832d69f32d8d059c007bb836f64c25"
+    },
+    {
+      "path": "standards/README_LANDING_AUTOMATION.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "e19305d65341ce75cffdc90dcc4c126cbc217b9ebbafb619555a4c025f21b768"
+    },
+    {
+      "path": "standards/REVENUECAT.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "e669327a1a650f6fa17408b6658609a4bdfb709ab20fd9f8776309c478cc104e"
+    },
+    {
+      "path": "standards/REVVEL_CODE_REVIEW_FLEET.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "3b67c31494f27e510cab67014e8a251aaf226b81293bdda55fc1d6a28ac13c14"
+    },
+    {
+      "path": "standards/SAAS_PRODUCTS.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "f3b775097550e9e29b54123d02a7d1718c6fea7c2f596c1d0b69a2ded9addef1"
+    },
+    {
+      "path": "standards/SEARCH_AND_SOURCING.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "449e0a59e8af41b3169d9c26d973b2cf7f755304868885d546e683c7fe8e6832"
+    },
+    {
+      "path": "standards/SECURITY.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "3796e7440a8b39bdb81683f0629457f383fcdd4cce2d4c89b4960d0114eaf1fe"
+    },
+    {
+      "path": "standards/SELF_HEALING_STANDARDS.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "c204e794bbbaa99249903b1d9459445bb1d7a47d4a791ff81c35a119dda35972"
+    },
+    {
+      "path": "standards/shapes/API.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "2481089a52ed62a5ac55cad9e6cb5bbe8c3cfa33b21a1b9d19b9888042eb222e"
+    },
+    {
+      "path": "standards/shapes/APP.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "b49e9e97457629e5d7c3f6a5f278e30dc9e62887f1f856fe88049358a892926f"
+    },
+    {
+      "path": "standards/shapes/CLI.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "b97a3868ef8feabf3604b6bc460790060af2a2c616aa1b36d3e92f9e79f23200"
+    },
+    {
+      "path": "standards/shapes/EXCEL.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "88996a58a4fa6dc4f0ce9bf022ed7ad94f3f61f4b9a154f9b703cbdf6c6fe0e2"
+    },
+    {
+      "path": "standards/shapes/MCP.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "7be00cccc9b0349a85377b93e608d02e4acd007ce259490c150158da2df1bfec"
+    },
+    {
+      "path": "standards/shapes/PDF.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "de1b9a78dd35b4966cea3847dd109ab8fc44d0f34a68e5f7236042670502f734"
+    },
+    {
+      "path": "standards/shapes/README.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "5522033bdf17a4126febd57c48832d73517762ce0ef8b15db0644e55e990e132"
+    },
+    {
+      "path": "standards/shapes/SKILL.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "c64df6ef2d1079536c2a5d562257e4c0e5aeac1412d970663531ec1973045f6a"
+    },
+    {
+      "path": "standards/shapes/TOKEN.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "35ed647eebfa381b7f93bc8ef3dc96da1b4d1d514db7136833d319d5afdfc744"
+    },
+    {
+      "path": "standards/SUGGESTION_HANDLING_STANDARD.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "d2bcecd2a198586d2d62a7bf76f62e699f6140f562f0b70381a4f8d86f029330"
+    },
+    {
+      "path": "standards/SYSTEM_STATE_STANDARD.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "fdbccff0d05f907d64ffe2f8b2cd9f62babaa96fe615a4f93e1709bf5b4ba755"
+    },
+    {
+      "path": "standards/TESTING.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "aa85e30c68e1caf46f524e53657458cdc884143b508d046eadd89854c4449a66"
+    },
+    {
+      "path": "standards/VERIFY_THE_POSTCONDITION.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "6e2a594ac60d51f6331f8c48be6d956783680db426922b8c639e5a59c9ad2495"
+    },
+    {
+      "path": "standards/WR-4471-lint-autofix-loop.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "e291122087f1fc6ce6a8176e92eeba8b90969deb2d2221ba05be6713e5bb6f94"
+    },
+    {
+      "path": "standards/WR-4472-ci-gate-self-heal.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "7d9dd0d02248154442c960b124b88b548db7b29437e449169b08a6fe9f56e341"
+    },
+    {
+      "path": "standards/WR-4473-precommit-enforcement.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "674f1e90f08b693fde398a52dacdc6ccd9d8ac81ed5820799f54813c6a16b8e2"
+    },
+    {
+      "path": "standards/WR-4474-runtime-gateway-triage.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "4757e4d02311dcf4a9bd7fbd6cd997706f8b7011104ce5063b2cf2ee50a563cc"
+    },
+    {
+      "path": "standards/WR-4481-lane-failover.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "cf142496f0b65f020458fa55980d412dd007d89d5121143b9f3f6d744c57b443"
+    },
+    {
+      "path": "standards/WR-4482-evidence-first-directive.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "f1f864e83aed3aaaea3ea6072fa2523e537e1d825efdce808ba9805ce1781e1c"
+    },
+    {
+      "path": "standards/WR-4483-ensemble-ahp-engine.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "8738bb8a4324c329f83ba05df14ce68b4e1dd4af76cf26b1c6acbf645684c942"
+    },
+    {
+      "path": "standards/WR-4484-bnat-invention-loop.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "a47e66d6484f4f8f745fc9878a2ddca29338f46d84df71f611bd66d43a769703"
+    },
+    {
+      "path": "standards/WR-4485-underdog-register.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "74c3056f7f41cdc7d371f999ebd9ae2b5028503012f41d309075727d698ac65b"
+    },
+    {
+      "path": "standards/WR-4486-judge-gated-rewrite-sweep.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "f13023ea651bac7db9e8365dadef1c0f09d62306a7a90f743715e8e47f12aaa2"
+    },
+    {
+      "path": "standards/ZERO_HUMAN_FRAMEWORK.md",
+      "reader": "codex-demos-sales-compliance",
+      "status": "semantic-read-confirmed",
+      "sha256": "b4d1dcb3dfb79a58c1304cf35448b815f53af91c9f22a717a4032ee3173bf1d2"
+    }
+  ]
+}

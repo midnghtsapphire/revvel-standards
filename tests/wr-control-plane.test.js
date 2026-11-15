@@ -30,6 +30,7 @@
 const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { pythonBinOrThrow } = require('../scripts/lib/python-bin.js');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SERVER_DIR = path.join(REPO_ROOT, 'mcp-servers', 'wr-control-plane');
@@ -78,7 +79,7 @@ function runPython(snippet) {
     OBOT_ALLOWED_HOSTS: '',
     WR_DEFAULT_REPO: 'midnghtsapphire/revvel-standards',
   };
-  const r = spawnSync('python3', ['-c', snippet], { encoding: 'utf8', env });
+  const r = spawnSync(pythonBinOrThrow(), ['-c', snippet], { encoding: 'utf8', env });
   if (r.status !== 0) {
     throw new Error(
       `python exit ${r.status}\nSTDERR: ${r.stderr}\nSTDOUT: ${r.stdout}`
@@ -108,7 +109,7 @@ test('server source files exist', () => {
 });
 
 test('server.py compiles cleanly with python3', () => {
-  const r = spawnSync('python3', ['-m', 'compileall', '-q', SERVER_DIR], {
+  const r = spawnSync(pythonBinOrThrow(), ['-m', 'compileall', '-q', SERVER_DIR], {
     encoding: 'utf8',
   });
   if (r.status !== 0) {
@@ -278,7 +279,7 @@ test('research_mode = firecrawl-agent when URLs + only Firecrawl key', () => {
     "'); from wr_control_plane.server import _control_plane_readiness, IssueSignalSet;" +
     "sigs = IssueSignalSet(urls=['https://example.com'], pdf_urls=[], comments_count=0, has_research_findings=False, requested_integrations=[]);" +
     "print(json.dumps(_control_plane_readiness(sigs)['research_mode']))";
-  const r = spawnSync('python3', ['-c', snippet], { encoding: 'utf8', env });
+  const r = spawnSync(pythonBinOrThrow(), ['-c', snippet], { encoding: 'utf8', env });
   if (r.status !== 0) throw new Error(r.stderr);
   assertEq(JSON.parse(r.stdout.trim()), 'firecrawl-agent', 'firecrawl-agent mode');
 });
@@ -299,7 +300,7 @@ test('research_mode = tavily-search when URLs + only Tavily key', () => {
     "'); from wr_control_plane.server import _control_plane_readiness, IssueSignalSet;" +
     "sigs = IssueSignalSet(urls=['https://example.com'], pdf_urls=[], comments_count=0, has_research_findings=False, requested_integrations=[]);" +
     "print(json.dumps(_control_plane_readiness(sigs)['research_mode']))";
-  const r = spawnSync('python3', ['-c', snippet], { encoding: 'utf8', env });
+  const r = spawnSync(pythonBinOrThrow(), ['-c', snippet], { encoding: 'utf8', env });
   if (r.status !== 0) throw new Error(r.stderr);
   assertEq(JSON.parse(r.stdout.trim()), 'tavily-search', 'tavily-search mode');
 });
@@ -320,7 +321,7 @@ test('research_mode = jules-plus-firecrawl-and-tavily when URLs + both keys', ()
     "'); from wr_control_plane.server import _control_plane_readiness, IssueSignalSet;" +
     "sigs = IssueSignalSet(urls=['https://example.com'], pdf_urls=[], comments_count=0, has_research_findings=False, requested_integrations=[]);" +
     "print(json.dumps(_control_plane_readiness(sigs)['research_mode']))";
-  const r = spawnSync('python3', ['-c', snippet], { encoding: 'utf8', env });
+  const r = spawnSync(pythonBinOrThrow(), ['-c', snippet], { encoding: 'utf8', env });
   if (r.status !== 0) throw new Error(r.stderr);
   assertEq(JSON.parse(r.stdout.trim()), 'jules-plus-firecrawl-and-tavily', 'both-tools mode');
 });
@@ -341,7 +342,7 @@ test('research_mode = jules-plus-firecrawl-pdf when PDF URLs + Firecrawl key', (
     "'); from wr_control_plane.server import _control_plane_readiness, IssueSignalSet;" +
     "sigs = IssueSignalSet(urls=['https://example.com/spec.pdf'], pdf_urls=['https://example.com/spec.pdf'], comments_count=0, has_research_findings=False, requested_integrations=[]);" +
     "print(json.dumps(_control_plane_readiness(sigs)['research_mode']))";
-  const r = spawnSync('python3', ['-c', snippet], { encoding: 'utf8', env });
+  const r = spawnSync(pythonBinOrThrow(), ['-c', snippet], { encoding: 'utf8', env });
   if (r.status !== 0) throw new Error(r.stderr);
   assertEq(JSON.parse(r.stdout.trim()), 'jules-plus-firecrawl-pdf', 'pdf mode wins');
 });
@@ -447,7 +448,7 @@ test('render_control_plane_mcp_entry uses template path for template profile', (
 
 test('render_control_plane_mcp_entry rejects unknown profiles', () => {
   const r = spawnSync(
-    'python3',
+    pythonBinOrThrow(),
     [
       '-c',
       "import sys; sys.path.insert(0, r'" +

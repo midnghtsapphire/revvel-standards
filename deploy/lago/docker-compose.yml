@@ -1,0 +1,27 @@
+version: "3.8"
+# Lago open-source billing — free self-hosted tier. WR #18333.
+services:
+  api:
+    image: getlago/api:latest
+    ports: ["3000:3000"]
+    env_file: .env          # LAGO_API_URL, DATABASE_URL, REDIS_URL, SECRET_KEY_BASE
+    depends_on: [db, redis]
+  worker:
+    image: getlago/api:latest
+    command: bundle exec sidekiq
+    env_file: .env
+    depends_on: [api]
+  front:
+    image: getlago/front:latest
+    ports: ["8080:80"]
+    environment:
+      LAGO_API_URL: http://api:3000
+    depends_on: [api]
+  db:
+    image: postgres:16-alpine
+    volumes: [pgdata:/var/lib/postgresql/data]
+    environment: { POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme} }
+  redis:
+    image: redis:7-alpine
+volumes:
+  pgdata:

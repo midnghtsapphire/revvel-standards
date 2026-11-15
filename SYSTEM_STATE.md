@@ -1,5 +1,50 @@
 # SYSTEM STATE — revvel-standards
 
+## Latest operational observation — 2026-11-10 19:12 UTC
+
+Owned local prosecution is now installed and observed running: the separate
+`GIT-FLEET local checks` Windows task polls every 15 minutes, runs on source
+changes or once per America/Denver day, and returned LastTaskResult=0 at
+12:09:14 and 12:10:11 MST. Its final HULL/prosecutor source run passed 78 tests
+with zero findings and provider calls. Exact operator snapshots and receipts
+are in GIT-FLEET PR #2, schedules/local/installed-20261110/.
+
+Required CircleCI lint-and-test job 23006 passed on implementation commit
+58a2d527183882c428e2255d56588e71bd4d26a0. GitGuardian passed; the existing
+owner-authored scaffolding job skipped without requesting a hosted runner.
+No gate or billing workaround was weakened. PR #18348 tracks this implementation.
+The four product releases remain staged in Railway; payment, production and
+the original remaining acceptance criteria are still unverified. Earlier
+observations below are preserved as the sequence of findings.
+
+## Verified shipping continuation — 2026-11-10
+
+This dated observation supersedes older optimistic production labels below;
+the historical rows remain visible. Codex shipping owns this delivery work.
+Another Codex chat owns Cloudflare Tunnel and the direct Proofy setup.
+
+- Merged: revenue/static delivery and CI repairs in PR #18347, HULL local
+  execution in oaudrey PR #13. Merged does not mean live or paid checkout.
+- Railway lucky-light production: existing service sleeping; four reviewed
+  releases remain in staged patch f7d1ef3b-8a4b-4a8e-8665-5375c86116e3.
+  Automatic approval review rejected apply despite Audrey's explicit approval.
+  No alternate apply was attempted, no domains or running new services verified.
+- Canonical owned-host key ~/.ssh/agent-access and injected SSH_PRIVATE_KEY are
+  absent locally; prior growlingeyes key rejected. Credential presence in a
+  GitHub secret-name list is not proof of locally usable credentials.
+- Billing continuation: signed Lago receiver, durable SQLite inbox and current
+  provider reconciliation have offline/HTTP tests. No public paid checkout,
+  entitlements, live invoice, webhook ingress or customer revenue verified.
+- Optional lifecycle now calls the existing policy-bound HULL executor and
+  persists receipts/review state in SQLite. It is opt-in, not a migrated
+  production fleet or an untrusted-code sandbox.
+- Daily/event prosecution is being bound to the existing GIT-FLEET local tick.
+  Its local-only mode avoids model, GitHub and Airtable setup. Registration
+  and final integrated receipts must be observed before calling it running.
+- Remaining original acceptance is tracked in
+  wr/summaries/owned-shipping-continuation-2026-11-10.md. Original issues stay
+  open until their live, benchmark, assessment or customer criteria are proven.
+
 > **Read this first at the start of every agent session.**
 > **Update this last at the end of every agent session.**
 > See `standards/SYSTEM_STATE_STANDARD.md` for full rules.
@@ -12,10 +57,12 @@
 |---|---|---|
 | CI/CD | ✅ | GitHub Actions workflows in `.github/workflows/` |
 | oAudrey App Platform app | ⏳ | **Pending human action:** Set `DIGITALOCEAN_TOKEN` GitHub secret → trigger `deploy-oaudrey.yml` |
-| oAudrey DNS (`oaudrey.com`) | ⏳ | **Pending human action:** Log into Namecheap (`uprisinghope`) → oaudrey.com → Nameservers → Custom DNS → `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com` |
-| oAudrey DNS (`fieldwork.oaudrey.com`) | ⏳ | **Pending human action:** Same NS change as above + add CNAME in DigitalOcean Networking → Domains |
+| oAudrey DNS (`oaudrey.com`) | ⏳ | **Pending human action:** DNS is on Cloudflare. Add the App Platform records in the Cloudflare zone for `oaudrey.com` and `www.oaudrey.com`. Do not move the zone to DigitalOcean nameservers. |
+| oAudrey DNS (`fieldwork.oaudrey.com`) | ⏳ | **Pending human action:** Same Cloudflare zone. Add the `fieldwork` record there. |
 | Database | ❌ | Not applicable (standards repo — no DB) |
 | SSL | ⏳ | Auto-provisioned by DigitalOcean Let's Encrypt once DNS resolves and app is deployed |
+
+<!-- 2026-11-11 MarketShipper: the oAudrey DNS rows above previously told a person to set Namecheap custom DNS to DigitalOcean nameservers. Audrey said DNS for her domains is on Cloudflare. The pre-change cells are in git history. -->
 
 **Status key:** ✅ Working | ⚠️ Working but degraded | ❌ Not applicable / not needed | ⏳ Pending human action (infrastructure blocker — see `docs/AGENTS.md` Infrastructure Blocker Protocol)
 

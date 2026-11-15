@@ -45,3 +45,56 @@ jobs:
           repository: ${{ github.repository }}
           pr-number: ${{ github.event.pull_request.number }}
 ```
+
+## Owned local execution — 2026-11-10
+
+The earlier Action example remains historical. The owned path invokes the same
+prosecutor detectors without GitHub execution, Apps, an API token or a model:
+
+```sh
+node products/merge-prosecutor/action/run-prosecutor.mjs --local --policy /absolute/operator-policy.json --packet /absolute/local-packet.json
+```
+
+Omit `--packet` to read the JSON packet from stdin through the existing HULL
+SkillRouter. Its manifest is `skills/merge-prosecutor/SKILL.md`; HULL's separate
+operator policy binds the manifest digest and exact CLI argv. A packet contains
+`head` (revision identity), `diff` (nonempty unified diff with file/hunk headers)
+and optional `comments`. Packet fields cannot select commands or paths.
+
+The prosecution policy is operator-controlled, separate from event data:
+
+```json
+{
+  "version": 1,
+  "workspace": "/absolute/checkout",
+  "receipts": "/absolute/local-receipts",
+  "checks": [{
+    "name": "prosecutor-regressions",
+    "argv": ["/absolute/node", "--test", "products/merge-prosecutor/tests/prosecutor.test.js"],
+    "cwd": ".",
+    "timeout_ms": 60000
+  }]
+}
+```
+
+Use native absolute paths on Windows and Node plus npm-cli.js for npm commands.
+Checks run without a shell, with an OS-only environment, bounded timeouts and
+process-tree cleanup. They run trusted checkout code with operator permissions;
+this is not an OS sandbox. Each result has an exclusive JSON receipt, measured
+check exit codes/output hashes and capped local diagnostic logs (1 MiB per
+check). Raw output stays in the local log, outside JSON stdout.
+
+Conflict/duplicate findings and actual failing checks return exit 1. Reviewer
+snippets remain advisory. Missing diff, no configured checks, malformed policy
+and overlap fail closed. Stable `repair-requests` JSON names deduplicate recurring
+findings across heads; receipts remain per execution. The exclusive lock records
+its owner and is retained under the run ID when released. A crashed process can
+leave a lock: inspect its PID and owner before manually recovering it.
+
+This CLI does not install a schedule, deploy, merge, close issues or contact any
+provider. Daily/event invocation belongs to the existing owned scheduler after
+operator command review. Run the product and local adapter regression tests with:
+
+```sh
+node --test products/merge-prosecutor/tests/prosecutor.test.js products/merge-prosecutor/tests/local-prosecution.test.js
+```

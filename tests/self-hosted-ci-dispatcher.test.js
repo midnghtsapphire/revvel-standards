@@ -176,7 +176,20 @@ test('materializeEnvSecrets moves SHCI_* secrets into mode-600 files and out of 
   d.materializeEnvSecrets(env, dir);
   assert.equal(env.SHCI_GITHUB_TOKEN, undefined);
   assert.equal(fs.readFileSync(env.GITHUB_TOKEN_FILE, 'utf8'), 'ghp_x\n');
-  assert.equal(fs.statSync(env.GITHUB_TOKEN_FILE).mode & 0o777, 0o600);
+  // POSIX mode bits are not settable on Windows: Node reports 0o666 for any
+  // writable file, so this assertion read 438 !== 384 there and the failure
+  // vanished into the suite's baseline red, where a control that CANNOT hold
+  // looks identical to one that broke (RVS-VERIFY-001). The dispatcher asks for
+  // the right mode (ops/self-hosted-ci/dispatcher.js:75, { mode: 0o600 }) and
+  // ships to Linux (ops/self-hosted-ci/README.md:40), where the assertion is
+  // real and unchanged. Run as a subtest so the report says "skipped" with the
+  // reason on win32 instead of saying nothing at all.
+  t.test('the materialized token file is mode 0600', {
+    skip: process.platform === 'win32'
+      && 'POSIX mode bits are not settable on Windows; see dispatcher.js:75',
+  }, () => {
+    assert.equal(fs.statSync(env.GITHUB_TOKEN_FILE).mode & 0o777, 0o600);
+  });
   assert.equal(fs.readFileSync(env.SECRETS_FILE, 'utf8'), 'A=1\nB=2\n');
   assert.equal(env.ADMIN_TOKEN_FILE, '/keep', 'an explicit *_FILE wins');
   assert.equal(env.SHCI_ADMIN_TOKEN, 'adm');

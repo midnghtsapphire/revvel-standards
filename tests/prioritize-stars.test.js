@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
+const { pythonBinOrThrow } = require('../scripts/lib/python-bin.js');
 
 const ROOT = path.join(__dirname, '..');
 const SCRIPT = path.join(ROOT, 'scripts', 'prioritize_stars.py');
@@ -54,7 +55,7 @@ test('workflow points at scripts/prioritize_stars.py and uses concurrency lock',
 });
 
 test('python prioritizer self-test passes offline', () => {
-  const result = spawnSync('python3', [SCRIPT, '--self-test'], {
+  const result = spawnSync(pythonBinOrThrow(), [SCRIPT, '--self-test'], {
     cwd: ROOT,
     encoding: 'utf8',
   });
@@ -67,7 +68,7 @@ test('python prioritizer fixture mode writes markdown and json', () => {
   const md = path.join(tmp, 'PRIORITIZED_STARS.md');
   const jsonOut = path.join(tmp, 'prioritized_stars.json');
   const result = spawnSync(
-    'python3',
+    pythonBinOrThrow(),
     [SCRIPT, '--fixture', '--output-md', md, '--output-json', jsonOut],
     { cwd: ROOT, encoding: 'utf8' },
   );

@@ -1,0 +1,25 @@
+# 2026-11-10 Codex WR #18330-18332: retired configuration retained in place.
+# Active independent deployment: templates/cicd/deploy-static.mjs (no GitHub or external base image).
+# name: screen-recorder-finder
+# services:
+#   - name: web
+#     github:
+#       repo: midnghtsapphire/revvel-standards
+#       branch: main
+#       deploy_on_push: true
+#     source_dir: /
+#     dockerfile_path: products/screen-recorder-finder/Dockerfile
+#     http_port: 8080
+#     instance_count: 1
+#     instance_size_slug: apps-s-1vcpu-0.5gb
+#     health_check:
+#       http_path: /health
+#       initial_delay_seconds: 10
+#       period_seconds: 30
+#       timeout_seconds: 5
+#       failure_threshold: 3
+# alerts:
+#   - rule: DEPLOYMENT_FAILED
+#   - rule: DOMAIN_FAILED
+#
+#

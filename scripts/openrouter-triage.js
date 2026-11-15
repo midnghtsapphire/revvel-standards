@@ -5,6 +5,7 @@ const https = require("https");
 const { assertCloudAllowed } = require("./llm-spend-gate");
 const fs = require("fs");
 const path = require("path");
+const { pythonBinOrThrow } = require('./lib/python-bin.js');
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
@@ -505,7 +506,7 @@ async function callPerplexityNoKey(systemPrompt, userPrompt) {
     // No shell: pass the script path and prompt as argv so prompt content
     // cannot be interpreted by a shell (no quoting/escaping required).
     // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); scriptPath is a fixed constant; prompt passed as argv
-    const result = execFileSync("python3", [scriptPath, combinedPrompt], {
+    const result = execFileSync(pythonBinOrThrow(), [scriptPath, combinedPrompt], {
       maxBuffer: 10 * 1024 * 1024,
       timeout: 120000,
     }).toString().trim();

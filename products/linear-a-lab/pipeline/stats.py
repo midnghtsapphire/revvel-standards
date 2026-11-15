@@ -70,9 +70,11 @@ class KuroResult:
     computed: float          # sum of entry numerals above it
     entries: int             # how many numeral-bearing entry lines
     damaged: bool            # any damage markers among the entries
+
     @property
     def discrepancy(self) -> float:
         return round(self.computed - self.declared, 6)
+
     @property
     def ok(self) -> bool:
         return abs(self.discrepancy) < 1e-9

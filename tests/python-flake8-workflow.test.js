@@ -202,7 +202,10 @@ test('baseline gate fails closed when it cannot run (does NOT report success)', 
       + `stop to debt enforcement.\nstdout:${res.stdout}\nstderr:${res.stderr}`
   );
   // And it must say which of the two problems it hit, since the fixes differ.
-  assert.match(res.stderr, /python3 is not available/);
+  // #18287 renamed the no-interpreter message when interpreter resolution moved
+  // to scripts/lib/python-bin.js ("run it, don't look it up"); the contract is
+  // that the message names the problem, not the old wording.
+  assert.match(res.stderr, /No working Python interpreter found/);
   assert.match(res.stderr, /fails closed by design/);
 });
 

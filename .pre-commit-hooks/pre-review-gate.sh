@@ -68,10 +68,25 @@ if [ "${#existing[@]}" -eq 0 ]; then
 fi
 
 fail=0
-have_python=1
-command -v python3 >/dev/null 2>&1 || have_python=0
+
+# Resolve the interpreter by RUNNING it, not by looking it up. On Windows with
+# Python installed through the py launcher, python3 and python sit on PATH as
+# Microsoft Store stubs: command -v finds them, and every invocation then exits
+# 9009 having run nothing. The old guard here was `command -v python3`, so this
+# gate reported Python as present and then failed on every use of it.
+# Mirrors scripts/lib/python-bin.js, which does the same for the JS callers.
+PYBIN=""
+have_python=0
+for candidate in ${PYTHON:-} python3 python py; do
+  [ -n "$candidate" ] || continue
+  if "$candidate" -c "" >/dev/null 2>&1; then
+    PYBIN="$candidate"
+    have_python=1
+    break
+  fi
+done
 if [ "$have_python" -eq 0 ]; then
-  echo "pre-review: WARNING python3 not found — YAML/JSON validation and markdown auto-fix skipped"
+  echo "pre-review: WARNING no working Python found (tried python3, python, py) — YAML/JSON validation and markdown auto-fix skipped"
 fi
 
 # ---------------------------------------------------------------------------
@@ -80,7 +95,7 @@ fi
 if [ "${#md[@]}" -gt 0 ]; then
   echo "pre-review: markdown — ${#md[@]} file(s)"
   if [ "$have_python" -eq 1 ]; then
-    python3 - "${md[@]}" <<'PY'
+    "$PYBIN" -X utf8 - "${md[@]}" <<'PY'
 import re
 import sys
 
@@ -106,8 +121,16 @@ def rewrite_outside_code(line):
     return "".join(rebuilt)
 
 def fix(path):
-    with open(path, encoding="utf-8") as fh:
-        text = fh.read()
+    # newline="" at both ends, so Python performs no line-ending translation.
+    # Without it the write turns every LF into CRLF on Windows, and this gate
+    # silently rewrote the line endings of every staged markdown file it
+    # touched -- a whole-file diff on each commit, from a gate whose job is to
+    # make small fixes. The file's own dominant ending is detected and restored
+    # instead, so the gate is a no-op on endings it did not come to change.
+    with open(path, encoding="utf-8", newline="") as fh:
+        raw = fh.read()
+    eol = "\r\n" if "\r\n" in raw else "\n"
+    text = raw.replace("\r\n", "\n")
     out = []
     in_fence = False
     prev_blank = False
@@ -128,8 +151,8 @@ def fix(path):
         out.append(rewrite_outside_code(line))
     fixed = "\n".join(out)
     if fixed != text:
-        with open(path, "w", encoding="utf-8") as fh:
-            fh.write(fixed)
+        with open(path, "w", encoding="utf-8", newline="") as fh:
+            fh.write(fixed.replace("\n", eol))
         print(f"pre-review: auto-fixed {path}")
 
 for p in sys.argv[1:]:
@@ -178,7 +201,7 @@ fi
 # ---------------------------------------------------------------------------
 if [ "${#yamlf[@]}" -gt 0 ] && [ "$have_python" -eq 1 ]; then
   echo "pre-review: yaml — ${#yamlf[@]} file(s)"
-  if ! python3 - "${yamlf[@]}" <<'PY'; then
+  if ! "$PYBIN" -X utf8 - "${yamlf[@]}" <<'PY'; then
 import sys
 
 try:
@@ -188,7 +211,8 @@ except ImportError:
     # Fail closed with an actionable fix instead of a silent pass.
     print(
         "pre-review: PyYAML is required to validate staged YAML but is not "
-        "installed. Install it (`python3 -m pip install pyyaml`) or unstage the "
+        "installed. Install it (`python3 -m pip install pyyaml`, or "
+        "`py -m pip install pyyaml` on Windows) or unstage the "
         "YAML change. Refusing to pass unvalidated YAML.",
         file=sys.stderr,
     )
@@ -237,7 +261,7 @@ fi
 if [ "${#jsonf[@]}" -gt 0 ] && [ "$have_python" -eq 1 ]; then
   echo "pre-review: json — ${#jsonf[@]} file(s)"
   for f in "${jsonf[@]}"; do
-    if python3 -m json.tool "$f" >/dev/null 2>&1; then
+    if "$PYBIN" -X utf8 -m json.tool "$f" >/dev/null 2>&1; then
       echo "pre-review: ✅ $f: valid JSON"
     else
       echo "pre-review: ❌ $f: invalid JSON"

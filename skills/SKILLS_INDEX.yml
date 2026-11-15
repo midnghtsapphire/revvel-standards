@@ -21,6 +21,20 @@ mandatory_session_end:
 
 skills:
 
+  - name: merge-prosecutor
+    title: "Local Merge Prosecutor"
+    version: "1.0.0"
+    path: "skills/merge-prosecutor/"
+    skill_file: "skills/merge-prosecutor/SKILL.md"
+    category: "Testing & Quality"
+    access: all
+    persona: verifier
+    triggers:
+      - "merge prosecution"
+      - "local prosecution"
+      - "merge-prosecutor"
+      - "owned daily and event checks"
+
   - name: bnatsheaf
     title: "BNAT Knowledge Sheaf — Mathematical Sheaf Consistency (H1 ~ 0)"
     version: "1.0.0"

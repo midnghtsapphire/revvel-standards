@@ -1,6 +1,10 @@
+/* 2026-11-10 Codex, WR #18330: retained v3 directives; v4 uses an import.
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+*/
+@import "tailwindcss";
+@config "../tailwind.config.ts";
 
 :root {
   --background: #ffffff;

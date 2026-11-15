@@ -1,0 +1,13 @@
+# DigitalOcean action-gateway for Codex.
+# WRs #18288 (Claude) and #18290 (Codex) name this same public endpoint.
+# The url is the endpoint id already published on those issues. It is not a
+# credential. Do not add a bearer token, env var, or Authorization header here.
+# Claude's copy is the action-gateway entry in .mcp.json (type = http).
+# Operator commands (run on the machine that signs in to DigitalOcean, not in CI).
+# `codex mcp add` stores the url. It does not start OAuth. The login command does:
+#   codex mcp add action-gateway --url "https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"
+#   codex mcp login action-gateway
+# Docs: docs/MCP_REVVEL_CATALOG.md (DigitalOcean action-gateway).
+
+[mcp_servers.action-gateway]
+url = "https://actions.do-ai.run/mcp/endpoint/158ed24e-cf7e-4f82-b37b-74abd1c5691a"

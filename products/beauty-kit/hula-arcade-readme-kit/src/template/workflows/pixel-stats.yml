@@ -1,0 +1,23 @@
+name: Pixel stats
+# Generates stats-light.svg and stats-dark.svg with scripts/pixel_stats.py (standard library only)
+# and publishes them to the `output` branch. Free on public repos. Needs no secrets: it uses the built-in GITHUB_TOKEN.
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: publish-output
+  cancel-in-progress: false
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Generate SVGs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/pixel_stats.py --user "${{ github.repository_owner }}" --out dist
+      - name: Publish to output branch
+        run: bash scripts/publish-output.sh dist

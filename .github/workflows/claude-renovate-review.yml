@@ -31,7 +31,7 @@ jobs:
         # openrouter.ai URL appears in this file. Runs only when the repository
         # variable REVVEL_LLM_ALLOW_CLOUD is "1". See docs/LOCAL_LLM_SETUP.md.
         if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
-        uses: koki-develop/claude-renovate-review@v1.3.1
+        uses: koki-develop/claude-renovate-review@v1.3.2
         id: review
         with:
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}

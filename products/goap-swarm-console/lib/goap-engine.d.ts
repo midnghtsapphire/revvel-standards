@@ -178,4 +178,7 @@ export function listScenarios(): Array<{
   description: string;
   world: WorldState;
   goalId: string;
-};
+// 2026-11-10 Codex, WR #18334: the original `};` omitted the Array
+// closing bracket and prevented every production build. Preserve it here:
+// };
+}>;

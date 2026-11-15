@@ -11,6 +11,7 @@
 
 const { test } = require("node:test");
 const assert = require("node:assert");
+const { pythonBinOrThrow } = require('../scripts/lib/python-bin.js');
 
 const {
   CANONICAL_WR_FIELDS,
@@ -139,8 +140,9 @@ test("enrichWorkRequest: LLM failure falls back to original body", async () => {
 
 test("preprocessWorkRequest: end-to-end with injected OCR + LLM", async () => {
   const runner = (cmd, args) => {
-    // Verify the OCR service is invoked correctly: python3 <script> --input <url>.
-    assert.strictEqual(cmd, "python3");
+    // Verify the OCR service is invoked correctly: <python> <script> --input <url>.
+    // The interpreter is resolved by running it, so this is 'py' on Windows.
+    assert.strictEqual(cmd, pythonBinOrThrow());
     assert.ok(args.includes("--input"), "OCR runner should pass --input");
     assert.strictEqual(args[args.length - 1], "https://github.com/user-attachments/assets/z");
     return "text inside the image";

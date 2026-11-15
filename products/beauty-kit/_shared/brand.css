@@ -1,0 +1,26 @@
+/* Hula Arcade document style. Palette: navy #1B1F4B, ink #14163A, yellow #FFD23F, teal #19C3B1, hibiscus #D81B60, cream #FFF4E0, lavender #B8A1FF.
+   All text pairs >= 4.5:1 (ink on cream 15.98, deep hibiscus #B5124F on cream 6.09, cream on ink 15.98, yellow on ink 12.06). */
+@page { size: Letter; margin: 0.75in 0.8in 0.8in 0.8in; background: #FFF4E0; }
+* { box-sizing: border-box; }
+html { background: #FFF4E0; }
+body { font-family: 'Nunito', 'Trebuchet MS', sans-serif; font-size: 11pt; line-height: 1.5; color: #14163A; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+h1, h2, h3, h4 { font-family: 'Pixelify Sans', 'Courier New', monospace; color: #1B1F4B; line-height: 1.2; }
+h1 { font-size: 26pt; margin: 0 0 8pt; border-bottom: 5px solid #FFD23F; padding-bottom: 6pt; }
+h2 { font-size: 17pt; color: #B5124F; margin: 18pt 0 6pt; }
+h3 { font-size: 13pt; color: #1B1F4B; margin: 14pt 0 4pt; }
+p { margin: 0 0 8pt; }
+a { color: #0A5C8A; }
+code { font-family: 'JetBrains Mono', 'Cascadia Code', monospace; font-size: 9pt; background: #F6E6C8; padding: 1pt 3pt; border-radius: 3pt; color: #14163A; }
+pre { background: #14163A; color: #FFF4E0; border-radius: 6pt; border-left: 6px solid #19C3B1; padding: 8pt 10pt; font-size: 8.4pt; line-height: 1.4; white-space: pre-wrap; word-break: break-word; page-break-inside: avoid; margin: 6pt 0 10pt; }
+pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+table { border-collapse: collapse; width: 100%; margin: 6pt 0 12pt; font-size: 9.6pt; page-break-inside: avoid; }
+th { background: #1B1F4B; color: #FFF4E0; text-align: left; padding: 4pt 6pt; }
+td { border-bottom: 1px solid #D6BE92; padding: 4pt 6pt; vertical-align: top; }
+blockquote { margin: 8pt 0; padding: 6pt 10pt; background: #FFFFFF; border-left: 6px solid #D81B60; border-radius: 0 6pt 6pt 0; }
+blockquote p { margin: 0; }
+hr { border: 0; border-top: 4px dotted #D81B60; margin: 14pt 0; }
+li { margin-bottom: 3pt; }
+img { max-width: 100%; }
+.cover { height: 9.2in; background: #14163A; color: #FFF4E0; margin: -0.75in -0.8in 0 -0.8in; padding: 0.9in 0.8in; page-break-after: always; position: relative; overflow: hidden; }
+.cover h1 { color: #FFD23F; border: 0; font-size: 34pt; }
+.cover p { color: #FFF4E0; font-size: 14pt; }
