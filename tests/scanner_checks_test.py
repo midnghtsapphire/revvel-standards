@@ -147,6 +147,46 @@ class ScannerTests(unittest.TestCase):
         scan.candidate_files(self.candidate)
         self.assertFalse(marker.exists())
 
+    def test_symlink_is_scanned_as_blob_never_followed(self):
+        (self.candidate / "link").symlink_to("/etc/shadow")
+        (self.candidate / ".git").write_text("gitdir: /private")
+        snapshot = self.root / "snapshot"
+        snapshot.mkdir()
+        self.assertEqual(scan.candidate_files(self.candidate, snapshot), 2)
+        self.assertEqual((snapshot / "link").read_text(), "/etc/shadow")
+        self.assertFalse((snapshot / "link").is_symlink())
+        self.assertFalse((snapshot / ".git").exists())
+
+    def test_lfs_and_submodule_transport_gaps_fail(self):
+        (self.candidate / "pointer").write_text("version https://git-lfs.github.com/spec/v1\noid sha256:abc\n")
+        with self.assertRaises(scan.ScanError):
+            scan.candidate_files(self.candidate)
+        other = self.root / "other"
+        other.mkdir()
+        (other / ".gitmodules").write_text("[submodule \"test\"]\n")
+        with self.assertRaises(scan.ScanError):
+            scan.candidate_files(other)
+
+    def test_arm64_pins_are_official_and_distinct(self):
+        data = json.loads(installer.MANIFEST.read_text())
+        for engine in ("trivy", "clamav"):
+            arm = data[engine]["arm64"]
+            installer.validate_pin(engine, arm, arm64=True)
+            self.assertNotEqual(data[engine]["sha256"], arm["sha256"])
+
+    def test_trivy_flags_cannot_enable_candidate_ignores(self):
+        work = self.root / "work"
+        work.mkdir()
+        def inspect(command, cwd, env, timeout=900):
+            self.assertIn("--ignore-unfixed=false", command)
+            self.assertIn("vuln,misconfig,secret", command)
+            policy = Path(command[command.index("--ignore-policy") + 1]).read_text()
+            self.assertIn("default ignore := false", policy)
+            self.assertIn("package trivy", policy)
+            raise scan.ScanError("test-stop-after-validation")
+        with patch.object(scan, "execute", side_effect=inspect), self.assertRaises(scan.ScanError):
+            scan.trivy_scan({"binary": "/trusted/trivy"}, self.candidate, work)
+
     def test_isolated_python_entrypoint_works(self):
         result = subprocess.run([sys.executable, "-I", str(ROOT / "scripts/security/scan.py"), "--help"], capture_output=True)
         self.assertEqual(result.returncode, 0)

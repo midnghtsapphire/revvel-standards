@@ -39,6 +39,9 @@
     "blocking_severities": ["HIGH", "CRITICAL"],
     "maximum_daily_database_age_hours": 48,
     "maximum_bytecode_database_age_days": 365,
+    "bytecode_policy_note": "2026-11-15: legacy age setting retained; signature-only lane does not download or execute bytecode",
+    "required_definitions": ["main", "daily"],
+    "bytecode_enabled": false,
     "maximum_trivy_database_age_hours": 48
   }
 }
