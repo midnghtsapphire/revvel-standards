@@ -229,6 +229,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Unit tests for this gate
+          command: node --test tests/api-code-review.test.js
+      - run:
           name: API code review of the PR diff (non-blocking)
           no_output_timeout: 12m
           command: node scripts/security-gates/api-code-review.js
