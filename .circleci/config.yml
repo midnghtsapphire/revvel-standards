@@ -101,6 +101,26 @@ jobs:
           # js-yaml pinned so this gate is reproducible (no floating npx fetch).
           command: npx --yes js-yaml@4.1.0 skills/SKILLS_INDEX.yml > /dev/null && echo "SKILLS_INDEX.yml ok"
 
+  # Security gate 3 (docs/security-gates/PLAN.md): block added text that is aimed
+  # at an AI agent (override-instructions phrases, invisible unicode, base64 that
+  # decodes to an instruction, chat-template tokens). Deterministic, node
+  # built-ins, no secret. `--llm` adds a second pass through OpenRouter ONLY when
+  # REVVEL_LLM_ALLOW_CLOUD=1 and OPENROUTER_API_KEY are set in the CircleCI
+  # project env; otherwise it prints that it skipped. Added by Proofy.
+  prompt-injection-scan:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Unit tests for this gate
+          command: node --test tests/prompt-injection-scan.test.js
+      - run:
+          name: Prompt-injection scan of added text
+          command: node scripts/security-gates/prompt-injection-scan.js --llm
+      - store_artifacts:
+          path: /tmp/security-gates
+          destination: security-gates
+
   # VEINS monitoring snapshot — answers the three standing questions about the
   # external V.E.I.N.S. self-healing engine: what is it changing, how frequently,
   # and are the proposals doing anything? Runs on every push; never fails the
@@ -629,6 +649,10 @@ workflows:
             branches:
               ignore: main
       - validate-registries:
+          filters:
+            branches:
+              ignore: main
+      - prompt-injection-scan:
           filters:
             branches:
               ignore: main
