@@ -14,8 +14,10 @@ from urllib.parse import unquote, urlsplit
 _CACHE: dict[str, tuple[dict[str, str], dict[str, set[str]]]] = {}
 # Initial two-document set retained for history (2026-11-10 review):
 # MANDATORY = ("AGENTS.md", "START_HERE_CALL_CHAIN.md")
-# MASTER establishes precedence and VISITING_AGENTS supplies the guest contract;
-# neither may fall out merely because lexical query overlap is low.
+# AGENTS.md is the rulebook (full text). MASTER.md and VISITING_AGENTS.md are
+# pointer stubs that still must be present so the guest-contract name and the
+# call-chain precedence file cannot fall out of context. Neither may fall out
+# merely because lexical query overlap is low.
 MANDATORY = ("AGENTS.md", "START_HERE_CALL_CHAIN.md", "MASTER.md", "VISITING_AGENTS.md")
 
 

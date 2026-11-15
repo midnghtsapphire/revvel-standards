@@ -16,6 +16,7 @@ class GraphTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "standards").mkdir()
+            # AGENTS.md is the rulebook; VISITING_AGENTS.md and MASTER.md may be stubs.
             (root / "AGENTS.md").write_text("Owner instructions", encoding="utf-8")
             (root / "START_HERE_CALL_CHAIN.md").write_text("Pipeline", encoding="utf-8")
             (root / "MASTER.md").write_text("Precedence", encoding="utf-8")

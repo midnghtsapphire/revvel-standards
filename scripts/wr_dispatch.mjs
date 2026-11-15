@@ -17,6 +17,12 @@
  *   Idempotent: if the issue already has a "Dispatched" comment from this bot, it exits.
  */
 
+import { createRequire } from "node:module";
+
+// Spend gate (#17850): the OpenRouter plan draft below bills, so it only runs
+// when REVVEL_LLM_ALLOW_CLOUD is exactly "1" (scripts/llm-spend-gate.js).
+const { cloudAllowed } = createRequire(import.meta.url)("./llm-spend-gate.js");
+
 const {
   GH_TOKEN, MANUS_API_KEY, OPENROUTER_API_KEY,
   ISSUE_NUMBER, FORCED_ROUTE, REPO,
@@ -105,7 +111,9 @@ async function main() {
 
   // route === "roo"
   let plan = "(OpenRouter key not set — write the task plan by hand below.)";
-  if (OPENROUTER_API_KEY) {
+  if (OPENROUTER_API_KEY && !cloudAllowed()) {
+    plan = "(Cloud LLM spend gate closed — REVVEL_LLM_ALLOW_CLOUD is not \"1\". Write the task plan by hand below.)";
+  } else if (OPENROUTER_API_KEY) {
     const r = await fetch(`${OPENROUTER}/chat/completions`, {
       method: "POST",
       headers: {
