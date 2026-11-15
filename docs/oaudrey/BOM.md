@@ -18,7 +18,7 @@ This BOM lists every credential, API, service, and tool the BOM team needs to im
 
 | Item | Provider | Cost | Purpose | Secret Name | Status |
 |---|---|---|---|---|---|
-| DigitalOcean API Token | DigitalOcean | $0 (included) | `doctl` authentication for App Platform deploy | `DIGITALOCEAN_API_TOKEN` | ❌ Not provisioned |
+| DigitalOcean API Token | DigitalOcean | $0 (included) | `doctl` authentication for App Platform deploy | `DIGITALOCEAN_TOKEN` | ❌ Not provisioned |
 | Doppler Service Token | Doppler | $0 (free tier) | Inject secrets into GitHub Actions | `DOPPLER_TOKEN` | ❌ Not provisioned |
 | `oaudrey.com` domain | Namecheap | ~$15/yr | Apex domain for the hub | — | ❌ Verify active |
 
@@ -28,8 +28,8 @@ This BOM lists every credential, API, service, and tool the BOM team needs to im
 2. Go to **API** → **Personal Access Tokens** → **Generate New Token**
 3. Name: `revvel-standards-deploy`; Scopes: **Read + Write**
 4. Copy token immediately (shown once)
-5. Add to GitHub: `gh secret set DIGITALOCEAN_API_TOKEN --repo midnghtsapphire/revvel-standards`
-6. Add to Doppler: `doppler secrets set DIGITALOCEAN_API_TOKEN --value "YOUR_TOKEN"`
+5. Add to GitHub: `gh secret set DIGITALOCEAN_TOKEN --repo midnghtsapphire/revvel-standards`
+6. Add to Doppler: `doppler secrets set DIGITALOCEAN_TOKEN --value "YOUR_TOKEN"`
 
 ---
 
@@ -77,7 +77,7 @@ This BOM lists every credential, API, service, and tool the BOM team needs to im
 gh secret list --repo midnghtsapphire/revvel-standards
 
 # Required secrets:
-# DIGITALOCEAN_API_TOKEN  — Deploy automation
+# DIGITALOCEAN_TOKEN  — Deploy automation
 # DOPPLER_TOKEN           — Secrets injection
 ```
 
@@ -88,7 +88,7 @@ gh secret list --repo midnghtsapphire/revvel-standards
 The **Credential Gatekeeper** workflow (`.github/workflows/credential-gatekeeper.yml`) auto-detects credential needs from issue text. Label any implementation issue with `ready-to-implement` to trigger it.
 
 Keywords that trigger detection for oAudrey work:
-- `digitalocean`, `doctl`, `app platform` → `DIGITALOCEAN_API_TOKEN`
+- `digitalocean`, `doctl`, `app platform` → `DIGITALOCEAN_TOKEN`
 - `namecheap`, `dns`, `domain` → `NAMECHEAP_API_KEY`
 - `doppler`, `secrets sync` → `DOPPLER_TOKEN`
 

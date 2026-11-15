@@ -1,0 +1,14 @@
+{
+  "home_markers": ["For You", "Following", "Search", "Profile"],
+  "create_button": ["Create", "New post"],
+  "next_button": ["Next"],
+  "caption_field": ["Add a caption", "Describe", "Caption", "Write"],
+  "post_button": ["Post", "Publish"],
+  "success_markers": ["Posted", "published", "Successfully"],
+  "dismiss_buttons": ["Not now", "Later", "Skip", "Got it", "OK", "Allow", "Don't allow"],
+  "gallery_first_cell": [0.17, 0.33],
+  "gallery_cell_step": [0.33, 0.22],
+  "create_fallback": [0.50, 0.94],
+  "caption_fallback": [0.50, 0.45],
+  "post_fallback": [0.90, 0.06]
+}
