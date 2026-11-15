@@ -80,6 +80,10 @@ def engine_env(home, prefix=None):
     env = {"PATH": "/usr/bin:/bin", "HOME": str(home), "LC_ALL": "C", "TZ": "UTC", "TMPDIR": str(home)}
     if prefix:
         env["LD_LIBRARY_PATH"] = str(Path(prefix) / "usr/local/lib")
+        # Official .deb defaults are absolute /usr/local paths. We extract into
+        # a private prefix without sudo: supply its verified CVD trust roots,
+        # never disable signature verification to work around relocation.
+        env["CVD_CERTS_DIR"] = str(Path(prefix) / "usr/local/etc/certs")
     return env
 
 

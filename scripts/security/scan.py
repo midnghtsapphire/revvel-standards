@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import pwd
 import re
+import shutil
 import stat
 import subprocess
 import sys
@@ -36,27 +37,48 @@ def atomic_report(directory, report):
     (directory / "summary.txt").write_text(text)
 
 
-def candidate_files(target):
+def candidate_files(target, snapshot=None):
     if not target.is_dir() or target.is_symlink():
         raise ScanError("candidate-directory-missing")
+    if (target / ".gitmodules").exists():
+        raise ScanError("candidate-submodules-require-materialized-reviewed-checkout")
     count = 0
     # .git is checkout transport metadata, not source. No other directory skip.
-    # Symlinks are rejected rather than followed out of the candidate tree or
-    # silently skipped. This intentionally fails closed on repositories using them.
+    # Git stores a symlink's target text as its blob. Scan that text, never follow
+    # it out of the candidate tree. A private normalized copy avoids unsafe
+    # traversal while keeping every tracked source blob visible to both engines.
     def walk_error(_):
         raise ScanError("candidate-unreadable")
     for base, dirs, files in os.walk(target, followlinks=False, onerror=walk_error):
-        if Path(base) == target and ".git" in dirs:
-            dirs.remove(".git")
-        for name in dirs + files:
+        if Path(base) == target:
+            if ".git" in dirs:
+                dirs.remove(".git")
+            if ".git" in files:
+                files.remove(".git")
+        for name in list(dirs) + files:
             path = Path(base) / name
             mode = path.lstat().st_mode
-            if stat.S_ISLNK(mode) or not (stat.S_ISREG(mode) or stat.S_ISDIR(mode)):
-                raise ScanError("candidate-symlink-or-special-file")
-            if stat.S_ISREG(mode):
-                with path.open("rb") as stream:
-                    stream.read(1)
+            output = snapshot / path.relative_to(target) if snapshot else None
+            if output:
+                output.parent.mkdir(parents=True, exist_ok=True)
+            if stat.S_ISLNK(mode):
+                if name in dirs:
+                    dirs.remove(name)
+                if output:
+                    output.write_bytes(os.fsencode(os.readlink(path)))
                 count += 1
+            elif stat.S_ISREG(mode):
+                # Git LFS pointers are not the object bytes, so fail instead of
+                # asserting that a transport-only checkout scanned the payload.
+                with path.open("rb") as stream:
+                    header = stream.read(128)
+                if header.startswith(b"version https://git-lfs.github.com/spec/v1"):
+                    raise ScanError("candidate-lfs-content-not-materialized")
+                if output:
+                    shutil.copyfile(path, output, follow_symlinks=False)
+                count += 1
+            elif not stat.S_ISDIR(mode):
+                raise ScanError("candidate-special-file")
     if count == 0:
         raise ScanError("candidate-has-no-readable-files")
     return count
@@ -108,7 +130,9 @@ def trivy_scan(receipt, target, work):
     config.write_text("{}\n")
     ignores.write_text("")
     secret_config.write_text("rules: []\nallow-rules: []\n")
-    policy.write_text("")
+    # An empty file is NOT a no-op policy: OPA rejects it as an empty module.
+    # The explicit false decision also prevents any candidate ignore policy.
+    policy.write_text("package trivy\nimport rego.v1\ndefault ignore := false\n")
     private = work / "raw.json"
     command = [receipt["binary"], "fs", "--config", str(config), "--ignorefile", str(ignores),
                "--secret-config", str(secret_config), "--ignore-policy", str(policy),
@@ -175,14 +199,19 @@ def clamav_scan(receipt, target, work):
     config.write_text(f"DatabaseDirectory {database}\nDatabaseOwner {pwd.getpwuid(os.getuid()).pw_name}\n"
                       "DatabaseMirror database.clamav.net\nDNSDatabaseInfo current.cvd.clamav.net\n"
                       "Foreground yes\nMaxAttempts 2\nConnectTimeout 30\nReceiveTimeout 120\n"
-                      "ScriptedUpdates yes\nBytecode yes\n")
+                      "ScriptedUpdates yes\nBytecode no\n")
     code, log = execute([str(bindir / "freshclam"), f"--config-file={config}"], work, env, timeout=420)
     # Some older updater releases returned zero on cooldown. Check fresh headers
     # in addition to its status; never treat a CDN block as a clean scan.
     if code or re.search(r"(?i)\b(?:error|warning|cool.?down|rate.limit|forbidden|failed)\b", log):
         raise ScanError("clamav-signature-update-failed")
     dates = {}
-    for name in ("main", "daily", "bytecode"):
+    # 2026-11-15 runtime finding: upstream bytecode v339 was built 2025-09-11
+    # even after a successful current freshclam update. Its arbitrary one-year
+    # age gate did not represent upstream freshness. Bytecode is not executed in
+    # this signature-only lane, so do not download it or claim it is scanned.
+    # Effective main+daily databases are mandatory and verified; daily is rolling.
+    for name in ("main", "daily"):
         paths = [database / f"{name}.{suffix}" for suffix in ("cvd", "cld") if (database / f"{name}.{suffix}").is_file()]
         if len(paths) != 1 or paths[0].stat().st_size == 0:
             raise ScanError("clamav-definitions-missing-or-ambiguous")
@@ -190,9 +219,8 @@ def clamav_scan(receipt, target, work):
         if code:
             raise ScanError("clamav-definition-verification-failed")
         # main is intentionally a long-lived base; daily is the rolling updates.
-        if name != "main":
-            age_limit = 48 * 3600 if name == "daily" else 365 * 86400
-            dates[name] = database_freshness(info, age_limit)
+        if name == "daily":
+            dates[name] = database_freshness(info, 48 * 3600)
     command = [receipt["binary"], "--recursive=yes", f"--database={database}", "--official-db-only=yes",
                "--bytecode=no", "--follow-dir-symlinks=0", "--follow-file-symlinks=0", "--cross-fs=no",
                "--alert-exceeds-max=yes", "--alert-encrypted=yes", "--alert-broken=yes",
@@ -227,8 +255,11 @@ def main(argv=None):
         report.update({"version": receipt["version"], "archive_sha256": receipt["archive_sha256"]})
         with tempfile.TemporaryDirectory(prefix="scan-", dir=tools) as scratch:
             scratch = Path(scratch)
+            snapshot = scratch / "candidate-data"
+            snapshot.mkdir(mode=0o700)
+            report["candidate_files"] = candidate_files(target, snapshot)
             operation = trivy_scan if args.engine == "trivy" else clamav_scan
-            code, details = operation(receipt, target, scratch)
+            code, details = operation(receipt, snapshot, scratch)
         report.update(details)
         report.update({"status": "clean" if code == 0 else "findings", "exit_code": code,
                        "reason": "scan-complete" if code == 0 else "blocking-findings"})
