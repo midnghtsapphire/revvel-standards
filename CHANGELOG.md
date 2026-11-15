@@ -1,3 +1,7 @@
+## 2026-11-14 (5) — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
+
+- MergeMe and GHCR wiring auditors find the port table in `AGENTS.md` or `legacy/AGENTS.md` (the cutover moved it). `pot_research_engine.py`, `wr_dispatch.mjs` and `opencode.yml` now consult the LLM spend gate. `products/beauty-kit/` and eleven `scripts/*.py` files are flake8-clean (formatting, unused imports, renamed `l`; behavior unchanged). No baseline, exclusion, test or CircleCI edit. See LEDGER.md.
+
 ## 2026-11-14 (4) — TriageChief — AGENTS.md is the new rulebook; old rule files renamed to legacy/
 
 - Root `AGENTS.md` is the full METAL rulebook. The old `AGENTS.md` text is at `legacy/AGENTS.md` (`git mv`, nothing deleted). A draft-only `RULES.md` name from an earlier revision of this PR was folded in and removed; it never landed on `main`.

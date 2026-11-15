@@ -3,6 +3,17 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-14 — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
+
+- **Actor:** TriageChief
+- **Requested by:** Audrey Evans, 14 Nov 2026 (t422u: "I want everything pushed coded and mergef")
+- **Role:** executed
+- **Files:** `scripts/mergeme-wiring.js`, `scripts/ghcr-setup.js`, `scripts/pot_research_engine.py`, `scripts/wr_dispatch.mjs`, `.github/workflows/opencode.yml`, `products/beauty-kit/**/*.py`, ten more `scripts/*.py` files that were over the flake8 baseline (a2a_bus, audit_workflows, export_wr_queue, gepa_optimize, graph_context_selector, lago_sync, langgraph_orchestrator, prompt_compressor, tier3_self_heal, zero_touch_secrets), `CHANGELOG.md` (prepended), `LEDGER.md` (this entry)
+- **What was done:** (1) The port-assignment surface check in the MergeMe and GHCR wiring auditors read only `AGENTS.md`; the 14 Nov cutover moved the port table, unedited, to `legacy/AGENTS.md`. Both auditors now look in `AGENTS.md` and `legacy/AGENTS.md` and still fail closed when the entry is in neither. (2) `pot_research_engine.py` and `wr_dispatch.mjs` now consult the LLM spend gate (`REVVEL_LLM_ALLOW_CLOUD` must be exactly "1") before a paid OpenRouter call; keyless dry-run and the by-hand plan fallback stay free. (3) Each `opencode.yml` step that hands `OPENROUTER_API_KEY` to the third-party action now has `if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'`, so it runs only when the gate is open. (4) The new Python in `products/beauty-kit/` (added in #18395) and the eleven `scripts/*.py` files named above, all over the committed flake8 baseline, are flake8-clean with the repo config: black at 120 columns, long string literals continued with a backslash (string values unchanged), star imports replaced by explicit names, unused imports removed, `l` renamed, and `# noqa: E402` only on sibling imports that need the `sys.path` entry.
+- **Decisions:** No baseline entry, no exclusion, no test edit, and no CircleCI change. The flake8 baseline and checks are unchanged. The `opencode.yml` edit only makes the workflow stricter and is the fix the spend-gate test asks for; flagged for Audrey as a workflow change.
+- **Sources:** MEASURED: `npm test` showed exactly these 5 failures on `daily/2026-11-14` (a6e8b5d7) before the change and 0 after.
+- **Open / handoff:** TriageChief merges after the C3 gates. The string constants in `_shared/*.py` were compared before and after (only `art.py` gained an `__all__` list).
+
 ## 2026-11-14 — TriageChief — AGENTS.md rulebook cutover (WR #18408, draft PR #18409)
 
 - **Actor:** TriageChief
