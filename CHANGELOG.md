@@ -5,6 +5,9 @@
 ## 2026-11-14 (5) — TriageChief — added the "Session start: read the handoff first" rule (S1 to S7), restored rules the cutover left out (R1 to R15), `handoffs/` template and Proofy seed; additions only
 
 - `AGENTS.md` section 0 and section R appended; `VISITING_AGENTS.md` repeats the session-start rule inline; `.github/copilot-instructions.md` is the exact copy. `legacy/README.md` got a dated correction note. New: `handoffs/TEMPLATE.md`, `handoffs/README.md`, `handoffs/proofy/2026-11-14.md`, `docs/cutover/mishap-records-audit-2026-11-14.md`. Nothing deleted or rewritten.
+## 2026-11-14 (5) — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
+
+- MergeMe and GHCR wiring auditors find the port table in `AGENTS.md` or `legacy/AGENTS.md` (the cutover moved it). `pot_research_engine.py`, `wr_dispatch.mjs` and `opencode.yml` now consult the LLM spend gate. `products/beauty-kit/` and eleven `scripts/*.py` files are flake8-clean (formatting, unused imports, renamed `l`; behavior unchanged). No baseline, exclusion, test or CircleCI edit. See LEDGER.md.
 
 ## 2026-11-14 (4) — TriageChief — AGENTS.md is the new rulebook; old rule files renamed to legacy/
 

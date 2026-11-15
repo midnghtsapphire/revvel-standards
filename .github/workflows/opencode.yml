@@ -47,7 +47,10 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+      # Spend gate (#17850): OpenCode bills OpenRouter inside the action, so the
+      # step only runs when REVVEL_LLM_ALLOW_CLOUD is exactly "1".
       - name: Run OpenCode
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         uses: anomalyco/opencode/github@latest
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -66,7 +69,10 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+      # Spend gate (#17850): OpenCode bills OpenRouter inside the action, so the
+      # step only runs when REVVEL_LLM_ALLOW_CLOUD is exactly "1".
       - name: Run OpenCode
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         uses: anomalyco/opencode/github@latest
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -98,7 +104,10 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+      # Spend gate (#17850): OpenCode bills OpenRouter inside the action, so the
+      # step only runs when REVVEL_LLM_ALLOW_CLOUD is exactly "1".
       - name: Run OpenCode
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         uses: anomalyco/opencode/github@latest
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
