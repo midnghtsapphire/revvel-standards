@@ -19,6 +19,16 @@ if HAS_NUMPY:
 
 
 @unittest.skipUnless(HAS_NUMPY, "numpy not installed")
+class TrimGuard(unittest.TestCase):
+    """Finding 4: a large trim must raise a clear ValueError, not a TypeError."""
+
+    def test_large_trim_raises_valueerror(self) -> None:
+        t, y = s.simulate_band("C", 2005.0, 20, 2013.5, 4.0, np.random.default_rng(1))
+        with self.assertRaises(ValueError):
+            s.detect_step(t, y, trim=0.6)
+
+
+@unittest.skipUnless(HAS_NUMPY, "numpy not installed")
 class Detection(unittest.TestCase):
     def test_recovers_step_time_and_size(self) -> None:
         data = s.analyze(event_year=2013.5, step_db=4.0, seed=42)
