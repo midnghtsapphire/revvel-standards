@@ -1,5 +1,9 @@
 name: Greenfield UI Agent Audit & Health Logger
 
+concurrency:
+  group: ui-audit-logger-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 on:
   push:
     branches: [main, develop]

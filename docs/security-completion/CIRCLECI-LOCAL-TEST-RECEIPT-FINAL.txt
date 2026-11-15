@@ -1,0 +1,124 @@
+TAP version 13
+# Subtest: existing PR/main workflows retain policy-check, with no added schedule or context
+ok 1 - existing PR/main workflows retain policy-check, with no added schedule or context
+  ---
+  duration_ms: 2.635605
+  type: 'test'
+  ...
+# Subtest: transport sources the invoker from a full immutable committed object, not candidate HEAD
+ok 2 - transport sources the invoker from a full immutable committed object, not candidate HEAD
+  ---
+  duration_ms: 16.461008
+  type: 'test'
+  ...
+# Subtest: transport shell parses and does not swallow invoker or bootstrap failures
+ok 3 - transport shell parses and does not swallow invoker or bootstrap failures
+  ---
+  duration_ms: 7.621484
+  type: 'test'
+  ...
+# Subtest: legacy invocation remains commented with dated owner-rule retirement metadata
+ok 4 - legacy invocation remains commented with dated owner-rule retirement metadata
+  ---
+  duration_ms: 0.559526
+  type: 'test'
+  ...
+# Subtest: clean pinned engines scan all candidate blobs and strip inherited settings
+ok 5 - clean pinned engines scan all candidate blobs and strip inherited settings
+  ---
+  duration_ms: 625.42763
+  type: 'test'
+  ...
+# Subtest: first policy failure does not hide scanner findings or a definition outage
+ok 6 - first policy failure does not hide scanner findings or a definition outage
+  ---
+  duration_ms: 629.462561
+  type: 'test'
+  ...
+# Subtest: findings without an engine error aggregate to exit 1
+ok 7 - findings without an engine error aggregate to exit 1
+  ---
+  duration_ms: 542.488584
+  type: 'test'
+  ...
+# Subtest: candidate replacement of scripts cannot replace approved executable bytes
+ok 8 - candidate replacement of scripts cannot replace approved executable bytes
+  ---
+  duration_ms: 522.349156
+  type: 'test'
+  ...
+# Subtest: diverged base uses merge-base rather than treating base-only files as deletions
+ok 9 - diverged base uses merge-base rather than treating base-only files as deletions
+  ---
+  duration_ms: 538.344556
+  type: 'test'
+  ...
+# Subtest: missing baseline is error 2 for every check, never an empty clean diff
+ok 10 - missing baseline is error 2 for every check, never an empty clean diff
+  ---
+  duration_ms: 208.599443
+  type: 'test'
+  ...
+# Subtest: missing approved source cannot fall back to candidate implementations
+ok 11 - missing approved source cannot fall back to candidate implementations
+  ---
+  duration_ms: 337.429164
+  type: 'test'
+  ...
+# Subtest: non-SHA and shell-injection refs cannot reach a shell command
+ok 12 - non-SHA and shell-injection refs cannot reach a shell command
+  ---
+  duration_ms: 29.068332
+  type: 'test'
+  ...
+# Subtest: symlinks and submodules are incomplete-coverage errors, not green skips
+ok 13 - symlinks and submodules are incomplete-coverage errors, not green skips
+  ---
+  duration_ms: 753.842813
+  type: 'test'
+  ...
+# Subtest: missing scanner receipt is an error even if the engine returns zero
+ok 14 - missing scanner receipt is an error even if the engine returns zero
+  ---
+  duration_ms: 526.553534
+  type: 'test'
+  ...
+# Subtest: archival runtime errors map to error 2, not findings 1
+ok 15 - archival runtime errors map to error 2, not findings 1
+  ---
+  duration_ms: 493.382897
+  type: 'test'
+  ...
+# Subtest: approved fleet missing API is error 2 and does not suppress scanners
+ok 16 - approved fleet missing API is error 2 and does not suppress scanners
+  ---
+  duration_ms: 506.444596
+  type: 'test'
+  ...
+# Subtest: missing actual metadata fails fleet but still runs both scanners
+ok 17 - missing actual metadata fails fleet but still runs both scanners
+  ---
+  duration_ms: 513.354971
+  type: 'test'
+  ...
+# Subtest: final worker fleet API scans real supplied metadata and redacts receipt content
+ok 18 - final worker fleet API scans real supplied metadata and redacts receipt content
+  ---
+  duration_ms: 576.846958
+  type: 'test'
+  ...
+# Subtest: final worker archival script reads unusual candidate names as committed data
+ok 19 - final worker archival script reads unusual candidate names as committed data
+  ---
+  duration_ms: 541.566149
+  type: 'test'
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7475.50817

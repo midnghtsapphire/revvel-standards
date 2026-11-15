@@ -52,8 +52,13 @@ test('the event lane refuses to scan issues the fleet itself filed', () => {
   // where github.event.issue is null and the label check is meaningless.
   assert.match(
     condition,
-    /github\.event_name == 'pull_request'/,
-    'pull_request events must still reach the lane',
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Write alerts now run from the trusted base event; the separate read-only PR job covers pull_request.
+//     /github\.event_name == 'pull_request'/,
+// REVVEL-DISABLED-END
+    /github\.event_name == 'pull_request_target'/,
+
+    'trusted pull_request_target events must still reach the alert lane',
   );
 });
 
@@ -94,4 +99,11 @@ test('the dedup key alone cannot break the chain', () => {
     /finding on \$\{subject\}/,
     'dedup title format changed — re-check whether it is still subject-scoped',
   );
+});
+
+test('read-only pull_request blocking remains independent of own-finding issue exclusion', () => {
+  const doc = YAML.parse(fs.readFileSync(workflowPath, 'utf8'));
+  assert.match(doc.jobs['pr-blocking'].if, /github\.event_name == 'pull_request'/);
+  assert.deepEqual(doc.jobs['pr-blocking'].permissions, { contents: 'read' });
+  assert.doesNotMatch(doc.jobs['pr-blocking'].if, /security-fleet/);
 });

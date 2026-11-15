@@ -14,6 +14,10 @@
 
 name: ChaosMender
 
+concurrency:
+  group: chaosmender-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     paths:

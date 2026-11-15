@@ -71,7 +71,7 @@ jobs:
         if: steps.detect.outputs.skip != 'true'
         uses: digitalocean/action-doctl@v2.5.2
         with:
-          token: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
+          token: ${{ secrets.DIGITALOCEAN_TOKEN }}
       - name: Resolve App Platform ingress hostname
         if: steps.detect.outputs.skip != 'true'
         id: ingress

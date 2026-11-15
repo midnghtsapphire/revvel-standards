@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://revvel.dev/schemas/ownership-record.schema.json",
+  "title": "Durable WR/PR Ownership v1",
+  "description": "Append-only snapshots in wr/agents/ownership.jsonl and owner-authored PR comments. scripts/ci/lib/ownership.js also enforces bounded lease/attempt lineage and completion proof across fields; URL shape is not live verification.",
+  "type": "object",
+  "required": ["schema_version", "id", "repo", "owner", "task", "outcome_type", "product_id", "state", "revision", "parent_revision", "heartbeat_at", "lease", "attempts", "next_action", "blocker", "evidence"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "id": {"type": "string", "pattern": "^[a-zA-Z0-9_.:-]+$"},
+    "repo": {"type": "string", "pattern": "^[\\w.-]+/[\\w.-]+$"},
+    "owner": {
+      "type": "object", "required": ["id", "platform", "github"],
+      "properties": {"id": {"$ref": "#/$defs/text"}, "platform": {"$ref": "#/$defs/text"}, "github": {"type": "string", "pattern": "^[a-zA-Z0-9_-]+(?:\\[bot\\])?$"}}
+    },
+    "task": {
+      "type": "object", "required": ["id", "ref", "wr", "pr"],
+      "properties": {"id": {"$ref": "#/$defs/text"}, "ref": {"$ref": "#/$defs/text"}, "wr": {"type": ["integer", "null"], "minimum": 1}, "pr": {"type": ["integer", "null"], "minimum": 1}}
+    },
+    "outcome_type": {"enum": ["product", "api", "cli", "mcp", "package", "docs", "artifact", "governance"]},
+    "product_id": {"type": ["string", "null"], "minLength": 1},
+    "state": {"enum": ["claimed", "active", "blocked", "awaiting-release", "done"]},
+    "revision": {"type": "integer", "minimum": 0},
+    "parent_revision": {"type": ["integer", "null"], "minimum": 0},
+    "heartbeat_at": {"$ref": "#/$defs/time"},
+    "lease": {
+      "type": "object", "required": ["holder", "expires_at"],
+      "properties": {"holder": {"type": ["string", "null"], "minLength": 1}, "expires_at": {"type": ["string", "null"], "format": "date-time"}}
+    },
+    "attempts": {"type": "object", "required": ["used", "max"], "properties": {"used": {"type": "integer", "minimum": 0, "maximum": 5}, "max": {"type": "integer", "minimum": 1, "maximum": 5}}},
+    "next_action": {"type": "object", "required": ["action", "owner"], "properties": {"action": {"$ref": "#/$defs/text"}, "owner": {"$ref": "#/$defs/text"}}},
+    "blocker": {
+      "type": ["object", "null"], "required": ["kind", "reason", "owner", "retry_after"],
+      "properties": {"kind": {"enum": ["auth", "billing", "schema", "check", "release", "other"]}, "reason": {"$ref": "#/$defs/text"}, "owner": {"$ref": "#/$defs/text"}, "retry_after": {"type": ["string", "null"], "format": "date-time"}}
+    },
+    "blocker_resolution": {"$ref": "#/$defs/receipt"},
+    "evidence": {
+      "type": "object", "required": ["artifacts", "tests"],
+      "properties": {
+        "artifacts": {"type": "array", "items": {"$ref": "#/$defs/receipt"}},
+        "tests": {"type": "array", "items": {"type": "object", "required": ["name", "result", "receipt", "commit"], "properties": {"name": {"$ref": "#/$defs/text"}, "result": {"enum": ["passed", "failed"]}, "receipt": {"$ref": "#/$defs/receipt"}, "commit": {"$ref": "#/$defs/commit"}}}},
+        "release": {"type": ["object", "null"], "required": ["kind", "ref", "version", "recorded_at", "commit", "verification"], "properties": {"kind": {"enum": ["deployment", "release", "publication", "owner-reviewed"]}, "ref": {"$ref": "#/$defs/receipt"}, "version": {"$ref": "#/$defs/text"}, "recorded_at": {"$ref": "#/$defs/time"}, "commit": {"$ref": "#/$defs/commit"}, "verification": {"enum": ["recorded", "requested-and-verified"]}, "verification_receipt": {"$ref": "#/$defs/receipt"}}},
+        "outcome": {"type": ["object", "null"], "required": ["summary", "receipt"], "properties": {"summary": {"$ref": "#/$defs/text"}, "receipt": {"$ref": "#/$defs/receipt"}}}
+      }
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"outcome_type": {"const": "product"}}}, "then": {"properties": {"product_id": {"$ref": "#/$defs/text"}}}},
+    {"if": {"properties": {"state": {"const": "done"}}}, "then": {"properties": {"blocker": {"type": "null"}, "evidence": {"required": ["release", "outcome"], "properties": {"artifacts": {"minItems": 1}, "tests": {"minItems": 1, "items": {"properties": {"result": {"const": "passed"}}}}, "release": {"type": "object"}, "outcome": {"type": "object"}}}}}}
+  ],
+  "$defs": {
+    "text": {"type": "string", "minLength": 1, "maxLength": 4096, "pattern": "^[^\\u0000-\\u001f]*\\S[^\\u0000-\\u001f]*$"},
+    "time": {"type": "string", "format": "date-time"},
+    "commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "receipt": {"type": "string", "minLength": 1, "description": "HTTP(S) URL without credentials or repository relative path without traversal. Runtime validator enforces this precisely."}
+  }
+}

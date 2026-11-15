@@ -4,6 +4,10 @@
 # Local equivalent: npm run lint (markdownlint-cli2 with .markdownlint.jsonc)
 name: Lint Markdown (markdownlint-cli)
 
+concurrency:
+  group: lint-md-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     paths:
