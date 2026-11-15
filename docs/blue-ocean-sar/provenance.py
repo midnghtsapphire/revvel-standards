@@ -167,7 +167,12 @@ def require_export_provenance(record, allow_unverified=False):
     malformed or unsourced provenance, and a measured or public_record source
     without a reference. allow_unverified=True (CLI --demo) falls back to
     provenance.STRICT, which by default labels such a location UNSOURCED."""
-    strict = None if allow_unverified else EXPORT_STRICT
+    # Hard-code strict rather than reading EXPORT_STRICT, so a stray
+    # `provenance.EXPORT_STRICT = False` cannot silently disable the export
+    # gate (the exact H1 failure mode, one assignment away). Only
+    # allow_unverified (CLI --demo) opts out, and it falls back to STRICT,
+    # which labels the location UNSOURCED rather than dropping the gate.
+    strict = None if allow_unverified else True
     return require_provenance(record, strict=strict)
 
 
