@@ -169,3 +169,34 @@ test("dispatch payload identifies a WR or PR without exceeding the event contrac
   assert.equal(payload.request_id, "81:claudecode");
   assert.equal(Object.keys(payload).length, 10);
 });
+
+test("Audrey saved replies use the canonical local bridge and existing request ID", () => {
+  for (const command of ["/audrey run", "/audrey finish 31"]) {
+    const parsed = parseCommands(command, config);
+    assert.equal(parsed.requests.length, 1);
+    assert.equal(parsed.requests[0].agent, "gitar-bridge");
+    const payload = buildDispatchPayload({
+      repository: "midnghtsapphire/revvel-standards",
+      request: parsed.requests[0],
+      event: {
+        comment: { id: 91, user: { login: "midnghtsapphire" } },
+        issue: { number: 7, title: "Work", html_url: "https://github.example/issues/7" }
+      }
+    });
+    assert.equal(payload.request_id, "91:gitar-bridge");
+    assert.equal(payload.version, "1");
+    assert.equal(payload.kind, "issue");
+    assert.equal(payload.requested_by, "midnghtsapphire");
+  }
+  assert.deepEqual(config.agents["gitar-bridge"].names, ["audrey"]);
+  assert.equal(nativeAssignee(config, "gitar-bridge"), "");
+});
+
+test("Audrey alias does not collide with native Gitar or existing oAudrey", () => {
+  const parsed = parseCommands("@gitar-bot review\n/gitar run\n/gitar-bridge run\n/oaudrey triage\n/audreybuildsai run", config);
+  assert.deepEqual(parsed.requests.map((request) => request.agent), ["oaudrey"]);
+  assert.equal(parseCommands("> /audrey run\n```text\n/audrey finish 31\n```", config).requests.length, 0);
+  // The generic router recognizes aliases; the local adapter must re-fetch
+  // and reject all commands except the two exact, case-sensitive forms.
+  assert.equal(parseCommands("@audrey run", config).requests[0].agent, "gitar-bridge");
+});

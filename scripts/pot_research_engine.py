@@ -7,6 +7,21 @@ import os, math, json, random, datetime, urllib.request
 MAX_CALLS = 64
 calls = {"n": 0}
 
+
+def _assert_cloud_allowed(call_site: str) -> None:
+    """Spend gate (#17850). Refuse a paid call unless someone deliberately said yes.
+
+    Same rule as scripts/llm-spend-gate.js and scripts/local_llm.py: the variable
+    must be exactly "1". Added 2026-11-15 by Proofy so tests/llm-spend-gate-coverage
+    passes; the dry-run path (no LLM_API_KEY) never reaches it.
+    """
+    if os.environ.get("REVVEL_LLM_ALLOW_CLOUD", "").strip() != "1":
+        raise RuntimeError(
+            f'Refusing to call a paid LLM API from "{call_site}": '
+            'REVVEL_LLM_ALLOW_CLOUD is not set to "1". This is a spend gate, not a bug.'
+        )
+
+
 def llm(prompt: str) -> str:
     calls["n"] += 1
     if calls["n"] > MAX_CALLS: raise RuntimeError("budget exceeded")
@@ -14,6 +29,7 @@ def llm(prompt: str) -> str:
     if not key:
         random.seed(hash(prompt) & 0xffffffff)
         return f"[dry-run answer {random.randint(1000,9999)}]"
+    _assert_cloud_allowed("pot_research_engine")
     req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions",
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
         data=json.dumps({"model": "anthropic/claude-sonnet-4-6",

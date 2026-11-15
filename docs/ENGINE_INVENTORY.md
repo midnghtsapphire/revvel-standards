@@ -41,7 +41,7 @@ artifacts, receipts, and state patches for the orchestrator to aggregate.
 | security | existing | `standards/SECURITY.md`; `.secrets.baseline`; `standards/GATEKEEPER.md` | None. |
 | cost | existing | BOM cost columns; `docs/API_LIMIT_AUTO_UPGRADE.md`; `standards/PRICING.md` | None. |
 | goal-score | existing | `GOAL.md` / `GOAP.md` (orchestrator-owned goals); `scripts/agent-scorecard/index.js`; `docs/AGENT_SCORECARD_STANDARD.md` | **Do not modify goal values** — see PRESERVE standard. |
-| launch-announcement | existing | `README_SOCIAL_MEDIA_AUTOMATION.md`; `scripts` social post formatter; `docs/ECO_MARKETPLACE_ACTIONS.md` | None. |
+| launch-announcement | existing | `docs/README_SOCIAL_MEDIA_AUTOMATION.md`; `scripts` social post formatter; `docs/ECO_MARKETPLACE_ACTIONS.md` | None. |
 | publish-artifact | existing | `ship-to-market.yml` (`tests/ship-to-market.test.js`); deliver channels | None. |
 | market | existing | `standards/Master_Inventory/AFFILIATE_MARKETING_STANDARD.md`; `docs/ECO_MARKETPLACE_ACTIONS.md` | None. |
 | measure | existing | `templates/standards/mixpanel-*`, `posthog-*`; `standards/AMPLITUDE_INTEGRATION_STANDARD.md` | None. |

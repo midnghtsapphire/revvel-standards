@@ -1,5 +1,9 @@
 name: Follow-up Checkbox Router
 
+concurrency:
+  group: followup-checkbox-router-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 on:
   pull_request:
     types: [edited]

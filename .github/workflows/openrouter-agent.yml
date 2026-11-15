@@ -1,5 +1,9 @@
 name: OpenRouter Agent
 
+concurrency:
+  group: openrouter-agent-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 on:
   issue_comment:
     types: [created]

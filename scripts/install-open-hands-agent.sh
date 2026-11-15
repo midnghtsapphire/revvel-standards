@@ -159,7 +159,7 @@ midnghtsapphire/revvel-standards
 
 ## Required Credentials
 - OPENROUTER_API_KEY
-- CLAUDE_API_KEY
+- ANTHROPIC_API_KEY
 - LINEAR_API_KEY  
 - BITO_API_KEY
 - JULES_API_KEY
