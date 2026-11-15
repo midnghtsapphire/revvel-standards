@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "owner": {
+    "id": "lifecycle-specialist",
+    "github": "midnghtsapphire"
+  },
+  "queue": [
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18392,
+        "ref": "cursor/wr-18335-openrouter-judge-8337"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18392",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18392 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18393,
+        "ref": "balls/slack-glowup-plan"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18393",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18393 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18399,
+        "ref": "feat/audrey-gitar-page-bridge-20261114"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18399",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18399 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18401,
+        "ref": "daily/2026-11-14"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18401",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18401 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18402,
+        "ref": "docs/l1-private-storage-warning-2026-11-14"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18402",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18402 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18404,
+        "ref": "docs/grok-bots-box-is-scratch-2026-11-14"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18404",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18404 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18406,
+        "ref": "docs/pr-deliverables-rule-2026-11-14"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18406",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18406 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18407,
+        "ref": "docs/notion-resale-inventory-template-2026-11-14"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18407",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18407 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18411,
+        "ref": "docs/actions-migration-and-free-substitutes-2026-11-14"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18411",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18411 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18412,
+        "ref": "ci/trivy-fs-circleci-2026-11-14"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18412",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18412 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18413,
+        "ref": "docs/inventory-and-organize-2026-11-14"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18413",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18413 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18417,
+        "ref": "fix/secret-naming-convention"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18417",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18417 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18419,
+        "ref": "fix/visiting-agent-oaudrey-home"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18419",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18419 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18420,
+        "ref": "fix/sar-review-findings"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18420",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18420 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18421,
+        "ref": "docs/sar-investigation-process"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18421",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18421 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18422,
+        "ref": "fix/windows-posix-test-portability"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18422",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18422 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18424,
+        "ref": "fix/actions-concurrency-cost-leak"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18424",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18424 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18425,
+        "ref": "docs/security-and-agent-follow-through-20261115"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18425",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18425 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18426,
+        "ref": "feat/agent-completion-20261115"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18426",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18426 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    },
+    {
+      "priority": 0,
+      "id": null,
+      "task": {
+        "pr": 18427,
+        "ref": "fix/security-trivy-malware-20261115"
+      },
+      "state": "unregistered",
+      "pr_url": "https://github.com/midnghtsapphire/revvel-standards/pull/18427",
+      "flags": [
+        "missing-ownership"
+      ],
+      "next_action": {
+        "owner": "lifecycle-specialist",
+        "action": "Read existing PR #18427 and its WR, then claim its existing task; do not open a replacement task"
+      }
+    }
+  ],
+  "policy": "Resume these existing WR/PRs before new work; no command from a PR body was executed. Empty queue is not authorization to create tasks."
+}
