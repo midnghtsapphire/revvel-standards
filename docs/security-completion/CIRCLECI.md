@@ -35,3 +35,13 @@ Rollback is a new owner-reviewed additive PR that comments the activation lines 
 [1]: https://circleci.com/docs/guides/security/env-vars/ "CircleCI project variables, BASH_ENV and secrets masking limitations"
 [2]: https://circleci.com/docs/guides/server/integration/pull-request-build-settings/ "CircleCI fork builds and secret-forwarding controls"
 [3]: https://circleci.com/docs/guides/config-policies/config-policy-management-overview/ "CircleCI organization policies and compiled configuration enforcement"
+
+## Final reviewed interface corrections — 2026-11-15
+
+The one completion-time local-tip snapshot captured policy/fleet commit `92682e66974218f37c6fbcfee8ebeae42620bb1c` and scanner commit `3e2e0cf567e7b5c898c410e41516c3ed43ec67f2`; both are merged into the integration branch, with no rebase/reset and no edits to worker worktrees or specialty files. These final pins supersede the initially reported worker tips. The actual portable fleet interface is the exported `scanPr` and `validateReport` API in `scripts/security-fleet.js`; there is no invented `security-fleet-pr-gate.js` production entry point.
+
+The final scanner normalizes symlink target text as regular source blobs. The integration therefore materializes each symlink's Git blob as a non-executable regular file without creating or following a symlink. This supersedes the initial symlink coverage-error description above and allows the existing `.cursorrules` symlink to reach real engine scans. Actual submodule objects remain coverage errors; scanner LFS/submodule declaration checks remain active.
+
+The fleet requires actual metadata, not an empty-body stand-in for missing access. For PR builds the transport accepts only the exact repository's PR URL, reads public GitHub PR metadata without credentials, and verifies its head SHA and main target before supplying title/body as data. Missing `CIRCLE_PULL_REQUEST`, HTTP 403/rate limits, malformed metadata or a mismatched head give fleet exit 2 while other engines still run. On main, the actual commit message is supplied as event metadata because there is no PR event. This does not claim PR title/body coverage for a main commit or a non-PR branch push. Metadata text itself is not an artifact.
+
+Final scanner changes preserve genuine installation/database failures and signature-only ClamAV scope. The current Trivy Rego policy is an explicit `ignore := false`; ClamAV requires official verified main/daily definitions and fresh daily updates, and does not execute/download bytecode. No failure is suppressed to make the activation PR green.

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # 2026-11-15 security completion: transport/invocation only, not a new detector.
 # Usage: security-completion.sh REPO HEAD_COMMIT BASE_COMMIT POLICY_SOURCE SCANNER_SOURCE REPORTS
+# Optional seventh argument is a trusted transport-produced event metadata text
+# file. Missing actual metadata is fleet error 2; other checks still complete.
 # Run this file from an owner-reviewed immutable Git object, never candidate HEAD.
 # Sources are full committed object IDs supplied by the reviewed CI configuration.
 # Candidate trees are DATA: no checkout hooks, package scripts, imports or eval.
@@ -9,11 +11,16 @@
 # already delivered to the outer job. See docs/security-completion/CIRCLECI.md.
 set -euo pipefail
 umask 077
-if [[ $# != 6 ]]; then
+# REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+# REASON: The final worker contract requires actual PR metadata, never a guessed empty string.
+# if [[ $# != 6 ]]; then
+# REVVEL-DISABLED-END
+if [[ $# != 6 && $# != 7 ]]; then
   printf 'security completion: six explicit arguments required\n' >&2
   exit 2
 fi
 repository=$1 head=$2 base=$3 policy_source=$4 scanner_source=$5 reports=$6
+metadata=${7:-}
 for ref in "$head" "$base" "$policy_source" "$scanner_source"; do
   if [[ ! $ref =~ ^[a-f0-9]{40}$ ]]; then
     printf 'security completion: full SHA-1 commit IDs required\n' >&2
@@ -117,10 +124,15 @@ for record in Path(listing).read_bytes().split(b'\0'):
         raise SystemExit(2)
     if name.startswith(b'/') or any(part in {b'', b'.', b'..'} for part in name.split(b'/')):
         raise SystemExit(2)
-    if mode == b'120000':
-        # Do not create symlinks while materializing: a later path could escape.
-        # The scanner rejects symlinks; reject here before any scan instead.
-        raise SystemExit(2)
+    # REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+    # REASON: Final scanner normalizes symlink target text; do not suppress engines on the existing .cursorrules symlink.
+    # if mode == b'120000':
+    #     # Do not create symlinks while materializing: a later path could escape.
+    #     # The scanner rejects symlinks; reject here before any scan instead.
+    #     raise SystemExit(2)
+    # REVVEL-DISABLED-END
+    # A symlink's Git blob is its target TEXT. Write it as a regular file;
+    # never create or follow a filesystem symlink in the candidate snapshot.
     target = os.path.join(root, name)
     os.makedirs(os.path.dirname(target), mode=0o700, exist_ok=True)
     with open(target, 'xb') as stream:
@@ -162,7 +174,11 @@ if (( policy_ok )) && [[ -f $work/policy/.circleci/scripts/check-archival-policy
 # REVVEL-DISABLED-END
 # CircleCI does not supply authenticated PR body/title metadata here. This gate
 # covers candidate additions only; it does not claim to audit PR metadata.
-if (( policy_ok )) && [[ -f $work/policy/scripts/security-fleet.js && ! -L $work/policy/scripts/security-fleet.js ]]; then
+# 2026-11-15 final worker review: require transport-supplied actual PR/commit
+# metadata. Older content-only wording above is history, not an input substitute.
+if [[ ! -f $metadata || -L $metadata ]]; then
+  record fleet 2 actual-event-metadata-unavailable
+elif (( policy_ok )) && [[ -f $work/policy/scripts/security-fleet.js && ! -L $work/policy/scripts/security-fleet.js ]]; then
   code=0
 # REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
 # REASON: Use worker exports with validated report and findings/errors distinguished, not an invented CLI.
@@ -170,11 +186,20 @@ if (( policy_ok )) && [[ -f $work/policy/scripts/security-fleet.js && ! -L $work
 #     "$node_bin" "$work/policy/scripts/security-fleet-pr-gate.js" \
 #     > "$work/private/fleet.log" 2>&1 || code=$?
 # REVVEL-DISABLED-END
-  clean "$node_bin" - "$work/policy/scripts/security-fleet.js" "$baseline" "$head" > "$work/private/fleet.log" 2>&1 <<'JS' || code=$?
+  # REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+  # REASON: Add required real metadata path to the reviewed module driver.
+  # clean "$node_bin" - "$work/policy/scripts/security-fleet.js" "$baseline" "$head" > "$work/private/fleet.log" 2>&1 <<'JS' || code=$?
+  # REVVEL-DISABLED-END
+  clean "$node_bin" - "$work/policy/scripts/security-fleet.js" "$baseline" "$head" "$metadata" > "$work/private/fleet.log" 2>&1 <<'JS' || code=$?
 'use strict';
 try {
   const fleet = require(process.argv[2]);
-  const report = fleet.scanPr({baseSha: process.argv[3], headSha: process.argv[4], text: ''});
+  // REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+  // REASON: Missing metadata cannot be disguised as an actual empty title/body.
+  // const report = fleet.scanPr({baseSha: process.argv[3], headSha: process.argv[4], text: ''});
+  // REVVEL-DISABLED-END
+  const text = require('fs').readFileSync(process.argv[5], 'utf8');
+  const report = fleet.scanPr({baseSha: process.argv[3], headSha: process.argv[4], text});
   fleet.validateReport(report, 'pr');
   process.exit(report.count > 0 ? 1 : 0);
 } catch (_) { process.exit(2); }

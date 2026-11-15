@@ -75,9 +75,20 @@ sys.exit(code)
 `);
   const approved = commit('approved engines');
   const reports = path.join(root, 'reports');
-  const invoke = ({ head = git('rev-parse', 'HEAD'), base = approved, policy = approved, scanner = approved } = {}) => {
+  const actualMetadata = path.join(root, 'actual-event-metadata.txt');
+  // This fixture's actual title/body are explicitly empty, not missing.
+  fs.writeFileSync(actualMetadata, '');
+  // REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+  // REASON: Supply real fixture metadata and allow the missing-metadata error case.
+  // const invoke = ({ head = git('rev-parse', 'HEAD'), base = approved, policy = approved, scanner = approved } = {}) => {
+  // REVVEL-DISABLED-END
+  const invoke = ({ head = git('rev-parse', 'HEAD'), base = approved, policy = approved, scanner = approved, metadata = actualMetadata } = {}) => {
     const marker = path.join(root, 'unexpected-execution');
-    const result = spawnSync('/bin/bash', ['--noprofile', '--norc', shim, repo, head, base, policy, scanner, reports], {
+    // REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+    // REASON: Add transport-produced actual metadata file as seventh argument.
+    // const result = spawnSync('/bin/bash', ['--noprofile', '--norc', shim, repo, head, base, policy, scanner, reports], {
+    // REVVEL-DISABLED-END
+    const result = spawnSync('/bin/bash', ['--noprofile', '--norc', shim, repo, head, base, policy, scanner, reports, ...(metadata === null ? [] : [metadata])], {
       encoding: 'utf8', timeout: 30000,
       env: { ...process.env, PATH: `${nodePath}:/usr/bin:/bin`, GH_TOKEN: secret,
         OPENROUTER_API_KEY: secret, ALLOW_DESTROY: 'true', PYTHONPATH: repo,
@@ -87,7 +98,11 @@ sys.exit(code)
     return { ...result, marker };
   };
   const report = (engine) => JSON.parse(fs.readFileSync(path.join(reports, engine, 'report.json')));
-  return { root, repo, git, put, commit, approved, reports, invoke, report };
+  // REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+  // REASON: Expose explicit fixture metadata for real-worker tests.
+  // return { root, repo, git, put, commit, approved, reports, invoke, report };
+  // REVVEL-DISABLED-END
+  return { root, repo, git, put, commit, approved, reports, invoke, report, actualMetadata };
 }
 test('clean pinned engines scan all candidate blobs and strip inherited settings', (t) => {
   const f = fixture(t);
@@ -181,8 +196,13 @@ test('symlinks and submodules are incomplete-coverage errors, not green skips', 
   const f = fixture(t);
   fs.symlinkSync('/etc/passwd', path.join(f.repo, 'escape'));
   let r = f.invoke({ head: f.commit('symlink candidate') });
-  assert.equal(r.status, 2);
-  assert.equal(f.report('trivy').exit_code, 2);
+  // REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+  // REASON: Scan symlink target text as regular Git blob data, not its external target.
+  // assert.equal(r.status, 2);
+  // assert.equal(f.report('trivy').exit_code, 2);
+  // REVVEL-DISABLED-END
+  assert.equal(r.status, 0, r.stderr + r.stdout);
+  assert.equal(f.report('trivy').exit_code, 0);
   f.git('checkout', '-qb', 'submodule-case', f.approved);
   f.git('update-index', '--add', '--cacheinfo', `160000,${f.approved},external`);
   f.git('commit', '-qm', 'submodule candidate');
@@ -218,4 +238,36 @@ test('approved fleet missing API is error 2 and does not suppress scanners', (t)
   assert.equal(r.status, 2);
   assert.equal(f.report('fleet').exit_code, 2);
   assert.equal(f.report('trivy').exit_code, 0);
+});
+
+test('missing actual metadata fails fleet but still runs both scanners', (t) => {
+  const f = fixture(t);
+  const r = f.invoke({ metadata: null });
+  assert.equal(r.status, 2);
+  assert.equal(f.report('fleet').reason, 'actual-event-metadata-unavailable');
+  assert.equal(f.report('trivy').exit_code, 0);
+  assert.equal(f.report('clamav').exit_code, 0);
+});
+test('final worker fleet API scans real supplied metadata and redacts receipt content', (t) => {
+  const f = fixture(t);
+  f.put('scripts/security-fleet.js', fs.readFileSync(path.resolve(__dirname, '../scripts/security-fleet.js')));
+  const policy = f.commit('approved final fleet module');
+  fs.writeFileSync(f.actualMetadata, `Actual fixture title\n\n${secret}`);
+  const r = f.invoke({ policy, base: policy, head: policy });
+  assert.equal(r.status, 1, r.stderr + r.stdout);
+  assert.equal(f.report('fleet').exit_code, 1);
+  assert.equal(f.report('trivy').exit_code, 0);
+  assert.doesNotMatch(fs.readFileSync(path.join(f.reports, 'fleet', 'report.json'), 'utf8'), new RegExp(secret));
+});
+test('final worker archival script reads unusual candidate names as committed data', (t) => {
+  const f = fixture(t);
+  f.put('.circleci/scripts/check-archival-policy.sh', fs.readFileSync(path.resolve(__dirname, '../.circleci/scripts/check-archival-policy.sh')));
+  const policy = f.commit('approved final archival module');
+  f.put('odd\ttab\n$(touch injected).txt', '# REVVEL-DISABLED | AGENT: fixture\n# REVVEL-DISABLED-END\n');
+  const head = f.commit('malformed archival metadata');
+  const r = f.invoke({ policy, base: policy, head });
+  assert.equal(r.status, 1, r.stderr + r.stdout);
+  assert.equal(f.report('archival').exit_code, 1);
+  assert.equal(f.report('trivy').exit_code, 0);
+  assert.equal(fs.existsSync(path.join(f.repo, 'injected')), false);
 });
