@@ -15,8 +15,9 @@ Detects GPU via nvidia-smi with graceful CPU fallback.
 Used by the AI Architecture framework to route workloads to the
 cheapest viable hardware tier.
 """
-from __future__ import annotations
-
+# SYNTAX REPAIR 2026-11-15 (same blocker PR): this was a second module header
+# (another interleaved version). Its `from __future__ import annotations` is
+# illegal anywhere but the top of the file; removed, keeping the imports.
 import shutil
 import subprocess
 from dataclasses import dataclass, field
@@ -68,8 +69,8 @@ def query_gpus() -> List[DeviceInfo]:
 Provides a thin abstraction over nvidia-smi with CPU fallback so the
 framework runs in any environment (CI, laptop, GPU host).
 """
-from __future__ import annotations
-
+# SYNTAX REPAIR 2026-11-15 (same blocker PR): third interleaved module header;
+# its mid-file `from __future__ import annotations` removed, imports kept.
 import json
 import shutil
 import subprocess
@@ -120,12 +121,17 @@ def detect_gpu() -> Optional[GPUInfo]:
     except (subprocess.SubprocessError, OSError):
         return [ComputeDevice(kind="cpu", index=0, name="cpu", memory_mb=0)]
 
+    # SYNTAX REPAIR 2026-11-15 (Claude session, blocker PR): this file holds
+    # several interleaved versions of the module (ComputeDevice / DeviceInfo /
+    # GPUInfo variants). Five orphaned lines of the DeviceInfo variant's
+    # try/except body sat here mid-function and broke compilation — the
+    # validate-before-push hook refuses EVERY push while any .py fails
+    # py_compile. Only that orphan fragment was removed; the interleaved
+    # versions (duplicate docstrings, dataclasses, __main__ blocks, and this
+    # function's GPUInfo annotation vs ComputeDevice body) still need a real
+    # reconstruction in a follow-up. Removing this note hides why a repair
+    # commit touched the middle of this function.
     devices: List[ComputeDevice] = []
-        ).decode("utf-8", errors="ignore")
-    except (subprocess.SubprocessError, OSError):
-        return []
-
-    devices: List[DeviceInfo] = []
     for line in out.strip().splitlines():
         parts = [p.strip() for p in line.split(",")]
         if len(parts) < 3:
@@ -177,10 +183,12 @@ def provision(min_memory_mb: int = 0) -> dict:
 
 if __name__ == "__main__":
     print(json.dumps(provision(), indent=2))
-        devices.append(DeviceInfo(name=parts[1], kind="gpu", memory_mb=mem, index=idx))
-    return devices
 
 
+# SYNTAX REPAIR 2026-11-15 (same blocker PR as the note above): two more
+# orphaned lines of the DeviceInfo variant's loop body sat here, indented
+# inside nothing. Removed; everything below is the DeviceInfo/GPUInfo
+# variants awaiting the same follow-up reconstruction.
 def provision(min_memory_mb: int = 0, prefer: Optional[str] = None) -> ProvisioningResult:
     """Provision the best-fit device for a workload.
 
@@ -216,20 +224,13 @@ if __name__ == "__main__":
     print(f"device={result.device.name} kind={result.device.kind} fallback={result.fallback}")
     for line in result.log:
         print(f"  {line}")
-                "--query-gpu=name,memory.total,utilization.gpu",
-                "--format=csv,noheader,nounits",
-            ],
-            text=True,
-            timeout=5,
-        ).strip().splitlines()
-        if not out:
-            return None
-        name, mem, util = [p.strip() for p in out[0].split(",")]
-        return GPUInfo(name=name, memory_mb=int(mem), utilization_pct=int(util), available=True)
-    except (subprocess.SubprocessError, ValueError, OSError):
-        return None
 
 
+# SYNTAX REPAIR 2026-11-15 (same blocker PR): twelve orphaned lines of the
+# GPUInfo variant's detect_gpu() body (its nvidia-smi query and return) sat
+# here, indented inside nothing. Removed as unparseable; note that
+# provision_jit() below still calls detect_gpu(), whose surviving body is the
+# ComputeDevice variant's — the follow-up reconstruction must reconcile them.
 def select_hardware(workload_gb: float, latency_ms: int) -> str:
     """Pick the cheapest hardware tier that fits the workload."""
     if workload_gb <= 1 and latency_ms >= 1000:

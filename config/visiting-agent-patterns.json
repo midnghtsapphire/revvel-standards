@@ -138,13 +138,14 @@
         "products/affiliate-hub/**",
         "products/halo-demo-stream/**",
         "packages/static-stripe-server/**",
-        "templates/cicd/deploy-static.mjs"
+        "templates/cicd/deploy-static.mjs",
+        "products/oaudrey-home/public/index.html"
       ],
       "patterns": [
         "affiliate",
         "utm-source"
       ],
-      "reason": "affiliate-hub is a product Audrey asked for and affiliate code is its purpose (WR #18342, #18330). The demo kit, the shared Stripe server and the deploy list only name or serve that product."
+      "reason": "affiliate-hub is a product Audrey asked for and affiliate code is its purpose (WR #18342, #18330). The demo kit, the shared Stripe server and the deploy list only name or serve that product. The oaudrey-home hub page links to affiliate-hub.oaudrey.com as one of its products and states it carries no affiliate code (approved by Audrey 2026-11-15)."
     }
   ],
   "baseline": [
