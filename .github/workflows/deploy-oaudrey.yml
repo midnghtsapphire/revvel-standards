@@ -25,7 +25,7 @@ jobs:
       - name: Check required secret
         id: check-secret
         run: |
-          if [ -z "$DO_TOKEN" ]; then
+          if [ -z "$DIGITALOCEAN_TOKEN" ]; then
             echo "::warning::DIGITALOCEAN_TOKEN is not set — skipping deploy."
             echo "See standards/OAUDREY_DEPLOYMENT_STANDARD.md for provisioning steps."
             echo "skip=true" >> "$GITHUB_OUTPUT"
@@ -33,7 +33,7 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
         env:
-          DO_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
+          DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
       - uses: actions/checkout@v7
         if: steps.check-secret.outputs.skip != 'true'
       - name: Install doctl
