@@ -317,6 +317,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Unit tests for this gate
+          command: node --test tests/malware-gates.test.js
+      - run:
           name: Trivy on changed files (secrets block; vuln and misconfig report)
           command: bash scripts/security-gates/trivy-scan.sh
       - store_artifacts:
