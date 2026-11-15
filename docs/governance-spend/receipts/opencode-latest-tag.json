@@ -1,0 +1,24 @@
+{
+  "node_id": "TA_kwDOOiiGL9oAKDJjMTRmYzU1ODZmZTBiODhlNWMwNDczMmQyZTg0Njc2OWNjMzU2NzE",
+  "sha": "2c14fc5586fe0b88e5c04732d2e846769cc35671",
+  "url": "https://api.github.com/repos/anomalyco/opencode/git/tags/2c14fc5586fe0b88e5c04732d2e846769cc35671",
+  "tagger": {
+    "name": "opencode",
+    "email": "opencode@sst.dev",
+    "date": "2026-04-07T15:46:47Z"
+  },
+  "object": {
+    "sha": "77fc88c8ade8e5a620ebbe1197f3a572d29ae91a",
+    "type": "commit",
+    "url": "https://api.github.com/repos/anomalyco/opencode/git/commits/77fc88c8ade8e5a620ebbe1197f3a572d29ae91a"
+  },
+  "tag": "latest",
+  "message": "Update latest to github-v1.2.19\n",
+  "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+  }
+}

@@ -124,7 +124,7 @@ revvel-rosette-automation/src/orchestrator.py::W293 12
 revvel-rosette-automation/src/scheduler.py::F401 2
 revvel-rosette-automation/src/scheduler.py::W293 21
 revvel-rosette-automation/src/selfheal.py::W293 31
-revvel-standards/docs/audrey/agents/audrey_super_agent.py::W292 1
+docs/audrey/agents/audrey_super_agent.py::W292 1
 scripts/app_artifact_auditor.py::E501 3
 scripts/app_artifact_auditor.py::E741 1
 scripts/apply-revvel-command-project-fields.py::E302 2

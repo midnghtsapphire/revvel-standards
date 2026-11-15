@@ -1,0 +1,87 @@
+  • Error calling workflow: 'pr-workflow'
+  • Error calling job: 'policy-check'
+  • Expressions must be less than 2048 characters.
+  • /usr/bin/env -i PATH=/usr/local/bin:/usr/bin:/bin HOME=/tmp/revvel-security-home \
+  •   LC_ALL=C TZ=UTC GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null \
+  •   /bin/bash --noprofile --norc -s -- "${CIRCLE_SHA1:-}" "${CIRCLE_BRANCH:-}" "${CIRCLE_PULL_REQUEST:-}" <<'TRUSTED_TRANSPORT'
+  • set -euo pipefail
+  • umask 077
+  • reports=/tmp/security-completion-reports
+  • mkdir -p "$HOME" "$reports"
+  • blocked() {
+  •   printf '{"schema":1,"engine":"bootstrap","status":"error","exit_code":2,"reason":"transport-or-reference-failed"}\n' > "$reports/bootstrap.json"
+  •   printf 'security completion: bootstrap error; inspect Git availability and reviewed pins\n' >&2
+  •   exit 2
+  • }
+  • trap blocked ERR
+  • head=$1 branch=$2
+  • [[ $head =~ ^[a-f0-9]{40}$ ]] || blocked
+  • # Full object pins, reviewed as stacked dependency PRs. An owner must
+  • # review pin changes; fetching a moving branch never approves code.
+  • # REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+  • # REASON: Final invoker requires real metadata and normalizes symlink blobs.
+  • # shim_source=d952b6afb7472f4d908f1ad637cd79902b8403a0
+  • # REVVEL-DISABLED-END
+  • shim_source=74a355d9f26008a40e75c94d896c8f64f8a28762
+  • # REVVEL-DISABLED | AGENT: orbit | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+  • # REASON: Final committed worker tips include the fleet/archival and scanner runtime fixes.
+  • # policy_source=521de54e02a8f07b32ab551dfd3aa3842c1200f4
+  • # scanner_source=d5c7797714f07b2058217641e99cf4171df53b19
+  • # REVVEL-DISABLED-END
+  • policy_source=92682e66974218f37c6fbcfee8ebeae42620bb1c
+  • # REVVEL-DISABLED | AGENT: coordinator | MODEL: runtime-unspecified | WR: security-circleci-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+  • # REASON: Final tested requirements-file scan correction and runtime evidence are committed together.
+  • # scanner_source=3e2e0cf567e7b5c898c410e41516c3ed43ec67f2
+  • # REVVEL-DISABLED-END
+  • scanner_source=f207fd3cbb47b88b4882de917454f4e9b6795992
+  • transport=$(mktemp -d /tmp/revvel-security-git.XXXXXXXX)
+  • git init --quiet "$transport/repository"
+  • git -C "$transport/repository" remote add origin https://github.com/midnghtsapphire/revvel-standards.git
+  • # Public Git transport only. No tokens, contexts or SSH checkout key.
+  • # No depth limit and no candidate working-tree checkout/overwrite.
+  • timeout 300 git -C "$transport/repository" fetch --quiet --no-tags origin \
+  •   "$shim_source" "$policy_source" "$scanner_source" "$head" 2>/dev/null
+  • timeout 300 git -C "$transport/repository" fetch --quiet --no-tags origin \
+  •   refs/heads/main:refs/remotes/origin/main 2>/dev/null
+  • if [[ $branch == main ]]; then
+  •   base=$(git -C "$transport/repository" rev-parse --verify "$head^1")
+  •   # Main has no PR metadata: scan its actual commit message as the
+  •   # event metadata, not an invented empty title/body.
+  •   git -C "$transport/repository" log -1 --format=%B "$head" > "$transport/event-metadata.txt"
+  • else
+  •   base=$(git -C "$transport/repository" rev-parse --verify refs/remotes/origin/main)
+  •   # A missing URL, HTTP 403/rate limit, malformed response or head
+  •   # mismatch is fleet error 2, not an empty-body successful scan.
+  •   # This public read uses no auth, proxy, provider or write context.
+  •   if ! python3 -I - "$3" "$head" "$transport/event-metadata.txt" <<'EVENT_METADATA'
+  • import json, re, sys, urllib.request
+  • from pathlib import Path
+  • try:
+  •     match = re.fullmatch(r'https://github\.com/midnghtsapphire/revvel-standards/pull/([1-9][0-9]*)', sys.argv[1])
+  •     if not match:
+  •         raise ValueError('missing metadata source')
+  •     url = 'https://api.github.com/repos/midnghtsapphire/revvel-standards/pulls/' + match[1]
+  •     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+  •     request = urllib.request.Request(url, headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'revvel-security-ci'})
+  •     with opener.open(request, timeout=30) as response:
+  •         payload = json.loads(response.read(2 * 1024 * 1024))
+  •     assert payload['head']['sha'] == sys.argv[2] and payload['base']['ref'] == 'main'
+  •     assert isinstance(payload['title'], str) and (payload['body'] is None or isinstance(payload['body'], str))
+  •     Path(sys.argv[3]).write_text(payload['title'] + '\n\n' + (payload['body'] or ''))
+  • except Exception:
+  •     print('Actual PR metadata unavailable; fleet must fail closed.', file=sys.stderr)
+  •     raise SystemExit(2)
+  • EVENT_METADATA
+  •   then printf 'Fleet metadata unavailable; other checks will still run.\n' >&2; fi
+  • fi
+  • git -C "$transport/repository" show "$shim_source:.circleci/scripts/security-completion.sh" > "$transport/invoker.sh"
+  • # Retain the invoker's real 0/1/2 status; ERR must not replace findings
+  • # with a transport error. Raw sources/logs are not artifact targets.
+  • trap - ERR
+  • status=0
+  • /bin/bash --noprofile --norc "$transport/invoker.sh" "$transport/repository" \
+  •   "$head" "$base" "$policy_source" "$scanner_source" "$reports" "$transport/event-metadata.txt" || status=$?
+  • [[ $status == 0 || $status == 1 || $status == 2 ]] || status=2
+  • exit "$status"
+  • TRUSTED_TRANSPORT
+error: Config file ".circleci/config.yml" contains compilation errors.

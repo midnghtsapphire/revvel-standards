@@ -26,7 +26,12 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const os = require('node:os');
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Fixture writes stay in the authorized worktree.
+// const os = require('node:os');
+// REVVEL-DISABLED-END
+const os = { tmpdir: () => path.join(__dirname, '..', 'docs/security-completion') };
+
 const path = require('node:path');
 const { execFileSync, spawnSync } = require('node:child_process');
 
@@ -87,7 +92,12 @@ function run(dir, env, { bin } = {}) {
 const LABELLED = JSON.stringify({ labels: [{ name: 'bug' }, { name: 'allow-destroy' }] });
 const UNLABELLED = JSON.stringify({ labels: [{ name: 'bug' }] });
 
-test('the allow-destroy label ratifies a deletion', () => {
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Test name updated to reflect the newer owner policy; original is kept for history.
+// test('the allow-destroy label ratifies a deletion', () => {
+// REVVEL-DISABLED-END
+test('allow-destroy label no longer ratifies deletion', () => {
+
   const dir = repoWithADeletion();
   const bin = stubCurl(dir, { body: LABELLED });
   const r = run(dir, {
@@ -96,8 +106,18 @@ test('the allow-destroy label ratifies a deletion', () => {
     CIRCLE_PROJECT_USERNAME: 'o',
     CIRCLE_PROJECT_REPONAME: 'r',
   }, { bin });
-  assert.equal(r.status, 0, `expected the label to ratify:\n${r.stdout}\n${r.stderr}`);
-  assert.match(r.stderr, /allow-destroy label found on PR #1234/);
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Legacy bypass assertions are superseded by owner no-delete policy.
+//   assert.equal(r.status, 0, `expected the label to ratify:\n${r.stdout}\n${r.stderr}`);
+// REVVEL-DISABLED-END
+  assert.equal(r.status, 1, "Owner no-delete rule blocks even a labelled PR");
+
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Legacy bypass assertions are superseded by owner no-delete policy.
+//   assert.match(r.stderr, /allow-destroy label found on PR #1234/);
+// REVVEL-DISABLED-END
+  assert.match(r.stderr, /no label\/env bypass/);
+
 });
 
 test('a PR without the label is still blocked', () => {
@@ -133,14 +153,29 @@ test('the label must be a label, not a word in the PR body', () => {
   assert.equal(r.status, 1, 'a PR must not ratify itself by naming the label');
 });
 
-test('no token fails CLOSED, and names what is missing', () => {
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Test name updated to reflect the newer owner policy; original is kept for history.
+// test('no token fails CLOSED, and names what is missing', () => {
+// REVVEL-DISABLED-END
+test('no token is required to block deletion', () => {
+
   // An unreadable label is not permission. But a check that just says "no" is
   // how the old hardcoded `false` stayed unnoticed, so it has to say WHY.
   const dir = repoWithADeletion();
   const r = run(dir, { CIRCLE_PULL_REQUEST: 'https://github.com/o/r/pull/1234' });
   assert.equal(r.status, 1);
-  assert.match(r.stderr, /no GITHUB_TOKEN in this job/);
-  assert.match(r.stderr, /Add GITHUB_TOKEN/);
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Legacy bypass assertions are superseded by owner no-delete policy.
+//   assert.match(r.stderr, /no GITHUB_TOKEN in this job/);
+// REVVEL-DISABLED-END
+  assert.match(r.stderr, /Deleted files detected/);
+
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Legacy bypass assertions are superseded by owner no-delete policy.
+//   assert.match(r.stderr, /Add GITHUB_TOKEN/);
+// REVVEL-DISABLED-END
+  assert.doesNotMatch(r.stderr, /Add GITHUB_TOKEN/);
+
 });
 
 test('an API failure fails CLOSED', () => {
@@ -153,13 +188,28 @@ test('an API failure fails CLOSED', () => {
     CIRCLE_PROJECT_REPONAME: 'r',
   }, { bin });
   assert.equal(r.status, 1);
-  assert.match(r.stderr, /allow-destroy lookup failed/);
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Legacy bypass assertions are superseded by owner no-delete policy.
+//   assert.match(r.stderr, /allow-destroy lookup failed/);
+// REVVEL-DISABLED-END
+  assert.match(r.stderr, /Deleted files detected/);
+
 });
 
-test('an explicit ALLOW_DESTROY still wins', () => {
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Test name updated to reflect the newer owner policy; original is kept for history.
+// test('an explicit ALLOW_DESTROY still wins', () => {
+// REVVEL-DISABLED-END
+test('explicit ALLOW_DESTROY cannot bypass deletion policy', () => {
+
   const dir = repoWithADeletion();
   const r = run(dir, { ALLOW_DESTROY: 'true' });
-  assert.equal(r.status, 0, 'an explicit setting is a decision already taken');
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Legacy bypass assertions are superseded by owner no-delete policy.
+//   assert.equal(r.status, 0, 'an explicit setting is a decision already taken');
+// REVVEL-DISABLED-END
+  assert.equal(r.status, 1, 'ALLOW_DESTROY is inert under the owner no-delete rule');
+
 });
 
 test('outside a PR build the gate stays strict', () => {
@@ -252,4 +302,13 @@ test('policy scan still flags bad blocks in files with NUL bytes or dash-leading
   assert.equal(r.status, 1, r.stdout + r.stderr);
   assert.match(r.stderr, /nul\.py:1 — REVVEL-DISABLED block missing 'MODEL:'/);
   assert.match(r.stderr, /-dash\.py:1 — REVVEL-DISABLED block missing 'MODEL:'/);
+});
+
+// 2026-11-15: fixtures are disposable test data, not repository source.
+process.on('exit', () => {
+  for (const name of fs.readdirSync(os.tmpdir())) {
+    if (/^(allow-destroy-|archival-scan-|archival-scan-edge-)/.test(name)) {
+      fs.rmSync(path.join(os.tmpdir(), name), { recursive: true, force: true });
+    }
+  }
 });

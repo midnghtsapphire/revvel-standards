@@ -1,0 +1,186 @@
+TAP version 13
+# Subtest: every script that calls a paid LLM provider consults the spend gate
+ok 1 - every script that calls a paid LLM provider consults the spend gate
+  ---
+  duration_ms: 35.229204
+  type: 'test'
+  ...
+# Subtest: the ungated workflow list only shrinks
+ok 2 - the ungated workflow list only shrinks
+  ---
+  duration_ms: 39.779515
+  type: 'test'
+  ...
+# Subtest: the gate opens only on exactly "1"
+ok 3 - the gate opens only on exactly "1"
+  ---
+  duration_ms: 2.186761
+  type: 'test'
+  ...
+# Subtest: the refusal names the gate and the call site
+ok 4 - the refusal names the gate and the call site
+  ---
+  duration_ms: 0.699876
+  type: 'test'
+  ...
+# Subtest: a free probe that starts billing loses its exemption
+ok 5 - a free probe that starts billing loses its exemption
+  ---
+  duration_ms: 1.399022
+  type: 'test'
+  ...
+# Subtest: a workflow handing a paid LLM credential to a third-party action is gated
+ok 6 - a workflow handing a paid LLM credential to a third-party action is gated
+  ---
+  duration_ms: 23.769018
+  type: 'test'
+  ...
+# Subtest: PoT Python spend gate executes five offline unittest regressions
+ok 7 - PoT Python spend gate executes five offline unittest regressions
+  ---
+  duration_ms: 153.616383
+  type: 'test'
+  ...
+# Subtest: Roo closed gate undefined never calls a paid provider or retries
+ok 8 - Roo closed gate undefined never calls a paid provider or retries
+  ---
+  duration_ms: 124.108317
+  type: 'test'
+  ...
+# Subtest: Roo closed gate "0" never calls a paid provider or retries
+ok 9 - Roo closed gate "0" never calls a paid provider or retries
+  ---
+  duration_ms: 125.672486
+  type: 'test'
+  ...
+# Subtest: Roo closed gate "" never calls a paid provider or retries
+ok 10 - Roo closed gate "" never calls a paid provider or retries
+  ---
+  duration_ms: 122.820839
+  type: 'test'
+  ...
+# Subtest: Roo closed gate "true" never calls a paid provider or retries
+ok 11 - Roo closed gate "true" never calls a paid provider or retries
+  ---
+  duration_ms: 124.341497
+  type: 'test'
+  ...
+# Subtest: Roo closed gate "yes" never calls a paid provider or retries
+ok 12 - Roo closed gate "yes" never calls a paid provider or retries
+  ---
+  duration_ms: 126.516951
+  type: 'test'
+  ...
+# Subtest: Roo closed gate "on" never calls a paid provider or retries
+ok 13 - Roo closed gate "on" never calls a paid provider or retries
+  ---
+  duration_ms: 128.881781
+  type: 'test'
+  ...
+# Subtest: Roo missing key with gate 0 keeps its honest manual fallback
+ok 14 - Roo missing key with gate 0 keeps its honest manual fallback
+  ---
+  duration_ms: 125.926607
+  type: 'test'
+  ...
+# Subtest: Roo missing key with gate 1 keeps its honest manual fallback
+ok 15 - Roo missing key with gate 1 keeps its honest manual fallback
+  ---
+  duration_ms: 124.040981
+  type: 'test'
+  ...
+# Subtest: Roo open gate consumes one mock response and no real provider
+ok 16 - Roo open gate consumes one mock response and no real provider
+  ---
+  duration_ms: 132.949921
+  type: 'test'
+  ...
+# Subtest: Roo mock provider refusal writes a manual pack without paid retry
+ok 17 - Roo mock provider refusal writes a manual pack without paid retry
+  ---
+  duration_ms: 124.728959
+  type: 'test'
+  ...
+# Subtest: Manus closed gate undefined is terminal before paid task creation
+ok 18 - Manus closed gate undefined is terminal before paid task creation
+  ---
+  duration_ms: 129.161452
+  type: 'test'
+  ...
+# Subtest: Manus closed gate "0" is terminal before paid task creation
+ok 19 - Manus closed gate "0" is terminal before paid task creation
+  ---
+  duration_ms: 121.096743
+  type: 'test'
+  ...
+# Subtest: Manus closed gate "true" is terminal before paid task creation
+ok 20 - Manus closed gate "true" is terminal before paid task creation
+  ---
+  duration_ms: 121.493648
+  type: 'test'
+  ...
+# Subtest: Manus missing key with gate 0 does not create a paid task
+ok 21 - Manus missing key with gate 0 does not create a paid task
+  ---
+  duration_ms: 130.92021
+  type: 'test'
+  ...
+# Subtest: Manus missing key with gate 1 does not create a paid task
+ok 22 - Manus missing key with gate 1 does not create a paid task
+  ---
+  duration_ms: 122.706002
+  type: 'test'
+  ...
+# Subtest: Manus open gate creates only one mock task
+ok 23 - Manus open gate creates only one mock task
+  ---
+  duration_ms: 128.91975
+  type: 'test'
+  ...
+# Subtest: opencode-comment preserves its trigger AND gates the pinned credential-bearing action
+ok 24 - opencode-comment preserves its trigger AND gates the pinned credential-bearing action
+  ---
+  duration_ms: 10.422689
+  type: 'test'
+  ...
+# Subtest: opencode-label preserves its trigger AND gates the pinned credential-bearing action
+ok 25 - opencode-label preserves its trigger AND gates the pinned credential-bearing action
+  ---
+  duration_ms: 6.910679
+  type: 'test'
+  ...
+# Subtest: opencode-manual preserves its trigger AND gates the pinned credential-bearing action
+ok 26 - opencode-manual preserves its trigger AND gates the pinned credential-bearing action
+  ---
+  duration_ms: 5.871999
+  type: 'test'
+  ...
+# Subtest: OpenCode action pin provenance and original mutable refs remain visible
+not ok 27 - OpenCode action pin provenance and original mutable refs remain visible
+  ---
+  duration_ms: 0.700319
+  type: 'test'
+  location: '/home/ubuntu/work/governance-spend/tests/llm-spend-gate-delivery.test.js:164:1'
+  failureType: 'testCodeFailure'
+  error: `Unexpected token '\x1B', "\x1B[1;37m{\x1B["... is not valid JSON`
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    JSON.parse (<anonymous>)
+    TestContext.<anonymous> (/home/ubuntu/work/governance-spend/tests/llm-spend-gate-delivery.test.js:166:20)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 26
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2367.67207

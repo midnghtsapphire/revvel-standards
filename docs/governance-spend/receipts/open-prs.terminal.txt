@@ -1,0 +1,107 @@
+[1;37m[[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"fix/security-no-destroy-20261115"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18428[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"fix(security): block destructive changes and isolate trusted fleet alerts"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18428"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"fix/security-trivy-malware-20261115"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18427[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"fix(security): enforce pinned Trivy and malware PR checks"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18427"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"feat/agent-completion-20261115"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18426[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"feat: resume owned agent work with bounded lifecycle completion proof"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18426"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"docs/security-and-agent-follow-through-20261115"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18425[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"docs: plan security checks and agent follow-through"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18425"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"fix/actions-concurrency-cost-leak"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18424[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"fix(ci): 🔴 BLOCKER — stop paying for superseded workflow runs on every push"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18424"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"fix/windows-posix-test-portability"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18422[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"fix(tests): make test suite runnable on Windows, not only POSIX"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18422"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"docs/sar-investigation-process"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18421[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"Add SAR investigation process docs and pipeline"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18421"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"fix/sar-review-findings"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18420[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"Fix 10 code-review findings in blue-ocean-sar SAR tools"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18420"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"fix/visiting-agent-oaudrey-home"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18419[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"fix(ci): 🔴 BLOCKER — visiting-agent scan false-positives fail CircleCI on every PR"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18419"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"fix/secret-naming-convention"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18417[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"fix(secrets): enforce <APP>_API_KEY / <APP>_TOKEN naming convention repo-wide"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18417"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"chunk/veins-monitoring-setup"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18416[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"chore(veins): monitoring snapshot 2026-11-15 + auto-persist history"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18416"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"docs/inventory-and-organize-2026-11-14"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18413[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"docs: inventory the repo + phase 1 organize (19 root moves, nothing deleted)"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18413"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"ci/trivy-fs-circleci-2026-11-14"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18412[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"ci: add Trivy filesystem scan on CircleCI"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18412"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"docs/actions-migration-and-free-substitutes-2026-11-14"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18411[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"docs: restore ACTIONS_MIGRATION.md and add free GitHub substitutes"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18411"[m
+  [1;37m}[m[1;37m,[m
+  [1;37m{[m
+    [1;34m"baseRefName"[m[1;37m:[m [32m"main"[m[1;37m,[m
+    [1;34m"headRefName"[m[1;37m:[m [32m"docs/notion-resale-inventory-template-2026-11-14"[m[1;37m,[m
+    [1;34m"number"[m[1;37m:[m 18407[1;37m,[m
+    [1;34m"title"[m[1;37m:[m [32m"Proofy: add Notion-mirrored Amazon Resale Inventory GitHub template — Proofy"[m[1;37m,[m
+    [1;34m"url"[m[1;37m:[m [32m"https://github.com/midnghtsapphire/revvel-standards/pull/18407"[m
+  [1;37m}[m
+[1;37m][m

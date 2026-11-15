@@ -112,6 +112,18 @@ def detect_gpu() -> Optional[GPUInfo]:
         out = subprocess.check_output(
             [
                 "nvidia-smi",
+                "--query-gpu=name,memory.total,utilization.gpu",
+                "--format=csv,noheader,nounits",
+            ],
+            text=True,
+            timeout=5,
+        ).strip().splitlines()
+        if not out:
+            return None
+        name, mem, util = [p.strip() for p in out[0].split(",")]
+        return GPUInfo(name=name, memory_mb=int(mem), utilization_pct=int(util), available=True)
+    except (subprocess.SubprocessError, ValueError, OSError):
+        return None
                 "--query-gpu=index,name,memory.total",
                 "--format=csv,noheader,nounits",
             ],
