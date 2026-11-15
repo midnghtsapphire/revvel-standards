@@ -1,0 +1,37 @@
+# CircleCI security completion — draft activation
+
+This extends the existing `policy-check` job in `pr-workflow` and `main-workflow`; it is not a second monitor, reviewer, fallback chain, or scheduled workflow. The integration branch starts at `e6b5a99659bf454874f62e8c8e4fba8f5aed32d5` and merges the no-destroy and scanner worker branches as stacked dependencies. Their specialty files are not copied or edited by this integration workstream. Delivery is a draft PR for owner review, not deployment or required-check activation.
+
+## What the job runs
+
+The job uses its existing pinned Node image, no context, no checkout credential, no package installation, and no provider API. A small inline transport fetches the public repository into a fresh Git store and reads this invoker from a full commit ID. It fetches candidate and approved source objects without checking out candidate code. Policy and scanner sources are separate pinned commits, never candidate `HEAD` and never a mutable branch name. Missing commits, scripts, merge bases, or scanner receipts fail closed.
+
+The invoker executes the workers' no-destroy, archival, and fleet policy entry points plus `python3 -I scripts/security/scan.py trivy|clamav --candidate DIR --tools DIR --reports DIR`. It does not implement detection, reviewer, remediation, or fallback logic. Every engine subprocess receives a new minimal environment; repository, provider, production, proxy, language-preload, threshold-override and scanner-skip variables are not passed through. Candidate blobs are materialized as non-executable data using NUL-delimited Git tree records and `cat-file`, not candidate hooks, imports, builds, installers or shell evaluation. Committed `export-ignore` attributes cannot hide files. Symlinks, submodules and unsupported tree objects are coverage errors, not silently excluded content.
+
+Policies receive the actual merge base of the resolved base and candidate head. PR/branch builds fetch complete `main` ancestry without overwriting candidate files. A main build compares its head against its first parent, so the latest main commit does not produce a trivially empty `HEAD`-against-`HEAD` check. Missing first parents or unrelated history are errors. Filenames containing tabs, newlines, spaces and shell punctuation remain data.
+
+All engines are invoked even after a policy finding. Exit `0` means every check completed cleanly; `1` means blocking findings; `2` means missing prerequisites, installation/definition outages, incomplete coverage, engine errors or invalid receipts. Errors dominate findings in the aggregate. Raw policy/scanner logs, candidate archives, filenames and secret excerpts remain private disposable execution data. Only redacted `report.json` and `summary.txt` receipts are retained as artifacts after failure as well as success. Native scanner installation/database error reasons are preserved rather than converted to a skip.
+
+## Activation restrictions, not a guarantee
+
+The supplied incident context reports that GitHub Actions jobs fail before steps account-wide and Checks/secrets/variables metadata access returns HTTP 403. This integration does not resolve that platform condition, pay a bill, alter billing, or infer clean scans from jobs that never started. The existing CircleCI lane is reported as running; this new pinned job still needs its own remote execution receipt. CLI schema/orb processing and live execution are distinct from local PyYAML/Bash/mock tests.
+
+CircleCI project-level environment variables are delivered to jobs, and masking is not a security boundary.[1] An environment scrub protects the engine subprocesses, not the outer job, candidate-controlled CircleCI configuration, unrelated legacy jobs, filesystem credential mounts or SSH reruns. Existing deploy jobs in this repository reference project-level Railway and DigitalOcean credentials. Adding no context to `policy-check` cannot prove those project secrets are absent. No project settings or deployment job is silently changed here.
+
+Before allowing untrusted candidate configuration or declaring this check a protected security boundary, the owner must verify that the project does not deliver write/provider/production credentials or user/deploy keys to those jobs. Existing credential-bearing deployments need owner-approved restricted contexts and/or a restricted trusted configuration source; a secret-free project execution path is another owner-controlled option. Keep fork secret forwarding off. Fork default protections do not protect same-repository branch configuration.[2] Org config policies can constrain compiled configuration if available, but their availability, privileges and enforcement have not been verified here and no paid plan is proposed.[3]
+
+The pinned object IDs in the reviewed config and invoker are the approved-code boundary only while that config is trusted. A contributor can otherwise change the config to select new pins or run arbitrary commands. Owner review of the pins and source objects is necessary before activation. Agents do not self-review, self-merge, change project secrets or required checks, or claim a draft is deployed.
+
+## Definition of done and cost
+
+The requested code deliverable is complete when a draft PR contains the merged worker dependencies, the functional pinned invoker, preserved legacy steps, local test receipts, remote availability evidence and the next owner action. Live enforcement remains blocked until the owner reviews/merges the dependency and integration code, establishes the credential/configuration boundary, observes a real clean/findings/error CircleCI run, and approves the required check name. Existing branch protection is not modified by this PR.
+
+There are no new timers or recurring Manus jobs, no paid LLM/API calls, no Docker-layer-cache purchase, and no billing changes. Native PR/main scanning adds public scanner downloads and vulnerability/signature database traffic plus CircleCI compute time. Existing workflow filters also run on non-main branch pushes; project-level “Only build pull requests” settings were not changed or verified. No dollar cost or zero-cost guarantee is invented.
+
+Rollback is a new owner-reviewed additive PR that comments the activation lines out in place with dated retirement metadata; do not delete source history or silently reinstate the deletion-label bypass or report-only scanner behavior.
+
+## References
+
+[1]: https://circleci.com/docs/guides/security/env-vars/ "CircleCI project variables, BASH_ENV and secrets masking limitations"
+[2]: https://circleci.com/docs/guides/server/integration/pull-request-build-settings/ "CircleCI fork builds and secret-forwarding controls"
+[3]: https://circleci.com/docs/guides/config-policies/config-policy-management-overview/ "CircleCI organization policies and compiled configuration enforcement"
