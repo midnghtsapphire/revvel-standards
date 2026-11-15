@@ -135,6 +135,15 @@ jobs:
               > /tmp/veins-artifacts/veins-state-log.txt || true
             cp docs/veins-history.jsonl \
               /tmp/veins-artifacts/veins-history.jsonl || true
+      # Push docs/veins-history.jsonl back to main so trend rows persist across
+      # builds. Only runs on main (enforced inside the script) and uses
+      # [skip ci] in the commit message to avoid a build loop. Exits 0 on
+      # skip (no token, non-main branch, no change) so it never fails the job.
+      - run:
+          name: Persist VEINS history row to repo
+          command: node scripts/veins-history-push.js || true
+          environment:
+            ADMIN_GITHUB_TOKEN: $ADMIN_GITHUB_TOKEN
       - store_artifacts:
           path: /tmp/veins-artifacts
           destination: veins-monitor
