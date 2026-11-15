@@ -1208,3 +1208,40 @@ product hostnames in the deploy notes did not resolve, and the Vercel host
 returned 402. A sales case study can cite only a product whose URL is the
 product. A parked 200 is not that. The deck says proof pending and names issue
 18330 instead of inventing a customer.
+
+## 2026-11-14 — Restore ACTIONS_MIGRATION.md and record free GitHub substitutes
+
+**Requested by Audrey, 14 Nov 2026:** find the hidden gems in
+revvel-standards, including the missing
+`docs/governance/ACTIONS_MIGRATION.md` and free substitutes for paid
+or limited GitHub features.
+
+**What happened.** PR #18279 (squash commit
+`b741f195027e5e17e849e7cdbbb4e6c04c09962a`) added
+`docs/governance/ACTIONS_MIGRATION.md` on 2026-11-07. GitHub still
+shows the pull request as merged, but that commit is not an ancestor
+of current `main`, so the path was missing even though this file
+already cited it (2026-11-07 billing-lock entry). The document was
+**recovered from that commit, not rewritten.** A recovery note and a
+short later-context section (CircleCI + GitGuardian gate,
+`ops/self-hosted-ci`, this lesson) were added around the original
+body.
+
+**New doc.** `docs/governance/FREE_GITHUB_SUBSTITUTES.md` maps
+Projects, Codespaces, Packages, LFS, and Advanced Security to
+workarounds that stay on the free tier and off hosted Actions. Pricing
+claims were checked against vendor docs on 2026-11-14 and are cited
+there. Notable findings: current Projects is included on GitHub Free
+(personal and org); Gitpod / Ona Cloud shut down on 2026-10-31 and is
+not a Codespaces substitute; GHCR container storage is currently free
+but reversible with one month's notice; default CodeQL setup still
+needs a hosted Actions runner, so it fails under the billing lock even
+on public repos.
+
+**Prevention rule (unchanged).** Keep Actions enabled, do not rewrite
+workflows, never touch billing, never run CI on the Grok Bot box.
+CircleCI and `ops/self-hosted-ci` remain the lanes.
+
+**Related:** [`docs/governance/ACTIONS_MIGRATION.md`](docs/governance/ACTIONS_MIGRATION.md),
+[`docs/governance/FREE_GITHUB_SUBSTITUTES.md`](docs/governance/FREE_GITHUB_SUBSTITUTES.md),
+PR #18279, `ops/self-hosted-ci/README.md`.
