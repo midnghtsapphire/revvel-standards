@@ -219,6 +219,26 @@ jobs:
           name: Catalog seeder tests (offline fake Lago)
           command: node --test products/revenue-billing/plans/seed-plans.test.mjs products/revenue-billing/lago.test.mjs
 
+  # Security gate 4 (docs/security-gates/PLAN.md): a second reader's notes on the
+  # PR diff through an API. NEVER blocks: no key, spend gate closed, or provider
+  # error all print a notice and exit 0. Calls nothing unless the CircleCI project
+  # env has REVVEL_LLM_ALLOW_CLOUD=1 and OPENROUTER_API_KEY (Manus: also set
+  # REVIEW_PROVIDERS=openrouter,manus and MANUS_API_KEY). Added by Proofy.
+  api-code-review:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Unit tests for this gate
+          command: node --test tests/api-code-review.test.js
+      - run:
+          name: API code review of the PR diff (non-blocking)
+          no_output_timeout: 12m
+          command: node scripts/security-gates/api-code-review.js
+      - store_artifacts:
+          path: /tmp/security-gates
+          destination: security-gates
+
   # WR #18333 — apply the billing SQL twice to a throwaway Postgres 15 and run
   # the assertions (idempotency, constraints, RLS, no anon grants, webhook
   # dedupe). The secondary container is created fresh per run and holds no data.
@@ -306,6 +326,38 @@ jobs:
           name: halo-demo-stream tests
           command: cd products/halo-demo-stream && npm test
 
+  # Security gate 2 (docs/security-gates/PLAN.md): Trivy and ClamAV on only the
+  # files a PR adds or changes. Trivy secrets (HIGH/CRITICAL) block; its vuln and
+  # misconfig results are reported, not blocking (old backlog). ClamAV blocks on
+  # any detection and fails the job, rather than passing, if it cannot get
+  # signatures or cannot detect its own EICAR self-test. Free tools only, no
+  # secret needed. Added by Proofy.
+  trivy-scan:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Unit tests for this gate
+          command: node --test tests/malware-gates.test.js
+      - run:
+          name: Trivy on changed files (secrets block; vuln and misconfig report)
+          command: bash scripts/security-gates/trivy-scan.sh
+      - store_artifacts:
+          path: /tmp/security-gates
+          destination: security-gates
+
+  clamav-scan:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: ClamAV on changed files
+          no_output_timeout: 15m
+          command: bash scripts/security-gates/clamav-scan.sh
+      - store_artifacts:
+          path: /tmp/security-gates
+          destination: security-gates
+
   # WR #18342 moved affiliate-hub's catalogue into app/lib/programs.mjs; this
   # proves the product still builds. Lockfile-pinned install, no scripts.
   affiliate-hub-build:
@@ -318,6 +370,17 @@ jobs:
       - run:
           name: affiliate-hub next build
           command: cd products/affiliate-hub && npx next build
+
+  # Security gate 5 (docs/security-gates/PLAN.md): the reuse path. Tests run-all.sh,
+  # bootstrap.sh (pinned-SHA sparse fetch) and print-adopt-snippet.sh. Node
+  # built-ins and git only, no secret. Added by Proofy.
+  security-gates-adopt-test:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Adoption tests (run-all, bootstrap, snippet)
+          command: node --test tests/security-gates-adopt.test.js
 
   # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
   # and that every REVVEL-DISABLED block in changed files has all required
@@ -474,6 +537,10 @@ workflows:
           filters:
             branches:
               ignore: main
+      - api-code-review:
+          filters:
+            branches:
+              ignore: main
       - billing-sql-validate:
           filters:
             branches:
@@ -486,7 +553,19 @@ workflows:
           filters:
             branches:
               ignore: main
+      - trivy-scan:
+          filters:
+            branches:
+              ignore: main
+      - clamav-scan:
+          filters:
+            branches:
+              ignore: main
       - affiliate-hub-build:
+          filters:
+            branches:
+              ignore: main
+      - security-gates-adopt-test:
           filters:
             branches:
               ignore: main

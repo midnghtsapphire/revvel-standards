@@ -68,8 +68,16 @@ def ca_cfar(intensity: np.ndarray, guard: int = 2, train: int = 4, pfa: float = 
     n_train = (2 * outer + 1) ** 2 - (2 * guard + 1) ** 2
     clutter = (_box_sum(x, outer) - _box_sum(x, guard)) / n_train
     threshold = cfar_alpha(n_train, pfa) * clutter
-    ratio = x / np.maximum(threshold, np.finfo(np.float64).tiny)
-    return x > threshold, ratio, threshold, n_train
+    # A zero or non-positive clutter mean means the training ring is all
+    # nodata/zero-fill (GRD scene edges and masked water are zero-filled). The
+    # threshold is then 0, so every positive cell "detects" with a runaway
+    # ratio and the data/nodata boundary becomes a ring of false targets that
+    # outrank real detections. Treat those cells as having no usable
+    # background: no detection, ratio 0.
+    valid = clutter > 0.0
+    ratio = np.zeros_like(x)
+    np.divide(x, threshold, out=ratio, where=valid)
+    return valid & (x > threshold), ratio, threshold, n_train
 
 
 def lee_filter_intensity(intensity: np.ndarray, size: int = 5, enl: float = 1.0) -> np.ndarray:
@@ -317,7 +325,6 @@ class BlueOceanSARPersonFinder:
         detected = np.flatnonzero(cs_mask.ravel())
         flat_indices = detected[np.argsort(fused_score.ravel()[detected])[::-1]]
         results = []
-        seen_coords = set()
         picked = []  # (row, col) of accepted targets, for non-maximum suppression
 
         for idx in flat_indices:
@@ -329,11 +336,11 @@ class BlueOceanSARPersonFinder:
             picked.append((r, c))
             lat = float(grid_lats[r, c])
             lon = float(grid_lons[r, c])
-            coord_key = (round(lat, 5), round(lon, 5))
-
-            if coord_key in seen_coords:
-                continue
-            seen_coords.add(coord_key)
+            # min_separation_px (pixel-based, resolution-independent) already
+            # suppresses one object's neighbouring pixels. The old lat/lon
+            # rounding dedupe ran AFTER picked.append, so a dropped duplicate
+            # still blocked real targets, and at fine resolution it merged
+            # genuinely separate detections into one. Removed.
 
             results.append(
                 {
@@ -352,7 +359,12 @@ class BlueOceanSARPersonFinder:
                     "cfar_pfa": det.pfa,
                     "cfar_training_cells": n_train,
                     "motion_pdf_weight": float(motion_confidence[r, c]),
-                    "provenance": prov,
+                    # Copy per target so a consumer marking one target's block
+                    # (ground_verified=True after a field check) cannot mutate
+                    # every other target's provenance via the shared dict. The
+                    # source dicts are copied too: list() alone shares them, so
+                    # editing one target's source fields would still cross targets.
+                    "provenance": {**prov, "sources": [dict(s) for s in prov["sources"]]},
                 }
             )
 
@@ -400,7 +412,11 @@ def run_demo(out_path: str = "candidates.geojson", allow_unverified: bool = Fals
     for cand in candidates:
         # What was wrong: the lenient check let an unsourced location be exported (H1).
         # require_provenance(cand)
-        require_export_provenance(cand, allow_unverified=allow_unverified)
+        # Use the block the gate RETURNS, not the original: with --demo it
+        # substitutes a clean UNSOURCED block for a missing/malformed one, and
+        # that substitute must reach the file (the help says output is
+        # "labelled UNSOURCED"). Writing properties=cand kept the original block.
+        cand["provenance"] = require_export_provenance(cand, allow_unverified=allow_unverified)
         features.append(
             {
                 "type": "Feature",

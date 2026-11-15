@@ -1218,3 +1218,51 @@ The prior setup is `.github/workflows/trivy.yml` (`aquasecurity/trivy-action@ed1
 The CircleCI job `trivy-fs` (`.circleci/scripts/trivy-fs.sh`, official Trivy v0.76.2) is the lane that actually runs. It uses the same scanners and severities, stores the table report, and fails on unfixed HIGH/CRITICAL (stricter than the Actions `exit-code: 0`, so findings are visible on the merge-adjacent CircleCI status).
 
 **Related:** `.github/workflows/trivy.yml`, `.circleci/scripts/trivy-fs.sh`, `docs/governance/FREE_GITHUB_SUBSTITUTES.md` (on draft PR #18411).
+
+## TM-0013 — Saved replies need one router and the real workflow contract
+
+2026-11-14 UTC, Audrey's Gitar/Facebook bridge integration.
+
+The standalone issue dispatcher used `work_request_number` and `requested_by`, but the governance repository's real WR workflow accepts `issue_number`. The repository already owns human comment intake through the command-window router. Add one local adapter, not a second catch-all router or gateway delivery. Re-fetch the comment-derived request ID, actual source repository/issue/author, exact command and current permission before running anything; a dispatch payload is data, not executable instructions.
+
+Bridge-originated WR dispatches request an actual draft PR and suppress the upstream direct Jules call through optional inputs, while preserving original caller behavior and existing viability/coding/spend gates. A WR-document/skeleton dispatch, a delivered status, or a green skipped job is not completed implementation. Keep the implementation-PR/Gitar handoff explicit; token-created events may not wake a downstream workflow.
+
+Publisher approval binds the exact summary, source, head and real numeric Page destination. Require a configured human-review environment, not merely its name or a digest; persistent pending receipts prevent blind repeat POSTs after uncertain outcomes. Slack webhook HTTPS and redirects also matter: a failed notice must not abort or replay already accepted work/publication.
+
+Validator/runtime drift and sparse-checkout omissions are different failures. Validate these workflows with the exact pinned actionlint 1.7.7, preserve the original newer queue as history, and do not weaken the gate. Materialize existing guard files and locked dependencies before calling their absence a repository defect. The remaining unchanged OpenCode paid-credential finding stays visible; passing local bridge tests is not global or connected acceptance.
+## 2026-11-14 — Restore ACTIONS_MIGRATION.md and record free GitHub substitutes
+
+**Requested by Audrey, 14 Nov 2026:** find the hidden gems in
+revvel-standards, including the missing
+`docs/governance/ACTIONS_MIGRATION.md` and free substitutes for paid
+or limited GitHub features.
+
+**What happened.** PR #18279 (squash commit
+`b741f195027e5e17e849e7cdbbb4e6c04c09962a`) added
+`docs/governance/ACTIONS_MIGRATION.md` on 2026-11-07. GitHub still
+shows the pull request as merged, but that commit is not an ancestor
+of current `main`, so the path was missing even though this file
+already cited it (2026-11-07 billing-lock entry). The document was
+**recovered from that commit, not rewritten.** A recovery note and a
+short later-context section (CircleCI + GitGuardian gate,
+`ops/self-hosted-ci`, this lesson) were added around the original
+body.
+
+**New doc.** `docs/governance/FREE_GITHUB_SUBSTITUTES.md` maps
+Projects, Codespaces, Packages, LFS, and Advanced Security to
+workarounds that stay on the free tier and off hosted Actions. Pricing
+claims were checked against vendor docs on 2026-11-14 and are cited
+there. Notable findings: current Projects is included on GitHub Free
+(personal and org); Gitpod / Ona Cloud shut down on 2026-10-31 and is
+not a Codespaces substitute; GHCR container storage is currently free
+but reversible with one month's notice; default CodeQL setup still
+needs a hosted Actions runner, so it fails under the billing lock even
+on public repos.
+
+**Prevention rule (unchanged).** Keep Actions enabled, do not rewrite
+workflows, never touch billing, never run CI on the Grok Bot box.
+CircleCI and `ops/self-hosted-ci` remain the lanes.
+
+**Related:** [`docs/governance/ACTIONS_MIGRATION.md`](docs/governance/ACTIONS_MIGRATION.md),
+[`docs/governance/FREE_GITHUB_SUBSTITUTES.md`](docs/governance/FREE_GITHUB_SUBSTITUTES.md),
+PR #18279, `ops/self-hosted-ci/README.md`.
