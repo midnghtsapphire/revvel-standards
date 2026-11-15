@@ -1,0 +1,75 @@
+{
+  "observed_date": "2026-11-15",
+  "architecture": "aarch64",
+  "active_required_checks_verified": false,
+  "receipts": {
+    "trivy_all_scanners": {
+      "tests": [
+        {
+          "engine": "trivy",
+          "test": "root-user-misconfiguration-and-candidate-policy-bypass",
+          "engine_exit": 1,
+          "findings": 11,
+          "counts": {
+            "vulnerability": 9,
+            "misconfiguration": 1,
+            "secret": 1
+          },
+          "database_updated_at": "2026-11-15T12:50:30.599818+00:00"
+        }
+      ]
+    },
+    "trivy_installer_and_scan": {
+      "archive_sha256": "ab9d51f86e6a5fb936f605faff6b593ac51bc378fff4d3e8b9d58358b9c367c3",
+      "candidate_files": 1,
+      "counts": {
+        "misconfiguration": 1,
+        "secret": 0,
+        "vulnerability": 0
+      },
+      "database_updated_at": "2026-11-15T12:50:30.599818+00:00",
+      "engine": "trivy",
+      "exit_code": 1,
+      "findings": 1,
+      "reason": "blocking-findings",
+      "schema": 1,
+      "status": "findings",
+      "timestamp": "2026-11-15T16:46:42.176985+00:00",
+      "version": "0.76.2"
+    },
+    "clamav_official_and_exit_codes": {
+      "tests": [
+        {
+          "engine": "clamav",
+          "test": "safe-EICAR-synthetic-signature",
+          "engine_exit": 1,
+          "infected_files": 1,
+          "scanned_files": 1,
+          "official_database": false
+        },
+        {
+          "engine": "clamav",
+          "test": "clean-file",
+          "engine_exit": 0
+        },
+        {
+          "engine": "clamav",
+          "test": "missing-database-engine-error",
+          "engine_exit": 2
+        },
+        {
+          "engine": "clamav",
+          "test": "safe-EICAR-official-definitions",
+          "engine_exit": 1,
+          "official_database": true,
+          "findings": 1,
+          "scanned_files": 2,
+          "database_build_times": {
+            "daily": "2026-11-15T06:27:00+00:00"
+          },
+          "bytecode_execution": false
+        }
+      ]
+    }
+  }
+}

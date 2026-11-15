@@ -125,6 +125,16 @@ def validate_trivy_report(path, engine_exit):
     return counts
 
 
+def trivy_analysis_incomplete(log):
+    # 2026-11-15 real requirements.txt fixture: Trivy warns when site-packages
+    # are absent for LICENSE detection, while requirements vulnerabilities are
+    # still scanned successfully. License is not one of our enabled scanners.
+    # Exempt only this exact upstream warning, not arbitrary WARN/error lines.
+    license_only = re.compile(r"\tWARN\t\[pip\] Unable to find python `site-packages` directory\. License detection is skipped\.\s+err=\"site-packages directory not found\"$")
+    relevant = "\n".join(line for line in log.splitlines() if not license_only.search(line))
+    return bool(re.search(r"(?im)^.*(?:WARN|ERROR|FATAL).*\b(?:fail(?:ed|ure)?|error|unable|could not)\b", relevant))
+
+
 def trivy_scan(receipt, target, work):
     config, ignores, secret_config, policy = [work / name for name in ("trivy.yaml", "ignore", "secret.yaml", "ignore.rego")]
     config.write_text("{}\n")
@@ -142,7 +152,7 @@ def trivy_scan(receipt, target, work):
                "--skip-dirs", str(target / ".git"), str(target)]
     code, log = execute(command, work, engine_env(work), timeout=720)
     # A parser/database warning indicating incomplete analysis is not a clean pass.
-    if re.search(r"(?im)^.*(?:WARN|ERROR|FATAL).*\b(?:fail(?:ed|ure)?|error|unable|could not)\b", log):
+    if trivy_analysis_incomplete(log):
         raise ScanError("trivy-incomplete-analysis")
     counts = validate_trivy_report(private, code)
     try:
