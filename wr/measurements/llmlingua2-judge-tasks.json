@@ -1,0 +1,20 @@
+{
+  "uncompressed": "PRIME DIRECTIVE\nStart at $10k/month. Scale to $10M total by year 3.\nGoal structure: Phase 1 is $10k/month. Phase 4 is $10M total.\nFocus areas: POLAR.SH GitHub funding, OSINT tools, and the automated product pipeline.\nMandatory governance documents that stay whole are AGENTS.md, START_HERE_CALL_CHAIN.md, MASTER.md, and VISITING_AGENTS.md.\n",
+  "compressed": "$ 10k month $ 10M year 3 1 10k 4 $ 10M POLAR GitHub OSINT automated product pipeline AGENTS AGENTS\n",
+  "compressed_by": "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
+  "compression_rate": 0.3,
+  "origin_tokens": 92,
+  "compressed_tokens": 35,
+  "questions": [
+    {
+      "id": "year3-total",
+      "ask": "What is the year-3 total named in the prime directive?",
+      "required_terms": ["10M"]
+    },
+    {
+      "id": "funding-focus",
+      "ask": "Which funding focus area is named?",
+      "required_terms": ["POLAR"]
+    }
+  ]
+}

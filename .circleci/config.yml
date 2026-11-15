@@ -272,6 +272,12 @@ jobs:
   # This job does not download a model and does not call a paid API.
   # Manual twin: python3 -m unittest discover -s tests -p prompt_compression_test.py -v
   prompt-compression:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: LLMLingua-2 compression tests
+          command: python3 -m unittest discover -s tests -p prompt_compression_test.py -v
   # WR #18379: the docs drop folders process themselves. Push-triggered, no cron.
   # Path filtering happens inside the job from config/drop-folders.json: it diffs
   # against the merge-base with main (or HEAD~1 on main) and does nothing when no
@@ -283,19 +289,10 @@ jobs:
   # turn this whole file into a setup config and break every job if the project's
   # "dynamic config" setting is off. See docs/DROP_FOLDERS.md.
   drop-folder-process:
-  # WR #18336 — graph prompting. Stdlib Python. Rebuilds the standards graph,
-  # checks the committed artifact and the local token measurements, and runs
-  # the routing tests. The accuracy harness check confirms the pending-spend
-  # record and does not call a model.
-  # Manual, from the repo root:
-  #   npm run graph-prompting:test && npm run graph-prompting:check
-  graph-prompting:
     executor: node-executor
     steps:
       - checkout
       - run:
-          name: LLMLingua-2 compression tests
-          command: python3 -m unittest discover -s tests -p prompt_compression_test.py -v
           name: Fetch origin/main for the merge-base diff
           command: git fetch origin main --depth=200 || true
       - run:
@@ -312,6 +309,42 @@ jobs:
       - store_artifacts:
           path: /tmp/drop-folder-artifacts
           destination: drop-folders
+  # WR #18336 — graph prompting. Stdlib Python. Rebuilds the standards graph,
+  # checks the committed artifact and the local token measurements, and runs
+  # the routing tests. The accuracy harness check confirms the pending-spend
+  # record and does not call a model.
+  # Manual, from the repo root:
+  #   npm run graph-prompting:test && npm run graph-prompting:check
+  graph-prompting:
+    executor: node-executor
+    steps:
+      - checkout
+      # 2026-11-13 PromptOrchestrator: the block below was mashed into this job
+      # and used duplicate YAML keys, so CircleCI rejected the config
+      # (run bf7b0c7e). Those steps now live on prompt-compression and
+      # drop-folder-process. Commented out, not deleted.
+      # - run:
+      #     name: LLMLingua-2 compression tests
+      #     command: python3 -m unittest discover -s tests -p prompt_compression_test.py -v
+      #     name: Fetch origin/main for the merge-base diff
+      #     command: git fetch origin main --depth=200 || true
+      # - run:
+      #     name: Install dependencies only when an inbox intake changed
+      #     command: |
+      #       if [ "$(node scripts/drop-folder-process.js --base auto --needs-deps)" = "true" ]; then
+      #         npm ci --ignore-scripts --no-audit --no-fund
+      #       else
+      #         echo "No inbox intake changed; the orchestrator is not needed."
+      #       fi
+      # - run:
+      #     name: Process changed drop-folder files
+      #     command: node scripts/drop-folder-process.js --base auto --out /tmp/drop-folder-artifacts
+      # - store_artifacts:
+      #     path: /tmp/drop-folder-artifacts
+      #     destination: drop-folders
+      - run:
+          name: Graph prompting tests and measurement check
+          command: bash .circleci/scripts/graph-prompting.sh
 
   # WR #18379: the project dashboard from PR #549, built here because GitHub
   # Pages is off and GitHub-hosted Actions are billing-locked. Builds
@@ -370,8 +403,11 @@ jobs:
             # Creates the Direct Upload project on first run; harmless if it exists.
             $WRANGLER pages project create revvel-dashboard --production-branch main || true
             $WRANGLER pages deploy public --project-name revvel-dashboard --branch main
-          name: Graph prompting tests and measurement check
-          command: bash .circleci/scripts/graph-prompting.sh
+          # 2026-11-13 PromptOrchestrator: these two keys were a second name/command
+          # on the deploy step, which made CircleCI reject the file. The graph
+          # command now runs in the graph-prompting job. Commented out, not deleted.
+          # name: Graph prompting tests and measurement check
+          # command: bash .circleci/scripts/graph-prompting.sh
   # WR #18338 — DSPy GEPA offline tests. Installs the pinned lock, runs DummyLM
   # unit tests, and checks that a non-local optimize call is refused. This job
   # does not call a model and does not read an API key.
@@ -383,6 +419,27 @@ jobs:
           name: Offline DSPy GEPA tests and spend refusal
           no_output_timeout: 15m
           command: bash .circleci/scripts/dspy-gepa-offline.sh
+
+  # WR #18335 — same-task accuracy judge. Paid OpenRouter calls happen only in
+  # this job, and only on the branch that carries the approved spend. Audrey
+  # Evans approved the spend on 2026-11-11 ("All") and named the new key on
+  # 2026-11-12. The job sets REVVEL_LLM_ALLOW_CLOUD=1. OPENROUTER_API_KEY must
+  # already be a CircleCI project environment variable. This file attaches no
+  # context, so a context secret is not visible. The script prints whether the
+  # key is set and never prints the value. Max 4 calls, model
+  # google/gemini-2.5-flash-lite, temperature 0. Listed price 2026-11-12:
+  # $0.10 / 1M input, $0.40 / 1M output. A 4-call run of these short prompts
+  # is estimated under $0.02 even if every token is billed at the output rate.
+  prompt-compression-judge:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Same-task accuracy judge (OpenRouter, capped)
+          command: bash .circleci/scripts/prompt-compression-judge.sh
+      - store_artifacts:
+          path: /tmp/llmlingua2-judge-result.json
+          destination: prompt-compression-judge
 
 workflows:
   version: 2
@@ -426,12 +483,22 @@ workflows:
           filters:
             branches:
               ignore: main
-      - prompt-compression:
+      # 2026-11-13 PromptOrchestrator: a trailing colon makes a null job entry.
+      # CircleCI run f6354e2c rejected it. The name stays; the colon does not.
+      # - prompt-compression:
+      - prompt-compression
+      - prompt-compression-judge:
+          filters:
+            branches:
+              only:
+                - cursor/wr-18335-openrouter-judge-8337
       - drop-folder-process:
           filters:
             branches:
               ignore: main
-      - dashboard-build:
+      # 2026-11-13 PromptOrchestrator: null mapping, same failure as prompt-compression.
+      # - dashboard-build:
+      - dashboard-build
       - dspy-gepa-offline:
           filters:
             branches:
@@ -484,12 +551,16 @@ workflows:
           filters:
             branches:
               only: main
-      - prompt-compression:
+      # 2026-11-13 PromptOrchestrator: null mapping rejected by CircleCI run f6354e2c.
+      # - prompt-compression:
+      - prompt-compression
       - drop-folder-process:
           filters:
             branches:
               only: main
-      - dashboard-build:
+      # 2026-11-13 PromptOrchestrator: null mapping rejected by CircleCI run f6354e2c.
+      # - dashboard-build:
+      - dashboard-build
       - dspy-gepa-offline:
           filters:
             branches:

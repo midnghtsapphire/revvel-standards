@@ -47,7 +47,12 @@ class CompressionTests(unittest.TestCase):
         # A developer shell may export these. Tests pin the defaults.
         self._saved_env = {
             name: os.environ.pop(name, None)
-            for name in ("REVVEL_FORCE_TOKENS", "REVVEL_LLMLINGUA_MODEL")
+            for name in (
+                "REVVEL_FORCE_TOKENS",
+                "REVVEL_LLMLINGUA_MODEL",
+                "REVVEL_LLM_ALLOW_CLOUD",
+                "OPENROUTER_API_KEY",
+            )
         }
 
     def tearDown(self):
@@ -254,6 +259,47 @@ class CompressionTests(unittest.TestCase):
         self.assertEqual(1.0, scored["full_governance"]["term_preservation_rate"])
         self.assertEqual(3.0, scored["full_governance"]["guarded_ratio"])
         self.assertEqual("pending-owner-approved-spend", scored["model_quality"]["status"])
+
+    def test_paid_judge_stays_closed_without_the_spend_gate(self):
+        code, report = accuracy.run_paid_judge()
+        self.assertEqual(3, code)
+        self.assertFalse(report["executed"])
+
+    def test_paid_judge_names_missing_key_and_does_not_call(self):
+        os.environ["REVVEL_LLM_ALLOW_CLOUD"] = "1"
+        os.environ.pop("OPENROUTER_API_KEY", None)
+        code, report = accuracy.run_paid_judge()
+        self.assertEqual(2, code)
+        self.assertFalse(report["executed"])
+        self.assertIn("OPENROUTER_API_KEY", report["where"])
+        self.assertNotIn("sk-", json.dumps(report))
+
+    def test_injected_judge_reports_a_regression_within_the_cap(self):
+        calls = []
+
+        def caller(prompt):
+            calls.append(prompt)
+            if "Condition: compressed" in prompt and "funding focus" in prompt:
+                return ("10M only", 8, "fake")
+            return ("10M and POLAR", 9, "fake")
+
+        tasks = {
+            "uncompressed": "full",
+            "compressed": "short",
+            "questions": [
+                {"id": "year3-total", "ask": "year 3 total", "required_terms": ["10M"]},
+                {"id": "funding-focus", "ask": "funding focus", "required_terms": ["POLAR"]},
+            ],
+        }
+        report = accuracy.judge_tasks(tasks, caller)
+        self.assertEqual(4, len(calls))
+        self.assertEqual(4, report["calls_used"])
+        self.assertEqual(["funding-focus"], report["regressions"])
+        tasks["questions"].append({"id": "extra", "ask": "more", "required_terms": ["10M"]})
+        before = len(calls)
+        with self.assertRaises(ValueError):
+            accuracy.judge_tasks(tasks, caller)
+        self.assertEqual(before, len(calls))
 
     def test_accuracy_path_cannot_escape_root(self):
         with tempfile.TemporaryDirectory() as tmp:
