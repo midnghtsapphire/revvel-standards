@@ -1,3 +1,6 @@
+## 2026-11-14 — Auky — add Trivy filesystem scan on CircleCI
+
+- Added CircleCI job `trivy-fs` and `.circleci/scripts/trivy-fs.sh`, reusing the scan settings from the existing (unchanged) `.github/workflows/trivy.yml`: filesystem scan, scanners `vuln,misconfig,secret`, severity CRITICAL/HIGH/MEDIUM, `ignore-unfixed`. Official Trivy v0.76.2. The CircleCI job fails on unfixed HIGH/CRITICAL and stores the table report as an artifact. No Actions workflow edits. No billing changes.
 ## 2026-11-12 — BALLS — Slack Glow-Up Plan
 
 - Added `products/beauty-kit/SLACK-glowup-plan.md`: retro-arcade and soft-Hawaiian Slack plan with sidebar theme hex codes, channel sections for eight brands, naming rules, emoji wishlist, workflows, status presets, and Slack Glow-Up Kit product ideas with price comps. Additions only; no private workspace details.

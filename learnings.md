@@ -1209,6 +1209,15 @@ returned 402. A sales case study can cite only a product whose URL is the
 product. A parked 200 is not that. The deck says proof pending and names issue
 18330 instead of inventing a customer.
 
+## 2026-11-14 — Trivy runs on CircleCI; the Actions workflow stays as-is
+
+**Requested by Audrey, 14 Nov 2026:** *"yes i liked trivy when we had it."*
+
+The prior setup is `.github/workflows/trivy.yml` (`aquasecurity/trivy-action@ed142fd` / v0.36.0, `scan-type: fs`, `scanners: vuln,misconfig,secret`, `severity: CRITICAL,HIGH,MEDIUM`, `ignore-unfixed: true`, `exit-code: "0"` plus SARIF upload). Hosted Actions cannot start that job under the billing lock. The workflow was not rewritten, disabled, or deleted.
+
+The CircleCI job `trivy-fs` (`.circleci/scripts/trivy-fs.sh`, official Trivy v0.76.2) is the lane that actually runs. It uses the same scanners and severities, stores the table report, and fails on unfixed HIGH/CRITICAL (stricter than the Actions `exit-code: 0`, so findings are visible on the merge-adjacent CircleCI status).
+
+**Related:** `.github/workflows/trivy.yml`, `.circleci/scripts/trivy-fs.sh`, `docs/governance/FREE_GITHUB_SUBSTITUTES.md` (on draft PR #18411).
 
 ## TM-0013 — Saved replies need one router and the real workflow contract
 
