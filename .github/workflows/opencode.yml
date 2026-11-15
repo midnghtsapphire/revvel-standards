@@ -12,6 +12,10 @@
 # Secrets: OPENROUTER_API_KEY (already on this repo — the fleet key).
 name: opencode
 
+concurrency:
+  group: opencode-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 on:
   issue_comment:
     types: [created]
