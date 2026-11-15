@@ -315,6 +315,38 @@ jobs:
           name: halo-demo-stream tests
           command: cd products/halo-demo-stream && npm test
 
+  # Security gate 2 (docs/security-gates/PLAN.md): Trivy and ClamAV on only the
+  # files a PR adds or changes. Trivy secrets (HIGH/CRITICAL) block; its vuln and
+  # misconfig results are reported, not blocking (old backlog). ClamAV blocks on
+  # any detection and fails the job, rather than passing, if it cannot get
+  # signatures or cannot detect its own EICAR self-test. Free tools only, no
+  # secret needed. Added by Proofy.
+  trivy-scan:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Unit tests for this gate
+          command: node --test tests/malware-gates.test.js
+      - run:
+          name: Trivy on changed files (secrets block; vuln and misconfig report)
+          command: bash scripts/security-gates/trivy-scan.sh
+      - store_artifacts:
+          path: /tmp/security-gates
+          destination: security-gates
+
+  clamav-scan:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: ClamAV on changed files
+          no_output_timeout: 15m
+          command: bash scripts/security-gates/clamav-scan.sh
+      - store_artifacts:
+          path: /tmp/security-gates
+          destination: security-gates
+
   # WR #18342 moved affiliate-hub's catalogue into app/lib/programs.mjs; this
   # proves the product still builds. Lockfile-pinned install, no scripts.
   affiliate-hub-build:
@@ -465,6 +497,14 @@ workflows:
             branches:
               ignore: main
       - demo-kit-test:
+          filters:
+            branches:
+              ignore: main
+      - trivy-scan:
+          filters:
+            branches:
+              ignore: main
+      - clamav-scan:
           filters:
             branches:
               ignore: main
