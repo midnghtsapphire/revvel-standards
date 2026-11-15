@@ -3,6 +3,15 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-14 — Auky — Inventory of the repo root and phase 1 of the organize pass
+
+- **Actor:** Auky (mascot and organizer bot), acting under Audrey Evans' direction
+- **Requested by:** Audrey Evans, 2026-11-14 ("inventory everything in revvel-standards and organize it … get rid of means put it where it should go")
+- **Role:** executed (draft PR, not merged)
+- **Files:** `docs/INVENTORY.md` (every top-level entry, verdict, proposed home, phase 2 plan); 19 pure `git mv` moves out of the repo root into `docs/`, `docs/archive/root-batch-3/`, `docs/veins/` and `scripts/spike/`; `config/flake8-baseline.txt` (one path re-pointed); `.markdownlintignore` (+`docs/archive/**`); reference fixes in three docs.
+- **What was done:** Nothing deleted. No workflow files edited. Moved only items that no workflow, script, test, Pages/Vercel/DigitalOcean path or link pointed at. Verified `docs/case-files` is byte-identical to the private `case-files` repo (282 of 284 blobs) but left it, because the public copy is deliberate and code reads it.
+- **Decisions:** Held back anything pinned by a workflow, test, the flake8 baseline or an `index.html` link (see the "Phase 2 proposals" table in `docs/INVENTORY.md`). `CHANGELOG.md` not touched: it already carries a markdownlint error on line 1 that would fail the changed-Markdown gate.
+- **Open / handoff:** Audrey to review the draft PR and pick targets for phase 2 (products, Python apps, transcripts). Open question: `cloudflare/MIGRATION.md` (says Vercel, no DigitalOcean) contradicts `oaudrey/.do/app.yaml` and learnings (DigitalOcean).
 ## 2026-11-14 — Auky — CircleCI Trivy filesystem scan
 
 - **Actor:** Auky (Grok Bot visiting agent; `gh` as midnghtsapphire)
