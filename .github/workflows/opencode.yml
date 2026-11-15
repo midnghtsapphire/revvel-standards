@@ -12,6 +12,10 @@
 # Secrets: OPENROUTER_API_KEY (already on this repo — the fleet key).
 name: opencode
 
+concurrency:
+  group: opencode-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 on:
   issue_comment:
     types: [created]
@@ -58,6 +62,9 @@ jobs:
         # Original mutable ref retained; latest resolves to github-v1.2.19.
         # uses: anomalyco/opencode/github@latest
         uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a
+        # Spend gate (#17850): OpenCode bills OpenRouter inside the action. Added 2026-11-15 by Proofy.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
+        uses: anomalyco/opencode/github@latest
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -82,6 +89,9 @@ jobs:
         if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         # uses: anomalyco/opencode/github@latest
         uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a
+        # Spend gate (#17850): OpenCode bills OpenRouter inside the action. Added 2026-11-15 by Proofy.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
+        uses: anomalyco/opencode/github@latest
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -119,6 +129,9 @@ jobs:
         if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         # uses: anomalyco/opencode/github@latest
         uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a
+        # Spend gate (#17850): OpenCode bills OpenRouter inside the action. Added 2026-11-15 by Proofy.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
+        uses: anomalyco/opencode/github@latest
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,5 +1,9 @@
 name: Cypress E2E — life-insurance-lead-engine
 
+concurrency:
+  group: cypress-lead-engine-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 # Runs Cypress E2E against the lead-engine app.
 # Triggers only when files inside that app change (per docs/TESTING_STACK.md:
 # Cypress is per-app, not repo-wide).
