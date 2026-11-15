@@ -38,3 +38,7 @@ Repository visiting-agent check returned exit 1 with four pre-existing `products
 7. Keep this PR/workstream as the single central implementation alert record. Subscribe reviewers and attach only redacted reason/count/SHA/run receipts. Wire any unattended alert through the existing central GitHub workstream and verify delivery without adding per-finding issue spam or provider calls.
 
 No external paid calls or manual CI dispatch were made. Runtime artifacts alone do not establish whole-repository cleanliness, branch protection or unattended alert delivery.
+
+## Final coordinator checkpoint
+
+All late changes and the previously missing `docs/scanners/TEST_RESULTS.json` are now committed and pushed. Latest scanner test count is 21, superseding the earlier 20-test entry. Final combined real Trivy fixture detected 9 vulnerabilities, 1 misconfiguration and 1 synthetic noncredential secret. ClamAV detected safe EICAR using verified official main/daily definitions, with daily built 2026-11-15T06:27:00Z. The exact disabled-license warning is covered by a regression test; security engine errors remain blocking. This is still a draft implementation PR, not active enforcement.
