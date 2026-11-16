@@ -12,7 +12,7 @@
 #   GITHUB_TOKEN         — built-in, for comments and queue files
 name: wr-dispatcher
 
-"on":
+on:
   issues:
     types: [labeled]
   workflow_dispatch:
@@ -35,8 +35,8 @@ jobs:
   dispatch:
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      github.event.label.name == 'manus' ||
-      github.event.label.name == 'roo'
+      (github.event_name == 'issues' && github.event.label.name == 'manus') ||
+      (github.event_name == 'issues' && github.event.label.name == 'roo')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
