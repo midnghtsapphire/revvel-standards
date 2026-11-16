@@ -37,3 +37,23 @@ node scripts/fleet-status.js board  --repo midnghtsapphire/neurooz   # who-owns-
 - Agents call `claim` when starting and `ready`/`block` when done. This is the contract going forward.
 - CI lanes (CircleCI, Gitar, laptop scheduler) call `status --to checks-passing/checks-failing` after runs.
 - `board` gives the owner a one-command live view per repo. GitHub Projects boards can group by these labels for client demos.
+
+## Commit identity — the layer GCM does not solve (added 2026-11-16, kimi-agent)
+
+Why past PRs all showed `@midnghtsapphire` as author even when Cursor ("MergeMender") or Grok Bot
+did the work: every agent authenticates with the **same GitHub account**. Git Credential Manager's
+multiple-user support (`credential.<url>.username`, or `user@` in the remote URL — see GCM's
+"Multiple users" doc) only distinguishes **separate GitHub accounts**. It cannot distinguish agents
+sharing one login, and it never touches `user.name`/`user.email` in commits. So provenance must live
+in two places GCM does not reach:
+
+1. **Commit author + trailer.** Agents set an agent author (`git -c user.name="<agent>"`, or the API
+   `author` field) and add an `Agent: <name>` trailer naming model/route where known. GitHub renders
+   commit authors even when the authenticated account is shared. (`kimi-agent` commits of 2026-11-16
+   are the reference pattern.)
+2. **The label/comment layer above** for live runtime ownership — labels say *now*, commit trailers
+   say *forever*.
+
+**Rule:** every agent-authored commit carries an agent author name or an `Agent:` trailer; every PR
+body states the agent (and model/route where known). A PR whose provenance cannot be told from its
+page is treated as unclaimed work and gets a provenance-backfill comment, not silent assumption.
