@@ -481,7 +481,7 @@ jobs:
 
           echo "=== Debug complete ==="
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: "24"
       - name: Get issue comments for research findings
