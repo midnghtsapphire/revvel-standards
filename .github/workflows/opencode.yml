@@ -52,7 +52,7 @@ jobs:
       vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 1
           persist-credentials: false
@@ -80,7 +80,7 @@ jobs:
     if: github.event_name == 'issues' && github.event.label.name == 'opencode' && vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 1
           persist-credentials: false
@@ -120,7 +120,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 1
           persist-credentials: false
