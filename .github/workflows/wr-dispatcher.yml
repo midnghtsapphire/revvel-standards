@@ -12,7 +12,7 @@
 #   GITHUB_TOKEN         — built-in, for comments and queue files
 name: wr-dispatcher
 
-on:
+"on":
   issues:
     types: [labeled]
   workflow_dispatch:
