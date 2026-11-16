@@ -1,4 +1,4 @@
-# WR DISPATCHER — routes labeled issues to the right agent backend.
+# WR DISPATCHER - routes labeled issues to the right agent backend.
 # Docs: standards/WR_DISPATCHER.md (read this before editing).
 name: wr-dispatcher
 
