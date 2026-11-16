@@ -813,3 +813,38 @@ Agent-craft stack (patterns your fleet standards borrow from): **claude-fleets**
 ---
 
 *Generated 2026-11-16 from authenticated GitHub API data and a full clone of `midnghtsapphire/revvel-standards` (HEAD `ce6c3abab`). Revoke the token used for this audit tonight as planned — it is not stored in this document or any file.*
+
+---
+
+# APPENDIX A — Local-lane hardware benchmark (measured 2026-11-16)
+
+**Why this is here (decision note, owner Audrey Evans):** the repo mandates local-first LLM
+routing (AGENTS.md, Layer 0). This benchmark records what the current operator machine can
+actually run, so the hardware decision is evidence, not vibes.
+
+**Method:** LM Studio server at `127.0.0.1:1234`, single 60-token chat completion, timed.
+
+**Models present on the machine (from `/v1/models` and `/api/v1/models`):**
+
+| Model | Type | Notes |
+| --- | --- | --- |
+| `google/gemma-3-4b` (Q4_K_M) | chat | Loaded as instance `mindmappr-local`, 8192 ctx |
+| `qwen/qwen3.5-9b` | chat | Downloaded, not benchmarked (slower than gemma on this hardware) |
+| `text-embedding-nomic-embed-text-v1.5` | embedding | NOT a chat model — never send to `/chat/completions` (known gotcha, AGENTS.md Layer 0) |
+
+**Result:**
+
+| Test | Outcome |
+| --- | --- |
+| gemma-3-4b, 60-token reply | **> 120 s → timed out; under ~0.5 tokens/sec** |
+
+**Interpretation:** inference is CPU-only; no usable GPU offload on this machine. The local
+lane exists on paper (Layer 0 routing works, the spend gate works) but the hardware cannot
+carry it. Consequence of ignoring this: any agent that follows the written standard and calls
+the local lane first will stall for minutes per reply and look broken; it is not a code bug.
+
+**Owner decision recorded 2026-11-16:** purchase a dedicated always-on box (~$1,300 budget,
+payday ~end of month): used 24GB-class GPU first, 64GB RAM, 2TB NVMe + 4TB archive HDD.
+Expected after: gemma-3-4b 100+ tok/s, qwen3.5-9b 60–80 tok/s (new default), 32B-class
+20–30 tok/s (research/code tier). GitHub remains repo-of-record; compute moves local
+(self-hosted runner; `probe-selfhosted.yml.disabled` exists for this).
