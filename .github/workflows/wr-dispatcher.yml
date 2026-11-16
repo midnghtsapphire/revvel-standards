@@ -33,10 +33,7 @@ permissions:
 
 jobs:
   dispatch:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'issues' && github.event.label.name == 'manus') ||
-      (github.event_name == 'issues' && github.event.label.name == 'roo')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'manus') || contains(github.event.issue.labels.*.name, 'roo')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
