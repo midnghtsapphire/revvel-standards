@@ -37,8 +37,28 @@ const { execFileSync } = require('child_process');
 const STATES = ['claimed', 'in-progress', 'checks-failing', 'checks-passing',
   'waiting-for-review', 'ready-to-merge', 'needs-action', 'blocked', 'needs-audrey'];
 
+// 2026-11-16 kimi-agent: resolve the gh binary instead of assuming PATH.
+// Portable installs (e.g. tools/bin/gh.exe) are not on PATH; check GH_PATH env,
+// then PATH, then a GH_BIN relative to this repo checkout. If it fails: install
+// gh or set GH_PATH=<full path to gh.exe>.
+const path = require('path');
+const fs = require('fs');
+function resolveGh() {
+  const candidates = [
+    process.env.GH_PATH,
+    process.env.GH_BIN,
+    path.join(__dirname, '..', '..', 'tools', 'bin', 'gh.exe'),
+    path.join(__dirname, '..', '..', 'tools', 'bin', 'gh'),
+  ].filter(Boolean);
+  for (const c of candidates) {
+    try { if (fs.existsSync(c)) return c; } catch { /* keep looking */ }
+  }
+  return 'gh'; // last resort: PATH lookup (laptop / CI where gh is installed)
+}
+const GH_BIN = resolveGh();
+
 function gh(args) {
-  return execFileSync('gh', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  return execFileSync(GH_BIN, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 }
 
 function parseArgs(argv) {
