@@ -37,6 +37,7 @@ node scripts/fleet-status.js board  --repo midnghtsapphire/neurooz   # who-owns-
 - Agents call `claim` when starting and `ready`/`block` when done. This is the contract going forward.
 - CI lanes (CircleCI, Gitar, laptop scheduler) call `status --to checks-passing/checks-failing` after runs.
 - `board` gives the owner a one-command live view per repo. GitHub Projects boards can group by these labels for client demos.
+- `scripts/ci/agent-session-start.js session-start` returns `fleet_label_gaps`: every open PR missing its `agent:*` / `status:*` label, so gaps surface at login instead of hiding until someone asks "who had this?" (added 2026-11-17, kimi-agent; read-only check, never blocks the queue).
 
 ## Commit identity — the layer GCM does not solve (added 2026-11-16, kimi-agent)
 
