@@ -25,6 +25,7 @@ artifacts tab to track trends across builds.
 ## Live snapshot — 2026-11-13
 ## Live snapshot — 2026-11-15
 ## Live snapshot — 2026-11-14
+## Live snapshot — 2026-11-18
 
 ```text
 Overall: 🔴 DOWN  |  Effectiveness index: 0/100
@@ -48,6 +49,7 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
   Days since last proposal: 113  ⚠️  Engine appears silent (> 30 days).
   Days since last proposal: 114  ⚠️  Engine appears silent (> 30 days).
   Days since last proposal: 116  ⚠️  Engine appears silent (> 30 days).
+  Days since last proposal: 119  ⚠️  Engine appears silent (> 30 days).
 
 ── 3. ARE THEY DOING ANYTHING? ─────────────────────────────────
   Stub rate: 100%  (7 unactioned / 7 total)
@@ -66,9 +68,11 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
 **Bottom line (2026-11-12):**
 **Bottom line (2026-11-13):**
 **Bottom line (2026-11-15):**
+**Bottom line (2026-11-18):**
 - VEINS fired 3 times between 2026-07-02 and 2026-07-22, all targeting the same
   flaky workflow (`🎛️ PR State Orchestrator`), generating 7 stub proposals.
 - **Zero proposals have been actioned.** The stub boilerplate is still in every file.
+- The engine has been **silent for 119 days** (as of 2026-11-18) — it stopped firing around 2026-07-22.
 - The engine has been **silent for 116 days** (as of 2026-11-15) — it stopped firing around 2026-07-22.
 **Bottom line (2026-11-14):**
 - VEINS fired 3 times between 2026-07-02 and 2026-07-22, all targeting the same
@@ -89,6 +93,7 @@ Three rows on record:
 Five rows on record:
 Six rows on record:
 Seven rows on record:
+Eight rows on record:
 
 | snapshot_at | status | effectiveness | stubs | days_silent | sheaf_H¹ |
 |---|---|---|---|---|---|
@@ -99,8 +104,11 @@ Seven rows on record:
 | 2026-11-13T09:08:45Z | 🔴 down | 0/100 | 7 | 114 | 3 |
 | 2026-11-15T09:10:31Z | 🔴 down | 0/100 | 7 | 116 | 3 |
 | 2026-11-14T09:08:48Z | 🔴 down | 0/100 | 7 | 115 | 3 |
+| 2026-11-18T09:08:42Z | 🔴 down | 0/100 | 7 | 119 | 3 |
 
-Trend: **status unchanged; engine silent 2 more day(s) since last check.** All key metrics are flat
+Trend: **status unchanged; engine silent 4 more day(s) since last check.** All key metrics are flat
+— stubs unresolved, engine offline, sheaf energy zero throughout. The only number
+moving is `days_since_last_commit`, now at 119.
 — stubs unresolved, engine offline, sheaf energy zero throughout. The only number
 moving is `days_since_last_commit`, now at 116.
 — stubs unresolved, engine offline, sheaf energy zero throughout. The only number
@@ -263,10 +271,11 @@ node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
 
 ---
 
-## Action items (as of 2026-11-15)
+## Action items (as of 2026-11-18)
 
 | Priority | Item | Status |
 |---|---|---|
+| P1 | VEINS engine has been **silent 119 days** (as of 2026-11-18). Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
 | P1 | VEINS engine has been **silent 116 days** (as of 2026-11-15). Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
 | P1 | VEINS engine has been **silent 111 days**. Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
 | P1 | VEINS engine has been **silent 113 days** (as of 2026-11-12). Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
@@ -282,8 +291,8 @@ node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
 
 Earlier readings (2026-11-05, 2026-11-06, 2026-11-07) are merged into the trend table above.
 Key counts at each point: 106 / 107 / 108 / 111 days silent, fingerprint refreshed
-Earlier readings (2026-11-05 through 2026-11-15) are merged into the trend table above.
-Key counts: 106 / 107 / 108 / 111 / 112 / 113 / 114 / 116 days silent, fingerprint refreshed
+Earlier readings (2026-11-05 through 2026-11-18) are merged into the trend table above.
+Key counts: 106 / 107 / 108 / 111 / 112 / 113 / 114 / 115 / 116 / 119 days silent, fingerprint refreshed
 Earlier readings (2026-11-05 through 2026-11-14) are merged into the trend table above.
 Key counts: 106 / 107 / 108 / 111 / 112 / 113 / 114 / 115 days silent, fingerprint refreshed
 2026-11-07 and again 2026-11-10. Items P1 and P2 (engine silence, unactioned stubs) remain open.
