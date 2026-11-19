@@ -2,6 +2,7 @@
 
 - `scripts/zero_touch_secrets.py` reads and writes Doppler (free Developer plan, project `revvel-standards`, config `prd`) and fans names out to CircleCI. Dry-run unless `--apply`. A sync refuses a destination that is newer than Doppler. Previous versions stay in the Doppler ledger. CircleCI workflow `secrets-maintenance` is the schedule. GitHub Actions is a sync target only.
 - Disabled, not deleted: the gatekeeper-cli sync fallback, the rosette gatekeeper wrapper and `provision_secrets`, and the homeostat Doppler recovery dispatch. `doppler-recover` stays off.
+- `.github/copilot-instructions.md` is again a byte copy of `AGENTS.md`. CircleCI `lint-and-test` failed because the two files already differed on `daily/2026-11-14`.
 
 ## 2026-11-14 (4) — TriageChief — Grok bots: the shared box is scratch; missing data goes on the BOM
 
