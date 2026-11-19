@@ -50,3 +50,13 @@ Added 2026-11-11 by DBArchitect. Both run in `pr-workflow` and `main-workflow`.
 - `billing-sql-validate`: applies `products/revenue-billing/db` twice to a throwaway Postgres 15 container and runs the assertions in `db/tests/`.
 
 Neither job needs a secret, deploys anything, or uses `setup_remote_docker`.
+
+## Advisory Semgrep CE + Qlty jobs (WR #18490)
+
+Added 2026-11-19 by TriageChief with Audrey's approval. Both run only in `pr-workflow`, in parallel with the other jobs, and **never fail the build**. Audrey decides if and when either becomes a gate.
+
+- `semgrep-advisory`: Semgrep Community Edition with the public `p/default` ruleset, metrics off, no account or token. It runs with `--baseline-commit`, so only findings introduced by the PR are reported. Artifacts: `semgrep.txt`, `semgrep.sarif`, `semgrep.json`.
+- `qlty-advisory`: Qlty CLI (free local mode, no Qlty Cloud) running `qlty check --upstream <base>` on changed files only. Config: `.qlty/qlty.toml` (shellcheck, ruff, actionlint, hadolint). Artifacts: `qlty.txt`, `qlty.sarif`.
+- The PR base is the newest `daily/*` branch or `main`, whichever is closest to the PR head (`.circleci/scripts/advisory-base-ref.sh`). If no base is found, the jobs skip with a log line instead of scanning the whole repo.
+- Semgrep is pinned to `1.186.0` and Qlty to `0.671.0`; bump them on purpose.
+- Run by hand from the repo root: `bash .circleci/scripts/semgrep-advisory.sh` (needs `semgrep` on PATH) or `bash .circleci/scripts/qlty-advisory.sh`.
