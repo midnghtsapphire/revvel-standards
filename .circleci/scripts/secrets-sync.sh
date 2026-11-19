@@ -3,7 +3,7 @@
 # Prints names and decisions only. Never prints a secret value.
 set -euo pipefail
 
-python3 -m pip install --user --disable-pip-version-check --quiet pynacl pytest
+python3 -m pip install --user --disable-pip-version-check --only-binary :all: --quiet pynacl pytest
 export PATH="${HOME}/.local/bin:${PATH}"
 python3 -m pytest tests/test_zero_touch_secrets.py -q
 

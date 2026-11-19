@@ -290,6 +290,13 @@ def test_apply_plan_refuses_unversioned_value():
     assert "OPENROUTER_API_KEY" not in ledger["secrets"]
 
 
+def test_load_map_stays_inside_the_repository():
+    with pytest.raises(SystemExit):
+        z.load_map("/etc/passwd")
+    with pytest.raises(SystemExit):
+        z.load_map("../outside.json")
+
+
 def test_secret_pattern_ignores_ordinary_words():
     assert z.SECRET_VALUE.search("desk-lamp and task-list") is None
     assert z.SECRET_VALUE.search("sk-" + ("a" * 20))

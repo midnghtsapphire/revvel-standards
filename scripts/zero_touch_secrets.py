@@ -416,7 +416,17 @@ def assert_names_only(data):
 
 
 def load_map(path):
-    with open(path, encoding="utf-8") as handle:
+    """Read a names-only map that stays inside this repository.
+
+    The path comes from the command line. Resolving it and requiring it to
+    sit under the repo root stops a relative path such as ../ from reading
+    a file outside the checkout.
+    """
+    root = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir))
+    candidate = os.path.realpath(path if os.path.isabs(path) else os.path.join(os.getcwd(), path))
+    if os.path.commonpath([root, candidate]) != root or not candidate.endswith(".json"):
+        raise SystemExit("secret map path must be a .json file inside the repository")
+    with open(candidate, encoding="utf-8") as handle:
         data = json.load(handle)
     assert_names_only(data)
     return data
