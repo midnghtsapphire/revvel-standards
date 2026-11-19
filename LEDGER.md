@@ -3,6 +3,17 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-19 17:05 America/Denver — Git-Master — fix the PR-number guard in pr-hygiene-check (WR #18494)
+
+- **Actor:** Git-Master
+- **Requested by:** TriageChief, 19 Nov 2026 (review of the sibling PR reese-reviews#98, same guard). `RELAYED` (A6). Audrey (t133u, 19 Nov 2026): "ya fix it all and merge it".
+- **Role:** executed
+- **Files:** `.circleci/config.yml` (only the `pr-hygiene-check` job); `CHANGELOG.md`; `LEDGER.md`.
+- **What was done:** The job skipped itself because `CIRCLE_PULL_REQUEST` is empty on GitHub App pipelines. It now resolves the PR number from that variable, then `pipeline.event.github.pull_request.number`, then the commit-to-PR API, and logs which one it used. Still advisory (`exit 0`).
+- **Decisions:** No `.github/workflows` file touched. No job deleted. `toolkit-weekly-report.yml` untouched. The unrelated `CIRCLE_PULL_REQUEST` mention at the label-check job was left alone.
+- **Commits / PRs:** PR #18496.
+- **Open / handoff:** Confirm in the CircleCI step log that the check ran.
+
 ## 2026-11-19 16:40 America/Denver — Git-Master — github-free-toolkit in CircleCI (WR #18494)
 
 - **Actor:** Git-Master

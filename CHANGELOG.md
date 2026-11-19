@@ -1,6 +1,7 @@
 ## 2026-11-19 — Git-Master — adopt github-free-toolkit in CircleCI (WR #18494)
 
 - Git-Master: added one new job and one new workflow to `.circleci/config.yml`, appended only: `pr-hygiene-check`, an advisory PR check that never fails the build. The weekly `toolkit-weekly-report` (`stale-prs`, `unassigned-prs`, `repo-inventory`) lives in its own file, `.circleci/toolkit-weekly-report.yml`, which is its own CircleCI pipeline with a schedule trigger only, so a scheduled run cannot start `main-workflow` or the deploy jobs (same pattern as `.circleci/scheduled-generators.yml`, PR #18489). The toolkit is fetched at pinned commit `2b7fcd8004f4`, not vendored. Both need the CircleCI context `github-free-toolkit` (GH_TOKEN), which Secret creates. No existing job or workflow was touched. Also added a note in `Library/README.md` and `handoffs/git-master/2026-11-19.md`. — Git-Master
+- Git-Master (PR #18496): fixed the PR-number guard in `pr-hygiene-check` in `.circleci/config.yml`. It no longer exits early when `CIRCLE_PULL_REQUEST` is empty (never set on CircleCI GitHub App pipelines); it now uses that variable, then `pipeline.event.github.pull_request.number`, then `gh api .../commits/$CIRCLE_SHA1/pulls`. Still advisory, always `exit 0`. `toolkit-weekly-report.yml` was not changed. — Git-Master
 
 ## 2026-11-14 (4) — TriageChief — Grok bots: the shared box is scratch; missing data goes on the BOM
 
