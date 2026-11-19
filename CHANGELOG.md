@@ -1,3 +1,11 @@
+## 2026-11-19 — Decipherer — eco portion runs on CircleCI (WR eco-run-20261119)
+
+- Root cause: hosted Actions never starts the eco workflows (account billing lock, 0 steps), and `main`'s `.circleci/config.yml` did not compile since `88d862206` (`policy-check` had `steps: null`; its steps sat under `huge-delete-guard`), so CircleCI could not run them either. Also found: Website Carbon `/site` has had no public access since 2025-07-14, the Pages default URL is a 404, the `ecoinfra` job's input and file are wrong, and the "sustainable npm" step never installs. Evidence: `docs/ECO_RUN.md`.
+- Fixed the CircleCI config by moving the stranded steps back (no line removed; `policy-check` is byte-identical to `555bfa53e`).
+- Added `scripts/eco/eco-ci-run.sh` (Eco CI v5.3.0 pinned by full SHA, send-data false, estimate labelled as a model estimate), `scripts/eco/website-carbon.js` (page weight + public `/data`), CircleCI jobs `eco-energy` (PR + main, machine executor) and `eco-website-carbon` (main, skips with a message until `GREEN_WEBSITE_URL` is set), `tests/eco-run.test.js`, `docs/ECO_RUN.md`, `docs/eco/BLUE_OCEAN_GREEN_SOFTWARE_2026.md`.
+- `.github/workflows/eco-github-extensions.yml` and `green-website.yml` kept; header comments only. Addendum in `docs/ECO_MARKETPLACE_ACTIONS.md`; its table is unchanged.
+- Two inline `markdownlint-disable-next-line` comments (MD026, MD012) above older lines in this file; no text changed. Touching the file otherwise fails the changed-Markdown lint on two pre-existing findings.
+
 ## 2026-11-14 — Auky — add Trivy filesystem scan on CircleCI
 
 - Added CircleCI job `trivy-fs` and `.circleci/scripts/trivy-fs.sh`, reusing the scan settings from the existing (unchanged) `.github/workflows/trivy.yml`: filesystem scan, scanners `vuln,misconfig,secret`, severity CRITICAL/HIGH/MEDIUM, `ignore-unfixed`. Official Trivy v0.76.2. The CircleCI job fails on unfixed HIGH/CRITICAL and stores the table report as an artifact. No Actions workflow edits. No billing changes.
@@ -16,6 +24,7 @@
   2026-11-14. Pointers in `learnings.md`, `LEDGER.md`, `README.md`,
   and `MASTER.md`. No workflow or CircleCI config changes.
 
+<!-- markdownlint-disable-next-line MD026 -->
 ## 2026-11-12 — BALLS — added incubating `products/beauty-kit/` with the BALLS Beauty Playbook research (GitHub beautification, other-tool tricks, market prices, 8 product ideas); additions only.
 ## 2026-11-12 — BALLS — Beauty Kit: three AudreyBuildsAI digital products
 
@@ -579,6 +588,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   comments remain checked. Preserved the earlier incorrect archive assertion
   and rule as dated history. Forty-seven child regressions pass.
 
+<!-- markdownlint-disable-next-line MD012 -->
 
 ## 2026-11-14 UTC — Audrey saved replies, Gitar audit, and Facebook Page drafts
 

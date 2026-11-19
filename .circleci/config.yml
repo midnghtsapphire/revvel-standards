@@ -665,6 +665,63 @@ jobs:
           path: /tmp/trivy-report.txt
           destination: trivy-fs
 
+  # ECO ENERGY (WR: eco-run-20261119). Replaces the billing-locked `run-tests`
+  # job of .github/workflows/eco-github-extensions.yml (hosted Actions never
+  # starts a step, see docs/ECO_RUN.md). Runs scripts/eco/eco-ci-run.sh, which
+  # drives Eco CI v5.3.0 (pinned commit) around `npm ci` and the eco tests.
+  #
+  # Why `machine`, not `docker`: Eco CI samples /proc/stat. In a Docker executor
+  # that file shows the whole shared host, so the utilisation (and the energy
+  # estimate derived from it) would be someone else's workload. A machine
+  # executor is a dedicated VM. Linux only: CARESSE (Windows) cannot run it
+  # except inside WSL2.
+  #
+  # The figure is a utilisation-based model estimate, not a meter reading; the
+  # artifact says so. Informational: it fails only if the measurement itself
+  # cannot run, never on an energy value (no budget is set until a baseline
+  # exists). No secret, no context, no upload (send-data is false).
+  eco-energy:
+    machine:
+      image: ubuntu-2404:2026.11.1
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: Eco energy estimate (Eco CI v5.3.0, CPU-utilisation model)
+          environment:
+            ECO_OUT_DIR: /tmp/eco-out
+            ECO_MACHINE_LABEL: circleci-machine-ubuntu-2404-medium
+          command: bash scripts/eco/eco-ci-run.sh
+      - store_artifacts:
+          path: /tmp/eco-out
+          destination: eco
+
+  # ECO WEBSITE CARBON (WR: eco-run-20261119). Replaces the fetch in
+  # .github/workflows/green-website.yml, whose Website Carbon /site endpoint has
+  # had no public access since 2025-07-14. Needs the project env var
+  # GREEN_WEBSITE_URL (a URL, not a secret). Without it the job prints SKIPPED
+  # and exits 0: a green skip is not a report. It does NOT commit to main; the
+  # README card is updated by hand from the artifact.
+  eco-website-carbon:
+    executor: node-executor
+    resource_class: small
+    steps:
+      - checkout
+      - run:
+          name: Website carbon report (page weight + Website Carbon /data)
+          environment:
+            ECO_OUT_DIR: /tmp/eco-out
+          command: |
+            if [ -z "${GREEN_WEBSITE_URL:-}" ]; then
+              echo "SKIPPED: set GREEN_WEBSITE_URL (CircleCI project env var) to the live site to measure."
+              echo "Not measured. This green skip is not a carbon report." >&2
+              exit 0
+            fi
+            node scripts/eco/website-carbon.js
+      - store_artifacts:
+          path: /tmp/eco-out
+          destination: eco
+
 workflows:
   version: 2
 
@@ -748,6 +805,10 @@ workflows:
             branches:
               ignore: main
       - trivy-fs:
+          filters:
+            branches:
+              ignore: main
+      - eco-energy:
           filters:
             branches:
               ignore: main
@@ -840,6 +901,14 @@ workflows:
             branches:
               only: main
       - trivy-fs:
+          filters:
+            branches:
+              only: main
+      - eco-energy:
+          filters:
+            branches:
+              only: main
+      - eco-website-carbon:
           filters:
             branches:
               only: main
