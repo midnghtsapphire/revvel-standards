@@ -3,6 +3,17 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-19 — Secret — Doppler source of truth for zero-touch secrets (issue #18486)
+
+- **Actor:** Secret
+- **Requested by:** Audrey Evans, 19 Nov 2026. Her words: "Yes, have Secret build the free Doppler plus my script setup."
+- **Role:** executed
+- **Files:** `scripts/zero_touch_secrets.py`, `tests/test_zero_touch_secrets.py`, `config/secret-map.json`, `.circleci/config.yml`, `.circleci/scripts/secrets-sync.sh`, `scripts/auditor-controller.js`, `gatekeeper-cli/gatekeeper_cli/commands/gatekeeper.py`, `revvel-rosette-automation/scripts/gatekeeper.sh`, `revvel-rosette-automation/src/gatekeeper.py`, `scripts/biome/homeostat.js`, `config/credential-modules.yml`, `standards/ZERO_TOUCH_SECRETS_STANDARD.md`, `docs/tool-history/doppler.md`, `wr/memory/decisions.jsonl`, `CHANGELOG.md`, `LEDGER.md`
+- **What was done:** Doppler project `revvel-standards` config `prd` is the source. The script seals GitHub Actions secrets (repo and org), fans names to CircleCI contexts `ai-review-llm` and `ai-review-post` and projects `gh/midnghtsapphire/revvel-standards` and `gh/midnghtsapphire/linear-a`, and keeps previous versions in a Doppler ledger. Dry-run is the default. A sync skips a destination whose timestamp or recorded version is newer. Older writers that pushed Doppler onto GitHub with no freshness check are disabled and left in the tree. The schedule is CircleCI `secrets-maintenance`, weekly, dry-run unless `SECRETS_APPLY=1`.
+- **Decisions:** GitHub Actions is not the runner (billing lock; paid GitHub is out). `scripts/gatekeeper-sync.sh` is already absent; callers were disabled rather than recreating it. The integration token could not assign issue #18486 (HTTP 403).
+- **Sources:** MEASURED: `python3 -m pytest tests/test_zero_touch_secrets.py` — 7 passed. CircleCI structure test passed. `node scripts/auditor-controller.js --check` passed after `scripts/__pycache__` was removed.
+- **Open / handoff:** Secret still has to create the Doppler project, the service token, the CircleCI contexts, and the CircleCI env vars `DOPPLER_TOKEN` and `CIRCLE_TOKEN`. Do not set `SECRETS_APPLY=1` until Doppler holds the live values.
+
 ## 2026-11-14 — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
 
 - **Actor:** TriageChief

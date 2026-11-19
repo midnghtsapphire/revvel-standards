@@ -1,3 +1,8 @@
+## 2026-11-19 — Secret — Doppler is the source for zero-touch secrets (issue #18486)
+
+- `scripts/zero_touch_secrets.py` reads and writes Doppler (free Developer plan, project `revvel-standards`, config `prd`) and fans names out to CircleCI. Dry-run unless `--apply`. A sync refuses a destination that is newer than Doppler. Previous versions stay in the Doppler ledger. CircleCI workflow `secrets-maintenance` is the schedule. GitHub Actions is a sync target only.
+- Disabled, not deleted: the gatekeeper-cli sync fallback, the rosette gatekeeper wrapper and `provision_secrets`, and the homeostat Doppler recovery dispatch. `doppler-recover` stays off.
+
 ## 2026-11-14 (4) — TriageChief — Grok bots: the shared box is scratch; missing data goes on the BOM
 
 - Added `docs/GROK-BOTS-BOX-IS-SCRATCH.md`, and linked it from `AGENTS.md` and `docs/BOT-COMMON-RULES.md`. The shared box is scratch space (it hit 100% disk on 14 Nov 2026). Private or copyrighted material belongs in a private GitHub repo (`linear-a-sources` or `box-backups`), not only on the box. Missing real data, APIs, inventory, or secrets do not fail the WR or PR and are not requested from Audrey mid-work; they go on the existing BOM "Audrey to get" list ([`docs/Universal-BOM_List/README.md`](docs/Universal-BOM_List/README.md)), and only that part is paused. Synthetic data is allowed only in dev, clearly labeled, and never as evidence; it must not feed Linear A findings, the ledger, or a merge to `main` (see linear-a's `synthetic_guard`). No workflow or CI changes.

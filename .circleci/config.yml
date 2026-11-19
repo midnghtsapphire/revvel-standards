@@ -435,6 +435,19 @@ jobs:
           path: /tmp/agent-fte-artifacts
           destination: agent-as-fte
 
+  # 2026-11-19 Secret (issue #18486). Weekly Doppler fan-out.
+  # Hosted GitHub Actions cannot run this: the account is billing-locked.
+  # Dry-run unless SECRETS_APPLY=1 on the CircleCI project.
+  secrets-sync:
+    docker:
+      - image: cimg/python:3.12
+    resource_class: small
+    steps:
+      - checkout
+      - run:
+          name: Doppler fan-out (dry-run unless SECRETS_APPLY=1)
+          command: bash .circleci/scripts/secrets-sync.sh
+
 workflows:
   version: 2
 
@@ -578,6 +591,22 @@ workflows:
             branches:
               only: main
       - oaudrey-home-image:
+          filters:
+            branches:
+              only: main
+
+  # Weekly Doppler read and fan-out. Separate from pr-workflow and
+  # main-workflow so those workflows stay free of a schedule.
+  secrets-maintenance:
+    triggers:
+      - schedule:
+          cron: "0 15 * * 1"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - secrets-sync:
           filters:
             branches:
               only: main
