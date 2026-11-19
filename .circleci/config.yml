@@ -447,23 +447,6 @@ jobs:
           # unreadable label is not permission. Setting it here again would
           # restore the deadlock, so leave it to the script.
 
-  # Security gate 1 (docs/security-gates/PLAN.md): fail a PR that deletes more
-  # than N lines or files, or removes a whole directory, unless a human put the
-  # `allow-huge-delete` label on it. Node built-ins only, no secret needed (a
-  # public repo's labels are readable without a token). Added by Proofy.
-  huge-delete-guard:
-    executor: node-executor
-    steps:
-      - checkout
-      - run:
-          name: Unit tests for this gate
-          command: node --test tests/huge-delete-guard.test.js
-      - run:
-          name: Huge-delete guard
-          command: node scripts/security-gates/huge-delete-guard.js
-      - store_artifacts:
-          path: /tmp/security-gates
-          destination: security-gates
       # 2026-11-15: the historical label-resolution commentary above is retained
       # only as history. Owner rule prohibits deletion and any label bypass.
       # No context, provider key, checkout/user SSH key or package hook is used.
@@ -562,6 +545,24 @@ jobs:
           # redacted receipt directory is retained, never private scanner logs.
           path: /tmp/security-completion-reports
           destination: security-completion
+
+  # Security gate 1 (docs/security-gates/PLAN.md): fail a PR that deletes more
+  # than N lines or files, or removes a whole directory, unless a human put the
+  # `allow-huge-delete` label on it. Node built-ins only, no secret needed (a
+  # public repo's labels are readable without a token). Added by Proofy.
+  huge-delete-guard:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Unit tests for this gate
+          command: node --test tests/huge-delete-guard.test.js
+      - run:
+          name: Huge-delete guard
+          command: node scripts/security-gates/huge-delete-guard.js
+      - store_artifacts:
+          path: /tmp/security-gates
+          destination: security-gates
 
   # Product image gate for screen-recorder-finder. Builds the Dockerfile, runs the server
   # tests, and requests /health inside the container. Unrelated diffs exit 0
