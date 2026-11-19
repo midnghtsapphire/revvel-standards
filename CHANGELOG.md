@@ -1,6 +1,6 @@
 ## 2026-11-19 — Git-Master — adopt github-free-toolkit in CircleCI (WR #18494)
 
-- Git-Master: added two new jobs and two new workflows to `.circleci/config.yml`, appended only. `pr-hygiene-check` is an advisory PR check that never fails the build. `toolkit-weekly-report` runs `stale-prs`, `unassigned-prs` and `repo-inventory` and is gated to a CircleCI scheduled trigger. The toolkit is fetched at pinned commit `2b7fcd8004f4`, not vendored. Both need the CircleCI context `github-free-toolkit` (GH_TOKEN), which Secret creates. No existing job or workflow was touched. Also added a note in `Library/README.md` and `handoffs/git-master/2026-11-19.md`. — Git-Master
+- Git-Master: added one new job and one new workflow to `.circleci/config.yml`, appended only: `pr-hygiene-check`, an advisory PR check that never fails the build. The weekly `toolkit-weekly-report` (`stale-prs`, `unassigned-prs`, `repo-inventory`) lives in its own file, `.circleci/toolkit-weekly-report.yml`, which is its own CircleCI pipeline with a schedule trigger only, so a scheduled run cannot start `main-workflow` or the deploy jobs (same pattern as `.circleci/scheduled-generators.yml`, PR #18489). The toolkit is fetched at pinned commit `2b7fcd8004f4`, not vendored. Both need the CircleCI context `github-free-toolkit` (GH_TOKEN), which Secret creates. No existing job or workflow was touched. Also added a note in `Library/README.md` and `handoffs/git-master/2026-11-19.md`. — Git-Master
 
 ## 2026-11-14 (4) — TriageChief — Grok bots: the shared box is scratch; missing data goes on the BOM
 
