@@ -31,7 +31,6 @@ python3 scripts/gate_exceptions.py --check "Devin Review" --result "Bugfinder in
 ```
 
 Credentials: CircleCI env vars `NOTION_TOKEN` (a Notion integration token with the database shared to
-it) and `NOTION_GATE_EXCEPTIONS_DB_ID` (`41d2aa31-9908-8139-9758-000bf3ec7939` is the data source;
-use the database id `41d2aa31-9908-819a-8c71-d804f9f44f21`). They are never printed or committed.
+it) and `NOTION_GATE_EXCEPTIONS_DB_ID` (the database id `41d2aa31-9908-819a-8c71-d804f9f44f21`). They are never printed or committed.
 
 Tests: `python3 -m unittest tests.gate_exceptions_test` (HTTP mocked; synthetic dev-only rows).
