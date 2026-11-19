@@ -1,0 +1,29 @@
+name: expr-probe
+# 2026-11-19 kimi-agent: one-shot diagnostic. Why do gated LLM lanes skip when
+# REVVEL_LLM_ALLOW_CLOUD == '1' is verified? Prints raw var values and evaluates
+# each gate clause as its own job. Branch-only; never merged to main.
+on:
+  workflow_dispatch:
+jobs:
+  raw:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "ALLOW=[${{ vars.REVVEL_LLM_ALLOW_CLOUD }}]"
+          echo "ROUTERS=[${{ vars.REVVEL_SWITCH_ROUTERS }}]"
+          echo "CODING=[${{ vars.REVVEL_SWITCH_CODING_AGENTS }}]"
+  gate-cloud:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "gate-cloud evaluated TRUE"
+  gate-routers-unset:
+    if: vars.REVVEL_SWITCH_ROUTERS != '0'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "gate-routers-unset evaluated TRUE"
+  combined:
+    if: vars.REVVEL_LLM_ALLOW_CLOUD == '1' && vars.REVVEL_SWITCH_ROUTERS != '0'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "combined evaluated TRUE"
