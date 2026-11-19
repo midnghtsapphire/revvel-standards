@@ -39,11 +39,11 @@ For applications requiring banking data, **Plaid Integration** is required to fa
 
 A comprehensive **Admin Panel** is a critical requirement. This dashboard must allow administrators to modify the user interface—including colors, layouts, branding, and fonts—without requiring code changes or redeployments. Additionally, administrators must have the ability to dynamically toggle features on and off for specific users or globally.
 
-### Marketing, SEO, and Analytics
+### Marketing and SEO (no analytics, no tracking)
 
 Organic growth and visibility are paramount. The application must have a strong **SEO Foundation**, including auto-generated meta tags, Open Graph tags, Twitter Cards, structured data (Schema.org JSON-LD), `sitemap.xml`, and `robots.txt`. 
 
-For paid acquisition, **SEM Hooks** must be built-in, supporting Google Ads integration, conversion tracking pixels, and UTM parameter handling. The admin panel must feature a **Backlinking Stats** dashboard displaying backlink counts, referring domains, and anchor text distribution, integrated with free APIs like OpenLinkProfiler or similar Free and Open Source Software (FOSS) tools.
+**No SEM hooks, conversion tracking pixels or UTM tagging are built in.** Paid-acquisition tracking is not allowed unless Audrey explicitly asks for it in that repo. The admin panel must feature a **Backlinking Stats** dashboard displaying backlink counts, referring domains, and anchor text distribution, integrated with free APIs like OpenLinkProfiler or similar Free and Open Source Software (FOSS) tools.
 
 Content management requires granular **Meta Data Management**, allowing per-page control over titles, descriptions, keywords, canonical URLs, and `hreflang` attributes for internationalization. Furthermore, **Alt Text** must be auto-generated for all images using an AI/LLM integration, with a manual override capability provided in the admin panel.
 
@@ -53,9 +53,9 @@ Finally, the application must include **Auto Marketing via Meta**. This involves
 
 The application must strictly comply with **WCAG 2.1 AA** accessibility standards. This includes comprehensive screen reader support, full keyboard navigation capabilities, and high contrast modes.
 
-For tracking user behavior, privacy-respecting **Analytics** must be integrated, prioritizing FOSS solutions like Plausible or Umami. 
+**No analytics.** Apps do not track user behavior, not even with privacy-friendly tools. Anything Audrey wants to see comes from her own sales and order records.
 
-Application stability is ensured through robust **Error Handling**, utilizing global error boundaries and Sentry-style error tracking. Code quality is maintained through comprehensive **Testing**, requiring full unit, integration, and end-to-end (e2e) test coverage using Vitest and Playwright.
+Application stability is ensured through robust **Error Handling**, utilizing global error boundaries and local error logs (no third-party error-reporting or call-home service unless Audrey asks). Code quality is maintained through comprehensive **Testing**, requiring full unit, integration, and end-to-end (e2e) test coverage using Vitest and Playwright.
 
 ### Auto-Documentation
 
@@ -105,7 +105,7 @@ Every Revvel project must be wired with MCP servers to give AI coding agents (Cl
 ### Mandatory for Every Project
 
 1. **`.mcp.json`** — Copy from `revvel-standards/templates/mcp/mcp.<profile>.json` and merge with `mcp.revvel-custom.json`.
-2. **`rvvel-affiliate-links-mcp`** — Always included. Enables AI agents to insert real affiliate links automatically. Run: `npx rvvel-affiliate-links-mcp`.
+2. ~~`rvvel-affiliate-links-mcp`~~ — **Removed.** No affiliate links in any app, so this server is not included.
 3. **`code-review-mcp-server`** — Always included. Enforces the Dev→Test→Live gate. Requires local clone: `github.com/midnghtsapphire/code-review-mcp-server`.
 
 ### Profile Selection
