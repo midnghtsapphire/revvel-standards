@@ -11,7 +11,7 @@ Every issue/PR being worked carries exactly **two** labels at all times:
 
 | Label family | Meaning | Examples |
 |---|---|---|
-| `agent:<name>` | Who holds it **right now** | `agent:openrouter`, `agent:copilot`, `agent:gitar`, `agent:jules`, `agent:kimi`, `agent:manus`, `agent:codex`, `agent:openhands` |
+| `agent:<name>` | Who holds it **right now** | `agent:openrouter`, `agent:copilot`, `agent:gitar`, `agent:jules`, `agent:kimi`, `agent:manus`, `agent:codex`, `agent:openhands` — plus automation bots (added 2026-11-19): `agent:dependabot`, `agent:renovate`, `agent:imgbot`, `agent:circleci`, `agent:cursor`, `agent:grok` |
 | `status:<state>` | Where it is in the pipeline **right now** | `status:claimed` → `status:in-progress` → `status:checks-passing` → `status:waiting-for-review` → `status:ready-to-merge` · plus `status:blocked`, `status:needs-audrey` |
 
 - **Handoff = label swap.** When OpenRouter hands to Copilot, `agent:openrouter` comes off and `agent:copilot` goes on, with a comment noting the handoff. The provenance question ("was this OpenRouter or Copilot?") is answered by the label history + comments.
