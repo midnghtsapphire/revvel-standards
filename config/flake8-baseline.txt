@@ -119,7 +119,7 @@ products/pdf-output/generate_pdf_rl.py::E128 8
 products/pdf-output/generate_pdf_rl.py::E226 6
 products/pdf-output/generate_pdf_rl.py::F401 3
 products/pdf-output/generate_pdf_rl.py::F841 1
-revvel-rosette-automation/src/gatekeeper.py::W293 21
+revvel-rosette-automation/src/gatekeeper.py::W293 20
 revvel-rosette-automation/src/orchestrator.py::W293 12
 revvel-rosette-automation/src/scheduler.py::F401 2
 revvel-rosette-automation/src/scheduler.py::W293 21

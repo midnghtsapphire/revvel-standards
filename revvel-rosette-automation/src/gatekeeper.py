@@ -71,7 +71,19 @@ class Gatekeeper:
             Dict with provisioning results
         """
         console.print(f"\n[cyan]Provisioning secrets for {repo}[/cyan]")
-        
+
+        # 2026-11-19 Secret: refuse the shell-out. gatekeeper-sync.sh copied
+        # Doppler onto GitHub with no freshness check (docs/tool-history/doppler.md).
+        # scripts/zero_touch_secrets.py is the writer that compares timestamps.
+        console.print("[red]provision_secrets writes are disabled (Secret 2026-11-19).[/red]")
+        return {
+            "error": (
+                "provision_secrets writes are disabled (Secret 2026-11-19). "
+                "Use scripts/zero_touch_secrets.py."
+            ),
+            "disabled": True,
+        }
+
         if self.gatekeeper_script is None:
             msg = (
                 "gatekeeper-sync.sh not found; cannot provision secrets. "
