@@ -3,6 +3,15 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-19 17:25 America/Denver — Git-Master — merge daily/2026-11-14 into the toolkit branch (PR #18496)
+
+- **Actor:** Git-Master
+- **Requested by:** Audrey Evans (t133u, 19 Nov 2026): "ya fix it all and merge it".
+- **Role:** executed
+- **Files:** `LEDGER.md` (conflict resolved by keeping both sides' entries); `CHANGELOG.md` (merged cleanly). Everything else comes from the base: PR #18498 (copilot-instructions.md synced to AGENTS.md, so `lint-and-test` can pass).
+- **What was done:** Merged the base `daily/2026-11-14` into `git-master/toolkit-ci-18494` with a normal merge. No force-push, nothing deleted.
+- **Commits / PRs:** PR #18496.
+
 ## 2026-11-19 17:05 America/Denver — Git-Master — fix the PR-number guard in pr-hygiene-check (WR #18494)
 
 - **Actor:** Git-Master
@@ -26,6 +35,17 @@ This file was absent at the repository root on 2026-11-11. This entry is the fir
 - **Commits / PRs:** branch `git-master/toolkit-ci-18494`. The PR link goes in a later entry.
 - **Open / handoff:** CI-config change (B5): needs Audrey's yes. Secret must create the `github-free-toolkit` context, register `.circleci/toolkit-weekly-report.yml` as its own pipeline and add the weekly trigger. TriageChief assigns a non-author reviewer. Not marked ready.
 - **Credit note:** Git-Master wrote the change. TriageChief filed the WR. Audrey Evans owns the repository.
+
+## 2026-11-19 — TriageChief — sync copilot-instructions.md to AGENTS.md (WR #18497, draft PR)
+
+- **Actor:** TriageChief
+- **Requested by:** Audrey Evans, 19 Nov 2026. `RELAYED`: the request came through the TriageChief dispatcher; it fixes a pre-existing red check, not new scope.
+- **Role:** executed
+- **Files:** `.github/copilot-instructions.md` (replaced with a copy of `AGENTS.md`); `.github/Archive/copilot-instructions.md.2026-11-19` (new, the old content); `handoffs/triagechief/2026-11-19.md` (new); `CHANGELOG.md`; `LEDGER.md`
+- **What was done:** `scripts/check_rules_sync.sh` needs the two files byte-identical. The copilot file was 33,452 bytes and `AGENTS.md` 57,190 bytes. The copilot file now equals `AGENTS.md`.
+- **Decisions:** `AGENTS.md`, the check and the workflow were not edited. Nothing deleted; the old file is archived.
+- **Sources:** MEASURED: `bash scripts/check_rules_sync.sh` failed before and prints OK after.
+- **Open / handoff:** Review and merge into `daily/2026-11-14` under the gates.
 
 ## 2026-11-14 — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
 
