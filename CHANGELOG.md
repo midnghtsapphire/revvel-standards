@@ -1,3 +1,7 @@
+## 2026-11-19
+
+- TriageChief (WR #18500): added `docs/principles/time-blindness-hook-machine.md` (Audrey's time-blindness quote, then Builders & agents and Products we make) and a link line in `START_HERE_CALL_CHAIN.md`. Additions only. — TriageChief
+
 ## 2026-11-14 — Auky — add Trivy filesystem scan on CircleCI
 
 - Added CircleCI job `trivy-fs` and `.circleci/scripts/trivy-fs.sh`, reusing the scan settings from the existing (unchanged) `.github/workflows/trivy.yml`: filesystem scan, scanners `vuln,misconfig,secret`, severity CRITICAL/HIGH/MEDIUM, `ignore-unfixed`. Official Trivy v0.76.2. The CircleCI job fails on unfixed HIGH/CRITICAL and stores the table report as an artifact. No Actions workflow edits. No billing changes.

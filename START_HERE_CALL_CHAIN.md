@@ -7,6 +7,7 @@
 **Simple HTML:** [`docs/process/how-it-works.html`](docs/process/how-it-works.html)  
 **Engine rules:** [`engines/CONTRACT.md`](engines/CONTRACT.md)  
 **What ships after merge:** [`standards/DELIVERY_MATRIX.md`](standards/DELIVERY_MATRIX.md)
+**Principle (time blindness and hooks):** [`docs/principles/time-blindness-hook-machine.md`](docs/principles/time-blindness-hook-machine.md)
 
 ---
 
