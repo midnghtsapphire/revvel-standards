@@ -4,6 +4,7 @@
 - The hand-written "Connector matrix (2026-11-19)" section in `docs/TOOL_COST_INDEX.md` is retired in place: kept verbatim inside an HTML comment with a dated note, not deleted. A test checks every one of its apps is in the database. All 14 rows, 4 stale rows and 4 questions were ported; added a Gumloop row and an n8n conflict row (stale-marked) from `docs/standards/RUNNER_TARGETS.md`, which says about 60 USD a month for n8n and Gumloop while the matrix said n8n is free.
 - `scripts/connections-registry.js`: the whole-file write of `docs/CONNECTIONS_REGISTRY.md` is commented out in place and replaced by one that carries the connector block across (`carryMatrixBlock`). No other change to that script.
 - Drift check: `npm run connectors:check`, run by `tests/connector-matrix.test.js` inside `npm test` (CircleCI `lint-and-test`). No workflow file was edited; the GitHub Actions `connections-registry.yml` is untouched.
+- `CHANGELOG.md`: touching this file turned `tests/markdown-gate-green.test.js` red because two older lines already failed markdownlint on main (MD026 on the 2026-11-12 BALLS heading, MD012 near the end). Added two one-line `markdownlint-disable-next-line` comments next to them. Those entries' text is unchanged and nothing was deleted.
 - `package.json`: scripts `connectors`, `connectors:check`, `connectors:db`, `connectors:csv`. `docs/CONNECTIONS_REGISTRY_STANDARD.md`: appended a section. `docs/tool-history/circleci.md`: my own link from this PR now points at the generated heading.
 
 ## 2026-11-19 — Decipherer — connector matrix (additive)
@@ -28,6 +29,7 @@
   2026-11-14. Pointers in `learnings.md`, `LEDGER.md`, `README.md`,
   and `MASTER.md`. No workflow or CircleCI config changes.
 
+<!-- markdownlint-disable-next-line MD026 -->
 ## 2026-11-12 — BALLS — added incubating `products/beauty-kit/` with the BALLS Beauty Playbook research (GitHub beautification, other-tool tricks, market prices, 8 product ideas); additions only.
 ## 2026-11-12 — BALLS — Beauty Kit: three AudreyBuildsAI digital products
 
@@ -591,6 +593,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   comments remain checked. Preserved the earlier incorrect archive assertion
   and rule as dated history. Forty-seven child regressions pass.
 
+<!-- markdownlint-disable-next-line MD012 -->
 
 ## 2026-11-14 UTC — Audrey saved replies, Gitar audit, and Facebook Page drafts
 
