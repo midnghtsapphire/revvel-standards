@@ -56,4 +56,4 @@ Supersedes the "free tier (6,000 build minutes)" cost line above; that line
 stays for history. Audrey confirmed on 2026-11-14 that she is on the
 Performance plan, that CircleCI is connected to Gitar and Slack, and that she
 has Chunk (CircleCI's beta assistant). Plan and connections: see the
-[connector matrix](../TOOL_COST_INDEX.md#connector-matrix-2026-11-19).
+[connector matrix](../TOOL_COST_INDEX.md#connector-matrix-database-generated).
