@@ -3,6 +3,17 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-19 — TriageChief — move the dashboard and catalog generators from frozen GitHub Actions to a CircleCI schedule (WR #18488)
+
+- **Actor:** TriageChief
+- **Requested by:** Audrey Evans, 19 Nov 2026, 4:08 PM MT (t457u: "Yes, move the dashboard and catalog jobs to a CircleCI schedule")
+- **Role:** executed
+- **Files:** `.circleci/scheduled-generators.yml` (new); `.circleci/scripts/run-scheduled-generator.sh` and `.circleci/scripts/generator-pr.mjs` (new); `tests/scheduled-generators.test.js` (new); `docs/SCHEDULED_GENERATORS.md` (new); `README.md` (one line, old text kept in a dated comment; CARBON-STATS marker kept with a comment); header comment only on `.github/workflows/update-project-dashboard.yml`, `update-agent-creator-data.yml`, `flow-chart-sync.yml`, `connections-registry.yml`; `CHANGELOG.md`; `handoffs/triagechief/2026-11-19.md`
+- **What was done:** A separate CircleCI pipeline runs four generators when a schedule trigger sets the pipeline parameter `generator`: dashboard (every 4 hours), agent-creator, flow-charts (with the tools catalog) and connections-registry (daily). Each runs the existing script. If the output changed beyond timestamps, it commits to a bot branch and opens or updates one draft PR into the newest `daily/` branch. It reads `GENERATORS_GITHUB_TOKEN` from the CircleCI context `generators-bot` and skips cleanly without it.
+- **Decisions:** Separate config file so the lint-and-test gate is untouched and nothing runs on a PR push. No GitHub schedule added, no workflow logic or test edited, so `tests/no-scheduled-workflows.test.js` still passes. The GitHub Pages deploy step of the dashboard workflow is not moved (it needs GitHub Actions).
+- **Sources:** MEASURED: `node --test tests/scheduled-generators.test.js` (new) and the existing freeze, dashboard, connections and CircleCI structure tests; CircleCI `validate_config` returned valid.
+- **Open / handoff:** B5 (CI-config change): Audrey's t457u words above are the approval. Secret still has to create the `generators-bot` context, register the pipeline and add the four schedule triggers (`docs/SCHEDULED_GENERATORS.md`). TriageChief merges after the C3 gates.
+
 ## 2026-11-14 — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
 
 - **Actor:** TriageChief
