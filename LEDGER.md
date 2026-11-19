@@ -3,6 +3,17 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-19 — TriageChief — sync copilot-instructions.md to AGENTS.md (WR #18497, draft PR)
+
+- **Actor:** TriageChief
+- **Requested by:** Audrey Evans, 19 Nov 2026. `RELAYED`: the request came through the TriageChief dispatcher; it fixes a pre-existing red check, not new scope.
+- **Role:** executed
+- **Files:** `.github/copilot-instructions.md` (replaced with a copy of `AGENTS.md`); `.github/Archive/copilot-instructions.md.2026-11-19` (new, the old content); `handoffs/triagechief/2026-11-19.md` (new); `CHANGELOG.md`; `LEDGER.md`
+- **What was done:** `scripts/check_rules_sync.sh` needs the two files byte-identical. The copilot file was 33,452 bytes and `AGENTS.md` 57,190 bytes. The copilot file now equals `AGENTS.md`.
+- **Decisions:** `AGENTS.md`, the check and the workflow were not edited. Nothing deleted; the old file is archived.
+- **Sources:** MEASURED: `bash scripts/check_rules_sync.sh` failed before and prints OK after.
+- **Open / handoff:** Review and merge into `daily/2026-11-14` under the gates.
+
 ## 2026-11-14 — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
 
 - **Actor:** TriageChief
