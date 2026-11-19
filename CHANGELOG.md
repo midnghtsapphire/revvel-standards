@@ -1,3 +1,7 @@
+## 2026-11-19 — Decipherer — connector matrix (additive)
+
+- Added eight entries to `config/connections.yml` (circleci, circleci-slack, gitar, cubic, chunk, sonarqube-cloud, n8n, higgins) and regenerated `docs/CONNECTIONS_REGISTRY.md`, the README block and the dashboard. Added the "Connector matrix (2026-11-19)" section, a stale-rows list and open questions to `docs/TOOL_COST_INDEX.md`. Appended dated stale notes to `docs/STACK.md` and `docs/tool-history/circleci.md`. Nothing deleted or rewritten. Plan tiers are Audrey's words from 2026-11-14 and are marked as such; Higgins is left unidentified. No secrets.
+
 ## 2026-11-14 — Auky — add Trivy filesystem scan on CircleCI
 
 - Added CircleCI job `trivy-fs` and `.circleci/scripts/trivy-fs.sh`, reusing the scan settings from the existing (unchanged) `.github/workflows/trivy.yml`: filesystem scan, scanners `vuln,misconfig,secret`, severity CRITICAL/HIGH/MEDIUM, `ignore-unfixed`. Official Trivy v0.76.2. The CircleCI job fails on unfixed HIGH/CRITICAL and stores the table report as an artifact. No Actions workflow edits. No billing changes.

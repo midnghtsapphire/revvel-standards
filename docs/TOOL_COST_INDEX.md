@@ -71,3 +71,52 @@ upgrade decision can be made.
 2. Add a corresponding entry to `docs/UPGRADE_LOG.md` if the change triggered a
    tier action.
 3. Workflows should *read* from this file, not hardcode prices inline.
+
+## Connector matrix (2026-11-19)
+
+Added by Decipherer for Audrey. Additive only: no row above was edited or
+removed. It answers one question per app: what does it connect to, and which
+paid add-on does that connection let us skip. The wiring itself lives in
+[`config/connections.yml`](../config/connections.yml) and its generated view
+[`docs/CONNECTIONS_REGISTRY.md`](CONNECTIONS_REGISTRY.md); this table adds the
+plan tier and the free workaround.
+
+Status words: **connected and working** means Audrey said so on 2026-11-14.
+**available** means the vendor documents it and nothing here proves it is on.
+**unverified** means nobody has confirmed it. A plan tier marked *(Audrey)* is
+her word; no read-only tool can see it.
+
+| App | Plan tier | Connects to | Status | Free workaround it enables | Source |
+| --- | --- | --- | --- | --- | --- |
+| CircleCI | Performance *(Audrey, 2026-11-14)*. Official: 30,000 credits a month, then 15 USD per 25,000 | GitHub App, Gitar, Slack app, n8n node, SonarQube orb, Railway and DigitalOcean deploy jobs | connected and working (GitHub, Gitar, Slack per Audrey). Projects: revvel-standards, reese-reviews, amazon-books, forensicfinders. linear-a has none | Self-hosted runner: 20 concurrent tasks on Performance, no per-minute charge, so CARESSE can stand in for the billing-locked Actions minutes. Schedule triggers stand in for Actions cron | [CircleCI pricing](https://circleci.com/pricing/), [runner overview](https://circleci.com/docs/runner/runner-overview/) |
+| CircleCI to Slack | Part of the CircleCI org. The docs state no separate fee | Slack workspace | connected and working *(Audrey, 2026-11-14)* | The app posts workflow results and lets you approve or cancel on-hold workflows from Slack. The docs do not describe starting a pipeline from Slack. To start one, post to the pipeline trigger API from n8n or a small custom Slack app | [CircleCI Slack integration](https://circleci.com/docs/guides/integration/slack-integration/), [trigger a workflow via API v2](https://support.circleci.com/en/articles/15091118-how-to-trigger-a-workflow-via-circleci-api-v2) |
+| Gitar | A higher membership she associates with Sonar *(Audrey)*. Official tiers: Core, Pro, Enterprise. Exact tier unverified | GitHub, CircleCI, Linear, Slack, Jira, Plane, YouTrack | CircleCI connected and working *(Audrey)*; others available | Keep deterministic checks in CircleCI jobs and use Gitar only for judgment calls. Scope settings limit what it processes | [Gitar plans](https://docs.gitar.ai/account-billing/plans), [connect CircleCI](https://docs.gitar.ai/connecting-ci/circleci) |
+| Sonar (SonarQube Cloud) | Unverified whether a separate subscription exists. Gitar is now a Sonar product but a Gitar plan is not documented as including SonarQube. Official Free: 50k lines of private code, 5 members | GitHub, CircleCI orb, Slack (Free, Team, Enterprise), Jira (Team, Enterprise) | unverified. Checks have been seen on PRs | The free plan covers small private repos. Unlimited for public repos | [SonarQube Cloud plans](https://docs.sonarsource.com/sonarqube-cloud/administering-sonarcloud/managing-subscription/subscription-plans), [Slack](https://docs.sonarsource.com/sonarqube-cloud/administering-sonarcloud/integrations/setup) |
+| Cubic | Team *(Audrey)*. Official: 30 USD per developer a month, billed yearly | GitHub App, Linear, Jira, Asana, GitHub Issues, Confluence, Notion | connected and working as a GitHub reviewer and installed in Notion. Seat and line usage unverified | Free for public repos. Linear and Notion context in reviews replaces a separate requirements-check tool | [cubic integrations](https://docs.cubic.dev/integrations/overview), [cubic pricing](https://www.cubic.dev/pricing-plans) |
+| Chunk | CircleCI beta, on Free, Performance and Scale *(Audrey has it)*. It is CircleCI's, not Cubic's | CircleCI, GitHub | available. Org setup unverified | No extra fee during beta. Uses credits and model tokens, and becomes paid at general availability | [Chunk overview](https://circleci.com/docs/guides/toolkit/chunk-setup-and-overview/) |
+| Bito | Paid on 2026-11-11, plan and amount unknown *(Audrey)*. Official: Team 12 to 15 USD, Professional 20 to 25 USD per seat a month | GitHub, GitLab, Bitbucket, VS Code and JetBrains. Jira, Confluence and Google Docs on Professional | connected (GitHub App, `bito-ai.yml`). Plan unverified | Same job as Gitar and Cubic. Free plan gives PR summaries | [Bito plans](https://docs.bito.ai/help/billing-and-plans/overview), [Bito features](https://docs.bito.ai/ai-code-reviews-in-git/key-features) |
+| Notion | Unverified. One member, one teamspace, no plan field readable | Slack, Linear (previews), cubic, GitHub (sync, Business only), n8n, Notion MCP | MCP connected. Bots installed: Composio, cubic, DEVIN_BRIDGE, Notion MCP | Notion AI connectors for Slack, GitHub and Linear need Business or Enterprise. n8n or the Notion API does the same on a free plan | [Notion pricing](https://www.notion.com/pricing), [AI connectors](https://www.notion.com/help/notion-ai-connectors) |
+| n8n | Community, self-hosted, free. Lab on Audrey's computer, localhost only | Built-in nodes: Slack, GitHub, Linear, Notion (with trigger), CircleCI (get, get many, trigger) | unverified. Trial lab only | Replaces Zapier tasks and Notion's Business-only GitHub sync. Notion webhooks need a public HTTPS endpoint | [n8n CircleCI](https://docs.n8n.io/integrations/builtin/credentials/circleci), [n8n Slack](https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.slack) |
+| Slack | Unknown (oaudrey workspace) | CircleCI app, MergeMe, Linear, Notion, SonarQube, Gitar (Pro), Zapier, n8n | connected and working for CircleCI *(Audrey)* and MergeMe | The CircleCI docs state no fee for the Slack app and SonarQube Slack is on its Free plan. Linear Slack intake is Business | [Linear Slack](https://linear.app/docs/slack) |
+| GitHub | Personal account behaves as Free (HTTP 403 on private-repo protection). Freedom-Angel-Corp is on the free plan with 1 seat | Everything above | connected and working | Self-hosted runners are free. Private repos cannot enforce merge gates without a paid plan | [GitHub plans](https://docs.github.com/en/get-started/learning-about-github/githubs-plans) |
+| Linear | Unknown (workspace RisingAloha). Free plan includes integrations, API and MCP | GitHub, Slack, Notion (previews), Zapier, Gitar, cubic | MCP connected | Free covers 250 issues and 2 teams | [Linear pricing](https://linear.app/pricing), [Linear integrations](https://linear.app/integrations) |
+| Zapier | Unknown. Free: 100 tasks a month, two-step Zaps | 9,000 plus apps, Linear triggers and actions, GitHub triggers polled every 15 minutes on Free | available (MCP connected) | n8n replaces it once the 100 tasks run out | [Zapier pricing](https://zapier.com/pricing), [Linear to Zapier](https://linear.app/docs/zapier) |
+| Higgins | Unknown. Audrey's name for an app; the product has not been identified. Another agent guessed Higgsfield, which is a guess | Audrey says she added it next to Gitar with CircleCI API work done | unverified | None until Audrey names it | Audrey, 2026-11-14 |
+
+### Stale rows (marked, not removed)
+
+Dated 2026-11-19. Each row below stays where it is. The current fact is here.
+
+| Where | What it says | Current fact | Source |
+| --- | --- | --- | --- |
+| `docs/TOOL_COST_INDEX.md`, CircleCI row above | Free tier, 6,000 build minutes a month | Audrey confirmed Performance on 2026-11-14. Performance includes 30,000 credits a month and 20 concurrent self-hosted tasks | Audrey; [CircleCI pricing](https://circleci.com/pricing/) |
+| `docs/TOOL_COST_INDEX.md`, Bito row above | CUT 2026-07-08 (D006), 0 USD | Audrey paid for Bito on 2026-11-11. Plan unknown. The cut decision and the payment are not reconciled | `docs/tool-history/bito.md` |
+| `docs/STACK.md`, Source control | GitHub Enterprise (Freedom-Angel-Corp) | The GitHub API reports the org on the free plan with 1 seat (checked 2026-11-14). Confirm no separate enterprise account exists | GitHub API, read-only |
+| `docs/Master Revvel-Standards Flow Charts/TOOLS_CATALOG.md`, row 68 | Notion: Free or 8 USD per user a month | Notion Plus is 10 USD per member a month; Business is 20 USD. That file is auto-maintained by `scripts/sync-flow-charts.js`, so this note lives here | [Notion pricing](https://www.notion.com/pricing) |
+
+### Open questions for Audrey
+
+1. What is Higgins? Name or link, so a row can be filled in.
+2. Is your Gitar plan Pro or Enterprise, and do you also pay for SonarQube or SonarCloud separately?
+3. What is the Notion plan, and what do you pay for Bito?
+4. Which repo holds the `secrets-` setup, so linear-a jobs can use it?
