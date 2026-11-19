@@ -3,6 +3,8 @@ name: expr-probe
 # REVVEL_LLM_ALLOW_CLOUD == '1' is verified? Prints raw var values and evaluates
 # each gate clause as its own job. Branch-only; never merged to main.
 on:
+  push:
+    branches: [diag/expr-probe-20261119]
   workflow_dispatch:
 jobs:
   raw:
