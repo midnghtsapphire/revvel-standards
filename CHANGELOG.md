@@ -4,7 +4,7 @@
 - Disabled, not deleted: the gatekeeper-cli sync fallback, the rosette gatekeeper wrapper and `provision_secrets`, and the homeostat Doppler recovery dispatch. `doppler-recover` stays off.
 - `.github/copilot-instructions.md` is again a byte copy of `AGENTS.md`. CircleCI `lint-and-test` failed because the two files already differed on `daily/2026-11-14`.
 - A sync no longer stamps the current time on an unversioned Doppler value, and `gatekeeper-cli sync` stops before it can run `gatekeeper-sync.sh`. The weekly CircleCI job exits 2 until `DOPPLER_TOKEN` and `CIRCLE_TOKEN` are set.
-- The secret-map path has to be a `.json` file inside the repository, and the CircleCI install uses binary wheels only.
+- The secret-map path has to be exactly `config/secret-map.json`. The file that is opened is built from the script location. The CircleCI install uses binary wheels only.
 
 ## 2026-11-14 (4) — TriageChief — Grok bots: the shared box is scratch; missing data goes on the BOM
 
