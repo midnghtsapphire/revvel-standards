@@ -1,3 +1,7 @@
+## 2026-11-19 — Git-Master — adopt github-free-toolkit in CircleCI (WR #18494)
+
+- Git-Master: added two new jobs and two new workflows to `.circleci/config.yml`, appended only. `pr-hygiene-check` is an advisory PR check that never fails the build. `toolkit-weekly-report` runs `stale-prs`, `unassigned-prs` and `repo-inventory` and is gated to a CircleCI scheduled trigger. The toolkit is fetched at pinned commit `2b7fcd8004f4`, not vendored. Both need the CircleCI context `github-free-toolkit` (GH_TOKEN), which Secret creates. No existing job or workflow was touched. Also added a note in `Library/README.md` and `handoffs/git-master/2026-11-19.md`. — Git-Master
+
 ## 2026-11-14 (4) — TriageChief — Grok bots: the shared box is scratch; missing data goes on the BOM
 
 - Added `docs/GROK-BOTS-BOX-IS-SCRATCH.md`, and linked it from `AGENTS.md` and `docs/BOT-COMMON-RULES.md`. The shared box is scratch space (it hit 100% disk on 14 Nov 2026). Private or copyrighted material belongs in a private GitHub repo (`linear-a-sources` or `box-backups`), not only on the box. Missing real data, APIs, inventory, or secrets do not fail the WR or PR and are not requested from Audrey mid-work; they go on the existing BOM "Audrey to get" list ([`docs/Universal-BOM_List/README.md`](docs/Universal-BOM_List/README.md)), and only that part is paused. Synthetic data is allowed only in dev, clearly labeled, and never as evidence; it must not feed Linear A findings, the ledger, or a merge to `main` (see linear-a's `synthetic_guard`). No workflow or CI changes.

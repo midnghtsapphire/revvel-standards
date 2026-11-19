@@ -3,6 +3,19 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-19 16:40 America/Denver — Git-Master — github-free-toolkit in CircleCI (WR #18494)
+
+- **Actor:** Git-Master
+- **Requested by:** Audrey Evans, 19 Nov 2026, relayed by TriageChief in WR #18494. `RELAYED` (A6): this is the WR scope, not Audrey's own words.
+- **Role:** executed
+- **Files:** `.circleci/config.yml` (two jobs and two workflows appended; nothing else changed); `CHANGELOG.md`; `LEDGER.md`; `Library/README.md`; `handoffs/git-master/2026-11-19.md` (new).
+- **What was done:** Added `pr-hygiene-check` (advisory, always exits 0, skips when there is no PR or no GH_TOKEN) in its own `pr-hygiene-advisory` workflow. Added `toolkit-weekly-report` in a workflow that runs only for a scheduled pipeline (`pipeline.trigger_source == scheduled_pipeline`). It is set to `TOOLKIT_PUBLIC_ONLY=true` because this repository is public and CircleCI logs and artifacts of a public project can be seen by anyone. Both jobs clone the toolkit at `2b7fcd8004f4a6f21703bba10dab4ef52204a276` and install gh CLI 2.63.2.
+- **Decisions:** Separate jobs and workflows, so the in-flight AI-review (#18493), Semgrep/Qlty (#18491) and generator (#18489) PRs do not collide in the same file. No `.github/workflows` file was added or changed.
+- **Sources:** MEASURED: `circleci config validate` (CLI 1.18.0) reports the file valid. Both job scripts were run on the box against live GitHub data (PR with an assignee passed, PR without one gave a warning and exit 0, bad PR number skipped with exit 0).
+- **Commits / PRs:** branch `git-master/toolkit-ci-18494`. The PR link goes in a later entry.
+- **Open / handoff:** CI-config change (B5): needs Audrey's yes. Secret must create the `github-free-toolkit` context and the weekly scheduled trigger. TriageChief assigns a non-author reviewer. Not marked ready.
+- **Credit note:** Git-Master wrote the change. TriageChief filed the WR. Audrey Evans owns the repository.
+
 ## 2026-11-14 — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
 
 - **Actor:** TriageChief
