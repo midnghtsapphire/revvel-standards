@@ -73,6 +73,14 @@ def sync(project: str, config_name: str, repo: str, secrets: str):
     console.print(f"Config: {config_name}")
     console.print(f"Repo: {repo}\n")
 
+    # 2026-11-19 Secret: stop before the script lookup. gatekeeper-sync.sh
+    # copies Doppler onto GitHub with no freshness check, including when the
+    # file is present on a runner. The guarded writer is
+    # scripts/zero_touch_secrets.py.
+    console.print("[red]Sync writes are disabled (Secret 2026-11-19).[/red]")
+    console.print("Use scripts/zero_touch_secrets.py. It refuses a newer destination.")
+    raise click.Abort()
+
     try:
         # Use the existing gatekeeper-sync.sh script (try to find it relative to repo root)
         from pathlib import Path

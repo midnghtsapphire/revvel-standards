@@ -94,9 +94,11 @@ def test_decide_write_refuses_older_source():
     assert z.decide_write("2020-01-01T00:00:00Z", None, True, None, None)[0] == "skip"
     assert z.decide_write("2020-01-01T00:00:00Z", None, True, 2, 2)[0] == "skip"
     assert z.decide_write("2020-01-01T00:00:00Z", None, True, 3, 2)[0] == "write"
+    # A just-written Doppler time must not overwrite a destination that has no timestamp.
     assert z.decide_write(
         "2026-11-19T00:00:00Z", None, True, 4, None, authoritative=True
-    )[0] == "write"
+    )[0] == "skip"
+    assert z.decide_write("2026-11-19T00:00:00Z", None, True, 4, 3)[0] == "write"
     dated = z.decide_write(None, "2030-01-01T00:00:00Z", True, None, None)
     assert dated[0] == "skip"
     assert "refusing" in dated[1]
@@ -266,6 +268,33 @@ def test_rotation_dry_run_does_not_write(capsys, monkeypatch):
     assert OLD not in out
 
 
+def test_apply_plan_refuses_unversioned_value():
+    http = FakeHTTP()
+    http.add("POST", "/envvar", 200, {})
+    ledger = {"secrets": {}, "history": [], "targets": {}}
+    actions = [
+        {
+            "action": "write",
+            "secret": "OPENROUTER_API_KEY",
+            "kind": "circleci_project",
+            "slug": "gh/midnghtsapphire/revvel-standards",
+            "where": "circleci project gh/midnghtsapphire/revvel-standards",
+            "key": "k",
+            "version": None,
+        }
+    ]
+    pushed, failed = z.apply_plan(actions, {"OPENROUTER_API_KEY": OLD}, ledger, CIRCLE, "gh", transport=http)
+    assert pushed == []
+    assert failed
+    assert http.calls == []
+    assert "OPENROUTER_API_KEY" not in ledger["secrets"]
+
+
+def test_secret_pattern_ignores_ordinary_words():
+    assert z.SECRET_VALUE.search("desk-lamp and task-list") is None
+    assert z.SECRET_VALUE.search("sk-" + ("a" * 20))
+
+
 def test_secret_map_names_and_disabled_writers():
     data = z.load_map(str(ROOT / "config" / "secret-map.json"))
     assert data["doppler"] == {"project": "revvel-standards", "config": "prd"}
@@ -287,6 +316,9 @@ def test_secret_map_names_and_disabled_writers():
     live = [line for line in gatekeeper.splitlines() if "set_repo_secret" in line and not line.strip().startswith("#")]
     assert live == []
     assert "Sync writes are disabled (Secret 2026-11-19)" in gatekeeper
+    disabled_at = gatekeeper.index("Sync writes are disabled (Secret 2026-11-19)")
+    script_at = gatekeeper.index("subprocess.run")
+    assert disabled_at < script_at
 
     wrapper = (ROOT / "revvel-rosette-automation/scripts/gatekeeper.sh").read_text()
     assert "writes are disabled (Secret 2026-11-19)" in wrapper

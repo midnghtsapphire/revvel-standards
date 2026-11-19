@@ -171,7 +171,16 @@ SERVICE_TO_DOPPLER = {
     "github_pat": "ADMIN_GITHUB_TOKEN",
 }
 
-SECRET_VALUE = re.compile(r"(dp\.pt\.|dp\.st\.|ghp_|github_pat_|sk-|xoxb-|ntn_)")
+# Token-shaped strings only. A short prefix such as "sk-" also appears inside
+# ordinary words ("desk-", "task-") and must not reject the name map.
+SECRET_VALUE = re.compile(
+    r"(\bdp\.(?:pt|st)\.[A-Za-z0-9]{10,}"
+    r"|\bghp_[A-Za-z0-9]{20,}"
+    r"|\bgithub_pat_[A-Za-z0-9_]{20,}"
+    r"|\bsk-[A-Za-z0-9_-]{16,}"
+    r"|\bxoxb-[A-Za-z0-9-]{10,}"
+    r"|\bntn_[A-Za-z0-9]{10,})"
+)
 
 
 def _manual_hook(detail):
@@ -351,9 +360,11 @@ def decide_write(
     """Return (action, reason). Never overwrite a newer destination.
 
     Doppler once copied stale values over fresh tokens (docs/tool-history/doppler.md,
-    Apr–Aug 2026). Missing timestamps are treated as 'might be newer', except
-    when this process just wrote the Doppler value (`authoritative`).
+    Apr–Aug 2026). A destination with no timestamp is treated as possibly newer.
+    `authoritative` is accepted and ignored: stamping "now" after a write must
+    not overwrite a CircleCI var that has no updated_at.
     """
+    del authoritative
     source_dt = parse_ts(source_updated_at)
     dest_dt = parse_ts(dest_updated_at)
     if not dest_exists:
@@ -370,8 +381,6 @@ def decide_write(
         if int(source_version) > int(pushed_version):
             return "write", "Doppler version is newer than the last push"
         return "skip", "destination already has this Doppler version"
-    if authoritative and source_dt is not None:
-        return "write", "this process just wrote Doppler; destination has no timestamp"
     if allow_unversioned and source_dt is not None:
         return "write", "unversioned destination allowed by SECRETS_ALLOW_UNVERSIONED"
     return "skip", "destination exists without a timestamp; refusing to overwrite a possibly newer value"
@@ -669,22 +678,17 @@ def apply_plan(actions, values, ledger, circle_token, github_token, transport=No
     for row in actions:
         if row["action"] != "write":
             continue
+        version = row.get("version")
+        if version is None:
+            # Do not invent updated_at=now, and do not push. An old Doppler
+            # value would then look newer than every dated destination.
+            failed.append(row["where"] + " (no Doppler version record)")
+            continue
         try:
             push_one(row, values[row["secret"]], circle_token, github_token, transport)
         except RuntimeError:
             failed.append(row["where"])
             continue
-        version = row.get("version") or 1
-        if row.get("version") is None:
-            ledger.setdefault("secrets", {}).setdefault(
-                row["secret"],
-                {
-                    "version": 1,
-                    "updated_at": now_iso(),
-                    "sha256": sha256_text(values[row["secret"]]),
-                },
-            )
-            version = ledger["secrets"][row["secret"]].get("version") or 1
         ledger.setdefault("targets", {})[row["key"]] = {
             "pushed_version": version,
             "pushed_at": now_iso(),
@@ -919,7 +923,12 @@ def main(argv=None):
                     if not (isinstance(item, (list, tuple)) and len(item) == 2):
                         continue
                     repo, keyname = item
-                    seal_and_set_secret(repo, keyname, new)
+                    try:
+                        seal_and_set_secret(repo, keyname, new)
+                    except RuntimeError:
+                        emit(f"   GitHub update failed for {repo}/{keyname}")
+                        doppler_rc = doppler_rc or 1
+                        continue
                     emit(f"   ✔ updated {repo}/{keyname}")
         os.makedirs("docs/security", exist_ok=True)
         with open("docs/security/LEAK_LOG.md", "a") as f:
