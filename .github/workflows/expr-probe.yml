@@ -29,3 +29,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "combined evaluated TRUE"
+
+# re-probe 2026-11-19 after payment
