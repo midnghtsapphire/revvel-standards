@@ -1,3 +1,6 @@
+## 2026-11-19 — TriageChief — dashboard, agent-creator, flow-chart/tools-catalog and connections generators move to a CircleCI schedule (WR #18488)
+
+- Added `.circleci/scheduled-generators.yml` (its own pipeline, gated on the pipeline parameter `generator`), `.circleci/scripts/run-scheduled-generator.sh`, `.circleci/scripts/generator-pr.mjs`, `tests/scheduled-generators.test.js` and `docs/SCHEDULED_GENERATORS.md`. Each job runs the existing script and, if the output changed beyond timestamps, opens or updates one draft PR into the newest `daily/` branch. Dashboard every 4 hours, the others daily. Needs the CircleCI context `generators-bot` (`GENERATORS_GITHUB_TOKEN`); skips cleanly without it. README line now says CircleCI (old text kept in a dated comment). The four GitHub workflows only gained a header comment; no GitHub schedule was added.
 ## 2026-11-19 — Secret — Doppler is the source for zero-touch secrets (issue #18486)
 
 - `scripts/zero_touch_secrets.py` reads and writes Doppler (free Developer plan, project `revvel-standards`, config `prd`) and fans names out to CircleCI. Dry-run unless `--apply`. A sync refuses a destination that is newer than Doppler. Previous versions stay in the Doppler ledger. CircleCI workflow `secrets-maintenance` is the schedule. GitHub Actions is a sync target only.

@@ -1,0 +1,108 @@
+# Scheduled generators pipeline — TriageChief, 2026-11-19, WR #18488.
+# Owner approval: Audrey Evans, 2026-11-19 (t457u): "Yes, move the dashboard and
+# catalog jobs to a CircleCI schedule".
+#
+# WHY A SEPARATE FILE (not .circleci/config.yml): this pipeline must never run on a
+# PR push and must not disturb the lint-and-test gate. Register it in CircleCI as
+# its OWN pipeline (Project Settings > Project Setup > Create pipeline, config path
+# `.circleci/scheduled-generators.yml`) with schedule triggers ONLY, no push trigger.
+# As a second guard, every workflow below runs only when the pipeline parameter
+# `generator` names it. A push, PR or any other trigger leaves `generator` at its
+# default `none`, so nothing runs.
+#
+# These replace four GitHub Actions workflows that stay in place, untouched except
+# for a header note (GitHub Actions is billing-locked and its schedules are frozen
+# by tests/no-scheduled-workflows.test.js):
+#   dashboard            <- .github/workflows/update-project-dashboard.yml (was every 4 h)
+#   agent-creator        <- .github/workflows/update-agent-creator-data.yml
+#   flow-charts          <- .github/workflows/flow-chart-sync.yml (incl. TOOLS_CATALOG.csv/.md)
+#   connections-registry <- .github/workflows/connections-registry.yml
+#
+# What each job does: runs the existing script(s), and if the output meaningfully
+# changed, commits to a bot branch and opens or updates ONE draft PR into the newest
+# daily/YYYY-MM-DD branch (never main, no force-push). Logic lives in
+# .circleci/scripts/run-scheduled-generator.sh. Docs: docs/SCHEDULED_GENERATORS.md.
+#
+# Secret: GENERATORS_GITHUB_TOKEN comes from the CircleCI context `generators-bot`
+# (contents + pull-requests write on this repo only). If it is missing the job
+# skips cleanly. No job prints environment variables.
+
+version: 2.1
+
+parameters:
+  generator:
+    description: >-
+      Which generator to run. Set by a schedule trigger (or a manual API run).
+      Any other value is not accepted; `none` (default) runs nothing.
+    type: enum
+    enum: [none, all, dashboard, agent-creator, flow-charts, connections-registry]
+    default: none
+
+executors:
+  node-executor:
+    docker:
+      - image: cimg/node:22.14
+    resource_class: small
+
+jobs:
+  generate:
+    executor: node-executor
+    parameters:
+      job:
+        type: enum
+        enum: [dashboard, agent-creator, flow-charts, connections-registry]
+    steps:
+      - checkout
+      - run:
+          name: Run << parameters.job >> generator and open or update the bot PR
+          no_output_timeout: 20m
+          command: bash .circleci/scripts/run-scheduled-generator.sh << parameters.job >>
+
+workflows:
+  # Schedule: every 4 hours. Cron `7 */4 * * *` (UTC).
+  dashboard:
+    when:
+      or:
+        - equal: [dashboard, << pipeline.parameters.generator >>]
+        - equal: [all, << pipeline.parameters.generator >>]
+    jobs:
+      - generate:
+          name: dashboard
+          job: dashboard
+          context: generators-bot
+
+  # Schedule: daily. Cron `17 7 * * *` (UTC).
+  agent-creator:
+    when:
+      or:
+        - equal: [agent-creator, << pipeline.parameters.generator >>]
+        - equal: [all, << pipeline.parameters.generator >>]
+    jobs:
+      - generate:
+          name: agent-creator
+          job: agent-creator
+          context: generators-bot
+
+  # Schedule: daily. Cron `27 7 * * *` (UTC). Covers the Flow Charts folder incl. TOOLS_CATALOG.csv/.md.
+  flow-charts:
+    when:
+      or:
+        - equal: [flow-charts, << pipeline.parameters.generator >>]
+        - equal: [all, << pipeline.parameters.generator >>]
+    jobs:
+      - generate:
+          name: flow-charts
+          job: flow-charts
+          context: generators-bot
+
+  # Schedule: daily. Cron `37 7 * * *` (UTC). Regenerates the README "Connections at a glance" block.
+  connections-registry:
+    when:
+      or:
+        - equal: [connections-registry, << pipeline.parameters.generator >>]
+        - equal: [all, << pipeline.parameters.generator >>]
+    jobs:
+      - generate:
+          name: connections-registry
+          job: connections-registry
+          context: generators-bot
