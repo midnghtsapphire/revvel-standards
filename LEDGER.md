@@ -3,6 +3,50 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-19 17:25 America/Denver — Git-Master — merge daily/2026-11-14 into the toolkit branch (PR #18496)
+
+- **Actor:** Git-Master
+- **Requested by:** Audrey Evans (t133u, 19 Nov 2026): "ya fix it all and merge it".
+- **Role:** executed
+- **Files:** `LEDGER.md` (conflict resolved by keeping both sides' entries); `CHANGELOG.md` (merged cleanly). Everything else comes from the base: PR #18498 (copilot-instructions.md synced to AGENTS.md, so `lint-and-test` can pass).
+- **What was done:** Merged the base `daily/2026-11-14` into `git-master/toolkit-ci-18494` with a normal merge. No force-push, nothing deleted.
+- **Commits / PRs:** PR #18496.
+
+## 2026-11-19 17:05 America/Denver — Git-Master — fix the PR-number guard in pr-hygiene-check (WR #18494)
+
+- **Actor:** Git-Master
+- **Requested by:** TriageChief, 19 Nov 2026 (review of the sibling PR reese-reviews#98, same guard). `RELAYED` (A6). Audrey (t133u, 19 Nov 2026): "ya fix it all and merge it".
+- **Role:** executed
+- **Files:** `.circleci/config.yml` (only the `pr-hygiene-check` job); `CHANGELOG.md`; `LEDGER.md`.
+- **What was done:** The job skipped itself because `CIRCLE_PULL_REQUEST` is empty on GitHub App pipelines. It now resolves the PR number from that variable, then `pipeline.event.github.pull_request.number`, then the commit-to-PR API, and logs which one it used. Still advisory (`exit 0`).
+- **Decisions:** No `.github/workflows` file touched. No job deleted. `toolkit-weekly-report.yml` untouched. The unrelated `CIRCLE_PULL_REQUEST` mention at the label-check job was left alone.
+- **Commits / PRs:** PR #18496.
+- **Open / handoff:** Confirm in the CircleCI step log that the check ran.
+
+## 2026-11-19 16:40 America/Denver — Git-Master — github-free-toolkit in CircleCI (WR #18494)
+
+- **Actor:** Git-Master
+- **Requested by:** Audrey Evans, 19 Nov 2026, relayed by TriageChief in WR #18494. `RELAYED` (A6): this is the WR scope, not Audrey's own words.
+- **Role:** executed
+- **Files:** `.circleci/config.yml` (one job and one workflow appended; nothing else changed); `.circleci/toolkit-weekly-report.yml` (new); `CHANGELOG.md`; `LEDGER.md`; `Library/README.md`; `handoffs/git-master/2026-11-19.md` (new).
+- **What was done:** Added `pr-hygiene-check` (advisory, always exits 0, skips when there is no PR or no GH_TOKEN) in its own `pr-hygiene-advisory` workflow in `config.yml`. Added `toolkit-weekly-report` in its own file, `.circleci/toolkit-weekly-report.yml`, following the #18489 pattern: a separate CircleCI pipeline with a schedule trigger only, and a `when:` on the pipeline parameter `toolkit_report` (default `none`), so a scheduled run cannot start `main-workflow` or the deploy jobs. The first version of this PR put the weekly job in `config.yml`; TriageChief asked for the split and a new commit reverted it. It is set to `TOOLKIT_PUBLIC_ONLY=true` because this repository is public and CircleCI logs and artifacts of a public project can be seen by anyone. Both jobs clone the toolkit at `2b7fcd8004f4a6f21703bba10dab4ef52204a276` and install gh CLI 2.63.2.
+- **Decisions:** Separate jobs and workflows, and a separate config file for the weekly report, so the in-flight AI-review (#18493), Semgrep/Qlty (#18491) and generator (#18489) PRs do not collide in the same file. No `.github/workflows` file was added or changed.
+- **Sources:** MEASURED: `circleci config validate` (CLI 1.18.0) reports both `.circleci/config.yml` and `.circleci/toolkit-weekly-report.yml` valid. Both job scripts were run on the box against live GitHub data (PR with an assignee passed, PR without one gave a warning and exit 0, bad PR number skipped with exit 0).
+- **Commits / PRs:** branch `git-master/toolkit-ci-18494`. The PR link goes in a later entry.
+- **Open / handoff:** CI-config change (B5): needs Audrey's yes. Secret must create the `github-free-toolkit` context, register `.circleci/toolkit-weekly-report.yml` as its own pipeline and add the weekly trigger. TriageChief assigns a non-author reviewer. Not marked ready.
+- **Credit note:** Git-Master wrote the change. TriageChief filed the WR. Audrey Evans owns the repository.
+
+## 2026-11-19 — TriageChief — sync copilot-instructions.md to AGENTS.md (WR #18497, draft PR)
+
+- **Actor:** TriageChief
+- **Requested by:** Audrey Evans, 19 Nov 2026. `RELAYED`: the request came through the TriageChief dispatcher; it fixes a pre-existing red check, not new scope.
+- **Role:** executed
+- **Files:** `.github/copilot-instructions.md` (replaced with a copy of `AGENTS.md`); `.github/Archive/copilot-instructions.md.2026-11-19` (new, the old content); `handoffs/triagechief/2026-11-19.md` (new); `CHANGELOG.md`; `LEDGER.md`
+- **What was done:** `scripts/check_rules_sync.sh` needs the two files byte-identical. The copilot file was 33,452 bytes and `AGENTS.md` 57,190 bytes. The copilot file now equals `AGENTS.md`.
+- **Decisions:** `AGENTS.md`, the check and the workflow were not edited. Nothing deleted; the old file is archived.
+- **Sources:** MEASURED: `bash scripts/check_rules_sync.sh` failed before and prints OK after.
+- **Open / handoff:** Review and merge into `daily/2026-11-14` under the gates.
+
 ## 2026-11-14 — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
 
 - **Actor:** TriageChief
