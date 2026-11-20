@@ -169,7 +169,7 @@ jobs:
 # REASON: Immutable upstream action commit resolved via gh api 2026-11-15.
 #         uses: actions/github-script@v9.0.0
 # REVVEL-DISABLED-END
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           # REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
           # REASON: Alert links must identify the actual comment scanned, not always the parent issue.
@@ -361,7 +361,7 @@ jobs:
 # REASON: Immutable upstream action commit resolved via gh api 2026-11-15.
 #         uses: actions/github-script@v9.0.0
 # REVVEL-DISABLED-END
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const fs = require('fs');
