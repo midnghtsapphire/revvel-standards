@@ -1,3 +1,5 @@
+// RETIRED (2026-11-19): Audrey's rule is no analytics or telemetry in any app unless she explicitly asks for it in that repo.
+// Do NOT copy this file into an app. Flagged for removal: standards/NO_TRACKING_STANDARD.md
 /**
  * Revvel Standard — Mixpanel Initializer
  * ──────────────────────────────────────

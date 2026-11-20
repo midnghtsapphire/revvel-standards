@@ -1,7 +1,11 @@
 # Mixpanel Event Standard — Revvel
 
+> ## ⛔ RETIRED — DO NOT IMPLEMENT (2026-11-19)
+> Audrey's rule: **no tracking, analytics, telemetry or affiliate code in any app unless she explicitly asks for it in that repo.** It previously said every Revvel app must emit Mixpanel events. That requirement is void. This page was written by a visiting agent and is kept only as history. Nothing below is a requirement. See [`standards/NO_TRACKING_STANDARD.md`](../../standards/NO_TRACKING_STANDARD.md).
+
+
 **Version:** 1.0.0
-**Status:** Active — applies to every Revvel project that ships a Mixpanel SDK.
+**Status:** RETIRED — not a policy (was: "Active — applies to every Revvel project that ships a Mixpanel SDK")
 **Companion:** [`skills/mixpanel/SKILL.md`](../../skills/mixpanel/SKILL.md), [`mixpanel-init.ts`](./mixpanel-init.ts).
 
 This is the authoritative event-naming, property-shape, and PII standard for Mixpanel across the MIDNGHTSAPPHIRE org. If a project deviates, document the deviation in its `BOM.md` §Telemetry.
@@ -35,7 +39,7 @@ Event names are read by humans on dashboards. Treat them like UI copy.
 
 ## 2. Baseline Event Catalog
 
-Every Revvel app **must** emit these. Project-specific events go in the per-app `BOM.md` §Telemetry.
+~~Every Revvel app **must** emit these.~~ **Void: no app emits these unless Audrey asks for it in that repo.** Project-specific events go in the per-app `BOM.md` §Telemetry.
 
 | Event Name | Authoritative side | Required Properties |
 |---|---|---|

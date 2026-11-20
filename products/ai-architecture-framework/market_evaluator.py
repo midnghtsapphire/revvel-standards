@@ -1,11 +1,11 @@
-"""Daily market evaluator: selects 3 topics and creates free TEST VERSION
-products on Stripe/Gumroad (mocked).
+"""Market evaluator: drafts 3 mock product launches per run.
 
-Writes an audit log to `.sandbox/market_evaluator/` for observability.
+Mocks the Stripe/Gumroad integration rather than calling either API, and
+emits a JSON report that the GitHub Actions workflows upload as an artifact.
+Designed to run headless.
 """
 from __future__ import annotations
 
-import datetime as dt
 import json
 import os
 import random
@@ -75,15 +75,16 @@ def run(seed: int | None = None, out_dir: str | None = None) -> Dict:
 if __name__ == "__main__":
     seed = int(os.environ.get("MARKET_EVAL_SEED", "0")) or None
     print(json.dumps(run(seed=seed), indent=2))
-"""Market evaluator: schedules 3 product creations per run.
-
-Mocks Stripe/Gumroad integration. Emits a JSON report that downstream
-automation (GitHub Actions) uploads as an artifact.
+# SYNTAX REPAIR 2026-11-15 (blocker PR): two interleaved docstrings for the
+# second module version overlapped here — the first opened and was closed by
+# the second's opening quotes, leaving an unterminated string that broke
+# compilation repo-wide (the validate-before-push hook refuses every push).
+# Kept the fuller docstring; this file still holds two concatenated module
+# versions (two __main__ blocks) awaiting a follow-up reconstruction.
 """Market evaluator: schedules 3 product creations/day with Stripe/Gumroad mocks.
 
 Designed to run headless in GitHub Actions. Emits a JSON report per run.
 """
-from __future__ import annotations
 
 import json
 import os
@@ -100,6 +101,7 @@ CANDIDATE_TOPICS = [
     "JIT GPU cost calculator",
     "Gumroad launch kit",
     "Stripe metered billing recipes",
+]  # SYNTAX REPAIR 2026-11-15: list was truncated mid-literal by the interleave; closed here.
 import random
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
@@ -119,59 +121,6 @@ TOPICS = [
 
 
 @dataclass
-class ProductDraft:
-    title: str
-    slug: str
-    channel: str  # "stripe" | "gumroad"
-    price_usd: float
-    tier: str  # "TEST VERSION" | "paid"
-
-
-def pick_topics(n: int = 3, seed: int | None = None) -> List[str]:
-    if seed is None:
-        seed = int(datetime.now(timezone.utc).strftime("%Y%m%d"))
-    picks: List[str] = []
-    for i in range(n):
-        picks.append(CANDIDATE_TOPICS[(seed + i) % len(CANDIDATE_TOPICS)])
-    return picks
-
-
-def draft_product(topic: str, idx: int) -> ProductDraft:
-    slug = topic.lower().replace(" ", "-")
-    channel = "gumroad" if idx % 2 == 0 else "stripe"
-    return ProductDraft(
-        title=topic,
-        slug=slug,
-        channel=channel,
-        price_usd=0.0,
-        tier="TEST VERSION",
-    )
-
-
-def mock_publish(product: ProductDraft) -> dict:
-    """Simulate publishing to Stripe/Gumroad. Returns a receipt."""
-    return {
-        "channel": product.channel,
-        "slug": product.slug,
-        "published_at": datetime.now(timezone.utc).isoformat(),
-        "status": "mock_ok",
-        "external_id": f"mock_{product.channel}_{product.slug}",
-    }
-
-
-def run(output_path: str | None = None) -> dict:
-    topics = pick_topics(3)
-    drafts = [draft_product(t, i) for i, t in enumerate(topics)]
-    receipts = [mock_publish(d) for d in drafts]
-    report = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "drafts": [asdict(d) for d in drafts],
-        "receipts": receipts,
-    }
-    if output_path:
-        os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
-        with open(output_path, "w", encoding="utf-8") as f:
-            json.dump(report, f, indent=2)
 class ProductPlan:
     title: str
     platform: str
@@ -221,12 +170,18 @@ def run(n: int = 3) -> dict:
 
 
 if __name__ == "__main__":
-    out = sys.argv[1] if len(sys.argv) > 1 else "market-evaluator-report.json"
-    report = run(out)
     out_dir = os.environ.get("MARKET_EVAL_OUT", ".")
-    os.makedirs(out_dir, exist_ok=True)
+    if len(sys.argv) > 1:
+        path = sys.argv[1]
+    else:
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%d")
+        path = os.path.join(out_dir, "market-eval-%s.json" % stamp)
+
     report = run(3)
-    path = os.path.join(out_dir, f"market-eval-{datetime.now(timezone.utc).strftime('%Y%m%d')}.json")
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=2)
+
+    parent = os.path.dirname(path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(report, fh, indent=2)
     print(json.dumps(report, indent=2))

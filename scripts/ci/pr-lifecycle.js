@@ -10,12 +10,16 @@
 'use strict';
 
 const { core, runCli } = require('./lib/mini-github');
+// 2026-11-15: additive metadata-only completion gate; existing lifecycle owns
+// event timing. Trusted-default checkout only; no PR body command execution.
+const { observeOwnership, openPrs } = require('./lib/ownership-lifecycle');
 
 // pull_request / pull_request_target events
 async function runPrState(github, context) {
   const pr = context.payload.pull_request;
   if (!pr) return;
   core.info(`PR #${pr.number} state=${pr.state} draft=${pr.draft}`);
+  return observeOwnership(github, context, pr);
 }
 
 // check_suite completed / workflow_run completed events
@@ -41,7 +45,9 @@ async function runCheckState(github, context) {
   }
 
   const { owner, repo } = context.repo;
-  const { data: prs } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+  // 2026-11-15 retired first-page-only lookup (Audrey completion WR/PR).
+  // const { data: prs } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+  const prs = await openPrs(github, owner, repo);
   const matching = prs.filter((p) => p.head.sha === sha);
   if (matching.length === 0) {
     core.info('No open PRs match this SHA.');
@@ -49,12 +55,26 @@ async function runCheckState(github, context) {
   }
   const { data: suites } = await github.rest.checks.listSuitesForRef({ owner, repo, ref: sha });
   core.info(`Found ${matching.length} PR(s) and ${suites.total_count} check suite(s) for SHA.`);
+  for (const pr of matching) await observeOwnership(github, context, pr);
+  // A failed check is only a continuation signal, not permission to create a
+  // paid reviewer task. Manus continuation proposal is documented, not active.
+  if (['failure', 'timed_out'].includes(context.payload.workflow_run?.conclusion || context.payload.check_suite?.conclusion)) {
+    core.warning('Failed check: owning agent must resume the existing task; Manus API review dispatcher is not activated.');
+  }
+}
+
+// On-demand continuation scan for the existing monitor/operator. No timer is
+// installed; all open PRs are paginated and metadata-only. Do not create WRs.
+async function runOwnershipScan(github, context) {
+  const prs = await openPrs(github, context.repo.owner, context.repo.repo);
+  for (const pr of prs) await observeOwnership(github, context, pr);
 }
 
 if (require.main === module) {
   runCli({
     'pr-state': runPrState,
     'check-state': runCheckState,
+    'ownership-scan': runOwnershipScan,
     _byEvent: {
       pull_request: 'pr-state',
       pull_request_target: 'pr-state',
@@ -64,4 +84,4 @@ if (require.main === module) {
   }, '🔄 PR Lifecycle').catch((e) => { console.error(`❌ pr-lifecycle failed: ${e.message}`); process.exit(1); });
 }
 
-module.exports = { runPrState, runCheckState };
+module.exports = { runPrState, runCheckState, runOwnershipScan };

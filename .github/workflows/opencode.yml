@@ -12,6 +12,10 @@
 # Secrets: OPENROUTER_API_KEY (already on this repo — the fleet key).
 name: opencode
 
+concurrency:
+  group: opencode-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 on:
   issue_comment:
     types: [created]
@@ -37,10 +41,15 @@ jobs:
   #    Association guard: public repo, so only owner/member/collaborator
   #    comments can spend the OpenRouter fleet key.
   opencode-comment:
+    # 2026-11-15, security-spend specialist, stacked spend-gate PR: AND the gate
+    # onto the full original event/command/association guard; do not replace it.
+    # Original final condition retained:
+    # contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     if: >-
       (github.event_name == 'issue_comment' || github.event_name == 'pull_request_review_comment') &&
       (contains(github.event.comment.body, '/opencode') || contains(github.event.comment.body, '/oc')) &&
-      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association) &&
+      vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,6 +57,13 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
       - name: Run OpenCode
+        # 2026-11-15: gate credential delivery and pin verified upstream code.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
+        # Original mutable ref retained; latest resolves to github-v1.2.19.
+        # uses: anomalyco/opencode/github@latest
+        uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a
+        # Spend gate (#17850): OpenCode bills OpenRouter inside the action. Added 2026-11-15 by Proofy.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         uses: anomalyco/opencode/github@latest
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -59,7 +75,9 @@ jobs:
 
   # 2) Label trigger: label `opencode` on an issue implements the WR.
   opencode-label:
-    if: github.event_name == 'issues' && github.event.label.name == 'opencode'
+    # 2026-11-15: retain the original filter and AND the repo-variable gate.
+    # if: github.event_name == 'issues' && github.event.label.name == 'opencode'
+    if: github.event_name == 'issues' && github.event.label.name == 'opencode' && vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -67,6 +85,12 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
       - name: Run OpenCode
+        # 2026-11-15: gate credential delivery and pin verified upstream code.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
+        # uses: anomalyco/opencode/github@latest
+        uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a
+        # Spend gate (#17850): OpenCode bills OpenRouter inside the action. Added 2026-11-15 by Proofy.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         uses: anomalyco/opencode/github@latest
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -91,7 +115,9 @@ jobs:
 
   # 3) Manual trigger with a free prompt.
   opencode-manual:
-    if: github.event_name == 'workflow_dispatch'
+    # 2026-11-15: a manual trigger alone does not authorize paid cloud spend.
+    # if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && vars.REVVEL_LLM_ALLOW_CLOUD == '1'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -99,6 +125,12 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
       - name: Run OpenCode
+        # 2026-11-15: gate credential delivery and pin verified upstream code.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
+        # uses: anomalyco/opencode/github@latest
+        uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a
+        # Spend gate (#17850): OpenCode bills OpenRouter inside the action. Added 2026-11-15 by Proofy.
+        if: vars.REVVEL_LLM_ALLOW_CLOUD == '1'
         uses: anomalyco/opencode/github@latest
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

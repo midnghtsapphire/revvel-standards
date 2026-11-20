@@ -54,3 +54,31 @@ creates WRs via Linear), set its real `auth`/`env`/`used_by`, flip `status` to
 1. Add an entry to `config/connections.yml`.
 2. `npm run connections && npm run connections:html`.
 3. Commit the YAML + regenerated views.
+
+## Connector matrix database (added 2026-11-19, Decipherer, PR #18475)
+
+`config/connections.yml` stays the wiring registry above. The **connector matrix**
+(plan tier, who confirmed it, status, what each app connects to, the free
+workaround, sources, stale records, open questions) is a database, as Audrey asked
+on 2026-11-19 ("I want that database driven").
+
+- **The database** is two text files: [`data/connectors/schema.sql`](../data/connectors/schema.sql)
+  and [`data/connectors/seed.sql`](../data/connectors/seed.sql). Tables: `connector`,
+  `target`, `connector_link` (many-to-many), `connector_source`, `stale_row`,
+  `open_question`. SQLite dialect, tested on SQLite only.
+- **To change a fact:** edit `seed.sql`, run `npm run connectors`. Never edit a
+  generated table. Never delete a row; set `stale = 1` with a note and add a `stale_row`.
+- **Generated views:** the block in `docs/TOOL_COST_INDEX.md`, the block in
+  `docs/CONNECTIONS_REGISTRY.md`, the block in `README.md` and
+  `connector-matrix-dashboard.html`.
+- **Drift check:** `npm run connectors:check` fails when a view differs from the
+  database or a row is inconsistent. `tests/connector-matrix.test.js` runs it, so
+  `npm test` (and the CircleCI `lint-and-test` job) enforces it. No GitHub Actions
+  minutes are used.
+- **Runs where:** anywhere with Node 22.13 or later (Audrey's laptop, CARESSE, CircleCI).
+  Node 22.5 to 22.12 needs `--experimental-sqlite`; the npm scripts already pass it.
+  No server, no account, no secret.
+- **Hand-offs:** `npm run connectors:csv -- out.csv` writes a CSV for an Airtable or
+  Notion import. `npm run connectors:db -- out.sqlite` writes a SQLite file for a viewer.
+  The standard's PostgreSQL guidance (`docs/Master_Inventory/DATABASE_ARCHITECTURE_STANDARD.md`)
+  is for apps with users; SQLite is permitted for single-owner tools (`DATA_MODEL_STANDARD.md`).

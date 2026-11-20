@@ -295,6 +295,20 @@ function scanRepoInventory() {
   return inv;
 }
 
+/**
+ * Keep the connector-matrix block (generated from data/connectors/ by scripts/connectors-db.js)
+ * when this script regenerates docs/CONNECTIONS_REGISTRY.md. Pure text, no database needed.
+ * Added 2026-11-19, Decipherer, PR #18475.
+ */
+function carryMatrixBlock(prior, next) {
+  const begin = '<!-- BEGIN:connector-matrix -->';
+  const end = '<!-- END:connector-matrix -->';
+  const b = prior.indexOf(begin);
+  const e = prior.indexOf(end);
+  if (b === -1 || e === -1 || e < b || next.includes(begin)) return next;
+  return `${next.replace(/\s*$/, '')}\n\n${prior.slice(b, e + end.length)}\n`;
+}
+
 function main(argv = process.argv.slice(2)) {
   const doc = load();
   const wantHtml = argv.includes('--html') || argv.includes('--all') || argv.length === 0;
@@ -302,7 +316,11 @@ function main(argv = process.argv.slice(2)) {
   const wantDrift = argv.includes('--drift');
 
   if (wantMd) {
-    fs.writeFileSync(DOC_PATH, renderMarkdown(doc));
+    // fs.writeFileSync(DOC_PATH, renderMarkdown(doc));
+    // 2026-11-19, Decipherer, PR #18475: the line above overwrote the whole file and would erase the
+    // connector-matrix block that scripts/connectors-db.js generates into it. Kept, not deleted.
+    const priorDoc = fs.existsSync(DOC_PATH) ? fs.readFileSync(DOC_PATH, 'utf8') : '';
+    fs.writeFileSync(DOC_PATH, carryMatrixBlock(priorDoc, renderMarkdown(doc)));
     if (fs.existsSync(README_PATH)) {
       const readme = fs.readFileSync(README_PATH, 'utf8');
       let next = injectReadme(readme, renderReadmeBlock(doc));
@@ -330,7 +348,7 @@ function main(argv = process.argv.slice(2)) {
 module.exports = {
   BEGIN, END, FB_BEGIN, FB_END,
   load, groupByType, renderMarkdown, renderReadmeBlock, renderFallbackBlock,
-  injectReadme, renderHtml, detectDrift, scanRepoInventory, main,
+  injectReadme, renderHtml, detectDrift, scanRepoInventory, carryMatrixBlock, main,
 };
 
 if (require.main === module) main();

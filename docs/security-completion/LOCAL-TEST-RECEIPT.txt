@@ -1,0 +1,325 @@
+TAP version 13
+# Subtest: the step condition requires an agent, not merely a non-matching one
+ok 1 - the step condition requires an agent, not merely a non-matching one
+  ---
+  duration_ms: 23.123699
+  type: 'test'
+  ...
+# Subtest: an empty agent files nothing and says so
+ok 2 - an empty agent files nothing and says so
+  ---
+  duration_ms: 6.994676
+  type: 'test'
+  ...
+# Subtest: whitespace-only metadata counts as empty
+ok 3 - whitespace-only metadata counts as empty
+  ---
+  duration_ms: 7.984575
+  type: 'test'
+  ...
+# Subtest: a missing issue number alone is enough to refuse
+ok 4 - a missing issue number alone is enough to refuse
+  ---
+  duration_ms: 3.922141
+  type: 'test'
+  ...
+# Subtest: a real fallback event still files a populated issue
+ok 5 - a real fallback event still files a populated issue
+  ---
+  duration_ms: 8.302399
+  type: 'test'
+  ...
+# Subtest: agent-monitor create-failure-wr uses labels that exist in labels.yml
+ok 6 - agent-monitor create-failure-wr uses labels that exist in labels.yml
+  ---
+  duration_ms: 34.65404
+  type: 'test'
+  ...
+# ::error::PR \#20: Ownership completion gate blocked. Repair existing task metadata/proof; no new task or paid retry.
+# Subtest: schema validates active record and JSONL round trip
+ok 7 - schema validates active record and JSONL round trip
+  ---
+  duration_ms: 3.01706
+  type: 'test'
+  ...
+# Subtest: journal and PR record round-trip preserve durable identity
+ok 8 - journal and PR record round-trip preserve durable identity
+  ---
+  duration_ms: 3.554127
+  type: 'test'
+  ...
+# Subtest: done requires nonempty passing tests and deployment/release/outcome
+ok 9 - done requires nonempty passing tests and deployment/release/outcome
+  ---
+  duration_ms: 2.717379
+  type: 'test'
+  ...
+# Subtest: product ID required before claim and live deployment required for done
+ok 10 - product ID required before claim and live deployment required for done
+  ---
+  duration_ms: 0.69643
+  type: 'test'
+  ...
+# Subtest: receipt rejects empty paths, command strings, traversal and URL credentials
+ok 11 - receipt rejects empty paths, command strings, traversal and URL credentials
+  ---
+  duration_ms: 0.488952
+  type: 'test'
+  ...
+# Subtest: test and release commits must match and verification is not inferred
+ok 12 - test and release commits must match and verification is not inferred
+  ---
+  duration_ms: 0.461759
+  type: 'test'
+  ...
+# Subtest: invalid owner, timestamps, lineage and unbounded budgets fail
+ok 13 - invalid owner, timestamps, lineage and unbounded budgets fail
+  ---
+  duration_ms: 0.675523
+  type: 'test'
+  ...
+# Subtest: claim binds authenticated owner and consumes one attempt
+ok 14 - claim binds authenticated owner and consumes one attempt
+  ---
+  duration_ms: 0.604687
+  type: 'test'
+  ...
+# Subtest: resume expired lease is bounded; heartbeat does not renew indefinitely
+ok 15 - resume expired lease is bounded; heartbeat does not renew indefinitely
+  ---
+  duration_ms: 1.455269
+  type: 'test'
+  ...
+# Subtest: another identity/session cannot steal live lease
+ok 16 - another identity/session cannot steal live lease
+  ---
+  duration_ms: 1.135165
+  type: 'test'
+  ...
+# Subtest: exhausted attempts cannot be reset by resume input
+ok 17 - exhausted attempts cannot be reset by resume input
+  ---
+  duration_ms: 0.54652
+  type: 'test'
+  ...
+# Subtest: auth/billing/schema blockers stop until explicit resolution; no retry loop
+ok 18 - auth/billing/schema blockers stop until explicit resolution; no retry loop
+  ---
+  duration_ms: 1.060538
+  type: 'test'
+  ...
+# Subtest: blocker retry_after cannot be bypassed
+ok 19 - blocker retry_after cannot be bypassed
+  ---
+  duration_ms: 0.393968
+  type: 'test'
+  ...
+# Subtest: awaiting release persists ownership after merge and done is terminal
+ok 20 - awaiting release persists ownership after merge and done is terminal
+  ---
+  duration_ms: 0.964709
+  type: 'test'
+  ...
+# Subtest: append journal resolves latest snapshot and rejects competing revisions/budget changes
+ok 21 - append journal resolves latest snapshot and rejects competing revisions/budget changes
+  ---
+  duration_ms: 0.649397
+  type: 'test'
+  ...
+# Subtest: stale empty PR and exhausted work are surfaced, never silently completed
+ok 22 - stale empty PR and exhausted work are surfaced, never silently completed
+  ---
+  duration_ms: 0.252705
+  type: 'test'
+  ...
+# Subtest: inherited failing checks are prioritized ahead of release work
+ok 23 - inherited failing checks are prioritized ahead of release work
+  ---
+  duration_ms: 0.518499
+  type: 'test'
+  ...
+# Subtest: gh pagination collects page two and refuses malformed response
+ok 24 - gh pagination collects page two and refuses malformed response
+  ---
+  duration_ms: 0.607469
+  type: 'test'
+  ...
+# Subtest: gh decoder strips only ANSI SGR and rejects arbitrary prefixes/control sequences
+ok 25 - gh decoder strips only ANSI SGR and rejects arbitrary prefixes/control sequences
+  ---
+  duration_ms: 0.337442
+  type: 'test'
+  ...
+# Subtest: session-start reads trusted registry and owner comments without executing body commands
+ok 26 - session-start reads trusted registry and owner comments without executing body commands
+  ---
+  duration_ms: 1.700664
+  type: 'test'
+  ...
+# Subtest: session-start retrieves closed PR continuation from registry
+ok 27 - session-start retrieves closed PR continuation from registry
+  ---
+  duration_ms: 0.900807
+  type: 'test'
+  ...
+# Subtest: forged third-party owner comment is ignored
+ok 28 - forged third-party owner comment is ignored
+  ---
+  duration_ms: 1.501202
+  type: 'test'
+  ...
+# Subtest: offline proof validation never calls gh or live URL
+ok 29 - offline proof validation never calls gh or live URL
+  ---
+  duration_ms: 0.30403
+  type: 'test'
+  ...
+# Subtest: auth failure stops once, not an empty queue/new task
+ok 30 - auth failure stops once, not an empty queue/new task
+  ---
+  duration_ms: 0.281999
+  type: 'test'
+  ...
+# Subtest: schema failure stops without retry or mutation
+ok 31 - schema failure stops without retry or mutation
+  ---
+  duration_ms: 0.613819
+  type: 'test'
+  ...
+# Subtest: CLI claim appends original PR prose and comment plus journal snapshot
+ok 32 - CLI claim appends original PR prose and comment plus journal snapshot
+  ---
+  duration_ms: 0.631461
+  type: 'test'
+  ...
+# Subtest: CLI done refuses receipts from an old PR head
+ok 33 - CLI done refuses receipts from an old PR head
+  ---
+  duration_ms: 0.710675
+  type: 'test'
+  ...
+# Subtest: stale lifecycle emits one sticky alert, deduplicated on repeat, never closes/merges
+ok 34 - stale lifecycle emits one sticky alert, deduplicated on repeat, never closes/merges
+  ---
+  duration_ms: 1.688824
+  type: 'test'
+  ...
+# Subtest: lifecycle does not overwrite a pasted user alert marker
+ok 35 - lifecycle does not overwrite a pasted user alert marker
+  ---
+  duration_ms: 0.550959
+  type: 'test'
+  ...
+# Subtest: invalid done proof gates non-draft PR without pretending live verification
+ok 36 - invalid done proof gates non-draft PR without pretending live verification
+  ---
+  duration_ms: 1.462031
+  type: 'test'
+  ...
+# Subtest: lifecycle paginated open PR lookup includes PRs after first hundred
+ok 37 - lifecycle paginated open PR lookup includes PRs after first hundred
+  ---
+  duration_ms: 0.391407
+  type: 'test'
+  ...
+# Subtest: WR-only ownership can attach its existing PR exactly once without replacing task
+ok 38 - WR-only ownership can attach its existing PR exactly once without replacing task
+  ---
+  duration_ms: 0.446662
+  type: 'test'
+  ...
+# Subtest: shared metadata client sends requested page, no candidate execution
+ok 39 - shared metadata client sends requested page, no candidate execution
+  ---
+  duration_ms: 0.684434
+  type: 'test'
+  ...
+# Subtest: workflow pins checkout full SHA and skips PR-candidate execution on Windows
+ok 40 - workflow pins checkout full SHA and skips PR-candidate execution on Windows
+  ---
+  duration_ms: 0.496566
+  type: 'test'
+  ...
+# === pr-lifecycle.yml Unit Tests ===
+# PASS: opened PR gets awaiting-review label
+# PASS: reopened PR gets awaiting-review label
+# PASS: ready_for_review PR gets awaiting-review label
+# PASS: converted_to_draft PR gets awaiting-approval label
+# PASS: closed approved PR gets ready-to-merge label
+# PASS: closed non-approved PR gets needs-action label
+# PASS: synchronize (new commit) PR gets review-started label
+# PASS: getLabelsToRemove removes awaiting-approval when adding awaiting-review
+# PASS: getLabelsToRemove removes approved when adding changes-requested
+# PASS: getLabelsToRemove removes checks-failing when adding checks-passing
+# PASS: isCheckPassing accepts success
+# PASS: isCheckPassing accepts neutral
+# PASS: isCheckPassing accepts skipped
+# PASS: isCheckPassing rejects failure
+# PASS: isCheckPassing rejects timed_out
+# PASS: isReviewApproved detects APPROVED
+# PASS: isReviewApproved rejects other states
+# PASS: isReviewChangesRequested detects CHANGES_REQUESTED
+# PASS: isReviewChangesRequested rejects other states
+# PASS: review_requested does not add awaiting-review when approved label present
+# PASS: review_requested does not add awaiting-review when live-approved on head (label not yet applied)
+# PASS: review_requested adds awaiting-review when not approved and label absent
+# PASS: review_requested does not duplicate awaiting-review when already present
+# PASS: review_requested adds awaiting-review when head approval is overridden by changes-requested
+# PASS: approval atomically removes all review-waiting label variants
+# PASS: approval removes changes-requested and needs-action in same atomic set
+# PASS: approved label set never contains a review-waiting label (no intermediate state)
+# PASS: approval is idempotent (approved not duplicated)
+# PASS: approval preserves non-lifecycle labels
+# PASS: changes_requested atomically removes waiting variants, approved, and ready-to-merge
+# PASS: shouldAddLabel returns false if label already present
+# PASS: shouldAddLabel returns true if label not present
+# PASS: handles rate limit errors gracefully
+# PASS: continues with empty labels on rate limit
+# === Results: 34 passed, 0 failed ===
+# ✅ All tests passed
+# Subtest: tests/pr-lifecycle.test.js
+ok 4 - tests/pr-lifecycle.test.js
+  ---
+  duration_ms: 49.277831
+  type: 'test'
+  ...
+# Subtest: pr-lifecycle check-state workflow allowlist
+    # Subtest: allowlist is non-empty
+    ok 1 - allowlist is non-empty
+      ---
+      duration_ms: 1.016131
+      type: 'test'
+      ...
+    # Subtest: every allowlisted name matches a real workflow name
+    ok 2 - every allowlisted name matches a real workflow name
+      ---
+      duration_ms: 1.731401
+      type: 'test'
+      ...
+    # Subtest: allowlist is sorted case-insensitively alphabetical
+    ok 3 - allowlist is sorted case-insensitively alphabetical
+      ---
+      duration_ms: 14.095594
+      type: 'test'
+      ...
+    # Subtest: allowlist never contains a wildcard
+    ok 4 - allowlist never contains a wildcard
+      ---
+      duration_ms: 0.28551
+      type: 'test'
+      ...
+    1..4
+ok 42 - pr-lifecycle check-state workflow allowlist
+  ---
+  duration_ms: 60.801691
+  type: 'suite'
+  ...
+1..42
+# tests 45
+# suites 1
+# pass 45
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 227.155189

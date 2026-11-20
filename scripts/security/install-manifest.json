@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "verified_at": "2026-11-15",
+  "platform": "linux-x86_64",
+  "trivy": {
+    "version": "0.76.2",
+    "url": "https://github.com/aquasecurity/trivy/releases/download/v0.76.2/trivy_0.76.2_Linux-64bit.tar.gz",
+    "sha256": "bc0fc726e017b8927a62b2d3531d7a84ee01769daf5c99ed866dced54089fdbf",
+    "format": "tar.gz",
+    "metadata": "https://api.github.com/repos/aquasecurity/trivy/releases/435196879",
+    "immutable_release": true,
+    "arm64": {
+      "version": "0.76.2",
+      "url": "https://github.com/aquasecurity/trivy/releases/download/v0.76.2/trivy_0.76.2_Linux-ARM64.tar.gz",
+      "sha256": "ab9d51f86e6a5fb936f605faff6b593ac51bc378fff4d3e8b9d58358b9c367c3",
+      "format": "tar.gz"
+    }
+  },
+  "clamav": {
+    "version": "1.5.4",
+    "url": "https://github.com/Cisco-Talos/clamav/releases/download/clamav-1.5.4/clamav-1.5.4.linux.x86_64.deb",
+    "sha256": "28d6efc5b4423e7830c3559339552eb53870a9eac51ac4efb37d60530d329886",
+    "format": "deb",
+    "metadata": "https://api.github.com/repos/Cisco-Talos/clamav/releases/366392418",
+    "immutable_release": false,
+    "arm64": {
+      "version": "1.5.4",
+      "url": "https://github.com/Cisco-Talos/clamav/releases/download/clamav-1.5.4/clamav-1.5.4.linux.aarch64.deb",
+      "sha256": "4bdab4118e8accb02108316b996d7c14da1cccc4eea2dff7bea82109f9239d95",
+      "format": "deb"
+    }
+  },
+  "actions": {
+    "actions/checkout": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+    "actions/upload-artifact": "cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+  },
+  "policy": {
+    "blocked_trivy_versions": ["0.69.4"],
+    "blocking_severities": ["HIGH", "CRITICAL"],
+    "maximum_daily_database_age_hours": 48,
+    "maximum_bytecode_database_age_days": 365,
+    "bytecode_policy_note": "2026-11-15: legacy age setting retained; signature-only lane does not download or execute bytecode",
+    "required_definitions": ["main", "daily"],
+    "bytecode_enabled": false,
+    "maximum_trivy_database_age_hours": 48
+  }
+}
