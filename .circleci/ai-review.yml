@@ -1,0 +1,456 @@
+# TriageChief, 2026-11-19. Advisory AI PR reviewers on CircleCI: PR-Agent and OpenHands.
+# Docs: docs/REVIEWERS.md. This file is a SECOND pipeline definition: it is not .circleci/config.yml
+# and does not touch it. In the CircleCI project settings add a pipeline with config path
+# .circleci/ai-review.yml and these triggers (exact steps are in docs/REVIEWERS.md):
+#   auto:      "PR opened" (drafts included)
+#   real time: "PR comment is exactly run-ci" and "label run-ci added"
+#
+# JOB GRAPH
+#   pr-agent-review ──┐
+#                     ├──> post-review-comments
+#   openhands-review ─┘
+#
+# WHO SEES WHAT (names only; values are never printed)
+#   pr-agent-review, openhands-review (context ai-review-llm): OPENROUTER_API_KEY, REVVEL_LLM_ALLOW_CLOUD, and the
+#     Notion read vars NOTION_TOKEN / NOTION_GATE_EXCEPTIONS_DB_ID (not used today). NO GitHub token. They read
+#     the PR from the CircleCI checkout (git, over the project's checkout key), never post, and write markdown to
+#     the workspace. An optional GITHUB_READ_TOKEN may only raise the public-API rate limit; it is not required.
+#   post-review-comments (context ai-review-post): ADMIN_GITHUB_TOKEN only. It does NOT check out or run PR code.
+#     It reads the markdown from the workspace and calls the GitHub API with a script that is written inline
+#     below (the only code it runs, passed as AI_REVIEW_POSTER), treating the LLM output as text: size capped, secrets masked, images
+#     removed, @mentions defused, HTML allow-listed.
+#
+# Rules:
+#   - Advisory only. Reviewers never fail a pipeline (every step ends in `|| true`). Nothing here approves.
+#   - Never echo env vars: no `set -x`, no env dumps. tests/ai_review_test.py greps for that.
+#   - Forked PRs: CircleCI keeps secrets off, the jobs detect it and skip cleanly with exit 0.
+#   - Cheap and capped: openrouter/deepseek/deepseek-v4.1-flash, 32k-token context cap for PR-Agent, 40 steps
+#     and $0.05 for OpenHands, and a skip for diffs over the size caps.
+#   - The inline poster in post-review-comments is the single source of that code. tests/ai_review_test.py
+#     extracts it from this file and tests it. Keep it free of "<<" and ">>" (CircleCI treats those as parameters).
+version: 2.1
+
+executors:
+  reviewer:
+    docker:
+      - image: cimg/python:3.12
+    resource_class: medium
+  poster:
+    docker:
+      - image: cimg/python:3.12
+    resource_class: small
+
+commands:
+  analyze:
+    description: Run one advisory analysis (scripts/ai-review/run-<reviewer>.sh). No GitHub token. Always exits 0.
+    parameters:
+      reviewer:
+        type: enum
+        enum: [pr-agent, openhands]
+    steps:
+      - checkout
+      - run:
+          name: << parameters.reviewer >> review (offline, advisory, never fails the build)
+          no_output_timeout: 20m
+          command: bash scripts/ai-review/run-<< parameters.reviewer >>.sh || true
+      - run:
+          name: Make sure both output files exist (so the workspace step cannot fail)
+          when: always
+          command: |
+            mkdir -p /tmp/ai-review-out
+            touch /tmp/ai-review-out/<< parameters.reviewer >>.md
+            test -f /tmp/ai-review-out/<< parameters.reviewer >>.meta.json || printf '{"result":"error","reason":"no output recorded"}' > /tmp/ai-review-out/<< parameters.reviewer >>.meta.json
+      - persist_to_workspace:
+          root: /tmp/ai-review-out
+          paths:
+            # <reviewer>.md, <reviewer>.meta.json and, for pr-agent, <reviewer>.fleet.json (diffs are not persisted)
+            - << parameters.reviewer >>.*
+
+jobs:
+  pr-agent-review:
+    executor: reviewer
+    steps:
+      - analyze:
+          reviewer: pr-agent
+  openhands-review:
+    executor: reviewer
+    steps:
+      - analyze:
+          reviewer: openhands
+  post-review-comments:
+    executor: poster
+    steps:
+      - attach_workspace:
+          at: /tmp/ai-review-out
+      - run:
+          name: Post one sticky comment per reviewer (text only, no PR code)
+          environment:
+            # The poster program, kept in an env var so the config has no heredoc (CircleCI reads "<<" as a parameter).
+            # It is the only code this job runs. ADMIN_GITHUB_TOKEN comes from the ai-review-post context.
+            AI_REVIEW_POSTER: |
+              import json
+              import os
+              import re
+              import sys
+              import urllib.error
+              import urllib.request
+
+              API = "https://api.github.com"
+              IN_DIR = os.environ.get("AI_REVIEW_OUT_DIR", "/tmp/ai-review-out")
+              REVIEWERS = {"pr-agent": "Code Review Fleet", "openhands": "OpenHands"}
+              MAX_BODY_CHARS = 12000
+
+              FLEET_TITLE = "Code Review Fleet"
+              FLEET_LAST = "syntax_final_gate"
+              FLEET_TITLES = {
+                  "security": "Security reviewer", "workflow": "Workflow reviewer", "no_delete_goals": "No-delete / goals reviewer",
+                  "product_process": "Product / process reviewer", "docs_contracts": "Docs / contracts reviewer",
+                  "connector": "Connector reviewer", "implementation": "Implementation reviewer", "compliance": "Compliance reviewer",
+                  "syntax_final_gate": "Syntax / Final Gate reviewer",
+              }
+              FLEET_AUTHORITY = ("security", "no_delete_goals", "compliance", "syntax_final_gate")
+              FLEET_STATUSES = ("ran", "skipped", "error", "partial")
+              SEVERITIES = ("blocking", "advisory", "bom")
+              INJECTION_RULE = "prompt-injection-attempt"
+              MAX_PERSONA_FINDINGS = 23
+              MAX_FLEET_CHARS = 30000
+              FIELD_LIMITS = {"scope": 160, "summary": 300, "evidence": 500, "recommendation": 500, "bom": 300}
+              RE_LINK = re.compile(r"\]\(")
+              RE_RULE = re.compile(r"[A-Za-z0-9_./-]{1,60}")
+              SKIP_TOKENS = ("[skip-review]", "[skip-ai-review]")
+              SKIP_LABEL = "skip-ai-review"
+              ALLOWED_TAG = "table|thead|tbody|tr|td|th|strong|b|em|i|br|hr|details|summary|code|pre|ul|ol|li|p|h[1-6]"
+              RE_BAD_LT = re.compile(r"<(?!/?(?:" + ALLOWED_TAG + r")\s*/?>)")
+              RE_IMAGE = re.compile(r"!\[([^\]]*)\]\([^)]*\)")
+              RE_MENTION = re.compile(r"(?<![\w`@])@(?=[A-Za-z0-9])")
+              RE_CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+              TOKEN_PATTERNS = [
+                  re.compile(r"github_pat_[A-Za-z0-9_]{20,}"), re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}"),
+                  re.compile(r"\bsk-[A-Za-z0-9_-]{16,}"), re.compile(r"\bCCIPAT_[A-Za-z0-9_-]{16,}"),
+                  re.compile(r"\bxox[abprs]-[A-Za-z0-9-]{10,}"), re.compile(r"\b(?:secret|ntn)_[A-Za-z0-9]{30,}"),
+                  re.compile(r"(?i)\bbearer\s+[A-Za-z0-9._~+/=-]{16,}"),
+              ]
+
+
+              def redact(text):
+                  text = str(text)
+                  for name in ("ADMIN_GITHUB_TOKEN", "OPENROUTER_API_KEY", "NOTION_TOKEN"):
+                      value = os.environ.get(name, "")
+                      if len(value) >= 8:
+                          text = text.replace(value, "***")
+                  for pattern in TOKEN_PATTERNS:
+                      text = pattern.sub("***", text)
+                  return text
+
+
+              def log(msg):
+                  print("post-review: " + redact(msg), file=sys.stderr)
+
+
+              def clean_markdown(text):
+                  """LLM output is untrusted text: cap it, mask secrets, drop images, defuse mentions, allow-list HTML."""
+                  text = RE_CONTROL.sub("", str(text or "")).strip()
+                  text = redact(text)
+                  text = RE_IMAGE.sub(lambda m: "[image removed: %s]" % m.group(1)[:40], text)
+                  text = RE_BAD_LT.sub("&lt;", text)
+                  text = RE_MENTION.sub("@\u200b", text)
+                  if len(text) > MAX_BODY_CHARS:
+                      text = text[:MAX_BODY_CHARS].rstrip() + "\n\n[output cut at %d characters]" % MAX_BODY_CHARS
+                  return text
+
+
+              def clean_meta(raw):
+                  """Validate the JSON the analysis job wrote. Anything unexpected becomes a safe default."""
+                  meta = raw if isinstance(raw, dict) else {}
+                  result = meta.get("result") if meta.get("result") in ("reviewed", "skipped", "error") else "error"
+                  sha = str(meta.get("sha") or "")
+                  model = str(meta.get("model") or "")
+                  pr_number = meta.get("pr_number")
+                  return {
+                      "result": result,
+                      "reason": re.sub(r"[^A-Za-z0-9 .,:;()/#=_'+-]", "", str(meta.get("reason") or ""))[:200],
+                      "sha": sha if re.fullmatch(r"[0-9a-f]{7,40}", sha) else "",
+                      "model": model if re.fullmatch(r"[A-Za-z0-9._:/-]{1,80}", model) else "",
+                      "size_skip": meta.get("size_skip") is True,
+                      "pr_number": pr_number if isinstance(pr_number, int) and not isinstance(pr_number, bool) else 0,
+                  }
+
+
+              def render(reviewer, meta, body):
+                  name = REVIEWERS[reviewer]
+                  short = meta["sha"][:7]
+                  head = "**TriageChief:** %s advisory review%s%s." % (
+                      name, " of `%s`" % short if short else "", " using `%s`" % meta["model"] if meta["model"] else "")
+                  if meta["result"] == "reviewed" and body:
+                      middle = ("AI-generated text. It is not an approval and never blocks a merge.\n\n---\n\n" + body + "\n\n---")
+                  elif meta["result"] == "skipped":
+                      middle = "Skipped: %s." % (meta["reason"] or "no reason recorded")
+                  else:
+                      middle = "No review was produced%s. This does not block anything." % (
+                          " (%s)" % meta["reason"] if meta["reason"] else "")
+                  tail = ("Call a review now: comment exactly `run-ci` or add the label `run-ci`. Skip: `[skip-ai-review]` in the "
+                          "head commit message or PR title, or the label `skip-ai-review`.")
+                  return "\n".join(["<!-- revvel-ai-review:%s -->" % reviewer, head, "", middle, "", tail, "", "— TriageChief"])
+
+
+              def clean_inline(text, limit):
+                  """One line of untrusted text for the fleet comment: no HTML, no links, no mentions, secrets masked, capped."""
+                  text = RE_CONTROL.sub("", str(text or ""))
+                  text = redact(re.sub(r"\s+", " ", text)).strip()
+                  text = RE_IMAGE.sub("[image removed]", text)
+                  text = RE_LINK.sub("] (", text).replace("<", "&lt;").replace("`", "'").replace("://", ":/\u200b/")
+                  text = RE_MENTION.sub("@\u200b", text)
+                  return text[:limit] + ("..." if len(text) > limit else "")
+
+
+              def clean_finding(raw, persona):
+                  """Validate one RVS-REVIEW-001 finding. Returns a safe dict, or None when it is unusable."""
+                  if not isinstance(raw, dict):
+                      return None
+                  severity = raw.get("severity") if raw.get("severity") in SEVERITIES else "advisory"
+                  rule = str(raw.get("rule") or "")
+                  rule = rule if RE_RULE.fullmatch(rule) else "unclassified"
+                  out = {key: clean_inline(raw.get(key), limit) for key, limit in FIELD_LIMITS.items()}
+                  if not out["summary"]:
+                      return None
+                  out_of_scope = raw.get("out_of_scope") is True
+                  if severity == "blocking" and persona not in FLEET_AUTHORITY and rule != INJECTION_RULE:
+                      severity, out_of_scope = "advisory", True
+                  out.update(persona=persona, severity=severity, rule=rule, blocking=severity == "blocking",
+                             out_of_scope=out_of_scope, bom=out["bom"] if severity == "bom" and out["bom"] else None)
+                  return out
+
+
+              def clean_fleet(raw):
+                  """Validate the fleet JSON the analysis job wrote. Returns a safe dict, or None when it is not usable."""
+                  if not isinstance(raw, dict) or not isinstance(raw.get("personas"), list):
+                      return None
+                  order = [p for p in FLEET_TITLES if p != FLEET_LAST] + [FLEET_LAST]
+                  seen = {}
+                  for entry in raw["personas"]:
+                      pid = entry.get("id") if isinstance(entry, dict) else None
+                      if pid not in FLEET_TITLES or pid in seen:
+                          continue
+                      found = [clean_finding(f, pid) for f in (entry.get("findings") or [])[:MAX_PERSONA_FINDINGS]
+                               if isinstance(entry.get("findings"), list)]
+                      status = entry.get("status") if entry.get("status") in FLEET_STATUSES else "error"
+                      seen[pid] = {"id": pid, "status": status, "findings": [f for f in found if f],
+                                   "reason": re.sub(r"[^A-Za-z0-9 .,:;()/#=_'+-]", "", str(entry.get("reason") or ""))[:120]}
+                  if not seen:
+                      return None
+                  caps = raw.get("caps") if isinstance(raw.get("caps"), dict) else {}
+                  cost = raw.get("cost_usd_est")
+                  return {"personas": [seen[p] for p in order if p in seen],
+                          "cost": "%.4f" % cost if isinstance(cost, (int, float)) and not isinstance(cost, bool) and 0 <= cost < 100
+                          else "",
+                          "source": re.sub(r"[^A-Za-z0-9 .,:;()/#=_'+-]", "", str(raw.get("config_source") or ""))[:80],
+                          "max_runs": caps.get("max_runs") if isinstance(caps.get("max_runs"), int) else 0}
+
+
+              def fleet_recommendation(fleet):
+                  """RVS-REVIEW-001 section 9.1, advisory only: the strictest persona wins."""
+                  done = [p for p in fleet["personas"] if p["status"] in ("ran", "partial")]
+                  if not done:
+                      return "incomplete"
+                  if any(f["blocking"] for p in done for f in p["findings"]):
+                      return "request-changes"
+                  gate = [p for p in fleet["personas"] if p["id"] == FLEET_LAST]
+                  return "approve" if gate and gate[0]["status"] == "ran" else "needs-discussion"
+
+
+              def render_finding(f):
+                  label = {"blocking": "BLOCKING", "advisory": "advisory", "bom": "BOM"}[f["severity"]]
+                  line = "- **%s** `%s`%s: %s" % (label, f["rule"], " (out of scope)" if f["out_of_scope"] else "", f["summary"])
+                  if f["scope"]:
+                      line += " (`%s`)" % f["scope"]
+                  for key, name in (("evidence", "Evidence"), ("recommendation", "Recommendation"), ("bom", "Needs")):
+                      if f.get(key):
+                          line += "\n  - %s: %s" % (name, f[key])
+                  return line
+
+
+              def render_fleet(meta, fleet):
+                  """ONE combined comment, grouped by persona, Final Gate last. Built only from validated fields."""
+                  short = meta["sha"][:7]
+                  count = {s: sum(1 for p in fleet["personas"] for f in p["findings"] if f["severity"] == s) for s in SEVERITIES}
+                  lines = [
+                      "<!-- revvel-ai-review:pr-agent -->",
+                      "**TriageChief:** %s (RVS-REVIEW-001) advisory review%s%s." % (
+                          FLEET_TITLE, " of `%s`" % short if short else "", " using `%s`" % meta["model"] if meta["model"] else ""),
+                      "",
+                      "AI-generated text. It is advisory: no status check is set, nothing is blocked, and a human decides.",
+                      "",
+                      "**Fleet recommendation (advisory): %s** - %d blocking, %d advisory, %d bom" % (
+                          fleet_recommendation(fleet), count["blocking"], count["advisory"], count["bom"]),
+                      "",
+                  ]
+                  for p in fleet["personas"]:
+                      title = FLEET_TITLES[p["id"]]
+                      if p["status"] == "skipped" or (p["status"] == "error" and not p["findings"]):
+                          lines += ["### %s - %s" % (title, "skipped" if p["status"] == "skipped" else "did not complete"),
+                                    p["reason"] or "No reason recorded.", ""]
+                          continue
+                      note = " (model run: %s)" % (p["reason"] or "incomplete") if p["status"] == "partial" else ""
+                      lines += ["### %s - %s%s" % (title, "%d finding(s)" % len(p["findings"]) if p["findings"] else "clean", note)]
+                      lines += [render_finding(f) for f in p["findings"]] + [""]
+                  foot = "Estimated model cost for this run: about $%s." % fleet["cost"] if fleet["cost"] else ""
+                  lines += ["---", foot, "Call a review now: comment exactly `run-ci` or add the label `run-ci`. Skip: "
+                            "`[skip-ai-review]` in the head commit message or PR title, or the label `skip-ai-review`.", "",
+                            "— TriageChief"]
+                  text = "\n".join(lines)
+                  if len(text) > MAX_FLEET_CHARS:
+                      text = text[:MAX_FLEET_CHARS].rstrip() + "\n\n[output cut at %d characters]\n\n— TriageChief" % MAX_FLEET_CHARS
+                  return text
+
+
+              def read_fleet():
+                  try:
+                      with open(os.path.join(IN_DIR, "pr-agent.fleet.json"), encoding="utf-8") as handle:
+                          return clean_fleet(json.load(handle))
+                  except (OSError, ValueError, AttributeError):
+                      return None
+
+
+              class Client:
+                  def __init__(self, token):
+                      self._token = token
+
+                  def call(self, method, path, body=None):
+                      data = json.dumps(body).encode("utf-8") if body is not None else None
+                      req = urllib.request.Request(API + path, method=method, data=data)
+                      req.add_header("Accept", "application/vnd.github+json")
+                      req.add_header("Authorization", "Bearer " + self._token)
+                      req.add_header("X-GitHub-Api-Version", "2022-11-28")
+                      if data is not None:
+                          req.add_header("Content-Type", "application/json")
+                      try:
+                          with urllib.request.urlopen(req, timeout=30) as resp:
+                              raw = resp.read().decode("utf-8") or "null"
+                              return resp.status, json.loads(raw)
+                      except urllib.error.HTTPError as err:
+                          return err.code, None
+                      except (urllib.error.URLError, ValueError, OSError):
+                          return 0, None
+
+                  def pages(self, path):
+                      out = []
+                      for page in range(1, 6):
+                          status, data = self.call("GET", "%s?per_page=100&page=%d" % (path, page))
+                          if status != 200 or not isinstance(data, list):
+                              break
+                          out.extend(data)
+                          if len(data) < 100:
+                              break
+                      return out
+
+
+              def read_reviewer(reviewer):
+                  """Return (meta, body) for one reviewer, or (None, "") when its files are missing."""
+                  base = os.path.join(IN_DIR, reviewer)
+                  try:
+                      with open(base + ".meta.json", encoding="utf-8") as handle:
+                          meta = clean_meta(json.load(handle))
+                      with open(base + ".md", encoding="utf-8", errors="replace") as handle:
+                          body = clean_markdown(handle.read(MAX_BODY_CHARS * 4))
+                  except (OSError, ValueError):
+                      return None, ""
+                  return meta, body
+
+
+              def find_pr_number(client, repo):
+                  match = re.search(r"/pull/(\d+)", os.environ.get("CIRCLE_PULL_REQUEST", ""))
+                  if match:
+                      return int(match.group(1))
+                  branch = os.environ.get("CIRCLE_BRANCH", "")
+                  if branch:
+                      status, data = client.call("GET", "/repos/%s/pulls?state=open&head=%s:%s" % (repo, repo.split("/")[0], branch))
+                      if status == 200 and isinstance(data, list) and data:
+                          return int(data[0]["number"])
+                  return 0
+
+
+              def skip_reason(pr, repo):
+                  if pr.get("state") != "open":
+                      return "PR is not open"
+                  head_repo = ((pr.get("head") or {}).get("repo") or {}).get("full_name", "")
+                  if head_repo and head_repo.lower() != repo.lower():
+                      return "fork PR"
+                  if any(t in (pr.get("title") or "").lower() for t in SKIP_TOKENS):
+                      return "skip token in PR title"
+                  if SKIP_LABEL in [(x or {}).get("name", "") for x in pr.get("labels") or []]:
+                      return "skip label on PR"
+                  return ""
+
+
+              def main():
+                  token = os.environ.get("ADMIN_GITHUB_TOKEN", "")
+                  if not token:
+                      log("ADMIN_GITHUB_TOKEN is not set (ai-review-post context not attached, or a forked PR). Nothing posted.")
+                      return 0
+                  repo = "%s/%s" % (os.environ.get("CIRCLE_PROJECT_USERNAME", ""), os.environ.get("CIRCLE_PROJECT_REPONAME", ""))
+                  if repo == "/":
+                      log("no CIRCLE_PROJECT_USERNAME/REPONAME. Nothing posted.")
+                      return 0
+                  pr_user = os.environ.get("CIRCLE_PR_USERNAME", "")
+                  if pr_user and pr_user.lower() != repo.split("/")[0].lower():
+                      log("fork PR. Nothing posted.")
+                      return 0
+                  client = Client(token)
+                  number = find_pr_number(client, repo)
+                  if not number:
+                      log("no pull request for this pipeline. Nothing posted.")
+                      return 0
+                  status, pr = client.call("GET", "/repos/%s/pulls/%d" % (repo, number))
+                  if status != 200 or not isinstance(pr, dict):
+                      log("could not read PR #%d (HTTP %s). Nothing posted." % (number, status))
+                      return 0
+                  reason = skip_reason(pr, repo)
+                  if reason:
+                      log("%s. Nothing posted." % reason)
+                      return 0
+                  status, me = client.call("GET", "/user")
+                  login = (me or {}).get("login", "") if status == 200 and isinstance(me, dict) else ""
+                  comments = client.pages("/repos/%s/issues/%d/comments" % (repo, number))
+                  posted = 0
+                  for reviewer in REVIEWERS:
+                      meta, body = read_reviewer(reviewer)
+                      if meta is None:
+                          log("%s: no output files in the workspace" % reviewer)
+                          continue
+                      if meta["pr_number"] and meta["pr_number"] != number:
+                          log("%s: output was for PR #%d, not #%d; skipped" % (reviewer, meta["pr_number"], number))
+                          continue
+                      if meta["result"] == "skipped" and not meta["size_skip"]:
+                          log("%s: skipped quietly (%s)" % (reviewer, meta["reason"]))
+                          continue
+                      marker = "<!-- revvel-ai-review:%s -->" % reviewer
+                      existing = [c for c in comments if marker in (c.get("body") or "")
+                                  and (not login or (c.get("user") or {}).get("login") == login)]
+                      fleet = read_fleet() if reviewer == "pr-agent" else None
+                      text = render_fleet(meta, fleet) if fleet else render(reviewer, meta, body)
+                      if existing:
+                          status, _ = client.call("PATCH", "/repos/%s/issues/comments/%d" % (repo, existing[0]["id"]), {"body": text})
+                      else:
+                          status, _ = client.call("POST", "/repos/%s/issues/%d/comments" % (repo, number), {"body": text})
+                      log("%s: comment %s (HTTP %s)" % (reviewer, "updated" if existing else "created", status))
+                      posted += 1 if status in (200, 201) else 0
+                  log("done, %d comment(s) written" % posted)
+                  return 0
+
+
+              if __name__ == "__main__":
+                  sys.exit(main())
+          command: python3 -c "$AI_REVIEW_POSTER" || true
+
+workflows:
+  ai-review:
+    jobs:
+      - pr-agent-review:
+          context: [ai-review-llm]
+      - openhands-review:
+          context: [ai-review-llm]
+      - post-review-comments:
+          context: [ai-review-post]
+          requires:
+            - pr-agent-review
+            - openhands-review
