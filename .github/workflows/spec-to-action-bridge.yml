@@ -1,0 +1,67 @@
+# Spec-to-Action Bridge — closes pending WR 03 / issue #15507
+#
+# DECISION NOTE (2026-11-16, owner Audrey Evans, implemented by Kimi audit agent):
+# The documented failure mode of this repo ("Why products often stop short of live",
+# START_HERE_CALL_CHAIN.md) is: research completes, nobody applies wr:code, the work
+# stalls as a research essay. This workflow is the missing handoff.
+#
+# What it does: when an issue receives the `wr:research-complete` label, it applies
+# `wr:code` and posts a comment naming the next file in the chain.
+#
+# What it deliberately does NOT do:
+#   - No cron, no schedule — event-gated only (post billing-lock discipline).
+#   - No LLM calls — pure label transition, zero spend, so the spend gate is not involved.
+#   - No merge, no approval — owner review rules untouched.
+#
+# Consequence of removing it: the intake→research half of the pipeline again dead-ends
+# with no signal to the coder lane; WRs pile up documented but unbuilt.
+#
+# NOTE: while the hosted Actions billing lock is in effect (2026-11-06, see
+# docs/governance/ACTIONS_MIGRATION.md) this workflow cannot run on GitHub-hosted
+# runners. It is committed now so the bridge exists the moment Actions unlock, and the
+# same transition is one n8n webhook (pending WR 05) if the lock persists.
+
+name: Spec-to-Action Bridge
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  issues: write
+
+jobs:
+  handoff:
+    if: github.event.label.name == 'wr:research-complete'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply wr:code and announce the handoff
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map(l => l.name);
+            if (labels.includes('wr:code')) {
+              core.info('wr:code already present — nothing to do.');
+              return;
+            }
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              labels: ['wr:code'],
+            });
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: [
+                '🔀 **Spec-to-Action Bridge:** research is complete, so this WR is now labeled `wr:code`.',
+                '',
+                'Next in the call chain (START_HERE_CALL_CHAIN.md step 5):',
+                '`openrouter-coder.yml` picks this up and opens an implementation PR.',
+                'Cloud model calls still require the spend gate (`REVVEL_LLM_ALLOW_CLOUD=1`);',
+                'if the coder lane does not fire, check the gate and the OpenRouter balance',
+                'before assuming a code bug (AGENTS.md, Layer 0).',
+              ].join('\n'),
+            });

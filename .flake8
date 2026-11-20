@@ -45,6 +45,12 @@ exclude =
     # SHA-256 matches docs/case-files/MANIFEST.csv. Linting them would mean
     # editing them; the corrected, tested versions live in
     # docs/blue-ocean-sar/ and docs/hfmr/ and are linted there.
-    docs/case-files
+    docs/case-files,
+    # NOT vendored, and this is an exclusion, not a cleanup: BALLS beauty-kit
+    # (7cc46d95, 555c5d8d) landed Python files with 400+ findings over a
+    # baseline of 0 and turned lint-and-test red on main for 25+ commits.
+    # Excluded 2026-11-15 by Proofy so every other PR can be judged on its own
+    # change. Remove this line once #18434's cleanup lands. Needs Audrey's yes.
+    products/beauty-kit
 show-source = True
 statistics = True
