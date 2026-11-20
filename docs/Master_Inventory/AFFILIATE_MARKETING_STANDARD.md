@@ -1,15 +1,19 @@
 # Affiliate Marketing Standard
 
+> ## ⛔ RETIRED — DO NOT IMPLEMENT (2026-11-19)
+> Audrey's rule: **no tracking, analytics, telemetry or affiliate code in any app unless she explicitly asks for it in that repo.** It previously made affiliate systems and Audrey's own referral links mandatory in every app. That requirement is void. This page was written by a visiting agent and is kept only as history. Nothing below is a requirement. See [`standards/NO_TRACKING_STANDARD.md`](../../standards/NO_TRACKING_STANDARD.md).
+
+
 **Version:** 1.0.0  
 **Date:** April 6, 2026  
-**Status:** Mandatory Policy — every Revvel app with a monetization model  
+**Status:** RETIRED — not a policy (was: "Mandatory Policy")
 **Author:** Audrey Evans (MIDNGHTSAPPHIRE)
 
 ---
 
 ## 1. What This Standard Covers
 
-Every Revvel application that sells products, services, or subscriptions must include two affiliate systems:
+~~Every Revvel application that sells products, services, or subscriptions must include two affiliate systems:~~ **Void. No app includes either system.** The old description was:
 
 1. **Outbound affiliate program** — Your own affiliates (other people) promote your app and earn commissions when they refer paying customers.
 2. **Inbound affiliate auto-linker** — Your app automatically inserts your own affiliate/referral links (Amazon, DigitalOcean, Make.com, etc.) into content and newsletters.
@@ -108,7 +112,7 @@ const activeCode = Date.now() - ts < thirtyDays ? code : null;
 
 ### 3.1. How It Works
 
-Every Revvel app automatically embeds your own referral/affiliate links (Amazon, DigitalOcean, Make.com, etc.) into:
+~~Every Revvel app automatically embeds your own referral/affiliate links~~ (void; apps embed none) (Amazon, DigitalOcean, Make.com, etc.) into:
 - Blog posts and content pages
 - Newsletters
 - Product recommendation sections
@@ -118,7 +122,7 @@ The auto-linker reads the `affiliate_links` table and replaces keyword mentions 
 
 ### 3.2. Active Affiliate Links
 
-These are Audrey's personal affiliate links and must be embedded in every app:
+These are Audrey's personal affiliate links. They are **not** to be embedded in any app (void rule; listed for her records only):
 
 | Platform | Affiliate URL | Tracking Code | Commission |
 |---|---|---|---|

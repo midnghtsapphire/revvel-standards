@@ -17,6 +17,12 @@
  *   Idempotent: if the issue already has a "Dispatched" comment from this bot, it exits.
  */
 
+// 2026-11-15, security-spend specialist, stacked spend-gate PR: this .mjs is
+// ESM; import the existing CommonJS gate via createRequire.
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const { assertCloudAllowed, cloudAllowed } = require("./llm-spend-gate.js");
+
 const {
   GH_TOKEN, MANUS_API_KEY, OPENROUTER_API_KEY,
   ISSUE_NUMBER, FORCED_ROUTE, REPO,
@@ -26,7 +32,7 @@ const GH = "https://api.github.com";
 const MANUS = "https://api.manus.ai/v1";
 const OPENROUTER = "https://openrouter.ai/api/v1";
 
-if (!GH_TOKEN || !ISSUE_NUMBER || !REPO) {
+if (!GH_TOKEN || !issueNum || !REPO) {
   console.error("Missing GH_TOKEN / ISSUE_NUMBER / REPO");
   process.exit(1);
 }
@@ -66,6 +72,9 @@ async function main() {
   const body = (issue.body || "(empty body)").trim();
 
   if (route === "manus") {
+    // 2026-11-15: a task creation also spends cloud credits. Refuse before the
+    // paid fetch and let the existing terminal catch report it; never retry.
+    assertCloudAllowed("wr_dispatch.manus");
     if (!MANUS_API_KEY) throw new Error("MANUS_API_KEY secret is not set on this repo.");
     const prompt = [
       `You are executing a Work Request (WR) in the GitHub repo ${REPO}.`,
@@ -105,7 +114,17 @@ async function main() {
 
   // route === "roo"
   let plan = "(OpenRouter key not set — write the task plan by hand below.)";
-  if (OPENROUTER_API_KEY) {
+  // 2026-11-15, security-spend specialist, stacked spend-gate PR: retired
+  // credential-only condition kept visible; a funded key must not open the gate.
+  // if (OPENROUTER_API_KEY) {
+  if (OPENROUTER_API_KEY && cloudAllowed()) {
+    // First paid-lane statement; a refusal must never become a provider retry.
+    assertCloudAllowed("wr_dispatch.roo");
+  // Spend gate (#17850): the plan draft is a paid call, so it only runs when
+  // REVVEL_LLM_ALLOW_CLOUD is exactly "1". Otherwise the pack says to write it by hand.
+  // Added 2026-11-15 by Proofy so tests/llm-spend-gate-coverage passes.
+  // if (OPENROUTER_API_KEY) {   // earlier form, kept for history (2026-11-15 Proofy)
+  if (OPENROUTER_API_KEY && cloudAllowed()) {
     const r = await fetch(`${OPENROUTER}/chat/completions`, {
       method: "POST",
       headers: {
@@ -129,6 +148,10 @@ async function main() {
     } else {
       console.warn(`OpenRouter draft failed (${r.status}) — writing pack without plan.`);
     }
+  } else if (OPENROUTER_API_KEY) {
+    // Keep writing the real WR/conventions pack without inventing an API plan.
+    plan = "(Cloud spend refused — write the task plan by hand below.)";
+    console.warn("REVVEL_LLM_ALLOW_CLOUD is not 1 — writing pack without paid draft; no retry.");
   }
 
   const pack = [

@@ -6,6 +6,20 @@
 
 ---
 
+## 🚫 No Tracking — Visiting Agents Must Not Add It
+
+**This rule overrides everything else in this document.** If any other page, template, checklist or module list in this repo says an app "must" or "should" include analytics, telemetry, tracking, affiliate or referral links, pixels, UTM link-tagging, A/B-testing beacons, third-party error reporting or session replay, that line is **void**.
+
+1. **No tracking of any kind.** A visiting agent (Manus, Jules, Copilot, Cursor, OpenHands, Claude, Grok, or any other) must not add analytics, telemetry, tracking pixels, heatmaps/session replay, usage beacons, call-home code, affiliate or referral links or IDs, or email open/click tracking to any of Audrey's apps, repos, extensions, emails or docs.
+2. **No agent names or branding.** A visiting agent must not put its own name, logo, badge, "built with" line, credit or any self-embedding into an app or file. Audrey's apps carry her brand only.
+3. **Only Audrey can turn it on.** The one exception is when Audrey explicitly asks for a specific item in a specific repo. Record it as a path, a pattern and a reason in the `allowlist` of [`config/visiting-agent-patterns.json`](../config/visiting-agent-patterns.json). Nothing else counts as permission, including this repo's old text.
+4. **Existing tracking code is flagged for removal.** If you find any such code in an app, do not leave it and do not quietly work around it. Report it to Audrey (repo, file, what it does) so it can be removed. Do not delete things silently to make a check pass.
+5. **Check before you push.** Run `node scripts/visiting-agent-scan.js` (see [`VISITING_AGENTS.md`](../VISITING_AGENTS.md) §1b).
+
+Full rule, plus the list of leftovers in this repo that are flagged for removal: [`standards/NO_TRACKING_STANDARD.md`](../standards/NO_TRACKING_STANDARD.md).
+
+---
+
 ## 0. Standards Index — Detailed Specifications
 
 This document is the master policy document. For detailed implementation specifications, field maps, and technical standards, refer to these dedicated documents. **Every document listed here is mandatory.**
@@ -31,8 +45,8 @@ This document is the master policy document. For detailed implementation specifi
 |---|---|
 | [`CONTENT_STANDARD.md`](Master_Inventory/CONTENT_STANDARD.md) | Blog system (20 posts at launch, AI generation, RSS), newsletter (CAN-SPAM), About pages, use cases |
 | [`SEO_METADATA_STANDARD.md`](Master_Inventory/SEO_METADATA_STANDARD.md) | **Mandatory Google metadata, alt text rules**, Open Graph, Twitter Cards, JSON-LD schemas, Lighthouse 90+ requirement |
-| [`MARKETING_AUTOMATION_STANDARD.md`](Master_Inventory/MARKETING_AUTOMATION_STANDARD.md) | Meta/TikTok/Instagram/X auto-posting, UTM tracking, landing pages, funnels |
-| [`AFFILIATE_MARKETING_STANDARD.md`](Master_Inventory/AFFILIATE_MARKETING_STANDARD.md) | Affiliate program DB schema, inbound auto-linker, IRS $600 threshold |
+| [`MARKETING_AUTOMATION_STANDARD.md`](Master_Inventory/MARKETING_AUTOMATION_STANDARD.md) | **Retired / opt-in only.** Tracking, UTM tagging and pixels are void; see No Tracking above |
+| [`AFFILIATE_MARKETING_STANDARD.md`](Master_Inventory/AFFILIATE_MARKETING_STANDARD.md) | **Retired.** Affiliate code is not allowed in any app; see No Tracking above |
 
 ### Leads & Insurance
 | Document | What It Covers |
@@ -292,25 +306,14 @@ Revvel operates on a unified, token-based freemium model.
 
 ### Monetization Rules
 - **Token Usage:** Each AI action (generation, analysis) consumes a specific number of tokens (typically 2-5).
-- **Affiliate Auto-Linker:** Every product mention must automatically generate an Amazon affiliate link (Tag: `meetaudreyeva-20`).
+- **No affiliate links:** Apps do not generate or insert affiliate or referral links, and do not carry affiliate tags or IDs. Product mentions link straight to the product. Audrey can ask for an exception in a specific repo.
 - **Self-Service Ads:** The "Selling Space" portal allows businesses to buy banner/sponsored space directly.
 
-### Affiliate Marketing Automation Engine (MANDATORY)
-Every Revvel application MUST include a built-in affiliate marketing automation module.
-
-#### Active Affiliate & Referral Links
-| Platform | URL | Code |
-|---|---|---|
-| **Amazon** | Auto-generated per product | Tag: `meetaudreyeva-20` |
-| **Make.com** | <https://www.make.com/en/register?pc=risingaloha> | risingaloha |
-| **GoHighLevel** | <https://www.gohighlevel.com/?fp_ref=audrey51> | audrey51 |
-| **VideoGen** | <https://videogen.io/?fpr=audrey21> | audrey21 |
-| **Chime** | <https://www.chime.com/r/audreyevans44/?c=s> | audreyevans44 |
-| **DigitalOcean** | <https://m.do.co/c/fe8240d60588> | fe8240d60588 |
-| **Monday.com** | <https://try.monday.com/9828lfh0uct0> | 9828lfh0uct0 |
+### Marketing Automation (OPTIONAL — only when Audrey asks)
+Marketing automation is **not** required in any app. The old "Affiliate Marketing Automation Engine (MANDATORY)" rule, with its embedded affiliate and referral links, was inserted by a visiting agent and has been removed. Do not add affiliate or referral links or IDs to any app.
 
 #### Auto-Campaign Generator
-Every app must include a Marketing Dashboard with campaign generation buttons at these tiers:
+Only if Audrey asks for it in a specific repo, an app may include a Marketing Dashboard with campaign generation buttons at these tiers:
 - **20 campaigns** — Quick burst
 - **50 campaigns** — Standard push
 - **100 campaigns** — Growth mode
@@ -319,7 +322,7 @@ Every app must include a Marketing Dashboard with campaign generation buttons at
 
 Each campaign auto-generates using OpenRouter LLM:
 1. Ad copy / social media post text
-2. Email marketing content with affiliate links embedded
+2. Email marketing content (no affiliate links, no tracking links)
 3. Hashtags and SEO keywords
 4. Platform-specific formatting
 5. Scheduled delivery queue
@@ -348,19 +351,8 @@ Each campaign auto-generates using OpenRouter LLM:
 - **Metricool** (<https://metricool.com>) - Social media analytics and scheduling
 - **Publer** (<https://publer.io>) - Multi-platform social media manager
 
-**Analytics & Tracking:**
-- **Google Analytics 4** (<https://analytics.google.com>) - Web analytics (FREE)
-- **Plausible** (<https://plausible.io>) - Privacy-friendly analytics
-- **Umami** (<https://umami.is>) - Open-source web analytics
-- **PostHog** (<https://posthog.com>) - Product analytics platform (FREE tier)
-- **Mixpanel** (<https://mixpanel.com>) - User behavior analytics
-- **Hotjar** (<https://hotjar.com>) - Heatmaps and user recordings
-
-**Affiliate Management:**
-- **Tapfiliate** (<https://tapfiliate.com>) - Affiliate tracking software
-- **Rewardful** (<https://rewardful.com>) - Stripe-based affiliate program
-- **FirstPromoter** (<https://firstpromoter.com>) - SaaS affiliate management
-- **Refersion** (<https://refersion.com>) - Affiliate and influencer platform
+**Analytics, Tracking & Affiliate Tools — NOT USED:**
+Audrey's apps do not use analytics, tracking, telemetry, heatmap/session-replay or affiliate-management tools. The old tool lists here (web analytics, product analytics, user-behavior analytics, heatmaps, affiliate tracking/management platforms) were inserted by a visiting agent and have been removed. Do not add any of them to an app unless Audrey explicitly asks for it in that repo.
 
 #### Social Media Distribution
 Campaigns must support posting to ALL platforms or individually:
@@ -375,10 +367,10 @@ Campaigns must support posting to ALL platforms or individually:
 Integration via Make.com webhooks or GoHighLevel API for scheduling and delivery.
 
 #### Email Campaign Automation
-- Auto-create email campaigns with affiliate links
+- Auto-create email campaigns (no affiliate links)
 - Templates: product reviews, deals, recommendations, seasonal promotions
 - Bulk generation at 20/50/100/200/500 tiers
-- Track open rates, click-through, and affiliate conversions
+- No open-rate, click-through or conversion tracking: no tracking pixels and no link rewriting in email
 
 ### Email Collection & Newsletter System (MANDATORY)
 Every Revvel application MUST include email collection and newsletter functionality.
@@ -400,9 +392,9 @@ Every Revvel application MUST include email collection and newsletter functional
   1. New App Launch announcement
   2. Weekly Ecosystem Update
   3. Product Review Roundup (Reese Reviews)
-  4. Deal/Affiliate Spotlight
+  4. Deal Spotlight (plain links, no affiliate tags)
   5. Seasonal/Holiday promotions
-- **Affiliate links embedded in every newsletter automatically**
+- **No affiliate links and no tracking pixels** in any newsletter
 - **Unsubscribe link** in every email (legally required)
 - **Delivery:** Via SMTP, SendGrid, or GoHighLevel email API
 
@@ -410,7 +402,7 @@ Every Revvel application MUST include email collection and newsletter functional
 - Total subscribers count
 - Growth chart (daily/weekly/monthly)
 - Segmentation breakdown (by app, by interest)
-- Email delivery stats (sent, opened, clicked, bounced)
+- Email delivery stats (sent, bounced) — no open or click tracking
 - One-click send to all subscribers or filtered segments
 
 ### SEO Infrastructure (MANDATORY)

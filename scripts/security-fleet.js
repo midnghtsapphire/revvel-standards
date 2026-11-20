@@ -24,7 +24,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const YAML = require('yaml');
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Do not install or execute PR dependencies for the read-only injection/exfil gate.
+// const YAML = require('yaml');
+// REVVEL-DISABLED-END
+// Event/PR scans need only Node built-ins; trusted sweep lanes load YAML lazily.
+const YAML = { parse: (text) => require('yaml').parse(text) };
+
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const WORKFLOWS_DIR = path.join(REPO_ROOT, '.github', 'workflows');
@@ -77,8 +83,14 @@ function scanPromptInjection(text, { source = 'text' } = {}) {
       findings.push({
         member: 'sentinel',
         rule: rule.id,
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Sentinel excerpts can include leaked credentials; redact complete values before any output.
+//         source,
+//         excerpt: excerpt(m[0]),
+// REVVEL-DISABLED-END
         source,
-        excerpt: excerpt(m[0]),
+        excerpt: excerpt(redactSensitiveText(m[0])),
+
       });
     }
   }
@@ -113,7 +125,13 @@ function auditExpressions(yamlText, file = 'workflow') {
   try {
     doc = YAML.parse(yamlText);
   } catch (_) {
-    return findings; // malformed YAML is workflow-yaml-validation's job, not ours
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: A failed expression audit cannot be reported as zero findings.
+//     return findings; // malformed YAML is workflow-yaml-validation's job, not ours
+// REVVEL-DISABLED-END
+    return [{ member: 'exprwatch', rule: 'unparseable-workflow', source: file,
+      excerpt: 'Workflow could not be parsed; expression audit was not completed.' }];
+
   }
   const runs = [];
   collectRunStrings(doc, null, runs);
@@ -149,7 +167,18 @@ const SECRET_PATTERNS = [
 ];
 
 function redact(value) {
-  return `${String(value).slice(0, 8)}…[redacted]`;
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Even credential prefixes must not be copied into logs or tracking issues.
+//   return `${String(value).slice(0, 8)}…[redacted]`;
+// REVVEL-DISABLED-END
+  return '[redacted]';
+
+}
+
+function redactSensitiveText(text) {
+  let safe = String(text);
+  for (const pattern of SECRET_PATTERNS) safe = safe.replace(pattern.re, '[redacted]');
+  return safe;
 }
 
 function scanSecretExfil(text, { source = 'text' } = {}) {
@@ -453,6 +482,84 @@ function sweepWorkflows(auditFn, dir = WORKFLOWS_DIR) {
   return findings;
 }
 
+// 2026-11-15: strict report contract. Missing/malformed output must not appear
+// as a clean scan or auto-close a prior finding. All callers use trusted code.
+function validateReport(report, expectedMember) {
+  if (!report || report.member !== expectedMember || !Array.isArray(report.findings) ||
+      !Number.isSafeInteger(report.count) || report.count !== report.findings.length) {
+    throw new Error('Missing or invalid security-fleet report');
+  }
+  for (const f of report.findings) {
+    if (!f || typeof f.rule !== 'string' || !/^[a-z0-9-]+$/.test(f.rule) ||
+        typeof f.excerpt !== 'string' || typeof f.source !== 'string' ||
+        typeof f.member !== 'string' || (expectedMember !== 'pr' && f.member !== expectedMember)) {
+      throw new Error('Malformed security-fleet finding');
+    }
+  }
+  return report;
+}
+
+function selectEventText(payload, eventName) {
+  if (!payload || typeof payload !== 'object') throw new Error('Invalid event payload');
+  let entity;
+  if (eventName === 'issue_comment') entity = payload.comment; // NOT issue.body
+  else if (eventName === 'issues') entity = payload.issue;
+  else if (eventName === 'pull_request' || eventName === 'pull_request_target') entity = payload.pull_request;
+  else throw new Error('Unsupported scan event');
+  if (!entity || typeof entity !== 'object' || !Object.prototype.hasOwnProperty.call(entity, 'body') ||
+      (entity.body !== null && typeof entity.body !== 'string') ||
+      (entity.title !== undefined && typeof entity.title !== 'string')) {
+    throw new Error('Missing or malformed event text');
+  }
+  return `${entity.title || ''}\n\n${entity.body || ''}`;
+}
+
+function scanPr({ baseSha, headSha = 'HEAD', text, cwd } = {}) {
+  if (typeof text !== 'string') throw new Error('PR metadata text is required (empty string is valid)');
+  const { execFileSync } = require('node:child_process');
+  const invoke = (args) => execFileSync('git', args, {
+    cwd, maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'],
+  }).toString('utf8');
+  const resolve = (ref) => {
+    if (typeof ref !== 'string' || !ref || ref.startsWith('-') || /[\x00-\x20]/.test(ref)) throw new Error('Missing/invalid PR ref');
+    const sha = invoke(['rev-parse', '--verify', '--end-of-options', `${ref}^{commit}`]).trim();
+    if (!/^[a-f0-9]{40,64}$/.test(sha)) throw new Error('Invalid PR commit');
+    return sha;
+  };
+  const base = resolve(baseSha);
+  const head = resolve(headSha);
+  const baseline = invoke(['merge-base', base, head]).trim();
+  if (!/^[a-f0-9]{40,64}$/.test(baseline)) throw new Error('Missing PR merge base');
+  const diff = invoke(['diff', '--no-color', '--no-ext-diff', '--no-textconv', '--no-renames', '--text', '--unified=0', '--output-indicator-new=+', '--output-indicator-old=-', '--output-indicator-context= ', baseline, head, '--']);
+  // Inspect additions only: removing a leaked token must not itself re-leak or
+  // fail a remediation. Metadata and added text are DATA, never executable code.
+  // Explicit --no-color is essential: this environment inherits color.ui=always.
+  // Track hunks instead of dropping every +++ line; actual added content can
+  // begin with ++ and must not be mistaken for a file header.
+  const additions = [];
+  let inHunk = false;
+  for (const line of diff.split('\n')) {
+    if (line.startsWith('diff --git ')) inHunk = false;
+    else if (line.startsWith('@@ ')) inHunk = true;
+    else if (inHunk && line.startsWith('+')) additions.push(line.slice(1));
+  }
+  const addedText = additions.join('\n');
+  const findings = [
+    ...scanPromptInjection(text, { source: 'PR metadata' }),
+    ...scanSecretExfil(text, { source: 'PR metadata' }),
+    ...scanPromptInjection(addedText, { source: 'PR additions' }),
+    ...scanSecretExfil(addedText, { source: 'PR additions' }),
+  ];
+  const { readDiff, evaluateDiff } = require('./no-destroy-guard.js');
+  const destruction = evaluateDiff(readDiff(base, head, { cwd }));
+  if (destruction.fail) findings.push({ member: 'no-destroy', rule: 'destructive-diff',
+    source: 'PR diff', excerpt: '[content omitted]' });
+  // Blocking logs/reports contain rule + location only, not attacker text.
+  return { member: 'pr', count: findings.length,
+    findings: findings.map((f) => ({ ...f, excerpt: '[content omitted]' })),
+    baseline, head, metadataScanned: true };
+}
+
 function main() {
   const args = process.argv.slice(2);
   const member = args[0];
@@ -460,8 +567,28 @@ function main() {
   const strict = args.includes('--strict');
   const textIdx = args.indexOf('--text');
   const fileIdx = args.indexOf('--text-file');
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Missing text is an invalid scan, not a clean sentinel/exfil report; add portable strict PR mode.
+//   let text = textIdx >= 0 ? args[textIdx + 1] : null;
+//   if (text == null && fileIdx >= 0) text = fs.readFileSync(args[fileIdx + 1], 'utf8');
+// REVVEL-DISABLED-END
+  const eventIdx = args.indexOf('--event-file');
   let text = textIdx >= 0 ? args[textIdx + 1] : null;
+  if (textIdx >= 0 && (text === undefined || text.startsWith('--'))) throw new Error('Missing --text value');
   if (text == null && fileIdx >= 0) text = fs.readFileSync(args[fileIdx + 1], 'utf8');
+  if (eventIdx >= 0) {
+    const payload = JSON.parse(fs.readFileSync(args[eventIdx + 1], 'utf8'));
+    text = selectEventText(payload, process.env.GITHUB_EVENT_NAME);
+  }
+  if (['sentinel', 'exfil', 'pr'].includes(member) && typeof text !== 'string') {
+    throw new Error('Explicit scan text/file/event is required');
+  }
+  if (member === 'pr') {
+    const report = scanPr({ baseSha: process.env.BASE_SHA, headSha: process.env.HEAD_SHA || 'HEAD', text });
+    validateReport(report, 'pr');
+    console.log(json ? JSON.stringify(report, null, 2) : `security-fleet PR: ${report.count} finding(s); content omitted`);
+    process.exit(strict && report.count > 0 ? 1 : 0);
+  }
   const dirArg = args.slice(1).find((a) => !a.startsWith('--') && a !== text);
 
   let findings;
@@ -497,9 +624,24 @@ function main() {
   process.exit(strict && findings.length > 0 ? 1 : 0);
 }
 
-if (require.main === module) main();
+// REVVEL-DISABLED | AGENT: security-specialist | MODEL: runtime-unspecified | WR: security-no-destroy-20261115 | DATE: 2026-11-15 | STATUS: REPLACED
+// REASON: Invalid/missing input and scanner errors must not green the check or leak diagnostic secrets.
+// if (require.main === module) main();
+// REVVEL-DISABLED-END
+if (require.main === module) {
+  try { main(); } catch (_) {
+    // Never echo file contents, raw Git stderr or token-shaped error arguments.
+    console.error('security-fleet scan failed; verify inputs, refs, and trusted dependencies.');
+    process.exit(2);
+  }
+}
+
 
 module.exports = {
+  validateReport,
+  selectEventText,
+  scanPr,
+  redactSensitiveText,
   INJECTION_RULES,
   SECRET_PATTERNS,
   SCOPE_SIGNALS,

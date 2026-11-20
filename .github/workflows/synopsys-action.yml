@@ -4,6 +4,10 @@
 # documentation.
 name: Synopsys Security Testing
 
+concurrency:
+  group: synopsys-action-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     # At this time, it is recommended to run Polaris only on pushes to main branches

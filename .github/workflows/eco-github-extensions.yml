@@ -1,5 +1,9 @@
 name: Eco Github Extensions
 
+concurrency:
+  group: eco-github-extensions-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   pull_request:
 

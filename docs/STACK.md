@@ -22,3 +22,13 @@
 
 ## Secrets
 - Infisical (current); evaluate GitHub native as consolidation
+
+## Stale-line notes (2026-11-19, Decipherer)
+
+Nothing above was changed. These notes mark lines that no longer match what
+was checked.
+
+- Source control: "GitHub Enterprise (Freedom-Angel-Corp)" is **stale**. The
+  GitHub API reported the org on the free plan with 1 seat on 2026-11-14.
+  Confirm no separate enterprise account exists. See the connector matrix in
+  [`TOOL_COST_INDEX.md`](TOOL_COST_INDEX.md).

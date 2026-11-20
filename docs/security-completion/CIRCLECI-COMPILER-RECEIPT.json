@@ -1,0 +1,15 @@
+{
+  "cli_version": "1.15.0",
+  "official_archive_sha256": "8d5ed374b4f6bd5bb6eec1b600f4a5ee7dcda3b4b00fcd26b64e60b1f8619226",
+  "config_valid": true,
+  "config_processed": true,
+  "policy_jobs": [
+    {
+      "job": "policy-check",
+      "shell_command_sha256": "d6a2296fad4b467552b1313755ef46f2f038d3366b829133c6fa491fd2dd04e8",
+      "literal_heredocs_after_processing": 2,
+      "escaped_delimiters_remaining": 0
+    }
+  ],
+  "pipeline_executed": false
+}

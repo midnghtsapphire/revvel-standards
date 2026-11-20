@@ -1,0 +1,147 @@
+TAP version 13
+# Subtest: image-seo-build-pack runs and writes when invoked through a symlink
+ok 1 - image-seo-build-pack runs and writes when invoked through a symlink
+  ---
+  duration_ms: 62.916996
+  type: 'test'
+  ...
+# Subtest: image-seo-filename-qa runs when invoked through a symlink
+ok 2 - image-seo-filename-qa runs when invoked through a symlink
+  ---
+  duration_ms: 58.704513
+  type: 'test'
+  ...
+# Subtest: neither script self-runs when imported as a module
+ok 3 - neither script self-runs when imported as a module
+  ---
+  duration_ms: 112.532324
+  type: 'test'
+  ...
+# Subtest: the parent fails when the builder exits 0 without producing a pack
+ok 4 - the parent fails when the builder exits 0 without producing a pack
+  ---
+  duration_ms: 0.76496
+  type: 'test'
+  ...
+# Subtest: NUL-safe path records preserve tabs, newlines, spaces, Unicode and leading dashes
+ok 5 - NUL-safe path records preserve tabs, newlines, spaces, Unicode and leading dashes
+  ---
+  duration_ms: 77.8811
+  type: 'test'
+  ...
+# Subtest: merge-base excludes new base-branch files from PR deletion totals
+ok 6 - merge-base excludes new base-branch files from PR deletion totals
+  ---
+  duration_ms: 65.937921
+  type: 'test'
+  ...
+# Subtest: renames are exposed as prohibited deletion plus addition
+ok 7 - renames are exposed as prohibited deletion plus addition
+  ---
+  duration_ms: 53.372026
+  type: 'test'
+  ...
+# Subtest: large replacement and stripping are caught below the global line budget
+ok 8 - large replacement and stripping are caught below the global line budget
+  ---
+  duration_ms: 51.956462
+  type: 'test'
+  ...
+# Subtest: binary modification and file type changes do not appear as quantified safe edits
+ok 9 - binary modification and file type changes do not appear as quantified safe edits
+  ---
+  duration_ms: 50.003938
+  type: 'test'
+  ...
+# Subtest: unknown commits and unrelated histories fail closed
+ok 10 - unknown commits and unrelated histories fail closed
+  ---
+  duration_ms: 46.749845
+  type: 'test'
+  ...
+# Subtest: missing baseline, malformed threshold and ALLOW_DESTROY cannot return CLI success
+ok 11 - missing baseline, malformed threshold and ALLOW_DESTROY cannot return CLI success
+  ---
+  duration_ms: 242.561497
+  type: 'test'
+  ...
+# Subtest: replacement minimum, ratio, aggregation and exact deletion threshold boundaries
+ok 12 - replacement minimum, ratio, aggregation and exact deletion threshold boundaries
+  ---
+  duration_ms: 0.485448
+  type: 'test'
+  ...
+# PASS: flags deletion of an existing app file
+# PASS: flags mass line removal under protected paths
+# PASS: allows a normal small edit
+# PASS: ignores lockfile churn in protected paths
+# PASS: blocks deletion outside protected paths
+# PASS: allow-destroy remains inert
+# PASS: global deletion budget includes unprotected paths and lockfiles
+# PASS: whole-file replacement is detected globally
+# PASS: invalid counts fail closed
+# Test Summary: 9 passed, 0 failed
+# Subtest: tests/no-destroy-guard.test.js
+ok 3 - tests/no-destroy-guard.test.js
+  ---
+  duration_ms: 59.789174
+  type: 'test'
+  ...
+# PASS: the resolver returns an interpreter that runs, or null
+# PASS: whatever the resolver returns, spawning it exits 0
+# PASS: the interpreter it returns can report a version
+# PASS: hasPython agrees with pythonBin
+# PASS: PYTHON overrides the probe and is not second-guessed
+# PASS: python3 is tried before py, so Linux and CI resolve on the first probe
+# FAIL: no JS file in tests/ or scripts/ spawns a hardcoded interpreter name
+#     Error: these call sites hardcode an interpreter name instead of calling pythonBinOrThrow() from scripts/lib/python-bin.js. On Windows the name they pick resolves to a Microsoft Store stub that exits 9009:
+#   tests/llm-spend-gate-delivery.test.js: spawnSync('python3'
+#     at assert (/home/ubuntu/work/governance-spend/tests/python-bin-resolution.test.js:41:25)
+#     at /home/ubuntu/work/governance-spend/tests/python-bin-resolution.test.js:132:3
+#     at test (/home/ubuntu/work/governance-spend/tests/python-bin-resolution.test.js:31:5)
+#     at Object.<anonymous> (/home/ubuntu/work/governance-spend/tests/python-bin-resolution.test.js:124:1)
+#     at Module._compile (node:internal/modules/cjs/loader:1781:14)
+#     at Object..js (node:internal/modules/cjs/loader:1913:10)
+#     at Module.load (node:internal/modules/cjs/loader:1505:32)
+#     at Function._load (node:internal/modules/cjs/loader:1309:12)
+#     at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+#     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+# PASS: the pre-commit gate resolves Python by running it, not by looking it up
+# PASS: the gate runs Python in UTF-8 mode
+# PASS: the gate preserves a file’s line endings instead of rewriting them
+# 9 passed, 1 failed
+# Subtest: tests/python-bin-resolution.test.js
+not ok 4 - tests/python-bin-resolution.test.js
+  ---
+  duration_ms: 162.609461
+  type: 'test'
+  location: '/home/ubuntu/work/governance-spend/tests/python-bin-resolution.test.js:1:1'
+  failureType: 'testCodeFailure'
+  exitCode: 1
+  signal: ~
+  error: 'test failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# PASS: flags <img> missing alt
+# PASS: flags empty alt
+# PASS: flags junk filename even with alt
+# PASS: passes good alt + descriptive filename
+# PASS: flags page file missing meta description
+# PASS: ignores files outside protected paths
+# PASS: allow-seo-debt override passes
+# Test Summary: 7 passed, 0 failed
+# Subtest: tests/seo-a11y-guard.test.js
+ok 5 - tests/seo-a11y-guard.test.js
+  ---
+  duration_ms: 55.524069
+  type: 'test'
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 14
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 698.619926

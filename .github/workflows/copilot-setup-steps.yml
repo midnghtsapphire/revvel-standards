@@ -1,5 +1,9 @@
 name: Copilot Setup Steps
 
+concurrency:
+  group: copilot-setup-steps-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 # Run automatically when this file or root dependency files change to validate setup steps,
 # and allow manual testing via the Actions tab.
 on:
