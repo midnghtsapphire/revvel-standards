@@ -3,6 +3,70 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-19 — TriageChief — move the dashboard and catalog generators from frozen GitHub Actions to a CircleCI schedule (WR #18488)
+
+- **Actor:** TriageChief
+- **Requested by:** Audrey Evans, 19 Nov 2026, 4:08 PM MT (t457u: "Yes, move the dashboard and catalog jobs to a CircleCI schedule")
+- **Role:** executed
+- **Files:** `.circleci/scheduled-generators.yml` (new); `.circleci/scripts/run-scheduled-generator.sh` and `.circleci/scripts/generator-pr.mjs` (new); `tests/scheduled-generators.test.js` (new); `docs/SCHEDULED_GENERATORS.md` (new); `README.md` (one line, old text kept in a dated comment; CARBON-STATS marker kept with a comment); header comment only on `.github/workflows/update-project-dashboard.yml`, `update-agent-creator-data.yml`, `flow-chart-sync.yml`, `connections-registry.yml`; `CHANGELOG.md`; `handoffs/triagechief/2026-11-19.md`
+- **What was done:** A separate CircleCI pipeline runs four generators when a schedule trigger sets the pipeline parameter `generator`: dashboard (every 4 hours), agent-creator, flow-charts (with the tools catalog) and connections-registry (daily). Each runs the existing script. If the output changed beyond timestamps, it commits to a bot branch and opens or updates one draft PR into the newest `daily/` branch. It reads `GENERATORS_GITHUB_TOKEN` from the CircleCI context `generators-bot` and skips cleanly without it.
+- **Decisions:** Separate config file so the lint-and-test gate is untouched and nothing runs on a PR push. No GitHub schedule added, no workflow logic or test edited, so `tests/no-scheduled-workflows.test.js` still passes. The GitHub Pages deploy step of the dashboard workflow is not moved (it needs GitHub Actions).
+- **Sources:** MEASURED: `node --test tests/scheduled-generators.test.js` (new) and the existing freeze, dashboard, connections and CircleCI structure tests; CircleCI `validate_config` returned valid.
+- **Open / handoff:** B5 (CI-config change): Audrey's t457u words above are the approval. Secret still has to create the `generators-bot` context, register the pipeline and add the four schedule triggers (`docs/SCHEDULED_GENERATORS.md`). TriageChief merges after the C3 gates.
+## 2026-11-19 — Secret — Doppler source of truth for zero-touch secrets (issue #18486)
+
+- **Actor:** Secret
+- **Requested by:** Audrey Evans, 19 Nov 2026. Her words: "Yes, have Secret build the free Doppler plus my script setup."
+- **Role:** executed
+- **Files:** `scripts/zero_touch_secrets.py`, `tests/test_zero_touch_secrets.py`, `config/secret-map.json`, `.circleci/config.yml`, `.circleci/scripts/secrets-sync.sh`, `scripts/auditor-controller.js`, `gatekeeper-cli/gatekeeper_cli/commands/gatekeeper.py`, `revvel-rosette-automation/scripts/gatekeeper.sh`, `revvel-rosette-automation/src/gatekeeper.py`, `scripts/biome/homeostat.js`, `config/credential-modules.yml`, `standards/ZERO_TOUCH_SECRETS_STANDARD.md`, `docs/tool-history/doppler.md`, `wr/memory/decisions.jsonl`, `CHANGELOG.md`, `LEDGER.md`
+- **What was done:** Doppler project `revvel-standards` config `prd` is the source. The script seals GitHub Actions secrets (repo and org), fans names to CircleCI contexts `ai-review-llm` and `ai-review-post` and projects `gh/midnghtsapphire/revvel-standards` and `gh/midnghtsapphire/linear-a`, and keeps previous versions in a Doppler ledger. Dry-run is the default. A sync skips a destination whose timestamp or recorded version is newer. Older writers that pushed Doppler onto GitHub with no freshness check are disabled and left in the tree. The schedule is CircleCI `secrets-maintenance`, weekly, dry-run unless `SECRETS_APPLY=1`.
+- **Decisions:** GitHub Actions is not the runner (billing lock; paid GitHub is out). `scripts/gatekeeper-sync.sh` is already absent; callers were disabled rather than recreating it. The integration token could not assign issue #18486 (HTTP 403).
+- **Sources:** MEASURED: `python3 -m pytest tests/test_zero_touch_secrets.py` — 7 passed. CircleCI structure test passed. `node scripts/auditor-controller.js --check` passed after `scripts/__pycache__` was removed.
+- **Open / handoff:** Secret still has to create the Doppler project, the service token, the CircleCI contexts, and the CircleCI env vars `DOPPLER_TOKEN` and `CIRCLE_TOKEN`. Do not set `SECRETS_APPLY=1` until Doppler holds the live values. CircleCI `lint-and-test` failed on the first push because `AGENTS.md` and `.github/copilot-instructions.md` already differed on `daily/2026-11-14`. The copilot file was replaced with the bytes of `AGENTS.md`. Handoff: `handoffs/secret/2026-11-19.md`.
+## 2026-11-19 17:25 America/Denver — Git-Master — merge daily/2026-11-14 into the toolkit branch (PR #18496)
+
+- **Actor:** Git-Master
+- **Requested by:** Audrey Evans (t133u, 19 Nov 2026): "ya fix it all and merge it".
+- **Role:** executed
+- **Files:** `LEDGER.md` (conflict resolved by keeping both sides' entries); `CHANGELOG.md` (merged cleanly). Everything else comes from the base: PR #18498 (copilot-instructions.md synced to AGENTS.md, so `lint-and-test` can pass).
+- **What was done:** Merged the base `daily/2026-11-14` into `git-master/toolkit-ci-18494` with a normal merge. No force-push, nothing deleted.
+- **Commits / PRs:** PR #18496.
+
+## 2026-11-19 17:05 America/Denver — Git-Master — fix the PR-number guard in pr-hygiene-check (WR #18494)
+
+- **Actor:** Git-Master
+- **Requested by:** TriageChief, 19 Nov 2026 (review of the sibling PR reese-reviews#98, same guard). `RELAYED` (A6). Audrey (t133u, 19 Nov 2026): "ya fix it all and merge it".
+- **Role:** executed
+- **Files:** `.circleci/config.yml` (only the `pr-hygiene-check` job); `CHANGELOG.md`; `LEDGER.md`.
+- **What was done:** The job skipped itself because `CIRCLE_PULL_REQUEST` is empty on GitHub App pipelines. It now resolves the PR number from that variable, then `pipeline.event.github.pull_request.number`, then the commit-to-PR API, and logs which one it used. Still advisory (`exit 0`).
+- **Decisions:** No `.github/workflows` file touched. No job deleted. `toolkit-weekly-report.yml` untouched. The unrelated `CIRCLE_PULL_REQUEST` mention at the label-check job was left alone.
+- **Commits / PRs:** PR #18496.
+- **Open / handoff:** Confirm in the CircleCI step log that the check ran.
+
+## 2026-11-19 16:40 America/Denver — Git-Master — github-free-toolkit in CircleCI (WR #18494)
+
+- **Actor:** Git-Master
+- **Requested by:** Audrey Evans, 19 Nov 2026, relayed by TriageChief in WR #18494. `RELAYED` (A6): this is the WR scope, not Audrey's own words.
+- **Role:** executed
+- **Files:** `.circleci/config.yml` (one job and one workflow appended; nothing else changed); `.circleci/toolkit-weekly-report.yml` (new); `CHANGELOG.md`; `LEDGER.md`; `Library/README.md`; `handoffs/git-master/2026-11-19.md` (new).
+- **What was done:** Added `pr-hygiene-check` (advisory, always exits 0, skips when there is no PR or no GH_TOKEN) in its own `pr-hygiene-advisory` workflow in `config.yml`. Added `toolkit-weekly-report` in its own file, `.circleci/toolkit-weekly-report.yml`, following the #18489 pattern: a separate CircleCI pipeline with a schedule trigger only, and a `when:` on the pipeline parameter `toolkit_report` (default `none`), so a scheduled run cannot start `main-workflow` or the deploy jobs. The first version of this PR put the weekly job in `config.yml`; TriageChief asked for the split and a new commit reverted it. It is set to `TOOLKIT_PUBLIC_ONLY=true` because this repository is public and CircleCI logs and artifacts of a public project can be seen by anyone. Both jobs clone the toolkit at `2b7fcd8004f4a6f21703bba10dab4ef52204a276` and install gh CLI 2.63.2.
+- **Decisions:** Separate jobs and workflows, and a separate config file for the weekly report, so the in-flight AI-review (#18493), Semgrep/Qlty (#18491) and generator (#18489) PRs do not collide in the same file. No `.github/workflows` file was added or changed.
+- **Sources:** MEASURED: `circleci config validate` (CLI 1.18.0) reports both `.circleci/config.yml` and `.circleci/toolkit-weekly-report.yml` valid. Both job scripts were run on the box against live GitHub data (PR with an assignee passed, PR without one gave a warning and exit 0, bad PR number skipped with exit 0).
+- **Commits / PRs:** branch `git-master/toolkit-ci-18494`. The PR link goes in a later entry.
+- **Open / handoff:** CI-config change (B5): needs Audrey's yes. Secret must create the `github-free-toolkit` context, register `.circleci/toolkit-weekly-report.yml` as its own pipeline and add the weekly trigger. TriageChief assigns a non-author reviewer. Not marked ready.
+- **Credit note:** Git-Master wrote the change. TriageChief filed the WR. Audrey Evans owns the repository.
+
+## 2026-11-19 — TriageChief — sync copilot-instructions.md to AGENTS.md (WR #18497, draft PR)
+
+- **Actor:** TriageChief
+- **Requested by:** Audrey Evans, 19 Nov 2026. `RELAYED`: the request came through the TriageChief dispatcher; it fixes a pre-existing red check, not new scope.
+- **Role:** executed
+- **Files:** `.github/copilot-instructions.md` (replaced with a copy of `AGENTS.md`); `.github/Archive/copilot-instructions.md.2026-11-19` (new, the old content); `handoffs/triagechief/2026-11-19.md` (new); `CHANGELOG.md`; `LEDGER.md`
+- **What was done:** `scripts/check_rules_sync.sh` needs the two files byte-identical. The copilot file was 33,452 bytes and `AGENTS.md` 57,190 bytes. The copilot file now equals `AGENTS.md`.
+- **Decisions:** `AGENTS.md`, the check and the workflow were not edited. Nothing deleted; the old file is archived.
+- **Sources:** MEASURED: `bash scripts/check_rules_sync.sh` failed before and prints OK after.
+- **Open / handoff:** Review and merge into `daily/2026-11-14` under the gates.
+
 ## 2026-11-14 — TriageChief — fix the five red lint-and-test tests on daily/2026-11-14
 
 - **Actor:** TriageChief

@@ -212,6 +212,9 @@ const CHECKS = [
         'scripts/secret-set.sh',
         'scripts/provision-repo-secrets.sh',
         'scripts/auditor-controller.js',
+        // 2026-11-19 Secret: the guarded Doppler writer (issue #18486).
+        // It refuses to overwrite a newer destination. Do not add another writer.
+        'scripts/zero_touch_secrets.py',
         'scripts/secrets-map.js',           // mentions DOPPLER_TOKEN in JSDoc comment only (decommission docs)
         '.github/workflows/bito-ai.yml',
         '.github/workflows/eeat-trust-cron.yml',

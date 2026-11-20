@@ -1,3 +1,6 @@
+# 2026-11-19 TriageChief, WR #18488: the scheduled run of this job moved to CircleCI, job dashboard (every 4 h), in
+# .circleci/scheduled-generators.yml (docs/SCHEDULED_GENERATORS.md). GitHub Actions is billing-locked and its
+# schedules stay frozen (tests/no-scheduled-workflows.test.js). This file is otherwise unchanged.
 name: Update Project Dashboard
 on:
   # COST FREEZE 2026-08-21: scheduled runs disabled. ~496 scheduled runs/day

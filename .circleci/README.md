@@ -60,3 +60,9 @@ Added 2026-11-19 by TriageChief with Audrey's approval. Both run only in `pr-wor
 - The PR base is the newest `daily/*` branch or `main`, whichever is closest to the PR head (`.circleci/scripts/advisory-base-ref.sh`). If no base is found, the jobs skip with a log line instead of scanning the whole repo.
 - Semgrep is pinned to `1.186.0` and Qlty to `0.671.0`; bump them on purpose.
 - Run by hand from the repo root: `bash .circleci/scripts/semgrep-advisory.sh` (needs `semgrep` on PATH) or `bash .circleci/scripts/qlty-advisory.sh`.
+## Secrets sync (2026-11-19 Secret, issue #18486)
+
+Workflow `secrets-maintenance` runs job `secrets-sync` on a weekly schedule
+from `main`. It calls `scripts/zero_touch_secrets.py` and stays a dry-run
+unless `SECRETS_APPLY=1`. It does not run on GitHub-hosted Actions.
+`pr-workflow` and `main-workflow` are unchanged and have no schedule.
