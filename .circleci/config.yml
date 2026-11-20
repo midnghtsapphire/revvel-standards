@@ -447,23 +447,6 @@ jobs:
           # unreadable label is not permission. Setting it here again would
           # restore the deadlock, so leave it to the script.
 
-  # Security gate 1 (docs/security-gates/PLAN.md): fail a PR that deletes more
-  # than N lines or files, or removes a whole directory, unless a human put the
-  # `allow-huge-delete` label on it. Node built-ins only, no secret needed (a
-  # public repo's labels are readable without a token). Added by Proofy.
-  huge-delete-guard:
-    executor: node-executor
-    steps:
-      - checkout
-      - run:
-          name: Unit tests for this gate
-          command: node --test tests/huge-delete-guard.test.js
-      - run:
-          name: Huge-delete guard
-          command: node scripts/security-gates/huge-delete-guard.js
-      - store_artifacts:
-          path: /tmp/security-gates
-          destination: security-gates
       # 2026-11-15: the historical label-resolution commentary above is retained
       # only as history. Owner rule prohibits deletion and any label bypass.
       # No context, provider key, checkout/user SSH key or package hook is used.
@@ -562,6 +545,24 @@ jobs:
           # redacted receipt directory is retained, never private scanner logs.
           path: /tmp/security-completion-reports
           destination: security-completion
+
+  # Security gate 1 (docs/security-gates/PLAN.md): fail a PR that deletes more
+  # than N lines or files, or removes a whole directory, unless a human put the
+  # `allow-huge-delete` label on it. Node built-ins only, no secret needed (a
+  # public repo's labels are readable without a token). Added by Proofy.
+  huge-delete-guard:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Unit tests for this gate
+          command: node --test tests/huge-delete-guard.test.js
+      - run:
+          name: Huge-delete guard
+          command: node scripts/security-gates/huge-delete-guard.js
+      - store_artifacts:
+          path: /tmp/security-gates
+          destination: security-gates
 
   # Product image gate for screen-recorder-finder. Builds the Dockerfile, runs the server
   # tests, and requests /health inside the container. Unrelated diffs exit 0
@@ -664,6 +665,63 @@ jobs:
           path: /tmp/trivy-report.txt
           destination: trivy-fs
 
+  # ECO ENERGY (WR: eco-run-20261119). Replaces the billing-locked `run-tests`
+  # job of .github/workflows/eco-github-extensions.yml (hosted Actions never
+  # starts a step, see docs/ECO_RUN.md). Runs scripts/eco/eco-ci-run.sh, which
+  # drives Eco CI v5.3.0 (pinned commit) around `npm ci` and the eco tests.
+  #
+  # Why `machine`, not `docker`: Eco CI samples /proc/stat. In a Docker executor
+  # that file shows the whole shared host, so the utilisation (and the energy
+  # estimate derived from it) would be someone else's workload. A machine
+  # executor is a dedicated VM. Linux only: CARESSE (Windows) cannot run it
+  # except inside WSL2.
+  #
+  # The figure is a utilisation-based model estimate, not a meter reading; the
+  # artifact says so. Informational: it fails only if the measurement itself
+  # cannot run, never on an energy value (no budget is set until a baseline
+  # exists). No secret, no context, no upload (send-data is false).
+  eco-energy:
+    machine:
+      image: ubuntu-2404:2026.11.1
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: Eco energy estimate (Eco CI v5.3.0, CPU-utilisation model)
+          environment:
+            ECO_OUT_DIR: /tmp/eco-out
+            ECO_MACHINE_LABEL: circleci-machine-ubuntu-2404-medium
+          command: bash scripts/eco/eco-ci-run.sh
+      - store_artifacts:
+          path: /tmp/eco-out
+          destination: eco
+
+  # ECO WEBSITE CARBON (WR: eco-run-20261119). Replaces the fetch in
+  # .github/workflows/green-website.yml, whose Website Carbon /site endpoint has
+  # had no public access since 2025-07-14. Needs the project env var
+  # GREEN_WEBSITE_URL (a URL, not a secret). Without it the job prints SKIPPED
+  # and exits 0: a green skip is not a report. It does NOT commit to main; the
+  # README card is updated by hand from the artifact.
+  eco-website-carbon:
+    executor: node-executor
+    resource_class: small
+    steps:
+      - checkout
+      - run:
+          name: Website carbon report (page weight + Website Carbon /data)
+          environment:
+            ECO_OUT_DIR: /tmp/eco-out
+          command: |
+            if [ -z "${GREEN_WEBSITE_URL:-}" ]; then
+              echo "SKIPPED: set GREEN_WEBSITE_URL (CircleCI project env var) to the live site to measure."
+              echo "Not measured. This green skip is not a carbon report." >&2
+              exit 0
+            fi
+            node scripts/eco/website-carbon.js
+      - store_artifacts:
+          path: /tmp/eco-out
+          destination: eco
+
 workflows:
   version: 2
 
@@ -747,6 +805,10 @@ workflows:
             branches:
               ignore: main
       - trivy-fs:
+          filters:
+            branches:
+              ignore: main
+      - eco-energy:
           filters:
             branches:
               ignore: main
@@ -839,6 +901,14 @@ workflows:
             branches:
               only: main
       - trivy-fs:
+          filters:
+            branches:
+              only: main
+      - eco-energy:
+          filters:
+            branches:
+              only: main
+      - eco-website-carbon:
           filters:
             branches:
               only: main
