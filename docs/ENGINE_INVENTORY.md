@@ -44,7 +44,7 @@ artifacts, receipts, and state patches for the orchestrator to aggregate.
 | launch-announcement | existing | `docs/README_SOCIAL_MEDIA_AUTOMATION.md`; `scripts` social post formatter; `docs/ECO_MARKETPLACE_ACTIONS.md` | None. |
 | publish-artifact | existing | `ship-to-market.yml` (`tests/ship-to-market.test.js`); deliver channels | None. |
 | market | existing | `standards/Master_Inventory/AFFILIATE_MARKETING_STANDARD.md`; `docs/ECO_MARKETPLACE_ACTIONS.md` | None. |
-| measure | existing | `templates/standards/mixpanel-*`, `posthog-*`; `standards/AMPLITUDE_INTEGRATION_STANDARD.md` | None. |
+| measure | retired (no analytics; see standards/NO_TRACKING_STANDARD.md) | `templates/standards/mixpanel-*`, `posthog-*`; `standards/AMPLITUDE_INTEGRATION_STANDARD.md` | None. |
 | lead-metrics | existing | `docs/field-maps/INSURANCE_LEADS_FIELD_MAP.md`; `docs/Master_Inventory/LEADS_STANDARD.md`; `.github/workflows/cypress-lead-engine.yml` | None. |
 | api-usage | existing | `docs/API_LIMIT_AUTO_UPGRADE.md`; `docs/Universal-BOM_List/API_REGISTRY_BOM.md` | None. |
 | learning/archive | existing | `learnings.md`; `docs/archive/*` (archive, not delete); `standards/COMMENT-DONT-DELETE.md` | None. |

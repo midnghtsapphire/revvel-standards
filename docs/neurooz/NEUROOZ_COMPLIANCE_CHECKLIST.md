@@ -89,17 +89,12 @@
 | Meta Data Management | Yes | [ ] | Medium | Per-page title/description/keywords |
 | Alt Text Auto-Generation | Yes | [ ] | Medium | AI/LLM integration |
 | Auto Marketing via Meta | Yes | [ ] | Low | Facebook/Instagram Business APIs |
-| SEM Hooks | Yes | [ ] | Low | Google Ads, conversion pixels, UTM |
+| SEM Hooks | **No — removed** | n/a | n/a | No conversion pixels or UTM tagging (see No Tracking) |
 | Backlinking Dashboard | Yes | [ ] | Low | OpenLinkProfiler integration |
 
-### 4.4 Affiliate Marketing (MANDATORY)
+### 4.4 Affiliate Marketing — REMOVED
 
-| Feature | Required | Present | Priority | Notes |
-|---------|----------|---------|----------|-------|
-| Affiliate Auto-Linker | Yes | [ ] | Medium | Amazon tag: `meetaudreyeva-20` |
-| Auto-Campaign Generator | Yes | [ ] | Low | 20/50/100/200/500 campaign tiers |
-| Social Media Distribution | Yes | [ ] | Low | All-platform posting |
-| Email Campaign Automation | Yes | [ ] | Low | Template generation via OpenRouter |
+No affiliate links, tags, auto-linker or affiliate campaign tooling in any app. This section was inserted by a visiting agent and is void. See `standards/NO_TRACKING_STANDARD.md`.
 
 ### 4.5 Email & Newsletter (MANDATORY)
 
@@ -142,7 +137,7 @@
 | SHIFT Self-Healing Monitor | Yes | [ ] | Medium | Cron-based, LLM-diagnosed |
 | WoZ Few-Shot Prompt Tests | Yes | [ ] | Medium | Behavioral validation |
 | Error Boundaries | Yes | [ ] | High | Global error handling + Sentry |
-| Analytics (FOSS) | Yes | [ ] | Medium | Plausible or Umami |
+| Analytics | **No — removed** | n/a | n/a | No analytics of any kind (see No Tracking) |
 
 ---
 

@@ -1,15 +1,19 @@
 # Marketing Automation Standard
 
+> ## ⛔ RETIRED — DO NOT IMPLEMENT (2026-11-19)
+> Audrey's rule: **no tracking, analytics, telemetry or affiliate code in any app unless she explicitly asks for it in that repo.** It previously made marketing automation, UTM tagging, conversion pixels (GA4, Meta, TikTok) and affiliate links mandatory in every app. That requirement is void. This page was written by a visiting agent and is kept only as history. Nothing below is a requirement. See [`standards/NO_TRACKING_STANDARD.md`](../../standards/NO_TRACKING_STANDARD.md).
+
+
 **Version:** 1.0.0  
 **Date:** April 6, 2026  
-**Status:** Mandatory Policy — applies to every Revvel application  
+**Status:** RETIRED — not a policy (was: "Mandatory Policy — applies to every Revvel application")
 **Author:** Audrey Evans (MIDNGHTSAPPHIRE)
 
 ---
 
 ## 1. What This Standard Covers
 
-Every Revvel application ships with a built-in marketing automation system. This is not optional — it is part of the core platform. This standard defines:
+~~Every Revvel application ships with a built-in marketing automation system. This is not optional — it is part of the core platform.~~ **Void: marketing automation is opt-in only, when Audrey asks for it in a repo, and never with tracking.** This standard defines:
 
 - How to auto-post ads to Meta, TikTok, Instagram, X (Twitter), and LinkedIn
 - SEO infrastructure every app must have
