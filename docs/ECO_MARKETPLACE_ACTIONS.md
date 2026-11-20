@@ -47,3 +47,11 @@ exists, rather than enabled blindly in this standards repo.
    already produces a plan JSON artifact.
 4. **Automation/personal ops repos:** add `naukri-resume-action.yml` only where
    the self-hosted-runner and credential requirements are acceptable.
+
+## Update 2026-11-19 (Decipherer, WR eco-run-20261119)
+
+The GitHub workflows that use these actions cannot start while the account
+billing lock is on. The eco measurement now also runs on CircleCI through
+`scripts/eco/`; read [`ECO_RUN.md`](ECO_RUN.md) for the root cause, the defects
+found in `eco-github-extensions.yml`, and how to read the energy figure. The
+inventory table above is unchanged.

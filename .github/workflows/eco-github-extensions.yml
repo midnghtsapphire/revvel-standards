@@ -1,3 +1,15 @@
+# ECO-RUN 2026-11-19 (Decipherer, WR eco-run-20261119): this workflow is KEPT
+# unchanged (never delete) but cannot run on GitHub today: every job fails
+# before step 1 with "not started because your account is locked due to a
+# billing issue". The live path is CircleCI: jobs `eco-energy` and
+# `eco-website-carbon` in .circleci/config.yml. Root cause, the extra defects
+# found in this file, and how to re-enable it: docs/ECO_RUN.md.
+# Defects that would remain even with billing fixed: (1) the ecoinfra job passes
+# `file:` but the action reads `plan-file`, and ./state.json is a dashboard
+# summary, not a Terraform plan; (2) the "sustainable npm" step only sets npm
+# config and never runs an install, so the measurement after it measures nothing;
+# (3) eco-ci defaults to send-data=true (posts repo, branch, commit, CPU model to
+# metrics.green-coding.io).
 name: Eco Github Extensions
 
 concurrency:
