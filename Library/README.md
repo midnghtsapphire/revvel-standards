@@ -26,3 +26,7 @@ Original archival material elsewhere in the repository remains intact.
   recovery is in progress and is not in this repo yet.
 - [Visiting-agent rule check data, 2026-11-11](../config/visiting-agent-patterns.json):
   patterns, allowlist, and the baseline of hits that were already in the repo.
+- [github-free-toolkit, pinned `2b7fcd8004f4`](https://github.com/midnghtsapphire/github-free-toolkit/tree/2b7fcd8004f4a6f21703bba10dab4ef52204a276):
+  Audrey's MIT-licensed read-only GitHub tools (`stale-prs`, `unassigned-prs`,
+  `repo-inventory`, `pr-hygiene-check`). `.circleci/config.yml` and `.circleci/toolkit-weekly-report.yml` fetch this commit at
+  run time; it is not copied into this repository. Added 2026-11-19, WR #18494.
