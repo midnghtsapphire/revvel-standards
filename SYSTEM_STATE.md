@@ -55,7 +55,9 @@ Another Codex chat owns Cloudflare Tunnel and the direct Proofy setup.
 
 | Component | Status | Details |
 |---|---|---|
-| CI/CD | ✅ | GitHub Actions workflows in `.github/workflows/` |
+| CI/CD | ⚠️ | Hosted Actions billing-locked since 2026-11-06 (account-level; jobs never start). CircleCI `lint-and-test` + Proofy security gates 1–4 are the live gate. See `docs/governance/ACTIONS_MIGRATION.md`. |
+| Home server (planned) | ⏳ | Owner decision 2026-11-16: ~$1,300 box at end of month (24GB GPU, 64GB RAM, 2TB NVMe + 4TB HDD). Build-sheet: `standards/HOME_SERVER_STANDARD.md`. Evidence: `docs/audits/GITHUB-AUDIT-2026-11-16.md` Appendix A (gemma-3-4b <0.5 tok/s CPU-only on operator laptop). Flips to ✅ only when the standard's acceptance gate passes. |
+| CI/CD (historical row) | ✅→⚠️ | GitHub Actions workflows exist in `.github/workflows/`. **Superseded 2026-11-16** by the ⚠️ row above: workflows exist but hosted runners are billing-locked. Row kept for history, do not remove. |
 | oAudrey App Platform app | ⏳ | **Pending human action:** Set `DIGITALOCEAN_TOKEN` GitHub secret → trigger `deploy-oaudrey.yml` |
 | oAudrey DNS (`oaudrey.com`) | ⏳ | **Pending human action:** DNS is on Cloudflare. Add the App Platform records in the Cloudflare zone for `oaudrey.com` and `www.oaudrey.com`. Do not move the zone to DigitalOcean nameservers. |
 | oAudrey DNS (`fieldwork.oaudrey.com`) | ⏳ | **Pending human action:** Same Cloudflare zone. Add the `fieldwork` record there. |
