@@ -1042,11 +1042,13 @@ The MIDNGHTSAPPHIRE GitHub organization maintains custom MCP servers built speci
 
 For the full audit of all 22 repos see: [`docs/MCP_REVVEL_CATALOG.md`](../MCP_REVVEL_CATALOG.md)
 
-### 12.1. The Two Must-Have Custom Servers
+### 12.1. The Must-Have Custom Servers
 
-These two are **mandatory in every Revvel project** — include them in any profile alongside the standard servers.
+> **2026-11-19:** `rvvel-affiliate-links-mcp` below is RETIRED and not used; affiliate links are not allowed in any app (see `standards/NO_TRACKING_STANDARD.md`). Only `code-review-mcp-server` remains must-have.
 
-#### `rvvel-affiliate-links-mcp`
+The old text said these were **mandatory in every Revvel project** — include them in any profile alongside the standard servers.
+
+#### `rvvel-affiliate-links-mcp` — RETIRED, DO NOT USE
 
 - **Repo:** [midnghtsapphire/rvvel-affiliate-links-mcp](https://github.com/midnghtsapphire/rvvel-affiliate-links-mcp)
 - **Transport:** stdio · **Backend:** SQLite (self-contained) · **No env vars required**

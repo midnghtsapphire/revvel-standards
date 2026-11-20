@@ -1,8 +1,12 @@
 # Mixpanel Integration — Revvel Standards
 
+> ## ⛔ RETIRED — DO NOT IMPLEMENT (2026-11-19)
+> Audrey's rule: **no tracking, analytics, telemetry or affiliate code in any app unless she explicitly asks for it in that repo.** It previously told every Revvel app to ship Mixpanel product analytics. That requirement is void. This page was written by a visiting agent and is kept only as history. Nothing below is a requirement. See [`standards/NO_TRACKING_STANDARD.md`](../standards/NO_TRACKING_STANDARD.md).
+
+
 **Version:** 1.0.0
 **Date:** April 28, 2026
-**Status:** Active — additive standard for all MIDNGHTSAPPHIRE apps that ship product analytics
+**Status:** RETIRED — not a policy (was: "Active — additive standard for all MIDNGHTSAPPHIRE apps")
 **Owner:** Audrey Evans (MIDNGHTSAPPHIRE)
 **Scope:** Every Revvel project (web, Node, mobile, browser extension) that needs user-behavior analytics
 **Related:**
