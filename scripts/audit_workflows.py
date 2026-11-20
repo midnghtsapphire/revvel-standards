@@ -3,11 +3,14 @@
 Checks every workflow for: dead script references, deprecated actions,
 references to deleted workflows, duplicate names. Read-only; pairs with
 tier3_self_heal.py for continuous monitoring."""
-import os, re, sys
+
+import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 WF = ROOT / ".github" / "workflows"
+
 
 def audit():
     all_files = {str(p.relative_to(ROOT)) for p in ROOT.rglob("*") if p.is_file()}
@@ -30,9 +33,11 @@ def audit():
             problems.append(f"{f.name}: deprecated action {m[0]}@v{m[1]}")
     return problems
 
+
 if __name__ == "__main__":
     probs = audit()
     print(f"audited {len(list(WF.glob('*.y*ml')))} workflows")
-    for p in probs: print(" ✘", p)
+    for p in probs:
+        print(" ✘", p)
     print("✔ clean" if not probs else f"{len(probs)} problems")
     sys.exit(1 if probs else 0)
