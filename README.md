@@ -83,6 +83,7 @@ Curated reading list — sorted by *when you'll need it*, not by topic. Open the
 | Building a full website + mobile UI artifact (glassmorphic, S2M quality) | [`templates/website-mobile-ui/README.md`](templates/website-mobile-ui/README.md) | Template |
 | Designing project delivery orchestration and completion gates | [`docs/orchestration/project-orchestration-standard.md`](docs/orchestration/project-orchestration-standard.md) | Standard |
 | Setting up the Notion knowledge layer | [`docs/notion-structure.md`](docs/notion-structure.md) | Spec |
+| Claiming a social or outreach account, or reading a sign-up code | [`docs/bot-apps/APPS-AND-DEVICES.md`](docs/bot-apps/APPS-AND-DEVICES.md) | How-to |
 | Adding a new MCP server to the WR/PR control plane | [`docs/Master_Inventory/MCP_STANDARD.md`](docs/Master_Inventory/MCP_STANDARD.md) + [`docs/MCP_REVVEL_CATALOG.md`](docs/MCP_REVVEL_CATALOG.md) | Standard + catalog |
 | Exploring the BNAT-UTEN data-center waste-heat reuse initiative | [`docs/grok/uten/Colorado/README.md`](docs/grok/uten/Colorado/README.md) · [live dashboard](https://midnghtsapphire.github.io/revvel-standards/docs/grok/uten/Colorado/dashboard.html) | Design + interactive dashboard |
 

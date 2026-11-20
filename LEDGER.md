@@ -3,6 +3,16 @@
 Play-by-play record per standards/LEDGER_STANDARD.md. Append-only. Newest first.
 This file was absent at the repository root on 2026-11-11. This entry is the first one. No earlier entry was removed or rewritten.
 
+## 2026-11-19 — LinearA-Untried — bot apps and devices how-to
+
+- **Actor:** LinearA-Untried (Audrey Evans' Linear A research and proposal bot)
+- **Requested by:** Audrey Evans, 2026-11-19 ("give instructoins on what app is needed or loaded for all the other bots put it in revvel-standards")
+- **Role:** executed (draft PR into `daily/2026-11-19`, not merged)
+- **Files:** `docs/bot-apps/APPS-AND-DEVICES.md` (new); `README.md` (reference-table row); `REMINDERS.md` (activity section); `LEDGER.md` (this entry)
+- **What was done:** Added a public how-to for every bot on which apps and devices are needed for account sign-ups, codes, and automation, based on the 2026-11-19 MinoanScript outreach checks. Linked it from the README reference table and REMINDERS. No secrets, phone numbers, birthdays, passwords, or IP addresses. `CHANGELOG.md` was left untouched because it already carries a known markdownlint error on line 1 that would fail the changed-Markdown gate.
+- **Decisions:** Path is `docs/bot-apps/` rather than the generated `docs/bots/` tree. Outreach account status stays in the private `midnghtsapphire/linear-a` tracker (`docs/outreach/ACCOUNTS.md`, PR #163).
+- **Open / handoff:** Draft PR for owner review. Do not merge.
+
 ## 2026-11-14 — Auky — Inventory of the repo root and phase 1 of the organize pass
 
 - **Actor:** Auky (mascot and organizer bot), acting under Audrey Evans' direction

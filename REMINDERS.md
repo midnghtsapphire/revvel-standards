@@ -132,6 +132,14 @@ Older templates are archived under `templates/issue-template-archive/`.
 
 ---
 
+## Claiming a social or outreach account, or reading a sign-up code
+
+**Read before you start:**
+
+- [`docs/bot-apps/APPS-AND-DEVICES.md`](./docs/bot-apps/APPS-AND-DEVICES.md) — which apps and devices to have loaded, how email and SMS codes are read, and which steps are a handoff to Audrey
+
+**Why before:** Sign-up paths differ by platform (some finish only in a phone app; some need a handoff). Codes are read from the bot inbox or, with Audrey's approval, from a synced Phone Link store. Passwords go in the vault, never in git.
+
 ## Editing this file
 
 - New activity? Add a heading. Sort alphabetically *only* if you genuinely can't pick a "natural" reading order; otherwise group by user journey.
