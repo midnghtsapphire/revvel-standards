@@ -1,3 +1,12 @@
+# ECO-RUN 2026-11-19 (Decipherer, WR eco-run-20261119): this workflow is KEPT
+# unchanged (never delete) but cannot run on GitHub today: every job fails
+# before step 1 with "not started because your account is locked due to a
+# billing issue". The live path is CircleCI: jobs `eco-energy` and
+# `eco-website-carbon` in .circleci/config.yml. Root cause, the extra defects
+# found in this file, and how to re-enable it: docs/ECO_RUN.md.
+# Defects that would remain even with billing fixed: https://api.websitecarbon.com/site
+# has had no public access since 2025-07-14 (HTTP 401), and the default URL
+# (GitHub Pages of this repo) is a 404 because Pages is not enabled.
 #
 # Local Website Carbon fetch replaces abandoned `filiptronicek/green-action`
 # (stale release + removed node12 runtime, WR #14884) so green reporting stays
