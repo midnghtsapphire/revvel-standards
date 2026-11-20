@@ -1,7 +1,11 @@
 # Amplitude Integration Standard
 
+> ## ⛔ RETIRED — DO NOT IMPLEMENT (2026-11-19)
+> Audrey's rule: **no tracking, analytics, telemetry or affiliate code in any app unless she explicitly asks for it in that repo.** It documents a workflow that sends repo events to Amplitude. That is analytics and is flagged for removal. This page was written by a visiting agent and is kept only as history. Nothing below is a requirement. See [`standards/NO_TRACKING_STANDARD.md`](NO_TRACKING_STANDARD.md).
+
+
 **Version:** 1.0.0
-**Status:** Active
+**Status:** RETIRED — flagged for removal (was: "Active")
 **Scope:** `midnghtsapphire/revvel-standards` (and any sibling repo that adopts the workflow)
 **Workflow:** [`.github/workflows/amplitude-events.yml`](../.github/workflows/amplitude-events.yml)
 **Registry row:** `docs/Universal-BOM_List/API_REGISTRY_BOM.md` → §9 *Analytics & Product Intelligence APIs* → **Amplitude**
