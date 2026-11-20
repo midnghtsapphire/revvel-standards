@@ -532,3 +532,73 @@ connections:
     status: unverified
     connects_to: [roo, gemini, opus]
     note: "Owner: Jules has access to Roo and Gemini/Opus and may run recursively. Confirm which models + whether recursion is enabled."
+
+  # ── Added 2026-11-19 (Decipherer for Audrey) — CI / review / automation apps
+  # Source for every plan and connection below: docs/TOOL_COST_INDEX.md →
+  # "Connector matrix (2026-11-19)". Audrey's own confirmations are dated
+  # 2026-11-14. Nothing here is a secret; no env names are invented.
+  - id: circleci
+    name: CircleCI (Performance plan)
+    type: app
+    auth: key
+    status: verified
+    access: [ci, schedule-triggers, custom-webhooks, self-hosted-runners, contexts, oidc]
+    connects_to: [github, gitar, slack, n8n, sonarqube-cloud, railway, digitalocean]
+    used_by: [.circleci/config.yml]
+    note: "Plan: Performance (Audrey, 2026-11-14; credits not readable by API, so the tier is her word). Org gh/midnghtsapphire has projects revvel-standards, reese-reviews, amazon-books, forensicfinders; linear-a has none. Self-hosted runners: 20 concurrent tasks on Performance, no per-minute charge (CircleCI pricing page). Slack app and Gitar hookups confirmed working by Audrey on 2026-11-14."
+  - id: circleci-slack
+    name: CircleCI Slack app (CircleCI ↔ Slack)
+    type: app
+    auth: oauth
+    status: verified
+    access: [workflow-notifications, dm-notifications, approve-on-hold-workflow, cancel-on-hold-workflow]
+    connects_to: [circleci, slack]
+    note: "Audrey, 2026-11-14: hooked and working. Per CircleCI docs (guides/integration/slack-integration) the app posts workflow notifications and lets you approve or cancel on-hold workflows; the docs do not describe starting a pipeline from Slack. To start one from Slack, call the pipeline trigger API (n8n or a custom Slack app). No separate fee is stated in the docs."
+  - id: gitar
+    name: Gitar (a Sonar product; higher tier than Core)
+    type: app
+    auth: key
+    status: verified
+    access: [pr-review, ci-failure-analysis, fix-commits, rules]
+    connects_to: [github, circleci, linear, slack, jira]
+    note: "Plan: a higher membership that Audrey associates with Sonar (2026-11-14). Official names are Core, Pro, Enterprise, so the exact tier is unverified. CircleCI hookup (personal API token in Gitar org settings) and API work done by Audrey. Linear, Slack and Jira integrations are Pro or Enterprise on the official pricing page."
+  - id: cubic
+    name: cubic (Team plan)
+    type: app
+    auth: oauth
+    status: verified
+    access: [pr-review, custom-review-agents, auto-approve, cli-review, wikis]
+    connects_to: [github, linear, jira, asana, notion]
+    note: "Plan: Team (Audrey, 2026-11-14); official price 30 USD per developer per month billed yearly. Issue-tracker and Notion context per docs.cubic.dev/integrations/overview. The cubic bot is installed in the Notion workspace (read-only check, 2026-11-14)."
+  - id: chunk
+    name: Chunk (CircleCI AI assistant, beta)
+    type: app
+    auth: key
+    status: verified
+    access: [flaky-test-fixes, coverage, config-help, docs]
+    connects_to: [circleci, github]
+    note: "Audrey has Chunk (2026-11-14). It is CircleCI's product, not cubic's (circleci.com/docs/guides/toolkit/chunk-setup-and-overview). Beta on Free, Performance and Scale; uses credits and model tokens; official docs say it becomes a paid feature at general availability. Org-level setup (Allow Chunk tasks, model provider) not verified."
+  - id: sonarqube-cloud
+    name: SonarQube Cloud (Sonar)
+    type: app
+    auth: oauth
+    status: unverified
+    access: [code-quality, security-analysis, quality-gates]
+    connects_to: [github, circleci, slack, jira]
+    note: "SonarQube Cloud checks have been seen on PRs and a SonarQube gate passed on one (agent reports, 2026-11-14 to 2026-11-16), but plan and subscription are unverified. Gitar joining Sonar does not replace SonarQube (Sonar FAQ). Free plan: 50k lines of private code, 5 members; Slack on Free, Team, Enterprise; Jira needs Team or Enterprise (docs.sonarsource.com subscription plans)."
+  - id: n8n
+    name: n8n (self-hosted Community, lab only)
+    type: app
+    auth: free
+    status: unverified
+    access: [workflow-automation, webhooks, notion-trigger, circleci-trigger-pipeline]
+    connects_to: [slack, github, linear, notion, circleci]
+    note: "Trial lab on Audrey's computer, localhost only (docs/tool-history/n8n.md). Built-in nodes exist for Slack, GitHub, Linear, Notion (with trigger) and CircleCI (get, get many, trigger pipeline) per docs.n8n.io. Webhook triggers from Notion need a public HTTPS endpoint. Stays unverified until a workflow actually runs."
+  - id: higgins
+    name: "Higgins (Audrey's name; product not identified)"
+    type: app
+    auth: unknown
+    status: unverified
+    access: []
+    connects_to: [circleci]
+    note: "Audrey, 2026-11-14: she added it alongside Gitar, with the API work done. The product has not been named by her. Another agent guessed Higgsfield; that is a guess, not a fact. Do not wire anything to it until Audrey names it."

@@ -872,7 +872,7 @@ Every project must include these two — check they are in `.mcp.json`:
 - `get_affiliate_links(category, minCommission)` — filtered link list
 - `export_links(format)` — export as JSON or CSV
 
-**When to call it:** Any time you are generating content, product pages, blog posts, or recommendations — call `get_best_link` or `search_links` first to get real, tracked affiliate links.
+**When to call it:** **Never** (retired 2026-11-19: no affiliate links in any app). The old text said: any time you are generating content, product pages, blog posts, or recommendations — call `get_best_link` or `search_links` first to get real, tracked affiliate links.
 
 #### `code-review`
 10 tools for automated code quality enforcement:

@@ -190,7 +190,7 @@ Freedom Angel Corp (2010, CO, EIN: 86-1209156, Non-Profit, Good Standing)
 7. Freedom Angel Corp as parent entity for all products
 8. Auto-documentation mandatory — CHANGELOG.md in every repo, every change logged
 9. INFRASTRUCTURE_MAP.md in revvel-standards is the single source of truth
-10. Affiliate marketing automation engine in every app (20/50/100/200/500 campaign buttons)
+10. ~~Affiliate marketing automation engine in every app (20/50/100/200/500 campaign buttons)~~ — REMOVED 2026-11-19: no affiliate or tracking code in any app
 11. Email collection & auto-newsletter in every app
 12. 1000+ backlink SEO strategy in every app
 13. MindMappr is the primary agent, accessible via Telegram and Slack
