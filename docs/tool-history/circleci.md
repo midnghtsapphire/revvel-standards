@@ -49,3 +49,11 @@ Kept. It is now the required merge gate. Repo record: kept as the merge gate. It
 - **Needs Audrey:** yes: her own view of CircleCI versus the other CI she has tried
 - Why it was removed on 2026-04-23.
 - Whether she wants it to stay the main gate once GitHub Actions billing is fixed.
+
+## 2026-11-19 update (Decipherer)
+
+Supersedes the "free tier (6,000 build minutes)" cost line above; that line
+stays for history. Audrey confirmed on 2026-11-14 that she is on the
+Performance plan, that CircleCI is connected to Gitar and Slack, and that she
+has Chunk (CircleCI's beta assistant). Plan and connections: see the
+[connector matrix](../TOOL_COST_INDEX.md#connector-matrix-database-generated).
