@@ -24,8 +24,9 @@ artifacts tab to track trends across builds.
 ## Live snapshot — 2026-11-10
 ## Live snapshot — 2026-11-12
 ## Live snapshot — 2026-11-13
-## Live snapshot — 2026-11-15
 ## Live snapshot — 2026-11-14
+## Live snapshot — 2026-11-15
+## Live snapshot — 2026-11-16
 
 ```text
 Overall: 🔴 DOWN  |  Effectiveness index: 0/100
@@ -45,6 +46,7 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
   First proposal commit:  2026-07-02T23:04:13.000Z
   Last proposal commit:   2026-07-22T19:32:41.000Z
   Span: 20 day(s)  |  Avg interval: 68.1 hour(s)
+  Days since last proposal: 117  ⚠️  Engine appears silent (> 30 days).
   Days since last proposal: 111  ⚠️  Engine appears silent (> 30 days).
   Days since last proposal: 113  ⚠️  Engine appears silent (> 30 days).
   Days since last proposal: 114  ⚠️  Engine appears silent (> 30 days).
@@ -64,6 +66,11 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
   ✅  Fingerprint is current — refreshed 2026-11-10.
 ```
 
+**Bottom line (2026-11-16, latest):**
+- VEINS fired 3 times between 2026-07-02 and 2026-07-22, all targeting the same
+  flaky workflow (`🎛️ PR State Orchestrator`), generating 7 stub proposals.
+- **Zero proposals have been actioned.** The stub boilerplate is still in every file.
+- The engine has been **silent for 117 days** (as of 2026-11-16) — it stopped firing around 2026-07-22.
 **Bottom line (2026-11-10):**
 **Bottom line (2026-11-12):**
 **Bottom line (2026-11-13):**
@@ -89,6 +96,7 @@ Overall: 🔴 DOWN  |  Effectiveness index: 0/100
 
 ## Trend history (`docs/veins-history.jsonl`)
 
+Eight rows on record (2026-11-06 through 2026-11-16):
 Three rows on record:
 Five rows on record:
 Six rows on record:
@@ -102,8 +110,13 @@ Eight rows on record:
 | 2026-11-10T09:09:22Z | 🔴 down | 0/100 | 7 | 111 | 3 |
 | 2026-11-12T09:08:48Z | 🔴 down | 0/100 | 7 | 113 | 3 |
 | 2026-11-13T09:08:45Z | 🔴 down | 0/100 | 7 | 114 | 3 |
-| 2026-11-15T09:10:31Z | 🔴 down | 0/100 | 7 | 116 | 3 |
 | 2026-11-14T09:08:48Z | 🔴 down | 0/100 | 7 | 115 | 3 |
+| 2026-11-15T09:10:31Z | 🔴 down | 0/100 | 7 | 116 | 3 |
+| 2026-11-16T09:08:29Z | 🔴 down | 0/100 | 7 | 117 | 3 |
+
+Trend: **status unchanged; engine silent +1 day since last check.** All key metrics are flat
+— stubs unresolved, engine offline, sheaf energy zero throughout. The only
+number moving is `days_since_last_commit`, now at 117. No change since 2026-11-06.
 | 2026-11-17T09:08:50Z | 🔴 down | 0/100 | 7 | 118 | 3 |
 
 Trend: **status unchanged; engine silent 3 more day(s) since last check.** All key metrics are flat
@@ -271,10 +284,11 @@ node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
 
 ---
 
-## Action items (as of 2026-11-15)
+## Action items (as of 2026-11-16)
 
 | Priority | Item | Status |
 |---|---|---|
+| P1 | VEINS engine has been **silent 117 days** (last proposal: 2026-07-22). Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
 | P1 | VEINS engine has been **silent 118 days** (as of 2026-11-17). Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
 | P1 | VEINS engine has been **silent 116 days** (as of 2026-11-15). Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
 | P1 | VEINS engine has been **silent 111 days**. Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
@@ -283,12 +297,15 @@ node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
 | P1 | VEINS engine has been **silent 114 days** (as of 2026-11-13). Check that it is running in Lovable and watching `midnghtsapphire/revvel-standards`. | 🔴 Open |
 | P1 | **7 unactioned stubs** in `.veins/proposals/` all target `🎛️ PR State Orchestrator`. Either apply a real quarantine patch (edit the stub files, remove boilerplate, add an actual fix) or close them as resolved if the flakiness is no longer observed. | 🔴 Open |
 | P2 | `🎛️ PR State Orchestrator` is the **only component VEINS has ever flagged** (3 runs, 7 proposals, all stubs). The underlying flakiness was never resolved. Check if this workflow is still flaky or if the problem self-healed; either action the stubs or close them. | 🔴 Open |
-| P2 | `bnat-fingerprint.json` refreshed 2026-11-10T09:10:28Z — topology is current but 5 days old; refresh recommended. | 🟡 Open |
+| P2 | `bnat-fingerprint.json` refreshed 2026-11-10 — topology is 6 days old; refresh recommended. | 🟡 Open |
 | P3 | `veins-monitor.yml` has no schedule (cron freeze). Consider running it manually on a cadence or via the VEINS WR process. | 🟡 Open |
-| P3 | `docs/veins-history.jsonl` is committed manually — the CircleCI auto-push script (`scripts/veins-history-push.js`) will now persist rows automatically. | ✅ Added |
+| P3 | `docs/veins-history.jsonl` is auto-pushed by the CircleCI `veins-history-push.js` step on every main-branch build. | ✅ Done |
 
 ### Prior readings (kept per RVS-PRESERVE-001)
 
+Earlier readings (2026-11-05 through 2026-11-15) are merged into the trend table above.
+Key silence counts across readings: 106 / 107 / 108 / 111 / 112 / 113 / 114 / 115 / 116 days.
+Fingerprint refreshed 2026-11-07 and again 2026-11-10. Items P1 and P2 remain open.
 Earlier readings (2026-11-05, 2026-11-06, 2026-11-07) are merged into the trend table above.
 Key counts at each point: 106 / 107 / 108 / 111 days silent, fingerprint refreshed
 Earlier readings (2026-11-05 through 2026-11-17) are merged into the trend table above.
