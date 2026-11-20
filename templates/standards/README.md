@@ -27,7 +27,9 @@ Copy this entire `standards/` folder into the root of every new app repo. Fill i
 **Related Workflows:**
 - [google-cloud-identity-verify.yml](../cicd/google-cloud-identity-verify.yml) - CI/CD verification workflow
 
-## Analytics & Telemetry Templates
+## Analytics & Telemetry Templates — RETIRED, DO NOT COPY
+
+> Audrey's rule: no analytics or telemetry in any app unless she explicitly asks for it in that repo. Do **not** copy these files into an app. They are kept as history and are flagged in [`standards/NO_TRACKING_STANDARD.md`](../../standards/NO_TRACKING_STANDARD.md).
 
 | File | Description |
 |---|---|

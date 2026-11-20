@@ -1,4 +1,8 @@
 name: oAudrey Git Greetings
+
+concurrency:
+  group: oaudrey-git-greetings-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 on:
   issues:
     types: [opened]

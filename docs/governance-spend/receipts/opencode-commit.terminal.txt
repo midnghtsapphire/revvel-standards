@@ -1,0 +1,14 @@
+[1;38m{[m
+[1;34m"commit"[m[1;38m:[m [1;38m{[m
+[1;34m"message"[m[1;38m:[m [32m"chore: remove dead code for todoread tool (#19128)"[m[1;38m,[m
+[1;34m"verification"[m[1;38m:[m [1;38m{[m
+[1;34m"payload"[m[1;38m:[m [32m"tree 153ba48632283a0bc0f9d9f92232b89c88762bfd\nparent cafc2b204b8061b66b4fe010aaa2848d8f9e1bc8\nauthor Aiden Cline <63023139+rekram1-node@users.noreply.github.com> 1774455702 -0500\ncommitter GitHub <noreply@github.com> 1774455702 +0000\n\nchore: remove dead code for todoread tool (#19128)"[m[1;38m,[m
+[1;34m"reason"[m[1;38m:[m [32m"valid"[m[1;38m,[m
+[1;34m"signature"[m[1;38m:[m [32m"-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJpxAuWCRC1aQ7uu5UhlAAA0P8QAGWi9ISZ3YMPZHepxX5puAWy\nKuhePxSwkOCKt86b0G/U+xJJrT0EC8H7/dCoDN2J3CgiMkoPxfvdP1EBLTrLeLQG\n7ble9DHIKiWbO79uFkt7MsafGtIyUFeZCTFRjT6Buy6fwDw+3DnwLUorlYSs21Ru\n0qUtAwqHlcCH/E2Cf7eG8T9MjUn5O2HPWBeYzq938Imyyliy4/41PVZYq16HGd1n\n3IsG7phgSgNokTwQGpVzIsU3v4SPjnUttetP45eA9UGWZ7CQC+4Vj4yJeruN3YGX\nB1bqW5mXHpj8tXm+rWdwu4prIb3R5XtpaLqPt/d1rT7NrasD3GToBhinb0kPHNtP\nUQ4T2AESZ1djgt1SHR7Q2U7bm7I+Tb74AJBokpFdipQkzFBYOOD4OjbKs5MxY5dJ\nju3/rDS3mj0Rdi1pO7yt/qOS/avuyjc1zeDhNxKiCL2Oh/kKN7Au9wbYDeeubYFT\nsksAJPmFDx/MvN9VlVItxO2cIRBeMlMq1JaifY/AwiUpnTsEP6vifvq5ZFVjsWxx\nabcyy0cgOh1tBuFdzeVx3RhMhos5+J/HuhomRBupOpSngdatTGKRIJtu3LsNEOoJ\nlWGaIPP9dkXby+WQvtcbkPhJZdP+l70wcmxnq7KOBL8EfQcccUgbEz3xq/1E0m9L\nhdddP67IS7woP/QUFlgo\n=zI+h\n-----END PGP SIGNATURE-----\n"[m[1;38m,[m
+[1;34m"verified"[m[1;38m:[m [33mtrue[m[1;38m,[m
+[1;34m"verified_at"[m[1;38m:[m [32m"2026-03-25T16:21:43Z"[m
+[1;38m}[m
+[1;38m}[m[1;38m,[m
+[1;34m"html_url"[m[1;38m:[m [32m"https://github.com/anomalyco/opencode/commit/77fc88c8ade8e5a620ebbe1197f3a572d29ae91a"[m[1;38m,[m
+[1;34m"sha"[m[1;38m:[m [32m"77fc88c8ade8e5a620ebbe1197f3a572d29ae91a"[m
+[1;38m}[m

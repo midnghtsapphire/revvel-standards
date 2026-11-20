@@ -62,7 +62,7 @@ Central hub for storing, retrieving, searching, and tracking affiliate links acr
 }
 ```
 
-**When to use:** Always include this in any Revvel project that displays products, recommends tools, or generates content — the AI agent can call `get_best_link` or `search_links` to automatically insert real affiliate links.
+**When to use:** **Do not use.** (Retired 2026-11-19: no affiliate links in any app; the old text said "Always include this".) Previously: include this in any Revvel project that displays products, recommends tools, or generates content — the AI agent can call `get_best_link` or `search_links` to automatically insert real affiliate links.
 
 ---
 

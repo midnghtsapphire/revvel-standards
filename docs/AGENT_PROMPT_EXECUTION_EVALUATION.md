@@ -52,7 +52,7 @@ The question is: **which agent platform should pick up and execute these prompts
 
 ### 2. Bito AI ✅ (Code Quality)
 
-**Status:** Already evaluated and integrated (`skills/bito-ai/`, `IMPLEMENTATION_SUMMARY_BITO_AI.md`)
+**Status:** Already evaluated and integrated (`skills/bito-ai/`, `docs/archive/root-batch-3/IMPLEMENTATION_SUMMARY_BITO_AI.md`)
 
 **Capabilities:**
 - AI-powered code review
@@ -333,7 +333,7 @@ TODO @goap: Find and evaluate 3 grant opportunities for Tikiwash bot
 
 - [GOAP.md](../GOAP.md) — GOAP agent system index
 - [GOAP_AGENT_PROMPT.md](../GOAP_AGENT_PROMPT.md) — Canonical GOAP prompt
-- [IMPLEMENTATION_SUMMARY_BITO_AI.md](../IMPLEMENTATION_SUMMARY_BITO_AI.md) — Bito integration summary
+- [IMPLEMENTATION_SUMMARY_BITO_AI.md](archive/root-batch-3/IMPLEMENTATION_SUMMARY_BITO_AI.md) — Bito integration summary
 - [docs/AUTOMATION_AUDIT.md](AUTOMATION_AUDIT.md) — Current automation inventory
 - [49AGENTS_EVALUATION.md](49AGENTS_EVALUATION.md) — Visual agent coordination
 - [docs/AGENTS.md](AGENTS.md) — Universal agent instructions

@@ -1,3 +1,5 @@
+# Who/When/Why/What: lifecycle specialist, 2026-11-15, Audrey completion request.
+# Metadata-only ownership/proof checks; no candidate checkout/execution or scheduler.
 name: PR Lifecycle
 
 on:
@@ -111,18 +113,25 @@ jobs:
   # blocks runner temp scripts (PSSecurityException).
   # ---------------------------------------------------------------------------
   pr-state:
-    if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
+    # Original preserved: a PR-supplied workflow can alter its run steps, so the
+    # pull_request path must not receive execution on persistent Windows metal.
+    # if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
+    if: github.event_name == 'pull_request_target'
     # 2026-11-10: original generic label retained; cmd requires explicit Windows.
     # runs-on: self-hosted
     runs-on: [self-hosted, Windows]
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v7
+      # Original preserved, resolved v7 commit verified using GitHub API 2026-11-15.
+      # - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           # Run trusted scripts from the default branch, never event-SHA code,
           # on the self-hosted runner (a PR could otherwise ship its own
           # version of the script and have it execute with a write token).
-          ref: main
+          # Original preserved: ref: main
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
       - name: Update PR state labels
         shell: cmd
         run: node scripts/ci/pr-lifecycle.js pr-state
@@ -136,12 +145,16 @@ jobs:
     runs-on: [self-hosted, Windows]
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
+      # Original preserved, resolved v7 commit verified using GitHub API 2026-11-15.
+      # - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           # Run trusted scripts from the default branch, never event-SHA code,
           # on the self-hosted runner (a PR could otherwise ship its own
           # version of the script and have it execute with a write token).
-          ref: main
+          # Original preserved: ref: main
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
       - name: Re-aggregate check state for head SHA
         shell: cmd
         run: node scripts/ci/pr-lifecycle.js check-state

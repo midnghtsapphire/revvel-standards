@@ -15,7 +15,14 @@ import xml.etree.ElementTree as ET
 
 # What was wrong: exports used the lenient check, so unsourced locations reached GeoJSON and ATAK (H1).
 # from provenance import LABEL_SYNTHETIC, DataSource, provenance_block, require_provenance
-from provenance import LABEL_SYNTHETIC, DataSource, provenance_block, require_export_provenance
+from provenance import (
+    LABEL_ESTIMATE,
+    LABEL_SYNTHETIC,
+    LABEL_UNSOURCED,
+    DataSource,
+    provenance_block,
+    require_export_provenance,
+)
 from sar_person_finder import UNCALIBRATED_UNITS, ca_cfar, lee_filter_intensity
 
 # NOT VALIDATED on real SAR scenes. Scores are relative rankings, not probabilities.
@@ -207,10 +214,26 @@ class MultiBandSAREngine:
 
     @staticmethod
     def _pixel_size_m(transform, crs, lat, lon):
-        """Larger pixel side in metres at (lat, lon)."""
+        """Larger pixel side in metres at (lat, lon), or None when the CRS
+        linear units are unknown, so CoT ce falls back to 'unknown' rather than
+        a confident but wrong accuracy circle."""
         rx, ry = abs(transform.a), abs(transform.e)
         if crs is not None and not crs.is_geographic:
-            return max(rx, ry)  # projected CRS: units assumed metres
+            # Convert the projected CRS units to metres instead of assuming
+            # them: a state-plane CRS in US survey feet would otherwise read
+            # 1 ft as 1 m and understate ce by ~3.3x on the ATAK display.
+            # linear_units_factor is a property: rasterio raises CRSError (not
+            # AttributeError) for a CRS without defined linear units, so the
+            # attribute access itself must sit inside the try, or the error
+            # propagates instead of falling back to ce=unknown.
+            try:
+                factor = getattr(crs, "linear_units_factor", None)
+                to_m = factor[1] if factor else None
+            except Exception:
+                to_m = None
+            if not to_m or not (to_m > 0):
+                return None
+            return max(rx, ry) * to_m
         dx = float(haversine_km(lat, lon, lat, lon + rx)) * 1000.0
         dy = float(haversine_km(lat, lon, lat + ry, lon)) * 1000.0
         return max(dx, dy)
@@ -288,7 +311,10 @@ class MultiBandSAREngine:
 
             band_db_list = []
             # fused_anomaly_map = np.zeros((self.grid_size, self.grid_size), dtype=np.float32)
-            fused_anomaly_map = np.zeros(shape, dtype=np.float32)
+            # float64: the CFAR ratios summed here can be large, and float32
+            # would lose precision versus the float64 detection pipeline,
+            # flipping the ranking between close candidates.
+            fused_anomaly_map = np.zeros(shape, dtype=np.float64)
             detecting_bands = np.zeros(shape, dtype=np.int32)
             band_units = {}
 
@@ -376,7 +402,6 @@ class MultiBandSAREngine:
         flat_indices = candidates[np.argsort(final_score_map.ravel()[candidates])[::-1]]
 
         targets = []
-        seen_coords = set()
         picked = []  # accepted (row, col) for non-maximum suppression
         rank = 1
 
@@ -388,11 +413,10 @@ class MultiBandSAREngine:
             picked.append((r, c))
             lat_val = float(lats[r, c])
             lon_val = float(lons[r, c])
-
-            coord_key = (round(lat_val, 4), round(lon_val, 4))
-            if coord_key in seen_coords:
-                continue
-            seen_coords.add(coord_key)
+            # min_separation_px handles one object's neighbouring pixels and is
+            # resolution-independent. The old lat/lon rounding dedupe ran after
+            # picked.append (a dropped duplicate still blocked real targets) and
+            # merged distinct detections on fine grids. Removed.
 
             score = float(final_score_map[r, c])
             anomaly = float(fused_anomaly_map[r, c])
@@ -401,6 +425,7 @@ class MultiBandSAREngine:
             band_readings = {
                 b_name: round(float(band_db_list[i][r, c]), 2) for i, b_name in enumerate(self.BAND_CONFIGS.keys())
             }
+            pixel_m = self._pixel_size_m(transform, crs, lat_val, lon_val)
 
             targets.append(
                 {
@@ -421,10 +446,14 @@ class MultiBandSAREngine:
                     "band_backscatter_db": band_readings,
                     "backscatter_units": band_units,
                     "band_order": band_order,
-                    "pixel_size_m": round(self._pixel_size_m(transform, crs, lat_val, lon_val), 3),
+                    "pixel_size_m": round(pixel_m, 3) if pixel_m is not None else None,
                     "scene_sha256": scene_sha256,
                     "run_id": run_id,
-                    "provenance": prov,
+                    # Copy per target so a consumer marking one target's block
+                    # cannot mutate every other target's provenance. The source
+                    # dicts are copied too: list() alone shares them, so editing
+                    # one target's source fields would still cross targets.
+                    "provenance": {**prov, "sources": [dict(s) for s in prov["sources"]]},
                 }
             )
 
@@ -536,7 +565,15 @@ class MultiBandSAREngine:
             # ET.SubElement(
             #     detail, "contact", callsign=f"SAR-6BAND-TARGET-#{t['rank']} ({t['fused_confidence'] * 100:.1f}%)"
             # )
-            prefix = "SYNTHETIC " if prov["status"] == LABEL_SYNTHETIC else "UNVERIFIED "
+            # The callsign is what an ATAK user reads first. An UNSOURCED or
+            # ESTIMATE target must not wear the plain "UNVERIFIED" prefix (the
+            # strongest a measured target earns) with its true status buried in
+            # the remarks.
+            prefix = {
+                LABEL_SYNTHETIC: "SYNTHETIC ",
+                LABEL_UNSOURCED: "UNSOURCED ",
+                LABEL_ESTIMATE: "ESTIMATE ",
+            }.get(prov["status"], "UNVERIFIED ")
             ET.SubElement(detail, "contact", callsign=f"{prefix}SAR-6BAND-#{t['rank']}")
             ET.SubElement(detail, "usericon", iconsetpath="COT_MAPPING_2525B/Emergency/Search & Rescue")
             ET.SubElement(detail, "color", argb="-65536" if t["rank"] <= 2 else "-256")

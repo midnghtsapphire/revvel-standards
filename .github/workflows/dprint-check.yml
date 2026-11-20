@@ -3,6 +3,10 @@
 # Config: dprint.json (auto-discovered; config-path set explicitly for clarity).
 name: dprint check
 
+concurrency:
+  group: dprint-check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   pull_request:
   push:
