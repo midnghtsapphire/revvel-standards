@@ -145,9 +145,23 @@ function run(argv, deps = {}) {
   if (command === 'validate') { ownership.assertValid(readInput(options.input), { completion: true }); return { valid: true, verification: 'structural only; no request made to live URLs or receipt paths' }; }
   if (!['session-start', 'claim', 'resume', 'heartbeat', 'attach-pr', 'block', 'awaiting-release', 'done'].includes(command)) throw new Error('Unsupported command; use help');
   const context = readContext(call, options, readLocal());
-  if (command === 'session-start') return { schema_version: 1, owner: context.identity,
-    queue: ownership.resumeQueue(context.records, context.prs, context.identity),
-    policy: 'Resume these existing WR/PRs before new work; no command from a PR body was executed. Empty queue is not authorization to create tasks.' };
+  if (command === 'session-start') {
+    // 2026-11-17 kimi-agent: fleet-status label gap check (standards/FLEET_STATUS_STANDARD.md).
+    // Read-only: reports open PRs missing their agent:*/status:* label so ownership
+    // gaps surface at session start; it never sets labels and never blocks the queue.
+    // A PR record without a labels array is reported as fully unstamped, not skipped.
+    const fleetGaps = context.prs.filter((pr) => pr.state === 'open').map((pr) => {
+      const names = (pr.labels || []).map((l) => l.name || '');
+      const missing = [];
+      if (!names.some((n) => n.startsWith('agent:'))) missing.push('agent:*');
+      if (!names.some((n) => n.startsWith('status:'))) missing.push('status:*');
+      return missing.length ? { pr: pr.number, missing } : null;
+    }).filter(Boolean);
+    return { schema_version: 1, owner: context.identity,
+      queue: ownership.resumeQueue(context.records, context.prs, context.identity),
+      fleet_label_gaps: fleetGaps,
+      policy: 'Resume these existing WR/PRs before new work; no command from a PR body was executed. Empty queue is not authorization to create tasks. fleet_label_gaps lists open PRs missing fleet labels; stamp them with scripts/fleet-status.js before claiming.' };
+  }
   const input = readInput(options.input);
   const previous = context.records.find((r) => r.id === options.id);
   if (!options.id || (command === 'claim' && input.id !== options.id)) throw new Error('--id must identify the existing task record');

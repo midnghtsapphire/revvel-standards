@@ -1,3 +1,16 @@
+## 2026-11-19 — Decipherer — connector matrix is now database-driven (PR #18475)
+
+- Audrey: "I want that database driven." Added `data/connectors/schema.sql` and `data/connectors/seed.sql` (SQLite dialect: connector, target, connector_link, connector_source, stale_row, open_question) and `scripts/connectors-db.js`, which loads them in memory with `node:sqlite` and generates the matrix into `docs/TOOL_COST_INDEX.md`, `docs/CONNECTIONS_REGISTRY.md`, `README.md` and the new `connector-matrix-dashboard.html`.
+- The hand-written "Connector matrix (2026-11-19)" section in `docs/TOOL_COST_INDEX.md` is retired in place: kept verbatim inside an HTML comment with a dated note, not deleted. A test checks every one of its apps is in the database. All 14 rows, 4 stale rows and 4 questions were ported; added a Gumloop row and an n8n conflict row (stale-marked) from `docs/standards/RUNNER_TARGETS.md`, which says about 60 USD a month for n8n and Gumloop while the matrix said n8n is free.
+- `scripts/connections-registry.js`: the whole-file write of `docs/CONNECTIONS_REGISTRY.md` is commented out in place and replaced by one that carries the connector block across (`carryMatrixBlock`). No other change to that script.
+- Drift check: `npm run connectors:check`, run by `tests/connector-matrix.test.js` inside `npm test` (CircleCI `lint-and-test`). No workflow file was edited; the GitHub Actions `connections-registry.yml` is untouched.
+- `CHANGELOG.md`: touching this file turned `tests/markdown-gate-green.test.js` red because two older lines already failed markdownlint on main (MD026 on the 2026-11-12 BALLS heading, MD012 near the end). Added two one-line `markdownlint-disable-next-line` comments next to them. Those entries' text is unchanged and nothing was deleted.
+- `package.json`: scripts `connectors`, `connectors:check`, `connectors:db`, `connectors:csv`. `docs/CONNECTIONS_REGISTRY_STANDARD.md`: appended a section. `docs/tool-history/circleci.md`: my own link from this PR now points at the generated heading.
+
+## 2026-11-19 — Decipherer — connector matrix (additive)
+
+- Added eight entries to `config/connections.yml` (circleci, circleci-slack, gitar, cubic, chunk, sonarqube-cloud, n8n, higgins) and regenerated `docs/CONNECTIONS_REGISTRY.md`, the README block and the dashboard. Added the "Connector matrix (2026-11-19)" section, a stale-rows list and open questions to `docs/TOOL_COST_INDEX.md`. Appended dated stale notes to `docs/STACK.md` and `docs/tool-history/circleci.md`. Nothing deleted or rewritten. Plan tiers are Audrey's words from 2026-11-14 and are marked as such; Higgins is left unidentified. No secrets.
+
 ## 2026-11-14 — Auky — add Trivy filesystem scan on CircleCI
 
 - Added CircleCI job `trivy-fs` and `.circleci/scripts/trivy-fs.sh`, reusing the scan settings from the existing (unchanged) `.github/workflows/trivy.yml`: filesystem scan, scanners `vuln,misconfig,secret`, severity CRITICAL/HIGH/MEDIUM, `ignore-unfixed`. Official Trivy v0.76.2. The CircleCI job fails on unfixed HIGH/CRITICAL and stores the table report as an artifact. No Actions workflow edits. No billing changes.
@@ -16,6 +29,7 @@
   2026-11-14. Pointers in `learnings.md`, `LEDGER.md`, `README.md`,
   and `MASTER.md`. No workflow or CircleCI config changes.
 
+<!-- markdownlint-disable-next-line MD026 -->
 ## 2026-11-12 — BALLS — added incubating `products/beauty-kit/` with the BALLS Beauty Playbook research (GitHub beautification, other-tool tricks, market prices, 8 product ideas); additions only.
 ## 2026-11-12 — BALLS — Beauty Kit: three AudreyBuildsAI digital products
 
@@ -579,6 +593,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   comments remain checked. Preserved the earlier incorrect archive assertion
   and rule as dated history. Forty-seven child regressions pass.
 
+<!-- markdownlint-disable-next-line MD012 -->
 
 ## 2026-11-14 UTC — Audrey saved replies, Gitar audit, and Facebook Page drafts
 

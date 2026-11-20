@@ -32,7 +32,7 @@ const GH = "https://api.github.com";
 const MANUS = "https://api.manus.ai/v1";
 const OPENROUTER = "https://openrouter.ai/api/v1";
 
-if (!GH_TOKEN || !ISSUE_NUMBER || !REPO) {
+if (!GH_TOKEN || !issueNum || !REPO) {
   console.error("Missing GH_TOKEN / ISSUE_NUMBER / REPO");
   process.exit(1);
 }
