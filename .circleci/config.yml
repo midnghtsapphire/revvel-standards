@@ -27,6 +27,11 @@ executors:
   node-next-executor:
     docker:
       - image: cimg/node:22.14
+  # Advisory scanners (Semgrep CE, Qlty). cimg/python has python3 + pip + git +
+  # curl, which is all both need. WR #18490.
+  advisory-executor:
+    docker:
+      - image: cimg/python:3.12
 
 jobs:
   lint-and-test:
@@ -435,6 +440,44 @@ jobs:
           path: /tmp/agent-fte-artifacts
           destination: agent-as-fte
 
+  # ADVISORY (WR #18490): these two jobs never fail the build. Audrey decides if and when
+  # they become gates. Both only look at what the PR changed (base = newest
+  # daily/* or main, see .circleci/scripts/advisory-base-ref.sh), run in
+  # parallel with the other PR jobs, and need no account, token or paid plan.
+  semgrep-advisory:
+    executor: advisory-executor
+    steps:
+      - checkout
+      - run:
+          name: Install Semgrep CE (pinned)
+          command: pip install --quiet --user semgrep==1.186.0
+      - run:
+          name: Semgrep CE scan of PR changes (advisory, never fails)
+          command: |
+            export PATH="$HOME/.local/bin:$PATH"
+            bash .circleci/scripts/semgrep-advisory.sh
+      - store_artifacts:
+          path: /tmp/advisory-artifacts/semgrep
+          destination: semgrep
+
+  qlty-advisory:
+    executor: advisory-executor
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - qlty-v1-{{ checksum ".qlty/qlty.toml" }}
+            - qlty-v1-
+      - run:
+          name: Qlty check of PR-changed files (advisory, never fails)
+          command: bash .circleci/scripts/qlty-advisory.sh
+      - save_cache:
+          key: qlty-v1-{{ checksum ".qlty/qlty.toml" }}
+          paths:
+            - ~/.qlty
+      - store_artifacts:
+          path: /tmp/advisory-artifacts/qlty
+          destination: qlty
   # 2026-11-19 Secret (issue #18486). Weekly Doppler fan-out.
   # Hosted GitHub Actions cannot run this: the account is billing-locked.
   # Dry-run unless SECRETS_APPLY=1 on the CircleCI project.
@@ -571,6 +614,15 @@ workflows:
             branches:
               ignore: main
       - oaudrey-home-image:
+          filters:
+            branches:
+              ignore: main
+      # Advisory only (never fails). WR #18490.
+      - semgrep-advisory:
+          filters:
+            branches:
+              ignore: main
+      - qlty-advisory:
           filters:
             branches:
               ignore: main
