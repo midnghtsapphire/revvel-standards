@@ -73,6 +73,14 @@ def sync(project: str, config_name: str, repo: str, secrets: str):
     console.print(f"Config: {config_name}")
     console.print(f"Repo: {repo}\n")
 
+    # 2026-11-19 Secret: stop before the script lookup. gatekeeper-sync.sh
+    # copies Doppler onto GitHub with no freshness check, including when the
+    # file is present on a runner. The guarded writer is
+    # scripts/zero_touch_secrets.py.
+    console.print("[red]Sync writes are disabled (Secret 2026-11-19).[/red]")
+    console.print("Use scripts/zero_touch_secrets.py. It refuses a newer destination.")
+    raise click.Abort()
+
     try:
         # Use the existing gatekeeper-sync.sh script (try to find it relative to repo root)
         from pathlib import Path
@@ -116,11 +124,18 @@ def sync(project: str, config_name: str, repo: str, secrets: str):
             raise click.Abort()
 
     except FileNotFoundError:
+        # 2026-11-19 Secret: this fallback wrote Doppler values onto GitHub
+        # with no freshness check. That is the stale-overwrite path in
+        # docs/tool-history/doppler.md. Writes stay off. The guarded writer
+        # is scripts/zero_touch_secrets.py.
+        console.print("[red]Sync writes are disabled (Secret 2026-11-19).[/red]")
+        console.print("Use scripts/zero_touch_secrets.py. It refuses a newer destination.")
+        raise click.Abort()
         console.print("[yellow]Warning: gatekeeper-sync.sh not found. Using API directly...[/yellow]\n")
 
         # Fallback to direct API calls
         doppler_api = DopplerAPI(doppler_token)
-        github_api = GitHubAPI(github_token)
+        # github_api = GitHubAPI(github_token)
 
         owner, repo_name = repo.split("/")
 
@@ -137,10 +152,10 @@ def sync(project: str, config_name: str, repo: str, secrets: str):
         for secret in secret_list:
             try:
                 secret_name = secret["name"]
-                secret_data = doppler_api.get_secret(secret_name, project, config_name)
-                secret_value = secret_data.get("value", {}).get("computed", "")
-
-                github_api.set_repo_secret(owner, repo_name, secret_name, secret_value)
+                # secret_data = doppler_api.get_secret(secret_name, project, config_name)
+                # secret_value = secret_data.get("value", {}).get("computed", "")
+                # github_api.set_repo_secret(owner, repo_name, secret_name, secret_value)
+                # 2026-11-19 Secret: live call removed. See the Abort above.
                 synced.append(secret_name)
                 console.print(f"[green]✓[/green] Synced: {secret_name}")
             except Exception as e:

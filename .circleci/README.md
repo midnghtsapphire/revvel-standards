@@ -50,3 +50,10 @@ Added 2026-11-11 by DBArchitect. Both run in `pr-workflow` and `main-workflow`.
 - `billing-sql-validate`: applies `products/revenue-billing/db` twice to a throwaway Postgres 15 container and runs the assertions in `db/tests/`.
 
 Neither job needs a secret, deploys anything, or uses `setup_remote_docker`.
+
+## Secrets sync (2026-11-19 Secret, issue #18486)
+
+Workflow `secrets-maintenance` runs job `secrets-sync` on a weekly schedule
+from `main`. It calls `scripts/zero_touch_secrets.py` and stays a dry-run
+unless `SECRETS_APPLY=1`. It does not run on GitHub-hosted Actions.
+`pr-workflow` and `main-workflow` are unchanged and have no schedule.

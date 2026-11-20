@@ -47,3 +47,20 @@ value on a hidden prompt, and stores them into `secrets.age`. Run once per machi
 
 - `broker --verify --repo <name>` lists secret NAMES (never values) and compares
   against secret-map.json; exit 1 on drift.
+
+## Doppler source of truth (2026-11-19, Secret, issue #18486)
+
+Audrey Evans approved the free Doppler Developer plan plus this script.
+Principle 3's "no Doppler" line stays above as history. Doppler project
+`revvel-standards`, config `prd`, is now the source. `DOPPLER_TOKEN` is the
+service token. The script reads and writes Doppler, fans names out to CircleCI,
+and can seal a copy into GitHub Actions. It does not print values.
+
+A sync refuses to overwrite a destination whose timestamp or recorded version
+is newer. That is the guard for the Apr–Aug 2026 stale overwrite. Dry-run is
+the default for `sync` and `rotate`. The schedule is CircleCI job
+`secrets-sync` in workflow `secrets-maintenance`, not a GitHub-hosted Actions
+run.
+
+`config/secret-map.json` still has the legacy service lists. The `secrets`
+object adds the CircleCI context and project targets. Names only.

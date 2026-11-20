@@ -40,3 +40,19 @@ Kept; reconcile first. Optional per credential routing; overwrote fresh tokens w
 
 - **Needs Audrey:** yes: keep or drop
 - Her verdict.
+
+## 2026-11-19 — Secret, issue #18486
+
+Audrey Evans approved the free Developer plan plus `scripts/zero_touch_secrets.py`.
+Doppler project `revvel-standards` config `prd` is the source. The script
+refuses to copy an older value onto a newer destination. These writers were
+disabled, not deleted:
+
+- `gatekeeper-cli` sync fallback that called `set_repo_secret`
+- `revvel-rosette-automation/scripts/gatekeeper.sh`
+- `revvel-rosette-automation/src/gatekeeper.py` `provision_secrets`
+- the Doppler recovery dispatch in `scripts/biome/homeostat.js`
+- `config/credential-modules.yml` module `doppler-recover` stays `enabled: false`
+
+`scripts/gatekeeper-sync.sh` is not in the tree. The CircleCI job
+`secrets-sync` is the schedule. GitHub Actions is a sync target only.
