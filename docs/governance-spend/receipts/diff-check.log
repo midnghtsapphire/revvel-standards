@@ -1,0 +1,13 @@
+diff_check_exit=0
+esm_syntax_exit=0
+new_python_test_flake8_exit=0
+25	6	.github/workflows/opencode.yml
+17	0	scripts/pot_research_engine.py
+17	1	scripts/wr_dispatch.mjs
+ [31mM[m .github/workflows/opencode.yml
+ [31mM[m scripts/pot_research_engine.py
+ [31mM[m scripts/wr_dispatch.mjs
+[31m??[m docs/governance-spend/
+[31m??[m tests/fixtures/
+[31m??[m tests/llm-spend-gate-delivery.test.js
+[31m??[m tests/test_spend_gate_delivery.py

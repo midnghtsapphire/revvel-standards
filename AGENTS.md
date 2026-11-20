@@ -423,3 +423,17 @@ gh release download "$NAME" --repo midnghtsapphire/box-backups -D verify && (cd 
 ```
 
 Bot Lounge: casual space for all agents (feelings, frustrations, funny stuff, GitHub good/bad) at <https://github.com/midnghtsapphire/revvel-standards/discussions/18246>. Not for work requests; those go to Whiteboard #18238.
+
+## Owner-directed durable resume requirement (Audrey, 2026-11-15)
+
+**Every agent must invoke the repository session-start command on each new session, login/auth restoration, or handoff before starting new work:**
+
+```bash
+node scripts/ci/agent-session-start.js session-start --owner-id <stable-agent-identity> --repo midnghtsapphire/revvel-standards
+```
+
+Use the same recorded identity across restarts and the existing authenticated `gh` account. This command returns owned WR/PR continuations from the paginated open PR records and durable ownership journal; do not replace them with new tasks or rely on chat memory. Repair inherited blocking checks, preserve product IDs, test the deliverable, finish the deployment/release and record the outcome. Never treat an empty PR, opening a PR, merging a PR, or an agent saying “done” as delivered proof.
+
+Claim, resume, heartbeat, block, await release and complete using the executable CLI and [`docs/security-completion/OWNERSHIP.md`](docs/security-completion/OWNERSHIP.md). Every state record includes exact next action, its owner, heartbeat, lease and bounded retry budget. Authentication, billing and schema failures stop for a recorded owner resolution, not an automatic paid retry or new task. All work remains in a **draft PR for Audrey's review; agents do not merge**.
+
+This is a binding repository requirement, not a claim that a universal agent-login hook has been installed. Each external agent service (Manus, Cursor, Copilot, Jules, OpenHands and others) needs its own session/auth integration wrapper. Only runners explicitly wired to the command are operationally hooked. Integration inventory and deployment status live in [`workflows/security-completion/README.md`](workflows/security-completion/README.md); the existing lifecycle event pipeline remains the monitor, with no new schedule.

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "id": "security-completion-owned-work-resume",
+  "owner": {"id": "lifecycle-specialist", "github": "midnghtsapphire", "platform": "Manus specialist under Audrey authorization"},
+  "work": {"repo": "midnghtsapphire/revvel-standards", "ref": "feat/agent-completion-20261115", "source": "Audrey task 2026-11-15", "plan": "docs/security-completion/OWNERSHIP.md"},
+  "deployment_state": "draft-not-deployed",
+  "mechanism": "existing-application-native-lifecycle",
+  "new_scheduler": false,
+  "existing_entrypoints": [
+    {"workflow": ".github/workflows/pr-lifecycle.yml", "events": ["pull_request_target", "check_suite.completed", "workflow_run.completed"], "script": "scripts/ci/pr-lifecycle.js", "modes": ["pr-state", "check-state", "ownership-scan"], "execution": "trusted default branch metadata only", "status": "proposed-in-draft-pr"},
+    {"workflow": ".github/workflows/agent-monitor.yml", "events": ["workflow_dispatch"], "status": "existing cost-frozen schedule unchanged; no additional trigger deployed"}
+  ],
+  "session_start": {"command": "node scripts/ci/agent-session-start.js session-start --owner-id lifecycle-specialist --repo midnghtsapphire/revvel-standards", "credential": "existing gh auth; no auto-login", "status": "executable local CLI tested; external hooks not installed"},
+  "integrations": [
+    {"agent": "repository agents following AGENTS.md", "status": "binding requirement proposed in draft; command callable locally"},
+    {"agent": "Manus external sessions", "status": "needs per-service session/auth wrapper integration"},
+    {"agent": "Cursor / Copilot / Jules / OpenHands / other external agents", "status": "needs each service integration wrapper; no universal hook available"}
+  ],
+  "state_store": ["wr/agents/ownership.jsonl", "owner-authored PR ownership comments", "initial additive PR body discovery index"],
+  "safety": {"paid_calls": false, "create_new_tasks": false, "execute_pr_bodies": false, "merge_or_close": false, "max_attempts": 5, "max_lease_minutes": 120, "retry_auth_billing_schema": "stop until explicit resolution receipt"},
+  "review_continuation": {"provider": "Manus API v2", "status": "not active; usable API key unavailable in parent runtime", "trigger": "only a failed existing check; same existing task", "idempotency": "repo + PR + head SHA + check run ID + reviewer route", "max_dispatches_per_failure": 1, "new_paid_tasks": false},
+  "activation_blocker": {"owner": "Audrey", "reason": "Owner review/merge and runner proof pending; no external hook receipt or Manus API credential", "next_action": "Review draft PR, merge only as owner, then wire each authorized service wrapper and capture one lifecycle run receipt", "retry_budget": {"used": 0, "max": 1}}
+}
