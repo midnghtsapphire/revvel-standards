@@ -142,13 +142,19 @@ if (require.main === module) {
     // Promptly rehydrate the wiped key(s) by dispatching the existing reviewed
     // Doppler->Actions recovery workflow (no-ops if Doppler has no value).
     if (shouldTriggerRecovery(assessment, process.env)) {
-      const recoveryWorkflow = process.env.BIOME_RECOVERY_WORKFLOW || '';
-      await repoApi(`/actions/workflows/${recoveryWorkflow}/dispatches`, {
-        method: 'POST',
-        body: { ref: 'main', inputs: { force_recovery: 'true' } },
-        allowError: true,
-      });
-      console.log(`[biome-homeostat] dispatched ${recoveryWorkflow} to rehydrate keys from Doppler`);
+      // 2026-11-19 Secret: do not dispatch Doppler recovery. That workflow
+      // wrote stale Doppler values over fresh tokens
+      // (docs/tool-history/doppler.md). Fan-out is scripts/zero_touch_secrets.py,
+      // which refuses a newer destination. The predicate above stays so the
+      // old opt-in is still visible.
+      console.log('[biome-homeostat] Doppler recovery dispatch is disabled (Secret 2026-11-19).');
+      // const recoveryWorkflow = process.env.BIOME_RECOVERY_WORKFLOW || '';
+      // await repoApi(`/actions/workflows/${recoveryWorkflow}/dispatches`, {
+      //   method: 'POST',
+      //   body: { ref: 'main', inputs: { force_recovery: 'true' } },
+      //   allowError: true,
+      // });
+      // console.log(`[biome-homeostat] dispatched ${recoveryWorkflow} to rehydrate keys from Doppler`);
     }
   })().catch((err) => {
     console.error(`[biome-homeostat] error: ${err.message}`);

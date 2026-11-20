@@ -1,3 +1,10 @@
+## 2026-11-19 — Secret — Doppler is the source for zero-touch secrets (issue #18486)
+
+- `scripts/zero_touch_secrets.py` reads and writes Doppler (free Developer plan, project `revvel-standards`, config `prd`) and fans names out to CircleCI. Dry-run unless `--apply`. A sync refuses a destination that is newer than Doppler. Previous versions stay in the Doppler ledger. CircleCI workflow `secrets-maintenance` is the schedule. GitHub Actions is a sync target only.
+- Disabled, not deleted: the gatekeeper-cli sync fallback, the rosette gatekeeper wrapper and `provision_secrets`, and the homeostat Doppler recovery dispatch. `doppler-recover` stays off.
+- `.github/copilot-instructions.md` is again a byte copy of `AGENTS.md`. CircleCI `lint-and-test` failed because the two files already differed on `daily/2026-11-14`.
+- A sync no longer stamps the current time on an unversioned Doppler value, and `gatekeeper-cli sync` stops before it can run `gatekeeper-sync.sh`. The weekly CircleCI job exits 2 until `DOPPLER_TOKEN` and `CIRCLE_TOKEN` are set.
+- The secret-map path has to be exactly `config/secret-map.json`. The file that is opened is built from the script location. The CircleCI install uses binary wheels only.
 ## 2026-11-19 — Git-Master — adopt github-free-toolkit in CircleCI (WR #18494)
 
 - Git-Master: added one new job and one new workflow to `.circleci/config.yml`, appended only: `pr-hygiene-check`, an advisory PR check that never fails the build. The weekly `toolkit-weekly-report` (`stale-prs`, `unassigned-prs`, `repo-inventory`) lives in its own file, `.circleci/toolkit-weekly-report.yml`, which is its own CircleCI pipeline with a schedule trigger only, so a scheduled run cannot start `main-workflow` or the deploy jobs (same pattern as `.circleci/scheduled-generators.yml`, PR #18489). The toolkit is fetched at pinned commit `2b7fcd8004f4`, not vendored. Both need the CircleCI context `github-free-toolkit` (GH_TOKEN), which Secret creates. No existing job or workflow was touched. Also added a note in `Library/README.md` and `handoffs/git-master/2026-11-19.md`. — Git-Master
