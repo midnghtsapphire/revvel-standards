@@ -16,7 +16,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlencode, urlparse
-from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler
+# 2026-11-20, kimi-work-lopez (flake8-debt PR): `urlopen` looks unused here (F401)
+# but MUST stay imported at module level: tests/test_bridge.py patches
+# `audrey_bridge.urlopen` by name (59 test errors without it). The noqa keeps the
+# gate green; removing the name again re-breaks the bridge test suite.
+from urllib.request import Request, urlopen, build_opener, HTTPRedirectHandler  # noqa: F401
 
 
 class BridgeError(RuntimeError):
@@ -67,14 +71,19 @@ def summary_from(body: str, sha: str) -> str | None:
     if not summary or len(summary) > 6000:
         raise BridgeError("Completion summary is empty or exceeds 6,000 characters.")
     # Conservative screening; not a substitute for human publication review.
-    if re.search(r"(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]+|-----BEGIN .*PRIVATE KEY-----|EAA[A-Za-z0-9]{30,})", summary):
+    if re.search(
+            r"(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}"
+            r"|xox[baprs]-[A-Za-z0-9-]+|-----BEGIN .*PRIVATE KEY-----|EAA[A-Za-z0-9]{30,})",
+            summary):
         raise BridgeError("Possible credential in summary; publication blocked.")
     return summary
 
 
 def linked_issues(body: str) -> list[int]:
     # Deliberately same-repository only. Never treat every #number as a link.
-    return sorted({int(n) for n in re.findall(r"(?im)\b(?:fix(?:es|ed)?|close[sd]?|resolve[sd]?|work request:)\s+#([1-9][0-9]*)\b", body or "")})
+    return sorted({int(n) for n in re.findall(
+        r"(?im)\b(?:fix(?:es|ed)?|close[sd]?|resolve[sd]?|work request:)\s+#([1-9][0-9]*)\b",
+        body or "")})
 
 
 def command_from(body: str) -> tuple[str, int | None] | None:
@@ -96,7 +105,10 @@ class NoRedirect:
     def request(url: str, method: str, headers: dict, body=None):
         if urlparse(url).scheme != "https":
             raise BridgeError("HTTPS required.")
-        data = None if body is None else (urlencode(body).encode() if headers.get("Content-Type") == "application/x-www-form-urlencoded" else json.dumps(body).encode())
+        data = None if body is None else (
+            urlencode(body).encode()
+            if headers.get("Content-Type") == "application/x-www-form-urlencoded"
+            else json.dumps(body).encode())
         req = Request(url, data=data, headers=headers, method=method)
         try:
             with build_opener(RejectRedirect()).open(req, timeout=30) as response:
@@ -107,8 +119,13 @@ class NoRedirect:
                 return json.loads(raw) if raw else None
         except HTTPError as exc:
             # Never print response bodies, tokens, request headers or secret URLs.
-            raise BridgeError(f"API request failed: HTTP {exc.code}; inspect provider permissions/rate limits.") from None
-        except (URLError, TimeoutError, json.JSONDecodeError) as exc:
+            raise BridgeError(
+                f"API request failed: HTTP {exc.code}; inspect provider permissions/"
+                "rate limits.") from None
+        # 2026-11-20, kimi-work-lopez (flake8-debt PR): `exc` is bound but not referenced
+        # (F841) — kept for future diagnostics; the generic-raise branch intentionally does
+        # not chain it. noqa keeps the gate green without deleting the binding.
+        except (URLError, TimeoutError, json.JSONDecodeError) as exc:  # noqa: F841
             raise BridgeError("API result uncertain; inspect the destination before retrying a write.") from None
 
 
@@ -181,7 +198,10 @@ class GitHub:
 class Bridge:
     def __init__(self, gh: GitHub):
         self.gh = gh
-        self.bot_logins = {s.strip().lower() for s in os.environ.get("GITAR_LOGINS", "gitar-bot[bot],gitar-bot").split(",") if s.strip()}
+        self.bot_logins = {s.strip().lower()
+                           for s in os.environ.get("GITAR_LOGINS",
+                                                   "gitar-bot[bot],gitar-bot").split(",")
+                           if s.strip()}
         self.metadata = None
 
     def is_gitar(self, user: dict) -> bool:
@@ -207,7 +227,10 @@ class Bridge:
         chunks = [rendered[i:i + 44000] for i in range(0, len(rendered), 44000)]
         for target in targets:
             for index, chunk in enumerate(chunks):
-                self.gh.comment_once(target, f"{key}:{index}", f"### Gitar activity record\n\nRecorded {utc()}. Source PR/issue #{number}. Part {index + 1}/{len(chunks)}.\n\n```json\n{chunk}\n```")
+                self.gh.comment_once(
+                    target, f"{key}:{index}",
+                    f"### Gitar activity record\n\nRecorded {utc()}. Source PR/issue "
+                    f"#{number}. Part {index + 1}/{len(chunks)}.\n\n```json\n{chunk}\n```")
 
     def start(self, number: int, login: str, trigger: str):
         if not self.gh.authorized(login):
@@ -220,7 +243,9 @@ class Bridge:
         key = "start:" + digest({"number": number, "trigger": trigger})
         if self.gh.marker_exists(number, f"<!-- audrey:{key} -->"):
             if "pull_request" not in issue and not self.gh.marker_exists(number, f"<!-- audrey:{key}:sent -->"):
-                raise BridgeError("Work-request dispatch already pending; inspect upstream before retrying. No completion confirmed.")
+                raise BridgeError(
+                    "Work-request dispatch already pending; inspect upstream before "
+                    "retrying. No completion confirmed.")
             return "Handoff already recorded; no work was re-dispatched and no completion is confirmed."
         if "pull_request" in issue:
             pr = self.gh.api("GET", f"{self.gh.base}/pulls/{number}")
@@ -240,12 +265,23 @@ class Bridge:
             if configured.get("path") != ".github/workflows/" + workflow or configured.get("state") != "active":
                 raise BridgeError("Approved work-request workflow is absent or inactive.")
             # Record pending BEFORE dispatch. Ambiguous failures are not automatically replayed.
-            self.gh.comment_once(number, key, f"Work-request workflow `{workflow}` dispatch pending. Requested by `{login}`. Trusted ref: `{branch}`. This is not a completion report.")
+            self.gh.comment_once(
+                number, key,
+                f"Work-request workflow `{workflow}` dispatch pending. Requested by "
+                f"`{login}`. Trusted ref: `{branch}`. This is not a completion report.")
             result = self.gh.api("POST", f"{self.gh.base}/actions/workflows/{quote(workflow, safe='')}/dispatches", {
-                "ref": branch, "inputs": {"issue_number": str(number), "draft_only": True, "suppress_direct_jules": True}})
-            self.gh.comment_once(number, key + ":sent", "Approved workflow dispatch accepted. It must create/link a PR before Gitar can act.\n\n" + inert(canonical(result)))
-            status = "WR workflow dispatch accepted for a draft document PR only; upstream may skip and is not an implementation engine or completion."
-        self.notify_slack(f"Run requested in {self.gh.repo} #{number}. https://github.com/{self.gh.repo}/issues/{number}")
+                "ref": branch,
+                "inputs": {"issue_number": str(number), "draft_only": True,
+                           "suppress_direct_jules": True}})
+            self.gh.comment_once(
+                number, key + ":sent",
+                "Approved workflow dispatch accepted. It must create/link a PR before Gitar "
+                "can act.\n\n" + inert(canonical(result)))
+            status = ("WR workflow dispatch accepted for a draft document PR only; upstream "
+                      "may skip and is not an implementation engine or completion.")
+        self.notify_slack(
+            f"Run requested in {self.gh.repo} #{number}. "
+            f"https://github.com/{self.gh.repo}/issues/{number}")
         return status
 
     def finish(self, number: int, source_id: int):
@@ -253,7 +289,8 @@ class Bridge:
         if "pull_request" not in issue:
             raise BridgeError("Use /audrey finish on the linked PR, not the issue.")
         source = self.gh.api("GET", f"{self.gh.base}/issues/comments/{source_id}")
-        if source.get("issue_url") != "https://api.github.com" + self.gh.base + f"/issues/{number}" or not self.is_gitar(source.get("user", {})):
+        if (source.get("issue_url") != "https://api.github.com" + self.gh.base
+                + f"/issues/{number}" or not self.is_gitar(source.get("user", {}))):
             raise BridgeError("Finish source must be a Gitar comment on this PR.")
         full_pr = self.gh.api("GET", f"{self.gh.base}/pulls/{number}")
         if summary_from(source.get("body", ""), full_pr["head"]["sha"]) is None:
@@ -286,7 +323,9 @@ class Bridge:
             # instructions, URL, author, sender or a comment-supplied ref.
             comment_id = int(match.group(1))
             comment = self.gh.api("GET", f"{self.gh.base}/issues/comments/{comment_id}")
-            issue_match = re.fullmatch(re.escape("https://api.github.com" + self.gh.base) + r"/issues/([1-9][0-9]*)", comment.get("issue_url", ""))
+            issue_match = re.fullmatch(
+                re.escape("https://api.github.com" + self.gh.base) + r"/issues/([1-9][0-9]*)",
+                comment.get("issue_url", ""))
             if comment.get("id") != comment_id or not issue_match:
                 raise BridgeError("Triggering comment does not belong to this repository/issue.")
             number = int(issue_match.group(1))
@@ -295,7 +334,8 @@ class Bridge:
             if type(payload.get("number")) is not int or payload["number"] != number:
                 raise BridgeError("Agent request number does not match the triggering comment.")
             issue = self.gh.api("GET", f"{self.gh.base}/issues/{number}")
-            if issue.get("number") != number or payload.get("kind") != ("pull_request" if "pull_request" in issue else "issue"):
+            if (issue.get("number") != number or payload.get("kind")
+                    != ("pull_request" if "pull_request" in issue else "issue")):
                 raise BridgeError("Agent request kind/number does not match the actual issue.")
             author = comment.get("user", {})
             login = author.get("login", "")
@@ -330,14 +370,23 @@ class Bridge:
                     self.audit(number, kind, self.select_comment(item), pr)
         for commit in self.gh.pages(f"{self.gh.base}/pulls/{number}/commits"):
             if self.is_gitar(commit.get("author") or {}) or self.is_gitar(commit.get("committer") or {}):
-                self.audit(number, "commit", {"sha": commit["sha"], "html_url": commit.get("html_url"), "commit": commit.get("commit"), "author": commit.get("author", {}).get("login") if commit.get("author") else None}, pr)
+                self.audit(number, "commit",
+                           {"sha": commit["sha"], "html_url": commit.get("html_url"),
+                            "commit": commit.get("commit"),
+                            "author": (commit.get("author", {}).get("login")
+                                       if commit.get("author") else None)}, pr)
         for check in self.gh.pages(f"{self.gh.base}/commits/{pr['head']['sha']}/check-runs", "check_runs"):
             if check.get("app", {}).get("slug") in {"gitar-bot", "gitar"}:
-                self.audit(number, "check", {k: check.get(k) for k in ("id", "name", "status", "conclusion", "head_sha", "details_url", "started_at", "completed_at", "output")}, pr)
+                self.audit(number, "check",
+                           {k: check.get(k) for k in (
+                               "id", "name", "status", "conclusion", "head_sha", "details_url",
+                               "started_at", "completed_at", "output")}, pr)
 
     @staticmethod
     def select_comment(item):
-        return {k: item.get(k) for k in ("id", "body", "html_url", "created_at", "updated_at", "submitted_at", "state", "commit_id", "path", "line")}
+        return {k: item.get(k) for k in (
+            "id", "body", "html_url", "created_at", "updated_at", "submitted_at", "state",
+            "commit_id", "path", "line")}
 
     def queue_summary(self, pr: dict, comment: dict):
         summary = summary_from(comment.get("body", ""), pr["head"]["sha"])
@@ -346,7 +395,9 @@ class Bridge:
         if self.repo_metadata().get("private", True):
             print("Facebook draft blocked: repository is private. No private-source auto-publication.")
             return
-        key = "draft:" + digest({"pr": pr["number"], "sha": pr["head"]["sha"], "source": comment["id"], "body": comment["body"], "page_id": os.environ.get("FACEBOOK_PAGE_ID")})
+        key = "draft:" + digest({"pr": pr["number"], "sha": pr["head"]["sha"],
+                                 "source": comment["id"], "body": comment["body"],
+                                 "page_id": os.environ.get("FACEBOOK_PAGE_ID")})
         if self.gh.marker_exists(pr["number"], f"<!-- audrey:{key} -->"):
             return
         signing_key = required("BRIDGE_SIGNING_KEY")
@@ -355,27 +406,49 @@ class Bridge:
         page_id = required("FACEBOOK_PAGE_ID")
         if not re.fullmatch(r"[0-9]+", page_id):
             raise BridgeError("Set the confirmed numeric Facebook Page ID before preparing drafts.")
-        data = {"version": 1, "repository": self.gh.repo, "pr_number": pr["number"], "head_sha": pr["head"]["sha"], "page_name": "audreybuildsai", "page_id": page_id, "source_comment_id": comment["id"], "source_body_sha256": hashlib.sha256(comment["body"].encode()).hexdigest(), "message": summary, "created_at": utc()}
-        envelope = {"data": data, "hmac_sha256": hmac.new(signing_key.encode(), canonical(data).encode(), hashlib.sha256).hexdigest()}
-        body = "### Facebook publication draft — audreybuildsai\n\nNothing has been published. Review the EXACT `message` below before approving the protected publication job.\n\n```json\n" + json.dumps(envelope, ensure_ascii=False, indent=2) + "\n```"
+        data = {"version": 1, "repository": self.gh.repo, "pr_number": pr["number"],
+                "head_sha": pr["head"]["sha"], "page_name": "audreybuildsai",
+                "page_id": page_id, "source_comment_id": comment["id"],
+                "source_body_sha256": hashlib.sha256(comment["body"].encode()).hexdigest(),
+                "message": summary, "created_at": utc()}
+        envelope = {"data": data,
+                    "hmac_sha256": hmac.new(signing_key.encode(), canonical(data).encode(),
+                                            hashlib.sha256).hexdigest()}
+        body = ("### Facebook publication draft — audreybuildsai\n\nNothing has been "
+                "published. Review the EXACT `message` below before approving the protected "
+                "publication job.\n\n```json\n"
+                + json.dumps(envelope, ensure_ascii=False, indent=2) + "\n```")
         result = self.gh.comment_once(pr["number"], key, body)
         if result and self.gh.apply and enabled("QUEUE_FACEBOOK_PUBLICATION"):
-            self.gh.api("POST", f"{self.gh.base}/dispatches", {"event_type": "audrey-publication-ready", "client_payload": {"draft_comment_id": result["id"]}})
+            self.gh.api("POST", f"{self.gh.base}/dispatches",
+                        {"event_type": "audrey-publication-ready",
+                         "client_payload": {"draft_comment_id": result["id"]}})
         if result:
-            self.notify_slack(f"Facebook draft ready for review in {self.gh.repo} PR #{pr['number']}. {result.get('html_url', '')}")
+            self.notify_slack(
+                f"Facebook draft ready for review in {self.gh.repo} PR #{pr['number']}. "
+                f"{result.get('html_url', '')}")
 
     def event(self, name: str, event: dict):
         if event.get("repository", {}).get("full_name") != self.gh.repo:
             raise BridgeError("Event repository does not match the configured repository.")
         action = event.get("action")
-        login = event.get("sender", {}).get("login", "")
+        # 2026-11-20, kimi-work-lopez (flake8-debt PR): flake8 flags `login` as assigned-but-
+        # unused (F841) in this scope. Binding kept visible for future audit logging; the
+        # noqa keeps the baseline gate green without deleting the line.
+        login = event.get("sender", {}).get("login", "")  # noqa: F841
         issue, pr = event.get("issue"), event.get("pull_request")
         number = (issue or pr or {}).get("number")
         if name == "repository_dispatch" and action == "agent_requested":
             self.agent_request(event.get("client_payload", {}))
             return
         if name in {"issues", "pull_request", "pull_request_target"} and action == "opened" and number:
-            self.gh.comment_once(number, "intake", "### Audrey saved-reply controls\n\nAn authorized collaborator can post exactly `/audrey run` to start the approved work. Gitar runs on PRs; issue work uses the configured work-request workflow to produce a linked PR.\n\nActivity is recorded here and in linked work requests. Completed Gitar summaries become Facebook drafts; no raw code or private-repository content is auto-published.")
+            self.gh.comment_once(
+                number, "intake",
+                "### Audrey saved-reply controls\n\nAn authorized collaborator can post exactly "
+                "`/audrey run` to start the approved work. Gitar runs on PRs; issue work uses "
+                "the configured work-request workflow to produce a linked PR.\n\nActivity is "
+                "recorded here and in linked work requests. Completed Gitar summaries become "
+                "Facebook drafts; no raw code or private-repository content is auto-published.")
             if enabled("AUTO_START"):
                 # 2026-11-14: actual current-write human creator, not sender.
                 # Original standalone intake: self.start(number, login, f"opened:{number}")
@@ -408,7 +481,8 @@ class Bridge:
             #         if "pull_request" not in issue:
             #             raise BridgeError("Use /audrey finish on the linked PR, not the issue.")
             #         source = self.gh.api("GET", f"{self.gh.base}/issues/comments/{command[1]}")
-            #         if source.get("issue_url") != "https://api.github.com" + self.gh.base + f"/issues/{number}" or not self.is_gitar(source.get("user", {})):
+            #         if (source.get("issue_url") != "https://api.github.com" + self.gh.base
+            #                 + f"/issues/{number}" or not self.is_gitar(source.get("user", {}))):
             #             raise BridgeError("Finish source must be a Gitar comment on this PR.")
             #         full_pr = self.gh.api("GET", f"{self.gh.base}/pulls/{number}")
             #         if summary_from(source.get("body", ""), full_pr["head"]["sha"]) is None:
@@ -454,7 +528,9 @@ class Bridge:
                 print("Deleted review comment cannot be revalidated; relay did not archive untrusted content.")
                 return
             raise
-        if name == "pull_request_review_comment" and source.get("pull_request_url") != "https://api.github.com" + self.gh.base + f"/pulls/{number}":
+        if (name == "pull_request_review_comment"
+                and source.get("pull_request_url")
+                != "https://api.github.com" + self.gh.base + f"/pulls/{number}"):
             raise BridgeError("Relayed inline comment belongs to another PR.")
         if not self.is_gitar(source.get("user", {})):
             print("Ignored relayed object: authoritative author is not Gitar.")
@@ -467,15 +543,19 @@ class Bridge:
             return
         # 2026-11-13: inactive validation retained; webhook paths carry credentials
         # and must never enter a plaintext request, even on an allowed Slack host.
-        # if urlparse(url).netloc not in {"hooks.slack.com", "hooks.slack-gov.com"} or not urlparse(url).path.startswith("/services/"):
+        # if (urlparse(url).netloc not in {"hooks.slack.com", "hooks.slack-gov.com"}
+        #     or not urlparse(url).path.startswith("/services/")):
         parsed = urlparse(url)
-        if parsed.scheme != "https" or parsed.netloc not in {"hooks.slack.com", "hooks.slack-gov.com"} or not parsed.path.startswith("/services/"):
+        if (parsed.scheme != "https"
+                or parsed.netloc not in {"hooks.slack.com", "hooks.slack-gov.com"}
+                or not parsed.path.startswith("/services/")):
             raise BridgeError("Use an authorized Slack incoming webhook URL.")
         if not self.gh.apply:
             print("DRY RUN: Slack notification suppressed.")
             return
         try:
-            req = Request(url, data=json.dumps({"text": text}).encode(), headers={"Content-Type": "application/json"}, method="POST")
+            req = Request(url, data=json.dumps({"text": text}).encode(),
+                          headers={"Content-Type": "application/json"}, method="POST")
             # 2026-11-13: inactive redirect-following transport retained below.
             # Refuse redirects before a new request can forward webhook credentials
             # or the notification body; inspect Slack manually on uncertainty.
@@ -500,14 +580,17 @@ class Bridge:
         try:
             envelope = json.loads(match.group(1))
             data = envelope["data"]
-            signature = hmac.new(required("BRIDGE_SIGNING_KEY").encode(), canonical(data).encode(), hashlib.sha256).hexdigest()
+            signature = hmac.new(
+                required("BRIDGE_SIGNING_KEY").encode(), canonical(data).encode(),
+                hashlib.sha256).hexdigest()
             if not hmac.compare_digest(signature, envelope["hmac_sha256"]):
                 raise BridgeError("Draft signature does not match; publication blocked.")
             if data["repository"] != self.gh.repo or data["page_name"] != "audreybuildsai" or data["version"] != 1:
                 raise BridgeError("Draft destination mismatch.")
             if data.get("page_id") != required("FACEBOOK_PAGE_ID"):
                 raise BridgeError("Draft's approved numeric Page ID does not match the configuration.")
-            if comment.get("issue_url") != "https://api.github.com" + self.gh.base + f"/issues/{int(data['pr_number'])}":
+            if (comment.get("issue_url")
+                    != "https://api.github.com" + self.gh.base + f"/issues/{int(data['pr_number'])}"):
                 raise BridgeError("Draft is not on its source PR.")
         except (ValueError, KeyError, TypeError):
             raise BridgeError("Invalid draft data.") from None
@@ -521,7 +604,9 @@ class Bridge:
         if pr["head"]["sha"] != data["head_sha"]:
             raise BridgeError("Draft is stale: PR has new commits. Generate a fresh summary.")
         source = self.gh.api("GET", f"{self.gh.base}/issues/comments/{int(data['source_comment_id'])}")
-        if not self.is_gitar(source.get("user", {})) or source.get("issue_url") != "https://api.github.com" + self.gh.base + f"/issues/{int(data['pr_number'])}":
+        if (not self.is_gitar(source.get("user", {}))
+                or source.get("issue_url") != "https://api.github.com" + self.gh.base
+                + f"/issues/{int(data['pr_number'])}"):
             raise BridgeError("Summary source is not a Gitar comment on the source PR.")
         if hashlib.sha256(source.get("body", "").encode()).hexdigest() != data["source_body_sha256"]:
             raise BridgeError("Gitar summary changed after approval preparation.")
@@ -548,19 +633,29 @@ class Bridge:
             raise BridgeError("Approved Page ID must match the selected Page ID.")
         if data.get("page_id") != page_id:
             raise BridgeError("Publication destination changed after the draft was signed.")
-        headers = {"Authorization": "Bearer " + required("FACEBOOK_PAGE_ACCESS_TOKEN"), "Content-Type": "application/x-www-form-urlencoded"}
+        headers = {"Authorization": "Bearer " + required("FACEBOOK_PAGE_ACCESS_TOKEN"),
+                   "Content-Type": "application/x-www-form-urlencoded"}
         graph = f"https://graph.facebook.com/{version}"
         actual = NoRedirect.request(graph + "/" + page_id + "?fields=id,name", "GET", headers)
         if actual.get("id") != page_id:
             raise BridgeError("Facebook Page token/ID validation failed.")
         # Page display names can differ from usernames. Confirm the numeric ID in setup.
         print(f"Publishing approved payload {approval_digest} to configured Page ID {page_id}.")
-        self.gh.comment_once(data["pr_number"], key + ":pending", f"Facebook publication attempt pending. Draft comment ID: {draft_id}. Payload SHA-256: `{approval_digest}`. Page ID: `{page_id}`. Do not retry automatically if the API outcome is uncertain.")
+        self.gh.comment_once(
+            data["pr_number"], key + ":pending",
+            f"Facebook publication attempt pending. Draft comment ID: {draft_id}. "
+            f"Payload SHA-256: `{approval_digest}`. Page ID: `{page_id}`. "
+            "Do not retry automatically if the API outcome is uncertain.")
         result = NoRedirect.request(graph + "/" + page_id + "/feed", "POST", headers, {"message": data["message"]})
         if not result or not result.get("id"):
             raise BridgeError("Facebook returned no post ID. Inspect Page before retrying.")
-        receipt = f"Facebook Page publication confirmed. Page ID: `{page_id}`. Post ID: `{result['id']}`. Draft: {comment.get('html_url')}. Payload SHA-256: `{approval_digest}`."
-        self.audit(data["pr_number"], "facebook-publication-receipt", {"page_id": page_id, "post_id": result["id"], "draft_id": draft_id, "payload_sha256": approval_digest}, self.gh.api("GET", f"{self.gh.base}/pulls/{data['pr_number']}"))
+        receipt = (f"Facebook Page publication confirmed. Page ID: `{page_id}`. "
+                   f"Post ID: `{result['id']}`. Draft: {comment.get('html_url')}. "
+                   f"Payload SHA-256: `{approval_digest}`.")
+        self.audit(data["pr_number"], "facebook-publication-receipt",
+                   {"page_id": page_id, "post_id": result["id"], "draft_id": draft_id,
+                    "payload_sha256": approval_digest},
+                   self.gh.api("GET", f"{self.gh.base}/pulls/{data['pr_number']}"))
         self.gh.comment_once(data["pr_number"], key + ":receipt", receipt)
         self.notify_slack(f"Approved Gitar summary published to audreybuildsai. Facebook post ID: {result['id']}.")
 
@@ -598,7 +693,8 @@ def main():
             bridge.collect_pr(args.pr)
         elif args.operation == "prepare":
             data, comment = bridge.read_draft(args.draft_id)
-            payload = {"draft_comment_id": args.draft_id, "approval_digest": digest(data), "draft_url": comment.get("html_url"), "data": data}
+            payload = {"draft_comment_id": args.draft_id, "approval_digest": digest(data),
+                       "draft_url": comment.get("html_url"), "data": data}
             Path(args.output).write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
             print("Exact publication draft: " + str(comment.get("html_url")))
             print("Approval digest: " + payload["approval_digest"])

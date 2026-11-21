@@ -52,13 +52,18 @@ class WorkflowTests(unittest.TestCase):
 
     def test_always_collect_reports_and_missing_artifacts_fail(self):
         for job in self.workflow["jobs"].values():
-            collection = [step for step in job["steps"] if "Collect redacted" in step["name"] or "Upload redacted" in step["name"]]
+            collection = [step for step in job["steps"]
+                          if "Collect redacted" in step["name"]
+                          or "Upload redacted" in step["name"]]
             self.assertEqual(len(collection), 2)
             self.assertTrue(all(step["if"] == "always()" for step in collection))
             self.assertEqual(collection[-1]["with"]["if-no-files-found"], "error")
 
     def test_legacy_lines_retained_in_dated_comments(self):
-        legacy = subprocess.run(["git", "show", "e6b5a99659bf454874f62e8c8e4fba8f5aed32d5:.github/workflows/trivy.yml"], cwd=ROOT, check=True, capture_output=True, text=True).stdout
+        legacy = subprocess.run(
+            ["git", "show",
+             "e6b5a99659bf454874f62e8c8e4fba8f5aed32d5:.github/workflows/trivy.yml"],
+            cwd=ROOT, check=True, capture_output=True, text=True).stdout
         lines = {line.strip() for line in self.text.splitlines()}
         uncommented = {re.sub(r"^#\s*", "", line) for line in lines}
         for original in legacy.splitlines():

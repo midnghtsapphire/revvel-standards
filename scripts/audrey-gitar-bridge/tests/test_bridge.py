@@ -12,8 +12,10 @@ import unittest
 from unittest.mock import patch
 
 # Import the actual bridge from the parent directory, not an installed module.
+# 2026-11-20, kimi-work-lopez (flake8-debt PR): E402 is inherent — the sys.path
+# insert above must precede this import; noqa keeps the gate green.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import audrey_bridge as bridge
+import audrey_bridge as bridge  # noqa: E402
 
 
 REPO = "example/project"
@@ -198,7 +200,8 @@ class ParsingTests(unittest.TestCase):
 
     def test_finish_accepts_only_a_positive_comment_id(self):
         self.assertEqual(bridge.command_from("/audrey finish 31"), ("finish", 31))
-        for body in ("/audrey finish 0", "/audrey finish -1", "/audrey finish 031", "/audrey finish 31; id", "/audrey finish 31\npublish"):
+        for body in ("/audrey finish 0", "/audrey finish -1", "/audrey finish 031",
+                     "/audrey finish 31; id", "/audrey finish 31\npublish"):
             with self.subTest(body=body):
                 self.assertIsNone(bridge.command_from(body))
 
@@ -263,13 +266,15 @@ class BridgeSafetyTests(OfflineTestCase):
         )])
         paths = [path for method, path, body in self.gh.calls if method == "GET"]
         self.assertIn(f"{self.gh.base}/actions/workflows/work-request.yml", paths)
-        pending_index = next(i for i, call in enumerate(self.gh.writes) if "dispatch pending" in (call[2] or {}).get("body", ""))
+        pending_index = next(i for i, call in enumerate(self.gh.writes)
+                             if "dispatch pending" in (call[2] or {}).get("body", ""))
         dispatch_index = next(i for i, call in enumerate(self.gh.writes) if call[1].endswith("/dispatches"))
         self.assertLess(pending_index, dispatch_index)
         self.network.assert_not_called()
 
     def test_issue_rejects_unapproved_workflow_filenames(self):
-        for filename in ("../evil.yml", ".github/workflows/evil.yml", "work-request.yml;id", "work-request.yml?ref=evil"):
+        for filename in ("../evil.yml", ".github/workflows/evil.yml", "work-request.yml;id",
+                         "work-request.yml?ref=evil"):
             with self.subTest(filename=filename), patch.dict(os.environ, {"WORK_REQUEST_WORKFLOW": filename}):
                 with self.assertRaisesRegex(bridge.BridgeError, "approved workflow filename"):
                     self.bridge.start(7, "maintainer", "filename-test")
@@ -402,7 +407,8 @@ class BridgeSafetyTests(OfflineTestCase):
     def test_uncertain_page_write_leaves_pending_marker_and_cannot_be_retried(self):
         draft, data = self.create_draft()
         graph = "https://graph.facebook.com/v99.0/12345"
-        headers = {"Authorization": "Bearer fake-page-token-not-a-credential", "Content-Type": "application/x-www-form-urlencoded"}
+        headers = {"Authorization": "Bearer fake-page-token-not-a-credential",
+                   "Content-Type": "application/x-www-form-urlencoded"}
         with patch.object(bridge.NoRedirect, "request", side_effect=[
             {"id": "12345", "name": "Test Page"}, bridge.BridgeError("API result uncertain"),
         ]) as fake_page:

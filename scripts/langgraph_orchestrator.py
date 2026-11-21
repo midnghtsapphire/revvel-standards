@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """langgraph_orchestrator.py — WR lifecycle graph. WR #18337.
 Falls back to a linear runner if langgraph isn't installed."""
-import os, sys, json
+import os
+import sys
+# 2026-11-20, kimi-work-lopez (flake8-debt PR): `json` was imported but never
+# used (F401). Commented out, not deleted, per OWNER RULE 4. Restore if a
+# future caller needs it.
+# import json
 
 STAGES = ["intake", "claim", "research", "build", "lint", "package", "pr", "merge", "close"]
+
 
 def run_linear(wr: str):
     state = {"wr": wr, "stage": None, "retries": 0, "log": []}
@@ -13,13 +19,17 @@ def run_linear(wr: str):
         print(f"[{wr}] {stage} ✔")
     return state
 
+
 def run_langgraph(wr: str):
     from typing_extensions import TypedDict
     from langgraph.graph import StateGraph, END
     from langgraph.checkpoint.sqlite import SqliteSaver
 
     class WRState(TypedDict):
-        wr: str; stage: str; retries: int; log: list
+        wr: str
+        stage: str
+        retries: int
+        log: list
 
     def make_node(name):
         def node(state: WRState):
@@ -30,9 +40,11 @@ def run_langgraph(wr: str):
         return node
 
     g = StateGraph(WRState)
-    for s in STAGES: g.add_node(s, make_node(s))
+    for s in STAGES:
+        g.add_node(s, make_node(s))
     g.set_entry_point("intake")
-    for a, b in zip(STAGES, STAGES[1:]): g.add_edge(a, b)
+    for a, b in zip(STAGES, STAGES[1:]):
+        g.add_edge(a, b)
     g.add_edge("close", END)
 
     os.makedirs("artifacts/lg", exist_ok=True)
@@ -40,6 +52,7 @@ def run_langgraph(wr: str):
     app = g.compile(checkpointer=memory)
     cfg = {"configurable": {"thread_id": f"wr-{wr}"}}
     return app.invoke({"wr": wr, "stage": "", "retries": 0, "log": []}, cfg)
+
 
 if __name__ == "__main__":
     wr = sys.argv[1] if len(sys.argv) > 1 else "WR-DEMO"

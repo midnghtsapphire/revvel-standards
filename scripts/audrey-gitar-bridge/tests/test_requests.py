@@ -158,6 +158,7 @@ class RequestProvenanceTests(OfflineTestCase):
         self.gh.metadata_response["default_branch"] = "trusted-default"
         self.gh.workflow = {"path": ".github/workflows/wr-pr-creation.yml", "state": "active"}
         original = self.gh.api
+
         def api(method, path, body=None):
             return original(method, path.replace("wr-pr-creation.yml", "work-request.yml"), body)
         with patch.dict(os.environ, {"WORK_REQUEST_WORKFLOW": ""}), patch.object(self.gh, "api", side_effect=api):
@@ -197,7 +198,9 @@ class RequestProvenanceTests(OfflineTestCase):
     def test_finish_private_repository_is_failed_not_completed(self):
         self.gh.metadata_response["private"] = True
         with self.assertRaisesRegex(bridge.BridgeError, "Private repository"):
-            self.bridge.event("repository_dispatch", self.request_event(number=PR_NUMBER, command=f"/audrey finish {SOURCE_ID}"))
+            self.bridge.event("repository_dispatch",
+                              self.request_event(number=PR_NUMBER,
+                                                 command=f"/audrey finish {SOURCE_ID}"))
         self.assertEqual(self.statuses()[-1]["status"], "failed")
         self.assert_no_work()
 

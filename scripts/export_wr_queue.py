@@ -9,7 +9,12 @@ Writes one Markdown file per WR: title, body, repo, labels, plus the fleet
 conventions header Roo must follow (branch naming, LEDGER rules, no secrets).
 Requires GITHUB_READ_TOKEN (or GITHUB_TOKEN) in the environment.
 """
-import argparse, json, os, re, sys, urllib.request
+import argparse
+import json
+import os
+import re
+import sys
+import urllib.request
 
 OWNER = "midnghtsapphire"
 API = "https://api.github.com"
@@ -37,6 +42,7 @@ State: {state} | Created: {created}
 {body}
 """
 
+
 def gh(path, params=None):
     qs = ""
     if params:
@@ -50,12 +56,14 @@ def gh(path, params=None):
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.load(r)
 
+
 def is_wr(issue):
     if "pull_request" in issue:
         return False
     t = issue.get("title", "")
     return bool(re.search(r"\bWR\b|work request", t, re.I)) or \
-           any(l["name"].lower() in ("wr", "work-request") for l in issue.get("labels", []))
+        any(lbl["name"].lower() in ("wr", "work-request") for lbl in issue.get("labels", []))
+
 
 def export(issue):
     repo = issue["repository_url"].split("/")[-1]
@@ -67,11 +75,12 @@ def export(issue):
             repo=repo, num=num, owner=OWNER,
             title=issue["title"].strip(),
             url=issue["html_url"],
-            labels=", ".join(l["name"] for l in issue.get("labels", [])) or "none",
+            labels=", ".join(lbl["name"] for lbl in issue.get("labels", [])) or "none",
             state=issue["state"], created=issue["created_at"],
             body=(issue.get("body") or "(empty body)").strip(),
         ))
     return path
+
 
 def main():
     if not TOKEN:
@@ -98,6 +107,7 @@ def main():
     for i in issues:
         print("wrote", export(i))
     print(f"{len(issues)} WR prompt pack(s) in {OUT_DIR}/")
+
 
 if __name__ == "__main__":
     main()

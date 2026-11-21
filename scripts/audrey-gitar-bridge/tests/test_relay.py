@@ -18,6 +18,7 @@ class RelayAndLedgerTests(OfflineTestCase):
         real_api = self.gh.api
         source = {"id": SOURCE_ID, "body": "Authoritative Gitar review.", "user": {"login": "gitar-bot[bot]"}}
         path = f"{self.gh.base}/pulls/{PR_NUMBER}/reviews/{SOURCE_ID}"
+
         def api(method, route, body=None):
             return copy.deepcopy(source) if method == "GET" and route == path else real_api(method, route, body)
         with patch.object(self.gh, "api", side_effect=api):
@@ -31,6 +32,7 @@ class RelayAndLedgerTests(OfflineTestCase):
         self.gh.pr["base"] = {"repo": {"full_name": REPO}}
         real_api = self.gh.api
         path = f"{self.gh.base}/pulls/{PR_NUMBER}/reviews/{SOURCE_ID}"
+
         def api(method, route, body=None):
             if method == "GET" and route == path:
                 return {"id": SOURCE_ID, "body": "Not Gitar", "user": {"login": "outsider"}}
@@ -52,6 +54,7 @@ class RelayAndLedgerTests(OfflineTestCase):
             with self.assertRaisesRegex(bridge.BridgeError, "numeric Page ID"):
                 self.bridge.read_draft(old["id"])
             self.bridge.queue_summary(self.gh.pr, self.source)
-        drafts = [row for row in self.gh.comment_by_id.values() if row["body"].startswith("### Facebook publication draft")]
+        drafts = [row for row in self.gh.comment_by_id.values()
+                  if row["body"].startswith("### Facebook publication draft")]
         self.assertEqual(len(drafts), 2)
         self.network.assert_not_called()

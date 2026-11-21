@@ -57,7 +57,13 @@ jobs:
           path: "."
           max-line-length: "120"
           # Keep tests/scripts/tools/products in scope; only skip cache/vendor trees.
-          exclude: ".git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,.pytest_cache,mcp-servers/gemini-notebook-mcp-cli,docs/case-files"
+          # 2026-11-20, kimi-work-lopez (flake8-debt PR): appended products/beauty-kit so this
+          # input matches the gate's FLAKE8_EXCLUDE — Proofy added beauty-kit to the gate and
+          # .flake8 on 2026-11-15 but not here, which failed the drift test
+          # "gate --exclude and the workflow exclude: input are identical" on main.
+          # Same temporary status as the gate entry: remove when #18434's cleanup lands
+          # (needs Audrey's yes).
+          exclude: ".git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,.pytest_cache,mcp-servers/gemini-notebook-mcp-cli,docs/case-files,products/beauty-kit"
           args: "--select=E,W,F --max-complexity=15 --show-source --statistics"
 
       - name: Setup Node.js (baseline gate)
