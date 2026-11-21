@@ -2,7 +2,12 @@
 """pot_research_engine.py — PoT research engine with MCTS + GRPO. WR #18341.
 Offline-capable skeleton: real LLM calls when LLM_API_KEY set, else deterministic
 dry-run so CI can validate the tree logic."""
-import os, math, json, random, datetime, urllib.request
+import os
+import math
+import json
+import random
+import datetime
+import urllib.request
 
 MAX_CALLS = 64
 calls = {"n": 0}
@@ -11,13 +16,20 @@ calls = {"n": 0}
 # 2026-11-15, security-spend specialist, stacked spend-gate PR: mirror the
 # existing gumloop_pdf_pipeline._assert_cloud_allowed helper. A funded key is
 # not authorization; refusal is terminal, never a paid retry or fabricated reply.
-def _assert_cloud_allowed(call_site: str) -> None:
-    if os.environ.get("REVVEL_LLM_ALLOW_CLOUD", "").strip() != "1":
-        raise RuntimeError(
-            f'Refusing to call a paid LLM API from "{call_site}": '
-            'REVVEL_LLM_ALLOW_CLOUD is not set to "1". This is a spend gate, '
-            "not a bug. Use the keyless dry-run for tree validation, or allow "
-            "cloud only for the calling job (see docs/LOCAL_LLM_SETUP.md)."
+# 2026-11-20, kimi-work-lopez (flake8-debt PR): the first definition below was
+# never closed — its raise( has no closing paren, so this module was an E999
+# SyntaxError on main and failed the flake8 baseline gate repo-wide. Two agents
+# stacked duplicate definitions on 2026-11-15; the second one (below, kept
+# active) is complete and documented. Per OWNER RULE 4 the broken first draft
+# is COMMENTED OUT, not deleted, so its text stays visible. Consequence of
+# restoring it: the module stops importing again and the gate goes red.
+# def _assert_cloud_allowed(call_site: str) -> None:
+#     if os.environ.get("REVVEL_LLM_ALLOW_CLOUD", "").strip() != "1":
+#         raise RuntimeError(
+#             f'Refusing to call a paid LLM API from "{call_site}": '
+#             'REVVEL_LLM_ALLOW_CLOUD is not set to "1". This is a spend gate, '
+#             "not a bug. Use the keyless dry-run for tree validation, or allow "
+#             "cloud only for the calling job (see docs/LOCAL_LLM_SETUP.md)."
 def _assert_cloud_allowed(call_site: str) -> None:
     """Spend gate (#17850). Refuse a paid call unless someone deliberately said yes.
 
@@ -34,20 +46,22 @@ def _assert_cloud_allowed(call_site: str) -> None:
 
 def llm(prompt: str) -> str:
     calls["n"] += 1
-    if calls["n"] > MAX_CALLS: raise RuntimeError("budget exceeded")
+    if calls["n"] > MAX_CALLS:
+        raise RuntimeError("budget exceeded")
     key = os.environ.get("LLM_API_KEY")
     if not key:
         random.seed(hash(prompt) & 0xffffffff)
-        return f"[dry-run answer {random.randint(1000,9999)}]"
+        return f"[dry-run answer {random.randint(1000, 9999)}]"
     # 2026-11-15: keep the original keyless dry-run above; gate the real paid
     # lane before Request/urlopen, even if the account has credit. Do not retry.
     _assert_cloud_allowed("pot_research_engine.llm")
     _assert_cloud_allowed("pot_research_engine")
     req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions",
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-        data=json.dumps({"model": "anthropic/claude-sonnet-4-6",
-                         "messages": [{"role": "user", "content": prompt}]}).encode())
+                                 headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                                 data=json.dumps({"model": "anthropic/claude-sonnet-4-6",
+                                                  "messages": [{"role": "user", "content": prompt}]}).encode())
     return json.load(urllib.request.urlopen(req, timeout=60))["choices"][0]["message"]["content"]
+
 
 class Node:
     def __init__(self, question, parent=None):
@@ -55,26 +69,37 @@ class Node:
         self.children, self.visits, self.value = [], 0, 0.0
         self.answer = None
 
+
 def uct(node, c=1.41):
-    if node.visits == 0: return float("inf")
+    if node.visits == 0:
+        return float("inf")
     return node.value / node.visits + c * math.sqrt(math.log(node.parent.visits or 1) / node.visits)
+
 
 def mcts(root, iterations=16):
     for _ in range(iterations):
         node = root
-        while node.children: node = max(node.children, key=uct)          # select
+        while node.children:
+            node = max(node.children, key=uct)          # select
         if node.visits > 0:                                              # expand
-            subs = [s.strip("- ") for s in llm(f"Break into 4 sub-questions: {node.question}").splitlines() if s.strip()][:4]
-            for s in subs: node.children.append(Node(s, node))
-            if node.children: node = node.children[0]
+            subs = [s.strip("- ")
+                    for s in llm(f"Break into 4 sub-questions: {node.question}").splitlines() if s.strip()][:4]
+            for s in subs:
+                node.children.append(Node(s, node))
+            if node.children:
+                node = node.children[0]
         node.answer = llm(f"Answer concisely with evidence: {node.question}")  # simulate
         score = min(1.0, len(node.answer) / 500.0)                       # rubric proxy
         while node:                                                      # backprop
-            node.visits += 1; node.value += score; node = node.parent
+            node.visits += 1
+            node.value += score
+            node = node.parent
+
 
 def grpo_update(node, group=4):
     """Group-relative scoring of candidate continuations (policy signal)."""
-    if not node.children: return
+    if not node.children:
+        return
     cands = [llm(f"Refine: {c.question}") for c in node.children[:group]]
     scores = [min(1.0, len(c) / 500.0) for c in cands]
     mean = sum(scores) / len(scores)
@@ -82,23 +107,30 @@ def grpo_update(node, group=4):
         c.value += (s - mean)  # group-relative advantage
     return {"mean": mean, "n": len(cands)}
 
+
 def run(seed: str):
     root = Node(seed)
     mcts(root)
     updates = []
+
     def walk(n, d=0):
         if d < 3:
             upd = grpo_update(n)
-            if upd: updates.append({"node": n.question[:60], **upd})
-            for c in n.children: walk(c, d + 1)
+            if upd:
+                updates.append({"node": n.question[:60], **upd})
+            for c in n.children:
+                walk(c, d + 1)
     walk(root)
     os.makedirs("artifacts/pot", exist_ok=True)
     out = f"artifacts/pot/{datetime.date.today()}-research.json"
-    def ser(n): return {"q": n.question, "visits": n.visits, "value": round(n.value, 3),
-                        "answer": (n.answer or "")[:200], "children": [ser(c) for c in n.children]}
+
+    def ser(n):
+        return {"q": n.question, "visits": n.visits, "value": round(n.value, 3),
+                "answer": (n.answer or "")[:200], "children": [ser(c) for c in n.children]}
     json.dump({"seed": seed, "tree": ser(root), "grpo": updates, "llm_calls": calls["n"]},
               open(out, "w"), indent=2)
     print(f"✔ tree explored ({calls['n']} LLM calls) → {out}")
+
 
 if __name__ == "__main__":
     import sys

@@ -6,6 +6,12 @@ Designed to run headless.
 """
 from __future__ import annotations
 
+# 2026-11-20, kimi-work-lopez (flake8-debt PR): version 1's run() below calls
+# dt.datetime.utcnow() but `dt` was never imported — a real NameError (F821)
+# on every version-1 call, not a style nit. Added as an ADDITION here rather
+# than editing the version-1 body, per OWNER RULE 5. Removing this import
+# re-breaks version 1's run().
+import datetime as dt
 import json
 import os
 import random
@@ -86,12 +92,20 @@ if __name__ == "__main__":
 Designed to run headless in GitHub Actions. Emits a JSON report per run.
 """
 
-import json
-import os
-import sys
-from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
-from typing import List
+# 2026-11-20, kimi-work-lopez (flake8-debt PR): the imports below sit mid-file
+# (E402) and re-import names from version 1 (F811) because this file holds two
+# concatenated module versions — see the SYNTAX REPAIR note above. Consolidating
+# them to the top or deduplicating TOPICS/run would merge the two versions,
+# which is the "follow-up reconstruction" that note explicitly parks for the
+# owner. Until she picks a surviving version, the noqa markers keep the gate
+# honest without touching the structure. Removing a marker without doing the
+# reconstruction turns the flake8 baseline gate red repo-wide.
+import json  # noqa: E402
+import os  # noqa: E402
+import sys  # noqa: E402
+from dataclasses import asdict, dataclass  # noqa: E402
+from datetime import datetime, timezone  # noqa: E402
+from typing import List  # noqa: E402,F811
 
 CANDIDATE_TOPICS = [
     "OSINT dashboard template",
@@ -102,10 +116,10 @@ CANDIDATE_TOPICS = [
     "Gumroad launch kit",
     "Stripe metered billing recipes",
 ]  # SYNTAX REPAIR 2026-11-15: list was truncated mid-literal by the interleave; closed here.
-import random
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
-from typing import List
+import random  # noqa: E402,F811
+from dataclasses import dataclass, asdict  # noqa: E402,F811
+from datetime import datetime, timezone  # noqa: E402,F811
+from typing import List  # noqa: E402,F811
 
 
 TOPICS = [

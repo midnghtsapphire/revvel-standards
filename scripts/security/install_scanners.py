@@ -34,8 +34,10 @@ def validate_pin(engine, pin, arm64=False):
     trivy_arch = "ARM64" if arm64 else "64bit"
     clam_arch = "aarch64" if arm64 else "x86_64"
     expected = {
-        "trivy": (f"https://github.com/aquasecurity/trivy/releases/download/v{version}/trivy_{version}_Linux-{trivy_arch}.tar.gz", "tar.gz"),
-        "clamav": (f"https://github.com/Cisco-Talos/clamav/releases/download/clamav-{version}/clamav-{version}.linux.{clam_arch}.deb", "deb"),
+        "trivy": (f"https://github.com/aquasecurity/trivy/releases/download/"
+                  f"v{version}/trivy_{version}_Linux-{trivy_arch}.tar.gz", "tar.gz"),
+        "clamav": (f"https://github.com/Cisco-Talos/clamav/releases/download/"
+                   f"clamav-{version}/clamav-{version}.linux.{clam_arch}.deb", "deb"),
     }
     if engine not in expected or (pin.get("url"), pin.get("format")) != expected[engine]:
         raise InstallError("release URL or format is not allowlisted")
@@ -129,7 +131,8 @@ def install(engine, root, manifest=MANIFEST):
         executable = binary_path(engine, destination)
         result = subprocess.run([str(executable), "--version"], env=engine_env(scratch, destination),
                                 cwd=scratch, capture_output=True, text=True, timeout=30)
-        if result.returncode or not re.search(r"(?<![0-9.])" + re.escape(pin["version"]) + r"(?![0-9.])", result.stdout):
+        version_pattern = r"(?<![0-9.])" + re.escape(pin["version"]) + r"(?![0-9.])"
+        if result.returncode or not re.search(version_pattern, result.stdout):
             raise InstallError("verified engine version mismatch or unavailable runtime dependency")
         receipt = {"engine": engine, "version": pin["version"], "archive_sha256": pin["sha256"],
                    "binary": str(executable), "prefix": str(destination)}
@@ -147,7 +150,8 @@ def main():
         return 0
     except (InstallError, OSError, ValueError, KeyError, tarfile.TarError, subprocess.SubprocessError):
         # Exception messages can contain signed CDN URLs or local secrets: omit them.
-        print("scanner installation failed; check reviewed pin, official asset availability and runtime dependencies", file=os.sys.stderr)
+        print("scanner installation failed; check reviewed pin, official asset availability "
+              "and runtime dependencies", file=os.sys.stderr)
         return 2
 
 

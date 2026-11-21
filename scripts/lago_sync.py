@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
 """lago_sync.py — push usage events to Lago. WR #18333."""
-import os, json, glob, uuid, datetime, urllib.request
+import os
+import json
+import glob
+import uuid
+import datetime
+import urllib.request
 
 LAGO_URL = os.environ.get("LAGO_API_URL", "http://localhost:3000")
 KEY = os.environ.get("LAGO_API_KEY", "")
 
+
 def push(event):
     req = urllib.request.Request(f"{LAGO_URL}/api/v1/events", method="POST",
-        headers={"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"},
-        data=json.dumps({"event": event}).encode())
+                                 headers={"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"},
+                                 data=json.dumps({"event": event}).encode())
     return urllib.request.urlopen(req, timeout=15).status
+
 
 def main():
     sent = 0
@@ -21,9 +28,12 @@ def main():
                   "code": u.get("metric", "llm_call"),
                   "timestamp": u.get("ts", datetime.datetime.utcnow().isoformat() + "Z")}
             if KEY:
-                push(ev); sent += 1
+                push(ev)
+                sent += 1
             else:
                 print("dry-run:", ev)
     print(f"✔ {sent} events pushed")
 
-if __name__ == "__main__": main()
+
+if __name__ == "__main__":
+    main()

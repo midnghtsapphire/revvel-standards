@@ -17,7 +17,12 @@ import tempfile
 # -I removes the script directory as well as unsafe environment import paths.
 # Restore ONLY this reviewed base-script directory, never the candidate cwd.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from install_scanners import InstallError, MANIFEST, engine_env, install
+# 2026-11-20, kimi-work-lopez (flake8-debt PR): E402 is inherent — the sys.path
+# restore above must run before this import; moving the import above it would
+# re-open the -I import-path hole the comment describes. `MANIFEST` was
+# imported but never referenced (F401); dropped from the name list and recorded
+# here, not silently deleted. Re-add it to the import if a caller needs it.
+from install_scanners import InstallError, engine_env, install  # noqa: E402
 
 
 class ScanError(Exception):
@@ -47,6 +52,7 @@ def candidate_files(target, snapshot=None):
     # Git stores a symlink's target text as its blob. Scan that text, never follow
     # it out of the candidate tree. A private normalized copy avoids unsafe
     # traversal while keeping every tracked source blob visible to both engines.
+
     def walk_error(_):
         raise ScanError("candidate-unreadable")
     for base, dirs, files in os.walk(target, followlinks=False, onerror=walk_error):
@@ -98,7 +104,8 @@ def validate_trivy_report(path, engine_exit):
         document = json.loads(Path(path).read_text())
     except (OSError, ValueError):
         raise ScanError("trivy-report-missing-or-malformed") from None
-    if not isinstance(document, dict) or document.get("SchemaVersion") != 2 or document.get("ArtifactType") != "filesystem":
+    if (not isinstance(document, dict) or document.get("SchemaVersion") != 2
+            or document.get("ArtifactType") != "filesystem"):
         raise ScanError("trivy-report-invalid-schema")
     # Trivy omits Results for a valid filesystem with no recognized artifacts.
     results = document.get("Results", [])
@@ -108,16 +115,19 @@ def validate_trivy_report(path, engine_exit):
     for result in results:
         if not isinstance(result, dict) or result.get("Errors"):
             raise ScanError("trivy-result-invalid")
-        for field, kind in [("Vulnerabilities", "vulnerability"), ("Misconfigurations", "misconfiguration"), ("Secrets", "secret")]:
+        for field, kind in [("Vulnerabilities", "vulnerability"),
+                            ("Misconfigurations", "misconfiguration"), ("Secrets", "secret")]:
             entries = result.get(field, [])
             if not isinstance(entries, list):
                 raise ScanError("trivy-findings-invalid")
             for entry in entries:
-                if not isinstance(entry, dict) or entry.get("Severity") not in {"UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"}:
+                if (not isinstance(entry, dict) or entry.get("Severity")
+                        not in {"UNKNOWN", "LOW", "MEDIUM", "HIGH", "CRITICAL"}):
                     raise ScanError("trivy-finding-invalid-severity")
                 if field == "Misconfigurations" and entry.get("Status") not in {"FAIL", "PASS", "EXCEPTION"}:
                     raise ScanError("trivy-misconfiguration-status-invalid")
-                if entry["Severity"] in {"HIGH", "CRITICAL"} and (field != "Misconfigurations" or entry["Status"] == "FAIL"):
+                if (entry["Severity"] in {"HIGH", "CRITICAL"}
+                        and (field != "Misconfigurations" or entry["Status"] == "FAIL")):
                     counts[kind] += 1
     findings = sum(counts.values())
     if (engine_exit == 1) != (findings > 0):
@@ -130,13 +140,16 @@ def trivy_analysis_incomplete(log):
     # are absent for LICENSE detection, while requirements vulnerabilities are
     # still scanned successfully. License is not one of our enabled scanners.
     # Exempt only this exact upstream warning, not arbitrary WARN/error lines.
-    license_only = re.compile(r"\tWARN\t\[pip\] Unable to find python `site-packages` directory\. License detection is skipped\.\s+err=\"site-packages directory not found\"$")
+    license_only = re.compile(
+        r"\tWARN\t\[pip\] Unable to find python `site-packages` directory\. License "
+        r"detection is skipped\.\s+err=\"site-packages directory not found\"$")
     relevant = "\n".join(line for line in log.splitlines() if not license_only.search(line))
     return bool(re.search(r"(?im)^.*(?:WARN|ERROR|FATAL).*\b(?:fail(?:ed|ure)?|error|unable|could not)\b", relevant))
 
 
 def trivy_scan(receipt, target, work):
-    config, ignores, secret_config, policy = [work / name for name in ("trivy.yaml", "ignore", "secret.yaml", "ignore.rego")]
+    config, ignores, secret_config, policy = [
+        work / name for name in ("trivy.yaml", "ignore", "secret.yaml", "ignore.rego")]
     config.write_text("{}\n")
     ignores.write_text("")
     secret_config.write_text("rules: []\nallow-rules: []\n")
@@ -222,7 +235,8 @@ def clamav_scan(receipt, target, work):
     # this signature-only lane, so do not download it or claim it is scanned.
     # Effective main+daily databases are mandatory and verified; daily is rolling.
     for name in ("main", "daily"):
-        paths = [database / f"{name}.{suffix}" for suffix in ("cvd", "cld") if (database / f"{name}.{suffix}").is_file()]
+        paths = [database / f"{name}.{suffix}" for suffix in ("cvd", "cld")
+                 if (database / f"{name}.{suffix}").is_file()]
         if len(paths) != 1 or paths[0].stat().st_size == 0:
             raise ScanError("clamav-definitions-missing-or-ambiguous")
         code, info = execute([str(bindir / "sigtool"), "--info", str(paths[0])], work, env, timeout=60)

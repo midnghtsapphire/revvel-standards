@@ -59,7 +59,8 @@ class WorkflowContractTests(unittest.TestCase):
             process.env.ISSUE_NUMBER = '7'; process.env.ISSUE_TITLE = '[WR] Review';
             process.env.BRANCH_NAME = 'trusted-branch'; process.env.WR_FILE = 'wr/issues/7.md';
             const script = """ + json.dumps(script) + """;
-            const execute = new (Object.getPrototypeOf(async function(){}).constructor)('context', 'github', 'core', script);
+            const execute = new (Object.getPrototypeOf(async function(){}).constructor)(
+                'context', 'github', 'core', script);
             (async () => {
                 for (const value of [undefined, false, 'false', true, 'true', '1']) {
                     const context = {repo: {owner: 'offline', repo: 'repo'}, payload: {inputs: {draft_only: value}}};
@@ -120,7 +121,9 @@ class WorkflowContractTests(unittest.TestCase):
     def test_new_privileged_workflow_checkouts_use_pinned_trusted_default_branch(self):
         for name in ("audrey-bridge.yml", "audrey-facebook-publish.yml"):
             source = workflow(name)
-            checkouts = re.findall(r"- uses: (actions/checkout@[^\s]+).*?\n        with:\n(.*?)(?=^      -|\Z)", source, re.M | re.S)
+            checkouts = re.findall(
+                r"- uses: (actions/checkout@[^\s]+).*?\n        with:\n(.*?)(?=^      -|\Z)",
+                source, re.M | re.S)
             self.assertEqual(len(checkouts), 2)
             for ref, configuration in checkouts:
                 self.assertEqual(ref, CHECKOUT)

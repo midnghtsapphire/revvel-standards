@@ -11,8 +11,10 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/security"))
-import scan
-from install_scanners import engine_env
+# 2026-11-20, kimi-work-lopez (flake8-debt PR): sys.path insert above must
+# precede this import, so E402 is inherent; noqa keeps the gate green.
+import scan  # noqa: E402
+from install_scanners import engine_env  # noqa: E402
 
 
 def main():
@@ -30,8 +32,10 @@ def main():
             candidate.mkdir()
             (candidate / "Dockerfile").write_text("FROM alpine:3.20\nUSER root\n")
             (candidate / "requirements.txt").write_text("Django==2.0.9\n")
-            fake_material = base64.b64encode(hashlib.sha256(b"noncredential-security-test").digest() * 4).decode("ascii")
-            (candidate / "credentials.env").write_text("-----BEGIN PRIVATE KEY-----\n" + fake_material + "\n-----END PRIVATE KEY-----\n")
+            fake_material = base64.b64encode(
+                hashlib.sha256(b"noncredential-security-test").digest() * 4).decode("ascii")
+            (candidate / "credentials.env").write_text(
+                "-----BEGIN PRIVATE KEY-----\n" + fake_material + "\n-----END PRIVATE KEY-----\n")
             # A policy bypass attempt in candidate data must not suppress findings.
             (candidate / "trivy.yaml").write_text("scanners: []\nignore-unfixed: true\n")
             (candidate / ".trivyignore").write_text("AVD-DS-0002\n")
@@ -39,6 +43,7 @@ def main():
             work.mkdir()
             receipt = json.loads((args.trivy_prefix / "installation.json").read_text())
             original = scan.execute
+
             def traced(command, work, env, timeout=900):
                 code, log = original(command, work, env, timeout)
                 # Safe fixture diagnostics are kept outside Git. Public receipts
@@ -51,9 +56,13 @@ def main():
                 code, details = scan.trivy_scan(receipt, candidate, work)
                 assert code == 1 and details["counts"]["misconfiguration"] > 0
                 assert details["counts"]["vulnerability"] > 0 and details["counts"]["secret"] > 0
-                receipts.append({"engine": "trivy", "test": "root-user-misconfiguration-and-candidate-policy-bypass", "engine_exit": code, **details})
+                receipts.append(
+                    {"engine": "trivy", "engine_exit": code,
+                     "test": "root-user-misconfiguration-and-candidate-policy-bypass", **details})
             except scan.ScanError as error:
-                receipts.append({"engine": "trivy", "test": "root-user-misconfiguration-and-candidate-policy-bypass", "status": "error", "reason": str(error)})
+                receipts.append(
+                    {"engine": "trivy", "status": "error", "reason": str(error),
+                     "test": "root-user-misconfiguration-and-candidate-policy-bypass"})
             finally:
                 scan.execute = original
         if args.clamav_prefix:
@@ -71,24 +80,35 @@ def main():
             # without pretending that synthetic defs satisfy production freshness.
             database = scratch / "test-only.hdb"
             database.write_text(f"{hashlib.md5(sample).hexdigest()}:{len(sample)}:Revvel.HarmlessEicarTest\n")
-            result = subprocess.run([receipt["binary"], "--database", str(database), str(sample_file)], env=env, cwd=scratch, capture_output=True, text=True, timeout=60)
+            result = subprocess.run(
+                [receipt["binary"], "--database", str(database), str(sample_file)],
+                env=env, cwd=scratch, capture_output=True, text=True, timeout=60)
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.with_suffix(".clam-private.log").write_text(result.stdout + result.stderr)
             found, scanned = scan.validate_clam_report(result.stdout + result.stderr, result.returncode)
             assert result.returncode == 1 and found == 1
-            receipts.append({"engine": "clamav", "test": "safe-EICAR-synthetic-signature", "engine_exit": result.returncode, "infected_files": found, "scanned_files": scanned, "official_database": False})
+            receipts.append(
+                {"engine": "clamav", "test": "safe-EICAR-synthetic-signature",
+                 "engine_exit": result.returncode, "infected_files": found,
+                 "scanned_files": scanned, "official_database": False})
             clean = candidate / "clean.txt"
             clean.write_text("safe content\n")
-            result = subprocess.run([receipt["binary"], "--database", str(database), str(clean)], env=env, cwd=scratch, capture_output=True, text=True, timeout=60)
+            result = subprocess.run(
+                [receipt["binary"], "--database", str(database), str(clean)],
+                env=env, cwd=scratch, capture_output=True, text=True, timeout=60)
             assert scan.validate_clam_report(result.stdout + result.stderr, result.returncode) == (0, 1)
             receipts.append({"engine": "clamav", "test": "clean-file", "engine_exit": result.returncode})
-            result = subprocess.run([receipt["binary"], "--database", str(scratch / "missing-db"), str(clean)], env=env, cwd=scratch, capture_output=True, timeout=60)
+            result = subprocess.run(
+                [receipt["binary"], "--database", str(scratch / "missing-db"), str(clean)],
+                env=env, cwd=scratch, capture_output=True, timeout=60)
             assert result.returncode == 2
-            receipts.append({"engine": "clamav", "test": "missing-database-engine-error", "engine_exit": result.returncode})
+            receipts.append({"engine": "clamav", "test": "missing-database-engine-error",
+                             "engine_exit": result.returncode})
             if args.official_clamav:
                 work = scratch / "clam-official-work"
                 work.mkdir()
                 original = scan.execute
+
                 def trace_official(command, work, env, timeout=900):
                     code, log = original(command, work, env, timeout)
                     args.output.with_suffix(".official-private.log").write_text(log)
@@ -97,9 +117,13 @@ def main():
                 try:
                     code, details = scan.clamav_scan(receipt, candidate, work)
                     assert code == 1 and details["findings"] == 1
-                    receipts.append({"engine": "clamav", "test": "safe-EICAR-official-definitions", "engine_exit": code, "official_database": True, **details})
+                    receipts.append(
+                        {"engine": "clamav", "test": "safe-EICAR-official-definitions",
+                         "engine_exit": code, "official_database": True, **details})
                 except scan.ScanError as error:
-                    receipts.append({"engine": "clamav", "test": "safe-EICAR-official-definitions", "status": "error", "reason": str(error)})
+                    receipts.append(
+                        {"engine": "clamav", "test": "safe-EICAR-official-definitions",
+                         "status": "error", "reason": str(error)})
                 finally:
                     scan.execute = original
     args.output.parent.mkdir(parents=True, exist_ok=True)
